@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
+// axios 기본 설정
+axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.withCredentials = true;
+
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -16,20 +20,20 @@ export default function SearchPage() {
   const fetchSuggestions = async (value) => {
     if (!value.trim()) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
 
     try {
       const res = await axios.get('/api/suggest', {
         params: { keyword: value },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      if (Array.isArray(res.data)) {
-        setSuggestions(res.data);
-        setShowSuggestions(true);
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
+      console.log('자동완성 응답:', res.data);
+      setSuggestions(res.data);
+      setShowSuggestions(true);
     } catch (err) {
       console.error('자동완성 오류:', err);
       setSuggestions([]);
@@ -76,13 +80,17 @@ export default function SearchPage() {
     return (
       <ul
         style={{
-          border: '1px solid #ccc',
+          border: '1px solid #e0e0e0',
+          borderRadius: '4px',
           padding: 0,
           marginTop: '4px',
           backgroundColor: '#fff',
           position: 'absolute',
           zIndex: 9999,
           width: '100%',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          maxHeight: '300px',
+          overflowY: 'auto',
         }}
       >
         {suggestions.map((item, index) => (
@@ -91,15 +99,23 @@ export default function SearchPage() {
             onClick={() => {
               setQuery(item.text);
               handleSearch(item.text);
+              setShowSuggestions(false);
             }}
             style={{
               listStyle: 'none',
-              padding: '8px',
+              padding: '12px 16px',
               cursor: 'pointer',
               borderBottom: '1px solid #eee',
               backgroundColor: '#fff',
-              color: '#000',
+              color: '#333',
+              transition: 'background-color 0.2s',
             }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = '#f5f5f5')
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = '#fff')
+            }
           >
             {item.text}
           </li>
@@ -161,10 +177,13 @@ export default function SearchPage() {
         onChange={(e) => {
           const val = e.target.value;
           setQuery(val);
-          fetchSuggestions(val); // 🔥 자동완성 즉시 실행
+          fetchSuggestions(val);
         }}
         onFocus={() => {
           if (suggestions.length > 0) setShowSuggestions(true);
+        }}
+        onBlur={() => {
+          setTimeout(() => setShowSuggestions(false), 200);
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -172,7 +191,15 @@ export default function SearchPage() {
             setShowSuggestions(false);
           }
         }}
-        style={{ width: '100%', padding: '10px', fontSize: '16px' }}
+        style={{
+          width: '100%',
+          padding: '12px 16px',
+          fontSize: '16px',
+          border: '1px solid #e0e0e0',
+          borderRadius: '4px',
+          outline: 'none',
+          transition: 'border-color 0.2s',
+        }}
       />
       {renderSuggestions()}
       {results.length > 0 && renderResults()}
