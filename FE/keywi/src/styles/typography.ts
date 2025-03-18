@@ -1,5 +1,6 @@
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
+import { colors, ColorName } from './colors'
 
 export const typography = {
   body1: {
@@ -39,9 +40,9 @@ export const typography = {
 export const Text = styled.span<{
   variant?: keyof typeof typography
   weight?: 'regular' | 'bold'
-  color?: string
+  color?: ColorName
 }>`
   ${({ variant = 'body1', weight = 'regular' }) => typography[variant][weight]}
-  ${({ color }) => color && `color: ${color};`}
+  ${({ color }) => color && `color: ${colors[color]};`}
   font-family: 'Pretendard';
 `
