@@ -72,9 +72,17 @@ if __name__ == "__main__":
         )
         db.commit()
     
-    def select_product():
-        cursor.execute("SELECT * from category")
+    def exist_product(product_name):
+        cursor.execute("SELECT EXISTS(SELECT 1 FROM products WHERE product_name = %s)", (product_name,))
+        return cursor.fetchone()[0]
+    
+    
+    def select_product(start=1, end=None):
+        query="SELECT * from products WHERE product_id >= %s" + (" and product_id <= %s" if end else "")
+        sele=(start, end,) if end else (start,)
+        cursor.execute(query, sele)
         return cursor.fetchall()
+    
     
     category=["case", 'switch', 'keycap', 'pcb', 'plate', 'stabilizer', 'foam']  # 1, 2, 3, 4, 5, 6, 7
     detail={
@@ -83,6 +91,7 @@ if __name__ == "__main__":
         3:['double-shot', 'dye-sub', 'artisan', 'cap-etc'],  # 18, 19, 20, 21
         6:['pcb-mount', 'plate-mount'],  # 22, 23
     }
+    
     # for c in category:
     #     print(insert_category(c))
     
@@ -92,6 +101,7 @@ if __name__ == "__main__":
     
     # for p in select_product():
     #     print(p)
+    
     
     options=Options()
     options.add_argument("log-level=3")
@@ -169,7 +179,7 @@ if __name__ == "__main__":
     }
     
     
-    
+    productList={}
     product_id=0
     
     def today():
@@ -182,12 +192,15 @@ if __name__ == "__main__":
     
     
     def cr(URL, List, Dic):
+        global product_id
         driver.get(baseURL+URL)
         driver.implicitly_wait(5)
         act=ActionChains(driver)
         
         # 탭 목록 저장용
         tab={}
+        driver.execute_script(f'window.open("{driver.current_url}");')
+        driver.switch_to.window(driver.window_handles[-1])
         tab[0]=driver.current_window_handle
         today()
         
@@ -196,12 +209,12 @@ if __name__ == "__main__":
             
             # 메뉴 더보기 버튼 누르기
             try:
-                moreButton=menu.find_element(By.XPATH, f"//button[contains(text(),'더보기')]") #By.CLASS_NAME, "_3ryPAjhmjZ")
+                moreButton=menu.find_element(By.XPATH, f"//button[text()='더보기']") #By.CLASS_NAME, "_3ryPAjhmjZ")
                 moreButton.click()
                 sleep(0.5)
             except:print("이미 열림")
             
-            sub=menu.find_element(By.XPATH, f"//a[contains(text(),'{l}')]")
+            sub=menu.find_element(By.XPATH, f"//a[text()='{l}']")
             act.move_to_element(sub).perform()
             sleep(0.3)
             
@@ -209,7 +222,7 @@ if __name__ == "__main__":
                 # 마우스 호버해서 얻은 세부 카테고리
                 submenu=wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "T20614P231")))
                 for detail, categoryId in Dic[l]:
-                    d=submenu.find_element(By.XPATH, f"//a[contains(text(),'{detail}')]")
+                    d=submenu.find_element(By.XPATH, f"//a[text()='{detail}']")
                     detailpage=d.get_attribute('href').replace("?cp=1", query)
                     print(detail, detailpage)
                     driver.execute_script(f'window.open("{detailpage}");')
@@ -220,6 +233,7 @@ if __name__ == "__main__":
                     driver.switch_to.window(tab[0])
             else:
                 subpage=sub.get_attribute('href').replace("?cp=1", query)
+                print(l, subpage)
                 driver.execute_script(f'window.open("{subpage}");')
                 driver.switch_to.window(driver.window_handles[-1])
                 if geoncate[l] in tab:
@@ -228,7 +242,6 @@ if __name__ == "__main__":
                 driver.switch_to.window(tab[0])
         
         productList={}
-        product_id=580
         
         for categoryId, pages in tab.items():
             if categoryId==0:continue
@@ -248,7 +261,7 @@ if __name__ == "__main__":
                     body=driver.find_element(By.TAG_NAME, 'body')
                     body.send_keys(Keys.END)
                     pagenation=body.find_element(By.CLASS_NAME, "_2UJrM31-Ry")
-                    pagebtn=pagenation.find_element(By.XPATH,f"//a[contains(text(),'{i}')]")
+                    pagebtn=pagenation.find_element(By.XPATH,f"//a[text()='{i}']")
                     pagebtn.click()
                     driver.implicitly_wait(5)
                     sleep(5)
@@ -263,9 +276,12 @@ if __name__ == "__main__":
                     
                     products = wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'flu7YgFW2k')))
                     for product in products:
-                        product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
-                        price = product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',','')
                         product_name = product.find_element(By.CLASS_NAME, '_26YxgX-Nu5').text
+                        if exist_product(product_name):
+                            print(f"\n{product_name} 존재.\n")
+                            continue
+                        product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                        price = int(product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',',''))
                         product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('src')
                         
                         # 세부 카테고리 Id 할당 안된 애들 할당해주기
@@ -315,6 +331,8 @@ if __name__ == "__main__":
                             # 찾지못하면 기타분류
                             if category_id==0: category_id=21
                         
+                        if category_id in [2,14,15,16,17] and price>1200 and price<14000: price=price//10
+                        
                         product_id+=1
                         
                         print(product_id, category_id, product_name, price, product_url, product_image)
@@ -322,19 +340,25 @@ if __name__ == "__main__":
                         productList[product_id]=(category_id, product_name, price, product_url, product_image, None)
                         insert_product(category_id, product_name, price, product_url, product_image)
                 driver.close()
+                driver.switch_to.window(driver.window_handles[-1])
             
         return productList
     
     # swegkey_product=cr(swegkey, swegkeyList, swegkeyDic)
-    
-    # with open("swegkey_product.json", "w", encoding="utf-8") as json_file:
-    #     json.dump(swegkey_product, json_file, indent=4, ensure_ascii=False)
+    swegkey_product={}
+    products=select_product(end=470)
+    for key, *value in products: swegkey_product[key]=value
+    # pprint(swegkey_product)
+    with open("swegkey_product.json", "w", encoding="utf-8") as json_file:
+        json.dump(swegkey_product, json_file, indent=4, ensure_ascii=False)
 
-    # print("swegkey_product JSON 파일이 성공적으로 저장되었습니다!")
-    # productList={}
+    print("swegkey_product JSON 파일이 성공적으로 저장되었습니다!")
     
-    geon_product=cr(geonworks, geonList, geonDic)
-    
+    # geon_product=cr(geonworks, geonList, geonDic)
+    geon_product={}
+    products=select_product(start=471)
+    for key, *value in products:geon_product[key]=value
+    # pprint(geon_product)
     with open("geon_product.json", "w", encoding="utf-8") as json_file:
         json.dump(geon_product, json_file, indent=4, ensure_ascii=False)
 
