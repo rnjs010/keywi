@@ -3,12 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import tw from 'twin.macro'
-import styled from 'styled-components'
+import { Text } from './styles/typography'
 
-const Title = styled.h1`
-  ${tw`text-3xl font-bold text-blue-600`}
-`
+import ExampleComponent from './components/exampleComponent'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -16,6 +13,12 @@ function App() {
   return (
     <>
       <div>
+        <Text variant="caption2" weight="bold">
+          KeyWi!!!!
+        </Text>
+        <ExampleComponent />
+      </div>
+      <div className="logo-container">
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -23,9 +26,6 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-
-      <Title>Welcome to My PWA</Title>
-
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
