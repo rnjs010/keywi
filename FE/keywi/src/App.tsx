@@ -3,12 +3,12 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import tw from "twin.macro";
-import styled from "styled-components";
+import tw from 'twin.macro'
+import styled from 'styled-components'
 
 const Title = styled.h1`
   ${tw`text-3xl font-bold text-blue-600`}
-`;
+`
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,7 +23,7 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      
+
       <Title>Welcome to My PWA</Title>
 
       <div className="card">
