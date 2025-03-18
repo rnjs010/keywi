@@ -28,14 +28,14 @@ CREATE TABLE products (
     price INT NOT NULL,
     product_url VARCHAR(500) NOT NULL,
     product_image VARCHAR(255),
+    options VARCHAR(500),
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
 CREATE TABLE products_descriptions (
     product_description_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
-    description_image_url VARCHAR(255) NOT NULL,
-    options VARCHAR(500),
+    description_image_url VARCHAR(500) NOT NULL,
     description_order INT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
@@ -44,9 +44,9 @@ CREATE TABLE products_descriptions (
 if __name__ == "__main__":
     
     db = mysql.connector.connect(
-        host=input("host: "),
-        user=input("mysql user: "),
-        password=input("mysql password: "),
+        host='127.0.0.1',#input("host: "),
+        user='ssafy',#input("mysql user: "),
+        password='ssafy',#input("mysql password: "),
         database="KeyWi"
     )
     
@@ -182,15 +182,14 @@ if __name__ == "__main__":
     
     
     def cr(URL, List, Dic):
-        today()
-        
         driver.get(baseURL+URL)
         driver.implicitly_wait(5)
         act=ActionChains(driver)
         
         # 탭 목록 저장용
         tab={}
-        maintab=driver.current_window_handle
+        tab[0]=driver.current_window_handle
+        today()
         
         for l in List:
             menu = wait.until(EC.element_to_be_clickable((By.ID,"pc-categoryMenuWidget")))
@@ -218,7 +217,7 @@ if __name__ == "__main__":
                     if categoryId in tab:
                         tab[categoryId]+=[driver.current_window_handle]
                     else:tab[categoryId]=[driver.current_window_handle]
-                    driver.switch_to.window(maintab)
+                    driver.switch_to.window(tab[0])
             else:
                 subpage=sub.get_attribute('href').replace("?cp=1", query)
                 driver.execute_script(f'window.open("{subpage}");')
@@ -226,12 +225,13 @@ if __name__ == "__main__":
                 if geoncate[l] in tab:
                     tab[geoncate[l]]+=[driver.current_window_handle]
                 else: tab[geoncate[l]]=[driver.current_window_handle]
-                driver.switch_to.window(maintab)
+                driver.switch_to.window(tab[0])
         
-        product={}
-        product_id=0
+        productList={}
+        product_id=580
         
         for categoryId, pages in tab.items():
+            if categoryId==0:continue
             for page in pages:
                 driver.switch_to.window(page)
                 sleep(1)
@@ -242,32 +242,31 @@ if __name__ == "__main__":
                 sleep(1)
                 
                 pagenation=body.find_element(By.CLASS_NAME, "_2UJrM31-Ry")
-                pages=len(pagenation.find_elements(By.CLASS_NAME, "UWN4IvaQza"))
+                pagenum=len(pagenation.find_elements(By.CLASS_NAME, "UWN4IvaQza"))
                 
-                currentURL=driver.current_url
-                parsed_url = urlparse(currentURL)
-                query_params = parse_qs(parsed_url.query)
-                
-                for i in range(1, pages+1):
-                    query_params['page']=[f'{i}']
-                    modified_query = urlencode(query_params, doseq=True)
-                    modified_url = urlunparse((parsed_url.scheme, parsed_url.netloc, parsed_url.path, parsed_url.params, modified_query, parsed_url.fragment))
+                for i in range(1, pagenum+1):
+                    body=driver.find_element(By.TAG_NAME, 'body')
+                    body.send_keys(Keys.END)
+                    pagenation=body.find_element(By.CLASS_NAME, "_2UJrM31-Ry")
+                    pagebtn=pagenation.find_element(By.XPATH,f"//a[contains(text(),'{i}')]")
+                    pagebtn.click()
+                    driver.implicitly_wait(5)
+                    sleep(5)
                     
-                    if driver.current_url!=modified_url:
-                        driver.get(modified_url)
-                        sleep(1)
-                        driver.implicitly_wait(5)
+                    body=driver.find_element(By.TAG_NAME, 'body')
+                    body.send_keys(Keys.END)
+                    sleep(1)
                     
-                        body=driver.find_element(By.TAG_NAME, 'body')
-                        body.send_keys(Keys.END)
-                        sleep(4)
+                    print()
+                    print(i, driver.current_url)
+                    print()
                     
                     products = wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'flu7YgFW2k')))
                     for product in products:
                         product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
                         price = product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',','')
                         product_name = product.find_element(By.CLASS_NAME, '_26YxgX-Nu5').text
-                        product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('href')
+                        product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('src')
                         
                         # 세부 카테고리 Id 할당 안된 애들 할당해주기
                         category_id=0
@@ -296,6 +295,7 @@ if __name__ == "__main__":
                                 if switch in product_name:
                                     category_id=geonMapping[switch]
                                     break
+                            if category_id==0:category_id=2
                         
                         # 3. 키캡(스웨그키)
                         elif categoryId == 3:
@@ -316,20 +316,22 @@ if __name__ == "__main__":
                             if category_id==0: category_id=21
                         
                         product_id+=1
-                        product[product_id]=(category_id, product_name, price, product_url, product_image, None)
+                        
+                        print(product_id, category_id, product_name, price, product_url, product_image)
+                        
+                        productList[product_id]=(category_id, product_name, price, product_url, product_image, None)
                         insert_product(category_id, product_name, price, product_url, product_image)
+                driver.close()
             
-        return product
+        return productList
     
-    swegkey_product=cr(swegkey, swegkeyList, swegkeyDic)
-    # soup = BeautifulSoup(driver.page_source, 'html.parser')
-    # pprint(soup)
+    # swegkey_product=cr(swegkey, swegkeyList, swegkeyDic)
     
-    with open("swegkey_product.json", "w", encoding="utf-8") as json_file:
-        json.dump(swegkey_product, json_file, indent=4, ensure_ascii=False)
+    # with open("swegkey_product.json", "w", encoding="utf-8") as json_file:
+    #     json.dump(swegkey_product, json_file, indent=4, ensure_ascii=False)
 
-    print("swegkey_product JSON 파일이 성공적으로 저장되었습니다!")
-    
+    # print("swegkey_product JSON 파일이 성공적으로 저장되었습니다!")
+    # productList={}
     
     geon_product=cr(geonworks, geonList, geonDic)
     
