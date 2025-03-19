@@ -26,7 +26,7 @@ CREATE TABLE products_descriptions (
     product_id INT NOT NULL,
     detail_description VARCHAR(500) NOT NULL,
     description_order INT NOT NULL,
-    content_type ENUM('text', 'image') NOT NULL,
+    content_type ENUM('text', 'image', 'hr') NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 '''
@@ -40,6 +40,9 @@ class DBs:
             database="KeyWi"
         )
         self.cursor = self.DB.cursor()
+    
+    def __str__(self):
+        return self.DB.is_connected()
         
     def insert_category(self, category_name, parent_id=None):
         self.cursor.execute("INSERT INTO category (category_name, parent_id) VALUES (%s, %s)", (category_name, parent_id))
