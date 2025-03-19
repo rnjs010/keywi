@@ -1,4 +1,4 @@
-import threading
+import threading, json
 from dbctl import DBs
 from time import sleep
 from mj import make_json
@@ -27,6 +27,13 @@ def listen_for_esc():
     with Listener(on_press=on_press) as listener:
         listener.join()
 
+def strToDict(data):
+    try:
+        parsed_data = json.loads(data)
+        return parsed_data
+    except json.JSONDecodeError as e:
+        print(f"JSON 파싱 오류: {e}")
+
 if __name__ == '__main__':
     esc_listener_thread = threading.Thread(target=listen_for_esc, daemon=True)
     esc_listener_thread.start()
@@ -36,7 +43,7 @@ if __name__ == '__main__':
             if KeyWi:break
         except:
             print("다시 시도해주세요.")
-    products = KeyWi.select_product(start=613)
+    products = KeyWi.select_product()
     
     fail_products={}
     result=[]
@@ -75,27 +82,42 @@ if __name__ == '__main__':
             for component in components:
                 compclass=component.get_attribute("class")
                 
-                if "se-text" in compclass:
+                if "se-text " in compclass:
                     descriptions=component.find_elements(By.TAG_NAME, "p")
+                    des=''
                     for de in descriptions:
-                        description_list.append([products_id, de.text, len(description_list)+1, 'text'])
+                        des=des+de.text+'\n'
+                    description_list.append([products_id, des, len(description_list)+1, 'text'])
                 
-                elif "se-image" in compclass:
+                elif "se-imageStrip " in compclass:
+                    try:
+                        gifs = component.find_elements(By.TAG_NAME, "video")
+                        gifURLs=''
+                        for gif in gifs:
+                            gifURL=gif.get_attribute("data-src")
+                            gifURLs+=(gifURL+'\n')
+                        description_list.append([products_id, gifURLs, len(description_list)+1, 'gif'])
+                    except Exception as e: print(e)
+                
+                elif "se-image " in compclass:
                     imgURL=component.find_element(By.TAG_NAME, "img").get_attribute("data-src")
-                    description_list.append([products_id, imgURL, len(description_list)+1, 'image'])
+                    hyperlink=None
+                    imgdata=strToDict(component.find_element(By.TAG_NAME, "a").get_attribute("data-linkdata"))
+                    if imgdata["linkUse"]=="true":hyperlink=imgdata["link"]
+                    description_list.append([products_id, imgURL, len(description_list)+1, 'image', hyperlink])
                     
                     img_descriptions=component.find_elements(By.TAG_NAME, "p")
                     if img_descriptions:
                         for imde in img_descriptions:
                             description_list.append([products_id, imde.text, len(description_list)+1, 'text'])
                 
-                elif "se-horizontalLine" in compclass:
+                elif "se-horizontalLine " in compclass:
                     if "se-l-line1" in compclass:
                         description_list.append([products_id, 'long', len(description_list)+1, 'hr'])
                     elif "se-l-default"  in compclass:
                         description_list.append([products_id, 'short', len(description_list)+1, 'hr'])
                 
-                elif "se-oembed" in compclass:
+                elif "se-oembed " in compclass:
                     embedURL=component.find_element(By.TAG_NAME, "iframe").get_attribute("src")
                     description_list.append([products_id, embedURL, len(description_list)+1, 'embed'])
         
@@ -107,12 +129,15 @@ if __name__ == '__main__':
             print()
             driver.quit()
         except Exception as e:
-            print(products_id)
+            print(products_id, len(description_list)+1)
             print(e)
-            fail_products[products_id]={"value":value, "error":e}
+            fail_products[products_id]={"value":value,"error_type": e.__class__.__name__, "error_message":str(e), "location":(len(description_list)+1)}
+            driver.quit()
         else:
             result=result+description_list
     if result:
-        make_json('products_descriptions', result)
+        try:make_json('products_descriptions', result)
+        except Exception as e:print(e)
     if fail_products:
-        make_json('fail_products', fail_products)
+        try:make_json('fail_products', fail_products)
+        except Exception as e:print(e)

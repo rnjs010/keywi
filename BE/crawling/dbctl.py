@@ -26,7 +26,8 @@ CREATE TABLE products_descriptions (
     product_id INT NOT NULL,
     detail_description VARCHAR(500) NOT NULL,
     description_order INT NOT NULL,
-    content_type ENUM('text', 'image', 'hr', 'embed') NOT NULL,
+    content_type ENUM('text', 'image', 'hr', 'embed', 'gif') NOT NULL,
+    hyperlink VARCHAR(500),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 '''
@@ -57,10 +58,10 @@ class DBs:
         self.DB.commit()
         return self.cursor.lastrowid
 
-    def insert_product_description(self, product_id, detail_description, description_order, content_type):
+    def insert_product_description(self, product_id, detail_description, description_order, content_type, hyperlink=None):
         self.cursor.execute(
-            "INSERT INTO products_descriptions (product_id, detail_description, description_order, content_type) VALUES (%s, %s, %s, %s)",
-            (product_id, detail_description, description_order, content_type)
+            "INSERT INTO products_descriptions (product_id, detail_description, description_order, content_type, hyperlink) VALUES (%s, %s, %s, %s, %s)",
+            (product_id, detail_description, description_order, content_type, hyperlink)
         )
         self.DB.commit()
 
