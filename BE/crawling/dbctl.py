@@ -26,7 +26,7 @@ CREATE TABLE products_descriptions (
     product_id INT NOT NULL,
     detail_description VARCHAR(500) NOT NULL,
     description_order INT NOT NULL,
-    content_type ENUM('text', 'image', 'hr') NOT NULL,
+    content_type ENUM('text', 'image', 'hr', 'embed') NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 '''
