@@ -1,9 +1,9 @@
 import threading, json
 from dbctl import DBs
 from time import sleep
-from mj import make_json
 from pprint import pprint
 from driver import init_driver
+from mj import make_json, open_json
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -37,21 +37,24 @@ def strToDict(data):
 if __name__ == '__main__':
     esc_listener_thread = threading.Thread(target=listen_for_esc, daemon=True)
     esc_listener_thread.start()
-    while True:
-        try:
-            KeyWi=DBs()
-            if KeyWi:break
-        except:
-            print("다시 시도해주세요.")
-    products = KeyWi.select_product()
+    # while True:
+    #     try:
+    #         KeyWi=DBs()
+    #         if KeyWi:break
+    #     except:
+    #         print("다시 시도해주세요.")
+    # products = KeyWi.select_product(800,800)
+    
+    products = open_json()
     
     fail_products={}
     result=[]
-    for products_id, *value in products:
+    # for products_id, *value in products:
+    for products_id, value in products.items():
         if exit_flag: break
         try:
             driver, wait = init_driver()
-            category_id, product_name, price, product_url, product_image, options = value
+            category_id, product_name, price, product_url, product_image, options = value["value"]
             driver.get(product_url)
             act=ActionChains(driver)
             
@@ -87,7 +90,11 @@ if __name__ == '__main__':
                     des=''
                     for de in descriptions:
                         des=des+de.text+'\n'
-                    description_list.append([products_id, des, len(description_list)+1, 'text'])
+                    if len(des)<480:
+                        description_list.append([products_id, des, len(description_list)+1, 'text'])
+                    
+                    for de in descriptions:
+                        description_list.append([products_id, de.text, len(description_list)+1, 'text'])
                 
                 elif "se-imageStrip " in compclass:
                     try:
@@ -122,8 +129,8 @@ if __name__ == '__main__':
                     description_list.append([products_id, embedURL, len(description_list)+1, 'embed'])
         
         
-            for description in description_list:
-                KeyWi.insert_product_description(*description)
+            # for description in description_list:
+            #     KeyWi.insert_product_description(*description)
             print(product_name)
             pprint(description_list)
             print()
@@ -131,10 +138,12 @@ if __name__ == '__main__':
         except Exception as e:
             print(products_id, len(description_list)+1)
             print(e)
-            fail_products[products_id]={"value":value,"error_type": e.__class__.__name__, "error_message":str(e), "location":(len(description_list)+1)}
+            # fail_products[products_id]={"value":value,"error_type": e.__class__.__name__, "error_message":str(e), "location":(len(description_list)+1)}
+            fail_products[products_id]={"value":value["value"],"error_type": e.__class__.__name__, "error_message":str(e), "location":(len(description_list)+1)}
             driver.quit()
         else:
             result=result+description_list
+        finally:description_list=[]
     if result:
         try:make_json('products_descriptions', result)
         except Exception as e:print(e)
