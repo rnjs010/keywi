@@ -9,10 +9,10 @@ class StoreData:
             6:['pcb-mount', 'plate-mount'],  # 22, 23
         }
         
-        self.swegkeyList=["스위치", "키보드", "키캡", "기판 & 파츠", "스테빌라이저", "툴"]
+        self.swegkey_list=["스위치", "키보드", "키캡", "기판 & 파츠", "스테빌라이저", "툴"]
         
         # 만약 1~3 사이 숫자가 들어있다면, 제목/설명 기반으로 카테고리 추출 - 쉑키는 설명(_1enCFJskWo)에, 지온은 처음부터 분류됨
-        self.swegkeyDic={
+        self.swegkey_dic={
             "스위치":[["마그네틱 스위치", 17], ["저소음", 16], ["리니어", 14], ["택타일", 15]],
             "키보드":[["Swagkeys", 1], ["Owlab", 9], ["QK", 1], ["Neo", 1], ["MatrixLab", 13], ["MODE", 9], ["Angrymiao", 9], ["Whatever Studio", 11], ["Omnitype", 9], ["TKD", 1], ["FoxLab", 9]],
             # 분류가 붙으면 그대로 넣고, 안붙은거는 제목에서 가져가기
@@ -36,9 +36,9 @@ class StoreData:
             'TKL':11
         }
         
-        self.geonList=["VENOM", "PCB & 보강판", "키보드", "스위치", "스테빌라이저", "키캡", "흡음재"]
+        self.geon_list=["VENOM", "PCB & 보강판", "키보드", "스위치", "스테빌라이저", "키캡", "흡음재"]
     
-        self.geonDic={
+        self.geon_dic={
             "VENOM":[['케이스', 1], ['기판', 4], ['보강판', 5]],  # 각자 카테고리로 넣기
             "PCB & 보강판":[['PCB', 4], ['보강판', 5]],
             "키보드":[['Margo65', 9], ['MAGNUM65', 9], ['TIGER F13', 11], ['FROG TKL', 11], ['DUNE 65', 9]],
@@ -48,17 +48,17 @@ class StoreData:
             "흡음재":False
         }
         
-        self.geoncate={"스위치":2, "흡음재":7}
+        self.geon_category={"스위치":2, "흡음재":7}
         
-        self.geonSwitch=['자석축', '저소음', '리니어', '넌클릭']
+        self.geon_switch=['자석축', '저소음', '리니어', '넌클릭']
         
-        self.geonMapping={
+        self.geon_mapping={
             '자석축':17,
             '저소음':16,
             '리니어':14,
             '넌클릭':15
         }
-        self.geonRemove=['스템', '스프링', '폼', '와셔', '디퓨저'] # 이름으로 제거
+        self.geon_remove=['스템', '스프링', '폼', '와셔', '디퓨저'] # 이름으로 제거
         
         self.keycap={
             '염료승화':19,
