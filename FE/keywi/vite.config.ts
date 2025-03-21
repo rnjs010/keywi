@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import macrosPlugin from 'vite-plugin-babel-macros'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -164,4 +165,7 @@ export default defineConfig({
     }),
     macrosPlugin(),
   ],
+  resolve: {
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+  },
 })

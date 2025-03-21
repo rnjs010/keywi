@@ -2,6 +2,8 @@
 import tw from 'twin.macro'
 // import styled from '@emotion/styled'
 import { Text } from '../styles/typography' // 커스텀 된 텍스트 불러오기
+import { Search } from 'iconoir-react'
+import { colors } from '@/styles/colors'
 
 const Container = tw.div`
   p-6 space-y-6
@@ -24,6 +26,13 @@ function ExampleComponent() {
         <Text variant="caption1" weight="bold">
           테스트중
         </Text>
+        {/* 아이콘 import */}
+        <Search
+          color={colors.darkKiwi}
+          height={24}
+          width={24}
+          name="arrow-right"
+        />
       </div>
     </Container>
   )
