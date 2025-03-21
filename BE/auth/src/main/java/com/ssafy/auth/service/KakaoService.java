@@ -48,30 +48,17 @@ public class KakaoService {
     private String clientId;
 
     @Value("${oauth2.kakao.redirect_uri}")
-    private String defaultRedirectUri;
+    private String redirectUri;
 
     private static final long TOKEN_EXPIRATION_TIME_MS = 1000 * 60 * 60 * 24 * 14;
 
-    /**
-     * 현재 도메인에 따라 적절한 리다이렉트 URI를 선택
-     * @param currentDomain 현재 도메인
-     * @return 선택된 리다이렉트 URI
-     */
-    private String selectRedirectUri(String currentDomain) {
-        if (currentDomain.contains("localhost")) {
-            return defaultRedirectUri;
-        } else {
-            return defaultRedirectUri.replace("localhost:8080", currentDomain);
-        }
-    }
     /**
      * 카카오 로그인
      */
     public LoginResponse kakaoLogin(String code, String currentDomain) {
         log.info("인가 코드: {}", code);
 
-        String redirectUri = selectRedirectUri(currentDomain);
-        // 카카오 토큰 정보 받아오기
+        // 카카오 토큰 정보 받아오기 - 항상 설정 파일에 정의된 고정 리다이렉트 URI 사용
         KakaoTokenInfo kakaoTokenInfo = getKakaoTokens(code, redirectUri);
         log.info("카카오 액세스 토큰: {}", kakaoTokenInfo.accessToken);
 
@@ -81,6 +68,7 @@ public class KakaoService {
 
         return processKakaoLogin(userInfo, kakaoTokenInfo);
     }
+
     /**
      * 카카오 토큰 갱신 처리
      * @param refreshToken JWT 리프레시 토큰
@@ -91,7 +79,7 @@ public class KakaoService {
 
         // Redis에서 카카오 리프레시 토큰 조회
         String userId = jwtTokenProvider.extractSubject(refreshToken);
-        String kakaoRefreshToken = refreshTokenRedisRepository.findByKey("KAKAO_" + userId)
+        String kakaoRefreshToken = refreshTokenRedisRepository.findByKey("KAKAO_REFRESH_" + userId)
                 .orElseThrow(() -> new TokenRefreshException("저장된 카카오 리프레시 토큰이 없습니다."));
 
         // 카카오 토큰 갱신
@@ -128,12 +116,13 @@ public class KakaoService {
 
         // Redis 업데이트
         if (!kakaoRefreshToken.equals(newKakaoRefreshToken)) {
-            refreshTokenRedisRepository.save("KAKAO_" + userId, newKakaoRefreshToken, TOKEN_EXPIRATION_TIME_MS);
+            refreshTokenRedisRepository.save("KAKAO_REFRESH_" + userId, newKakaoRefreshToken, TOKEN_EXPIRATION_TIME_MS);
         }
-        refreshTokenRedisRepository.save(userId, newJwtTokens.getRefreshToken(), TOKEN_EXPIRATION_TIME_MS);
+        refreshTokenRedisRepository.save("JWT_REFRESH_" + userId, newJwtTokens.getRefreshToken(), TOKEN_EXPIRATION_TIME_MS);
 
         return newJwtTokens;
     }
+
     /**
      * 카카오 토큰 정보 내부클래스
      */
@@ -162,6 +151,8 @@ public class KakaoService {
         body.add("client_id", clientId);
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
+
+        log.debug("카카오 토큰 요청 - 리다이렉트 URI: {}", redirectUri);
 
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
@@ -196,12 +187,22 @@ public class KakaoService {
         );
 
         JsonNode jsonNode = parseJsonResponse(response.getBody());
+        log.debug("카카오 사용자 정보 응답: {}", jsonNode.toString());
 
+        // ID는 항상 존재해야 함
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
-
         userInfo.put("id", id);
-        userInfo.put("nickname", nickname);
+
+        // properties나 nickname이 null일 수 있음에 대비한 안전한 처리
+        JsonNode properties = jsonNode.get("properties");
+        if (properties != null && properties.get("nickname") != null) {
+            String nickname = properties.get("nickname").asText();
+            userInfo.put("nickname", nickname);
+        } else {
+            // 닉네임이 없는 경우 기본값 사용
+            userInfo.put("nickname", "User" + id);
+            log.warn("카카오에서 닉네임을 가져오지 못했습니다. 기본값 사용: User{}", id);
+        }
 
         return userInfo;
     }
@@ -234,7 +235,6 @@ public class KakaoService {
                     return memberRepository.save(newMember);
                 });
 
-        // 나머지 코드는 그대로 유지
         // JWT 토큰 생성
         JwtTokens jwtTokens = jwtTokensGenerator.generate(member.getId().toString());
         log.info("Generated JWT tokens for user {}: Access={}, Refresh={}",

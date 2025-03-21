@@ -31,16 +31,13 @@ public class SocialLoginController {
 
     private final KakaoService kakaoService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "Auth service is working!";
-    }
     // 카카오 로그인 콜백 처리
     @GetMapping("/callback/kakao")
     public ApiResponse<LoginResponse> kakaoCallback(
-            @RequestParam String code, // URL 파라미터로 전달되는 인가 코드
-            HttpServletRequest request // 현재 도메인 정보를 얻기 위한 HTTP 요청 객체
+            @RequestParam String code,
+            HttpServletRequest request
     ) {
+        log.debug("카카오 콜백 받음: code={}", code);
         String currentDomain = request.getServerName();
         return ApiResponse.success(kakaoService.kakaoLogin(code, currentDomain));
     }
