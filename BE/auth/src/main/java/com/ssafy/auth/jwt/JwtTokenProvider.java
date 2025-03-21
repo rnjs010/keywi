@@ -1,5 +1,6 @@
 package com.ssafy.auth.jwt;
 
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 
 import javax.crypto.SecretKey;
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ public class JwtTokenProvider {
      */
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Jwts.SIG.HS512.key().build();
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     /**
@@ -59,8 +62,8 @@ public class JwtTokenProvider {
      */
     public String accessTokenGenerate(String subject, Date expiredAt) {
         return Jwts.builder()
-                .subject(subject)
-                .expiration(expiredAt)
+                .setSubject(subject)
+                .setExpiration(expiredAt)
                 .signWith(key)
                 .compact();
     }
@@ -73,8 +76,8 @@ public class JwtTokenProvider {
      */
     public String refreshTokenGenerate(String subject, Date expiredAt) {
         return Jwts.builder()
-                .subject(subject)
-                .expiration(expiredAt)
+                .setSubject(subject)
+                .setExpiration(expiredAt)
                 .signWith(key)
                 .compact();
     }
@@ -87,10 +90,10 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             log.info("Validating token: {}", token);
-            Jwts.parser()
-                    .verifyWith(key)
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
                     .build()
-                    .parseSignedClaims(token);
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             log.error("JWT 토큰이 유효하지 않습니다: {}", e.getMessage());
@@ -105,11 +108,11 @@ public class JwtTokenProvider {
      */
     public String extractSubject(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(key)
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
                     .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
+                    .parseClaimsJws(token)
+                    .getBody()
                     .getSubject();
         } catch (Exception e) {
             throw new RuntimeException("토큰에서 사용자 정보를 추출하는데 실패했습니다.", e);

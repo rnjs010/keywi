@@ -1,6 +1,7 @@
 package com.ssafy.auth.service;
 
 import com.ssafy.auth.dto.token.JwtTokens;
+import com.ssafy.auth.exception.TokenRefreshException;
 import com.ssafy.auth.jwt.JwtTokenGenerator;
 import com.ssafy.auth.jwt.JwtTokenProvider;
 import com.ssafy.auth.repository.RefreshTokenRedisRepository;

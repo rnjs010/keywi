@@ -1,16 +1,14 @@
-package com.ssafy.auth.dto.userinfo;
+package com.ssafy.auth.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class KakaoUserInfoResponseDto {
     private Long id;
     private Properties properties;
-    private KakaoAccount kakaoAccount;
+    private KakaoAccount kakao_account;
 
     @Getter
     @NoArgsConstructor
@@ -19,7 +17,6 @@ public class KakaoUserInfoResponseDto {
     }
 
     @Getter
-    @Setter
     @NoArgsConstructor
     public static class KakaoAccount {
         private String email;

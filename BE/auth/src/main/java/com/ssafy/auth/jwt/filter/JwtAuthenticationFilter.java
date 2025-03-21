@@ -1,6 +1,6 @@
-package com.ssafy.roCatRun.global.security.jwt.filter;
+package com.ssafy.auth.jwt.filter;
 
-import com.ssafy.roCatRun.global.security.jwt.JwtTokenProvider;
+import com.ssafy.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 /**

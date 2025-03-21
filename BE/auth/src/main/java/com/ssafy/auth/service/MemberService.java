@@ -1,5 +1,6 @@
 package com.ssafy.auth.service;
 
+import com.ssafy.auth.dto.request.MemberProfileUpdateRequest;
 import com.ssafy.auth.dto.response.LoginResponse;
 import com.ssafy.auth.dto.token.JwtTokenResponse;
 import com.ssafy.auth.dto.userinfo.KakaoUserInfoResponseDto;
@@ -7,9 +8,13 @@ import com.ssafy.auth.entity.Member;
 import com.ssafy.auth.repository.MemberRepository;
 import com.ssafy.auth.repository.RefreshTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,72 +24,107 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * 회원 관련 비즈니스 로직을 처리하는 서비스
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-    private final JwtTokenService jwtTokenService;
-    private final String profileUploadPath; // 프로필 이미지 저장 경로
+    private final RestTemplate restTemplate;
 
-    // 카카오 ID로 회원 찾기
-    public Optional<Member> findByKakaoId(Long kakaoId) {
-        return memberRepository.findByKakaoId(kakaoId);
-    }
-
-    // 닉네임 중복 확인
-    public boolean isNicknameAvailable(String nickname) {
-        return !memberRepository.existsByNickname(nickname);
-    }
-
-    // 프로필 이미지 저장
-    public String saveProfileImage(MultipartFile file) {
-        try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path targetPath = Paths.get(profileUploadPath, fileName);
-            Files.copy(file.getInputStream(), targetPath);
-            return "/profiles/" + fileName; // 접근 가능한 URL
-        } catch (IOException e) {
-            throw new RuntimeException("프로필 이미지 저장 실패", e);
-        }
-    }
-
-    // 새 회원 등록
+    /**
+     * 회원 탈퇴 처리
+     * - Member 엔티티 삭제 시 CascadeType.ALL 설정으로 인해 연관된 엔티티들이 자동 삭제됨:
+     *   - GameCharacter (orphanRemoval = true)
+     *   - GameResult (CascadeType.ALL)
+     *   - Inventory (CascadeType.ALL)
+     * - Redis에 저장된 토큰 정보 삭제
+     */
     @Transactional
-    public Member registerNewMember(KakaoUserInfoResponseDto userInfo, String nickname, String profileImageUrl) {
-        Member member = Member.builder()
-                .kakaoId(userInfo.getId())
-                .nickname(nickname)
-                .profileImageUrl(profileImageUrl)
-                .email(userInfo.getKakaoAccount().getEmail())
-                .loginType("KAKAO")
-                .build();
+    public void deleteMember(Long memberId) {
+        // 리프레시 토큰 삭제
+        refreshTokenRedisRepository.deleteByKey(memberId.toString());
 
-        return memberRepository.save(member);
+        // 회원 삭제 (연관된 엔티티들은 cascade로 자동 삭제)
+        memberRepository.deleteById(memberId);
     }
 
-    // 기존 회원 로그인 처리
-    public ResponseEntity<?> loginExistingMember(Member member) {
-        JwtTokenResponse tokenResponse = generateTokens(member);
-        return ResponseEntity.ok(new LoginResponse(true, null, tokenResponse));
-    }
-
-    // JWT 토큰 발급
-    public JwtTokenResponse generateTokens(Member member) {
-        return jwtTokenService.generateTokens(member.getId().toString());
-    }
-
-    // 로그아웃
     @Transactional
     public void logout(Long memberId) {
-        // 소셜 로그인 연동 해제는 선택적으로 구현 (필요시)
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        // 소셜 로그인 타입에 따라 로그아웃 처리
+        String loginType = member.getLoginType();
+        if ("KAKAO".equals(loginType)) {
+            logoutFromKakao(memberId);
+        } else if ("GOOGLE".equals(loginType)) {
+            logoutFromGoogle(memberId);
+        }
 
         // JWT 리프레시 토큰 삭제
         refreshTokenRedisRepository.deleteByKey(memberId.toString());
 
-        // 카카오 토큰 삭제
-        refreshTokenRedisRepository.deleteByKey("KAKAO_ACCESS_" + memberId);
-        refreshTokenRedisRepository.deleteByKey("KAKAO_REFRESH_" + memberId);
+        // 소셜 토큰들 삭제
+        refreshTokenRedisRepository.deleteByKey(loginType + "_ACCESS_" + memberId);
+        refreshTokenRedisRepository.deleteByKey(loginType + "_REFRESH_" + memberId);
+    }
+
+    /**
+     * 카카오 서버에 로그아웃 요청
+     * 카카오 액세스 토큰을 무효화하지만, 사용자의 동의 정보는 유지됨
+     */
+    private void logoutFromKakao(Long memberId) {
+        try {
+            String accessToken = refreshTokenRedisRepository.findByKey("KAKAO_ACCESS_" + memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("카카오 액세스 토큰이 없습니다. "));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            restTemplate.postForEntity(
+                    "https://kapi.kakao.com/v1/user/unlink",
+                    entity,
+                    String.class
+            );
+        } catch (Exception e) {
+            // 로그아웃 실패 시에도 토큰은 삭제되어야 함
+            log.error("카카오 로그아웃 실패", e);
+        }
+    }
+
+    /**
+     * 구글 서버에 로그아웃 요청
+     * 구글 액세스 토큰을 무효화하지만, 사용자의 동의 정보는 유지됨
+     */
+    private void logoutFromGoogle(Long memberId) {
+        try {
+            String accessToken = refreshTokenRedisRepository.findByKey("GOOGLE_ACCESS_" + memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("구글 액세스 토큰이 없습니다."));
+
+            String revokeUrl = "https://oauth2.googleapis.com/revoke?token=" + accessToken;
+
+            restTemplate.postForEntity(
+                    revokeUrl,
+                    null,
+                    String.class
+            );
+        } catch (Exception e) {
+            // 로그아웃 실패 시에도 토큰은 삭제되어야 함
+            log.error("구글 로그아웃 실패", e);
+        }
+    }
+
+
+    @Transactional
+    public void updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+        Member member = memberRepository.findByIdWithCharacter(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
     }
 }

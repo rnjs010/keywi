@@ -1,6 +1,7 @@
 package com.ssafy.auth.config;
 
 import com.ssafy.auth.jwt.JwtTokenProvider;
+import com.ssafy.auth.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +59,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     // URL 특수문자 허용 설정
     @Bean
