@@ -1,6 +1,6 @@
 //SECTION - r거래 상태, 당도 표시에 사용되는 Badge
 import tw from 'twin.macro'
-import { Text } from '../styles/typography'
+import { Text } from '@/styles/typography'
 
 const colorStyles = {
   red: 'bg-[#F2D9D5] text-[#AA2E1B]',
@@ -20,12 +20,12 @@ interface BadgeProps {
   color: keyof typeof colorStyles
 }
 
-const Badge = ({ title, color }: BadgeProps) => (
-  <BadgeContainer className={`${colorStyles[color]}`}>
-    <Text variant="caption2" weight="bold">
-      {title}
-    </Text>
-  </BadgeContainer>
-)
-
-export default Badge
+export default function Badge({ title, color }: BadgeProps) {
+  return (
+    <BadgeContainer className={`${colorStyles[color]}`}>
+      <Text variant="caption2" weight="bold">
+        {title}
+      </Text>
+    </BadgeContainer>
+  )
+}
