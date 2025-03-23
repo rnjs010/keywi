@@ -1,4 +1,4 @@
-package com.example.estest.document;
+package com.ssafy.search.document;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

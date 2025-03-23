@@ -1,6 +1,6 @@
-package com.example.estest.controller;
+package com.ssafy.search.controller;
 
-import com.example.estest.service.SearchService;
+import com.ssafy.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class SearchController {
         List<Map<String, Object>> posts = searchService.searchPosts(query, page, size);
         return ResponseEntity.ok(Map.of("posts", posts));
     }
-
+/*
     // 상품 검색
     @GetMapping("/products")
     public ResponseEntity<Map<String, Object>> searchProducts(
@@ -47,9 +47,5 @@ public class SearchController {
         List<Map<String, Object>> users = searchService.searchUsers(query, page, size);
         return ResponseEntity.ok(Map.of("users", users));
     }
-
-    @GetMapping("/suggest")
-    public List<Map<String, Object>> suggest(@RequestParam String keyword) {
-        return searchService.searchSuggestions(keyword);
-    }
+*/
 }

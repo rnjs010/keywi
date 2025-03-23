@@ -1,4 +1,4 @@
-package com.example.estest.repository;
+package com.ssafy.search.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.PrefixQuery;
@@ -56,33 +56,7 @@ public class SearchRepository {
             throw new RuntimeException("Elasticsearch posts search failed", e);
         }
     }
-
-    public List<Map<String, Object>> searchSuggestions(String keyword) {
-        try {
-            Query autoQuery = PrefixQuery.of(m -> m
-                    .field("text")
-                    .value(keyword)
-            )._toQuery();
-
-            SearchRequest request = SearchRequest.of(s -> s
-                    .index("posts_autocomplete")
-                    .size(10)
-                    .query(autoQuery)
-            );
-
-            SearchResponse<ObjectNode> response = client.search(request, ObjectNode.class);
-
-            List<Map<String, Object>> suggestions = new ArrayList<>();
-            for (Hit<ObjectNode> hit : response.hits().hits()) {
-                suggestions.add(objectMapper.convertValue(hit.source(), Map.class));
-            }
-            return suggestions;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Elasticsearch suggest search failed", e);
-        }
-    }
-
+/*
     public List<Map<String, Object>> searchProducts(String query, int page, int size) {
         return new ArrayList<>();
     }
@@ -90,4 +64,5 @@ public class SearchRepository {
     public List<Map<String, Object>> searchUsers(String query, int page, int size) {
         return new ArrayList<>();
     }
+    */
 }
