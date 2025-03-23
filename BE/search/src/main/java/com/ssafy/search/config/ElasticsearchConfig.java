@@ -19,7 +19,7 @@ public class ElasticsearchConfig {
 
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-        Dotenv dotenv = Dotenv.load(); 
+        Dotenv dotenv = Dotenv.load();
 
         final String hostname = dotenv.get("ELASTIC_HOST");
         final int port = Integer.parseInt(dotenv.get("ELASTIC_PORT"));
