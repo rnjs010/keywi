@@ -10,55 +10,34 @@ const NavContainer = tw.div`
 `
 
 export default function NavBar() {
+  const navActiveStyle = ({ isActive }: { isActive: boolean }) => ({
+    color: isActive ? colors.default : colors.darkGray,
+  })
+
   return (
     <NavContainer>
       {/* Home */}
-      <NavLink
-        to="/"
-        style={({ isActive }) => ({
-          color: isActive ? colors.default : colors.darkGray,
-        })}
-      >
+      <NavLink to="/" style={navActiveStyle}>
         <IoHomeOutline size="2rem" />
       </NavLink>
 
       {/* Product */}
-      <NavLink
-        to="/"
-        style={({ isActive }) => ({
-          color: isActive ? colors.default : colors.darkGray,
-        })}
-      >
+      <NavLink to="/" style={navActiveStyle}>
         <ShopFourTilesWindow width="2rem" height="2rem" />
       </NavLink>
 
       {/* Board */}
-      <NavLink
-        to="/board"
-        style={({ isActive }) => ({
-          color: isActive ? colors.default : colors.darkGray,
-        })}
-      >
+      <NavLink to="/board" style={navActiveStyle}>
         <PiClipboardText size="2rem" />
       </NavLink>
 
       {/* Chat */}
-      <NavLink
-        to="/"
-        style={({ isActive }) => ({
-          color: isActive ? colors.default : colors.darkGray,
-        })}
-      >
+      <NavLink to="/" style={navActiveStyle}>
         <ChatBubble width="2rem" height="2rem" />
       </NavLink>
 
       {/* Profile */}
-      <NavLink
-        to="/"
-        style={({ isActive }) => ({
-          color: isActive ? colors.default : colors.darkGray,
-        })}
-      >
+      <NavLink to="/" style={navActiveStyle}>
         <ProfileCircle width="2rem" height="2rem" />
       </NavLink>
     </NavContainer>

@@ -3,6 +3,7 @@ import { colors } from '@/styles/colors'
 import { Text } from '@/styles/typography'
 import { ChatBubbleSolid } from 'iconoir-react'
 import tw from 'twin.macro'
+import { Link } from 'react-router-dom'
 
 const CardContainer = tw.div`
   flex flex-col justify-between items-start py-4 border-b border-[#EEEEEE]
@@ -53,6 +54,7 @@ interface BoardCardProps {
 }
 
 export default function BoardCard({
+  id,
   status,
   title,
   authorNickname,
@@ -63,38 +65,42 @@ export default function BoardCard({
   const badgeData = getBadgeData(status)
 
   return (
-    <CardContainer>
-      <Badge title={badgeData.title} color={badgeData.color} />
-      <ContentContainer>
-        <LeftContent>
-          {/* 제목, 채팅 수 */}
-          <TitleContainer>
-            <Text variant="body1" weight="regular">
-              {title}
-            </Text>
-            {chstCount !== 0 && (
-              <span className="flex flex-row gap-1 items-center">
-                <ChatBubbleSolid
-                  color={colors.gray}
-                  width="1rem"
-                  height="1rem"
-                />
-                <Text variant="caption1" weight="regular" color="gray">
-                  {chstCount}
-                </Text>
-              </span>
-            )}
-          </TitleContainer>
-          {/* 닉네임, 날짜 */}
-          <MetaInfo>
-            <Text variant="caption2" weight="regular" color="gray">
-              {authorNickname} · {date}
-            </Text>
-          </MetaInfo>
-        </LeftContent>
-        {/* 사진 */}
-        {thumbnailUrl && <ThumbnailImage src={thumbnailUrl} alt="thumbnail" />}
-      </ContentContainer>
-    </CardContainer>
+    <Link to={`/board/${id}`}>
+      <CardContainer>
+        <Badge title={badgeData.title} color={badgeData.color} />
+        <ContentContainer>
+          <LeftContent>
+            {/* 제목, 채팅 수 */}
+            <TitleContainer>
+              <Text variant="body1" weight="regular">
+                {title}
+              </Text>
+              {chstCount !== 0 && (
+                <span className="flex flex-row gap-1 items-center">
+                  <ChatBubbleSolid
+                    color={colors.gray}
+                    width="1rem"
+                    height="1rem"
+                  />
+                  <Text variant="caption1" weight="regular" color="gray">
+                    {chstCount}
+                  </Text>
+                </span>
+              )}
+            </TitleContainer>
+            {/* 닉네임, 날짜 */}
+            <MetaInfo>
+              <Text variant="caption2" weight="regular" color="gray">
+                {authorNickname} · {date}
+              </Text>
+            </MetaInfo>
+          </LeftContent>
+          {/* 사진 */}
+          {thumbnailUrl && (
+            <ThumbnailImage src={thumbnailUrl} alt="thumbnail" />
+          )}
+        </ContentContainer>
+      </CardContainer>
+    </Link>
   )
 }

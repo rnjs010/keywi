@@ -19,7 +19,7 @@ export default function BoardPage() {
       {/* SECTION -  게시글 리스트 영역 */}
       <ScrollArea>
         {posts.map((item) => (
-          <BoardCard {...item} />
+          <BoardCard key={item.id} {...item} />
         ))}
       </ScrollArea>
       <NavBar />
