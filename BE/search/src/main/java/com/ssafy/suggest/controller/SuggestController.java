@@ -16,7 +16,7 @@ public class SuggestController {
 
     private final SuggestService searchSuggestions;
 
-    @GetMapping("/suggest")
+    @GetMapping()
     public List<Map<String, Object>> suggest(@RequestParam String keyword) {
         return searchSuggestions.searchSuggestions(keyword);
     }
