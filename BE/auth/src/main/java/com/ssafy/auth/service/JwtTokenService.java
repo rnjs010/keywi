@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JwtTokenService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtTokenGenerator jwtTokenGenerator;  // 추가
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     private static final long TOKEN_EXPIRATION_TIME_MS = 1000 * 60 * 60 * 24 * 14; // 14일

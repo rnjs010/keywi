@@ -42,10 +42,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 인증 없이 접근 가능
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/domain/members/**").permitAll()
-                        .requestMatchers("/domain/mypage/**").permitAll()
-                        .requestMatchers("/domain/characters/**").permitAll()
-                        .requestMatchers("/domain/upload/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
 
                         // 관리자 권한 필요

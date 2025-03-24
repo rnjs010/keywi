@@ -4,19 +4,34 @@ import com.ssafy.auth.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    // kakaoId는 Long 타입
+    /**
+     * 카카오 ID와 로그인 타입으로 회원 조회
+     */
     Optional<Member> findByKakaoIdAndLoginType(Long kakaoId, String loginType);
+    /**
+     * 닉네임으로 회원 조회
+     */
+    Optional<Member> findByUserNickname(String userNickname);
 
+    /**
+     * 닉네임 존재 여부 확인 (중복 체크용)
+     */
     boolean existsByUserNickname(String userNickname);
 
-    // gameCharacter 필드가 없으므로 간단한 조회로 변경
+    /**
+     * 카카오 ID로 회원 조회
+     */
+    Optional<Member> findByKakaoId(Long kakaoId);
+
+    /**
+     * 회원 ID와 캐릭터 정보를 함께 조회
+     */
     @Query("SELECT m FROM Member m WHERE m.userId = :memberId")
     Optional<Member> findByIdWithCharacter(@Param("memberId") Long memberId);
-
-    // 또는 아래처럼 기본 findById 메서드를 사용해도 됩니다
-    // Optional<Member> findById(Long id);
 }

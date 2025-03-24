@@ -91,6 +91,11 @@ public class Member {
         this.statusMessage = statusMessage;
     }
 
+    // 이메일 업데이트 메서드 (추가)
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
     // 상태 메시지만 업데이트하는 메서드
     public void updateStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
@@ -145,5 +150,4 @@ public class Member {
                 .statusMessage("")
                 .build();
     }
-
 }

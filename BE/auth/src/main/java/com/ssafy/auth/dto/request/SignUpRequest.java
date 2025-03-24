@@ -5,14 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 회원 프로필 정보 수정 요청 데이터를 담는 DTO
+ * 회원가입 요청 데이터를 담는 DTO
  */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberProfileUpdateRequest {
-    private String userNickname;
+public class SignUpRequest {
     private String email;
+    private String userName;
+    private String userNickname;
+    private String loginType;
+    private Long kakaoId;
     private String statusMessage;
-    // 기존 키, 몸무게, 나이, 성별 정보는 제거하고 필요한 필드만 유지
 }

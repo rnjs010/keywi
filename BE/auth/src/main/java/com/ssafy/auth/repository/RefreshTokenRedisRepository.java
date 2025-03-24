@@ -43,8 +43,16 @@ public class RefreshTokenRedisRepository {
      * @return RefreshToken (Optional)
      */
     public Optional<String> findByKey(String key) {
-        String redisKey = KEY_PREFIX + key;
+        // JWT_REFRESH_ 접두사를 추가한 키로 조회
+        String redisKey = KEY_PREFIX + "JWT_REFRESH_" + key;
         String refreshToken = redisTemplate.opsForValue().get(redisKey);
+
+        // 키를 찾지 못한 경우 기존 형식으로도 시도
+        if (refreshToken == null) {
+            redisKey = KEY_PREFIX + key;
+            refreshToken = redisTemplate.opsForValue().get(redisKey);
+        }
+
         return Optional.ofNullable(refreshToken);
     }
 
