@@ -22,3 +22,10 @@ export interface BoardData {
   items: BoardItem[]
   images: string[]
 }
+
+export interface Product {
+  id: string
+  category: string
+  name: string
+  price: number
+}

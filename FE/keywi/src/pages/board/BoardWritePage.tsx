@@ -2,6 +2,7 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'
+import ProductForm from '@/features/board/components/ProductForm'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -21,6 +22,8 @@ export default function BoardDetailPage() {
           글쓰기
         </Text>
       </HeaderContainer>
+
+      <ProductForm />
     </Container>
   )
 }
