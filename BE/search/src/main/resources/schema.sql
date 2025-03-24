@@ -1,3 +1,9 @@
+drop database keywi;
+
+create database keywi;
+
+use keywi;
+
 create table users (
                        user_id int auto_increment primary key,
                        user_name varchar(255),
@@ -14,13 +20,24 @@ create table posts (
                        foreign key (user_id) references users(user_id)
 );
 
-create table products (
-                          product_id int auto_increment primary key ,
-                          product_name VARCHAR(255),
-                          description TEXT,
-                          price int,
-                          created_at datetime default current_timestamp
-);
+CREATE TABLE `category` (
+                            `category_id` INT NOT NULL AUTO_INCREMENT,
+                            `category_name` VARCHAR(255) NOT NULL,
+                            `parent_id` INT DEFAULT NULL,
+                            PRIMARY KEY (`category_id`),
+                            FOREIGN KEY (`parent_id`) REFERENCES category(`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `products` (
+                            `product_id` INT NOT NULL AUTO_INCREMENT,
+                            `product_name` VARCHAR(255) NOT NULL,
+                            `price` INT NOT NULL,
+                            `description` TEXT,
+                            `category_id` INT NOT NULL,
+                            `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            PRIMARY KEY (`product_id`),
+                            FOREIGN KEY (`category_id`) REFERENCES category(`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE post_product_tag (
                                   post_id int,
@@ -29,9 +46,4 @@ CREATE TABLE post_product_tag (
                                   FOREIGN KEY (post_id) REFERENCES posts(post_id),
                                   FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
-
-# create table categories (
-                              #     category_id int auto_increment primary key ,
-                              #     category_name varchar(255),
-                              # )
 
