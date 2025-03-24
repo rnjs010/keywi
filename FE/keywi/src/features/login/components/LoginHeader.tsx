@@ -1,16 +1,11 @@
 import tw from 'twin.macro'
-import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 
-const Container = styled.div`
-  ${tw`
+const Container = tw.div`
     flex
     items-center
     justify-center
-    mt-10
-  `}
-  margin-top: min(25vh, 10rem);
-`
+  `
 
 export default function LoginHeader() {
   return (

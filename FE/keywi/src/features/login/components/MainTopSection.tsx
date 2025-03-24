@@ -14,23 +14,19 @@ const TopSection = styled.div`
   margin-top: min(25vh, 10rem);
 `
 
-const LogoImage = styled.img`
-  ${tw`
+const LogoImage = tw.img`
   w-48
   mr-2
   mb-10
-`}
-`
+  `
 
-const Description = styled.div`
-  ${tw`
-    text-center
-    mt-6
-    mb-10
-  `}
-`
+const Description = tw.div`
+  text-center
+  mt-6
+  mb-10
+  `
 
-export default function LoginTopSection() {
+export default function MainTopSection() {
   return (
     <TopSection>
       <LogoImage src={keywiLogo} alt="kiwi-logo" />

@@ -2,6 +2,7 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import kakaoLogo from '@/assets/logo_kakao.svg'
+import { useKakaoLogin } from '../hooks/useKakaoLogin'
 
 const Button = styled.button`
   ${tw`
@@ -17,18 +18,18 @@ const Button = styled.button`
   margin-top: 10rem;
   background-color: #fee500;
 `
-const Img = styled.img`
-  ${tw`  
+const Img = tw.img`  
     w-5
     h-5 
     absolute
     left-4
-  `}
-`
+  `
 
-export default function KakaoLoginBtn() {
+export default function MainLoginBtn() {
+  const { handleKakaoLogin } = useKakaoLogin()
+
   return (
-    <Button>
+    <Button onClick={handleKakaoLogin}>
       <Img src={kakaoLogo} alt="kakao-logo" />
       <Text variant="body1" weight="bold" color="black">
         카카오로 시작하기

@@ -1,5 +1,5 @@
-import KakaoLoginBtn from '@/features/login/components/KakaoLoginBtn'
-import LoginTopSection from '@/features/login/components/MainTopSection'
+import MainLoginBtn from '@/features/login/components/MainLoginBtn'
+import MainTopSection from '@/features/login/components/MainTopSection'
 
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
@@ -21,8 +21,8 @@ const Container = styled.div`
 export default function MainPage() {
   return (
     <Container>
-      <LoginTopSection />
-      <KakaoLoginBtn />
+      <MainTopSection />
+      <MainLoginBtn />
     </Container>
   )
 }
