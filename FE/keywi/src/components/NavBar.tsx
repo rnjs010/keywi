@@ -1,12 +1,12 @@
+import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { ShopFourTilesWindow, ChatBubble, ProfileCircle } from 'iconoir-react'
 import { PiClipboardText } from 'react-icons/pi'
 import { IoHomeOutline } from 'react-icons/io5'
-import { colors } from '@/styles/colors'
 import { NavLink } from 'react-router-dom'
 
 const NavContainer = tw.div`
-  flex justify-between items-center px-4 pt-3 pb-8 border-t border-t-gray
+  flex justify-between items-center px-4 pt-3 pb-8 border-t border-t-[#EEEEEE]
 `
 
 export default function NavBar() {
