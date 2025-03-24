@@ -1,10 +1,13 @@
 import NavBar from './components/NavBar'
 import BoardDetailPage from './pages/board/BoardDetailPage'
 import BoardPage from './pages/board/BoardPage'
+import BoardWritePage from './pages/board/BoardWritePage'
 import Fonts from './styles/fonts'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 function App() {
+  const location = useLocation() // 현재 경로 가져오기
+
   return (
     <>
       <Fonts />
@@ -13,8 +16,11 @@ function App() {
         {/* <Route path="/" element={SplashScreen} /> */}
         <Route path="/board" element={<BoardPage />} />
         <Route path="/board/:postId" element={<BoardDetailPage />} />
+        <Route path="/board/write" element={<BoardWritePage />} />
       </Routes>
-      <NavBar />
+
+      {/* 현재 경로가 "/"일 때만 NavBar 표시 */}
+      {location.pathname === '/' && <NavBar />}
     </>
   )
 }
