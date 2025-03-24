@@ -25,10 +25,16 @@ const Container = styled.div`
   -webkit-overflow-scrolling: touch;
 `
 
+const ContentWrapper = tw.div`
+  flex flex-col items-center justify-center h-screen
+`
+
 export default function CompletePage() {
   return (
     <Container>
-      <CompleteContent />
+      <ContentWrapper>
+        <CompleteContent />
+      </ContentWrapper>
       <CompleteBtn />
     </Container>
   )

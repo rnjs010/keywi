@@ -4,7 +4,6 @@ import LoginHeader from '@/features/login/components/LoginHeader'
 import LoginImgBtn from '@/features/login/components/LoginImgBtn'
 import LoginNameInput from '@/features/login/components/LoginNameInput'
 import LoginNextBtn from '@/features/login/components/LoginNextBtn'
-import { LoginProvider } from '@/features/login/services/LoginContext'
 
 const Container = styled.div`
   ${tw`
@@ -30,13 +29,11 @@ const Container = styled.div`
 
 export default function LoginPage() {
   return (
-    <LoginProvider>
       <Container>
         <LoginHeader />
         <LoginImgBtn />
         <LoginNameInput />
         <LoginNextBtn />
       </Container>
-    </LoginProvider>
   )
 }

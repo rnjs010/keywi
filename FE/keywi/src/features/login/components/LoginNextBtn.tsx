@@ -1,6 +1,7 @@
 import MainButton from '@/components/MainButton'
 import tw from 'twin.macro'
 import { useLogin } from '../services/LoginContext'
+import { useNavigate } from 'react-router-dom'
 
 const BtnWrapper = tw.div`
   mt-auto
@@ -11,10 +12,11 @@ const BtnWrapper = tw.div`
 export default function LoginNextBtn() {
   const { nickname } = useLogin()
   const isDisabled = nickname.length < 2
+  const navigate = useNavigate()
 
   const handleNext = () => {
     if (!isDisabled) {
-      // 다음 단계 진행 로직
+      navigate('/complete')
     }
   }
 
