@@ -1,8 +1,6 @@
 package com.ssafy.auth.controller;
 
 import com.ssafy.auth.common.ApiResponse;
-import com.ssafy.auth.dto.request.MemberProfileUpdateRequest;
-import com.ssafy.auth.dto.request.SignUpRequest;
 import com.ssafy.auth.dto.response.NicknameCheckResponse;
 import com.ssafy.auth.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -42,14 +40,14 @@ public class MemberController {
 
             // 간소화된 회원가입 처리
             memberService.signUpSimplified(Long.parseLong(memberId), userNickname, profileImage);
-            return ApiResponse.success("회원가입이 완료되었습니다!");
+            return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
         } catch (IllegalArgumentException e) {
             // 중복 닉네임 등의 검증 오류
             log.error("회원가입 실패 (검증 오류): {}", e.getMessage());
-            return ApiResponse.error(e.getMessage());
+            return ApiResponse.error("회원가입에 실패했습니다: " + e.getMessage());
         } catch (Exception e) {
             log.error("회원가입 실패: {}", e.getMessage());
-            return ApiResponse.error("회원가입이 실패했습니다: " + e.getMessage());
+            return ApiResponse.error("회원가입에 실패했습니다: " + e.getMessage());
         }
     }
 
@@ -68,7 +66,11 @@ public class MemberController {
         boolean isAvailable = memberService.isNicknameAvailable(nickname);
         log.info("Nickname '{}' available for use: {}", nickname, isAvailable);
 
-        return ApiResponse.success(new NicknameCheckResponse(isAvailable));
+        if (isAvailable) {
+            return ApiResponse.success("중복된 닉네임이 없습니다", new NicknameCheckResponse(true));
+        } else {
+            return ApiResponse.success("중복된 닉네임이 있습니다", new NicknameCheckResponse(false));
+        }
     }
 
     /**
@@ -93,14 +95,14 @@ public class MemberController {
             }
 
             memberService.updateMemberProfileSimplified(Long.parseLong(memberId), userNickname, profileImage);
-            return ApiResponse.success("프로필이 정상적으로 수정되었습니다!");
+            return ApiResponse.success("회원 프로필 정보 수정에 성공했습니다", "프로필이 정상적으로 수정되었습니다!");
         } catch (IllegalArgumentException e) {
             // 중복 닉네임 등의 검증 오류
             log.error("프로필 수정 실패 (검증 오류): {}", e.getMessage());
-            return ApiResponse.error(e.getMessage());
+            return ApiResponse.error("회원 프로필 정보 수정에 실패했습니다: " + e.getMessage());
         } catch (Exception e) {
             log.error("프로필 수정 실패: {}", e.getMessage());
-            return ApiResponse.error("프로필 수정에 실패했습니다: " + e.getMessage());
+            return ApiResponse.error("회원 프로필 정보 수정에 실패했습니다: " + e.getMessage());
         }
     }
 
@@ -112,8 +114,13 @@ public class MemberController {
     public ApiResponse<Void> deleteMember(
             @AuthenticationPrincipal String memberId
     ) {
-        memberService.deleteMember(Long.parseLong(memberId));
-        return ApiResponse.success(null);
+        try {
+            memberService.deleteMember(Long.parseLong(memberId));
+            return ApiResponse.success("회원탈퇴에 성공했습니다", null);
+        } catch (Exception e) {
+            log.error("회원 탈퇴 실패: {}", e.getMessage());
+            return ApiResponse.error("회원탈퇴에 실패했습니다: " + e.getMessage());
+        }
     }
 
     /**
@@ -124,7 +131,12 @@ public class MemberController {
     public ApiResponse<Void> logout(
             @AuthenticationPrincipal String memberId
     ) {
-        memberService.logout(Long.parseLong(memberId));
-        return ApiResponse.success(null);
+        try {
+            memberService.logout(Long.parseLong(memberId));
+            return ApiResponse.success("로그아웃에 성공했습니다", null);
+        } catch (Exception e) {
+            log.error("로그아웃 실패: {}", e.getMessage());
+            return ApiResponse.error("로그아웃에 실패했습니다: " + e.getMessage());
+        }
     }
 }

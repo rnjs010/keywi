@@ -82,7 +82,6 @@ public class MemberService {
     }
 
     /**
-     * 간소화된 회원가입 처리
      * 소셜 로그인 정보는 이미 저장되어 있다고 가정하고, 닉네임과 프로필 이미지만 업데이트
      *
      * @param memberId 회원 ID
@@ -135,61 +134,6 @@ public class MemberService {
         return !memberRepository.existsByUserNickname(nickname);
     }
 
-    /**
-     * 회원 프로필 정보 수정
-     * 닉네임, 상태 메시지, 프로필 이미지 업데이트
-     *
-     * @param memberId 회원 ID
-     * @param request 프로필 수정 요청 데이터
-     * @param profileImage 새 프로필 이미지 (옵션)
-     * @throws IllegalArgumentException 회원 정보 없음, 닉네임 중복 등의 검증 오류
-     * @throws InvalidFileException 파일 관련 검증 오류
-     */
-    @Transactional
-    public void updateMemberProfile(Long memberId, MemberProfileUpdateRequest request, MultipartFile profileImage) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-
-        // 닉네임 변경 요청이 있고, 현재 닉네임과 다르면 중복 확인
-        if (request.getUserNickname() != null && !request.getUserNickname().equals(member.getUserNickname())) {
-            if (request.getUserNickname().trim().isEmpty()) {
-                throw new IllegalArgumentException("닉네임은 빈 문자열일 수 없습니다.");
-            }
-
-            if (!isNicknameAvailable(request.getUserNickname())) {
-                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
-            }
-        }
-
-        // 프로필 이미지 처리
-        String profileUrl = member.getProfileUrl(); // 기존 프로필 URL로 초기화
-        if (profileImage != null && !profileImage.isEmpty()) {
-            validateFileSize(profileImage);
-            validateFileType(profileImage);
-
-            // 기존 이미지가 기본 이미지가 아니면 S3에서 삭제
-            if (profileUrl != null && !profileUrl.equals(defaultProfileImageUrl)) {
-                s3Service.deleteFile(profileUrl);
-            }
-
-            // 새 이미지 업로드
-            profileUrl = s3Service.uploadFile(profileImage, "profiles");
-        }
-
-        // 회원 정보 업데이트
-        member.updateProfile(
-                request.getUserNickname() != null ? request.getUserNickname() : member.getUserNickname(),
-                profileUrl,
-                request.getStatusMessage() != null ? request.getStatusMessage() : member.getStatusMessage()
-        );
-
-        // 이메일 업데이트
-        if (request.getEmail() != null) {
-            member.updateEmail(request.getEmail());
-        }
-
-        log.info("회원 프로필 수정 완료: {}", memberId);
-    }
 
     /**
      * 간소화된 회원 프로필 정보 수정

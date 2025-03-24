@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.auth.dto.response.LoginResponse;
 import com.ssafy.auth.dto.token.JwtTokens;
-import com.ssafy.auth.dto.userinfo.KakaoUserInfoResponseDto;
 import com.ssafy.auth.entity.Member;
 import com.ssafy.auth.exception.TokenRefreshException;
 import com.ssafy.auth.jwt.JwtTokenGenerator;
@@ -24,12 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import java.security.Key;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 카카오 소셜 로그인 관련 서비스
