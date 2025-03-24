@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NicknameCheckResponse {
-    private boolean available;
+    private boolean available; // 닉네임 사용 가능 여부 (true: 사용 가능, false: 사용 불가)
 }

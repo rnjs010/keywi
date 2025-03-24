@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NicknameCheckRequest {
-    private String nickname;
+    private String nickname; // 중복 확인할 닉네임
 }
