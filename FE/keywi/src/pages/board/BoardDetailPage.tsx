@@ -70,8 +70,7 @@ const dummyData: BoardData = {
       itemId: 101,
       itemName: 'Qwertykeys QK80MK2 WK PINK',
       price: 241000,
-      imageUrl:
-        'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+      imageUrl: 'https://picsum.photos/200',
     },
     {
       categoryId: 2,
@@ -79,8 +78,7 @@ const dummyData: BoardData = {
       itemId: 102,
       itemName: '오스메 사쿠라 키캡',
       price: 149000,
-      imageUrl:
-        'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+      imageUrl: 'https://picsum.photos/200',
     },
     {
       categoryId: 3,
@@ -88,11 +86,8 @@ const dummyData: BoardData = {
       itemId: 103,
       itemName: 'SWK 체다 리니어 스위치',
       price: 38000,
-      imageUrl:
-        'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+      imageUrl: 'https://picsum.photos/200',
     },
   ],
-  images: [
-    'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
-  ],
+  images: ['https://picsum.photos/200'],
 }

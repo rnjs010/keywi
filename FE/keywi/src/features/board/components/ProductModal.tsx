@@ -1,180 +1,132 @@
-import React, { useState } from 'react'
+import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import styled from '@emotion/styled'
-import { Product } from '@/interfaces/BoardInterface'
+import { BoardItem } from '@/interfaces/BoardInterface'
+import { HelpCircle, Search } from 'iconoir-react'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import React, { useState } from 'react'
+import { colors } from '@/styles/colors'
 
-interface ProductModalProps {
-  products: Product[]
-  selectedProducts: Record<string, Product>
-  onSelect: (product: Product) => void
-  onClose: () => void
+const CardContainer = tw.div`
+  flex items-center gap-3 cursor-pointer my-2
+`
+
+const ThumbnailImage = tw.img`
+  w-[3rem] h-[3rem] rounded-md object-cover self-start
+`
+
+const SearchContainer = tw.div`
+  relative mx-4 my-2
+`
+
+const SearchInput = tw.input`
+  w-full p-2 pl-8 rounded-md text-sm bg-input
+  focus:outline-none
+  [caret-color: #70C400]
+`
+
+const SearchIconWrapper = tw.div`
+  absolute left-2 top-1/2 transform -translate-y-1/2
+`
+
+interface ProductDrawerProps {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  children?: React.ReactNode
+  trigger: React.ReactNode
+  products?: BoardItem[]
+  onSelectProduct?: (product: BoardItem) => void
 }
 
-const Overlay = styled.div`
-  ${tw`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50`}
-`
-
-const ModalContainer = styled.div`
-  ${tw`bg-white w-full h-full flex flex-col`}
-`
-
-const Header = styled.div`
-  ${tw`p-4 bg-gray text-white flex items-center`}
-`
-
-const CloseButton = styled.button`
-  ${tw`text-white text-xl mr-2`}
-`
-
-const Title = styled.h2`
-  ${tw`flex-1 text-center`}
-`
-
-const Content = styled.div`
-  ${tw`flex-1 overflow-y-auto p-4`}
-`
-
-const CategoryName = styled.h3`
-  ${tw`font-medium mt-4 mb-2`}
-`
-
-const ProductList = styled.div`
-  ${tw`flex flex-col gap-2`}
-`
-
-const ProductItem = styled.div<{ selected: boolean }>`
-  ${tw`p-3 border border-gray rounded-md`}
-  ${({ selected }) => selected && tw`bg-green-100`}
-`
-
-const ProductName = styled.div`
-  ${tw`font-medium mb-1`}
-`
-
-const ProductPrice = styled.div`
-  ${tw`text-gray`}
-`
-
-const Numpad = styled.div`
-  ${tw`grid grid-cols-10 gap-2 p-4 bg-gray`}
-`
-
-const NumKey = styled.button`
-  ${tw`p-2 bg-white rounded-md text-center`}
-`
-
 export default function ProductModal({
+  isOpen,
+  onOpenChange,
+  title,
+  children,
+  trigger,
   products,
-  selectedProducts,
-  onSelect,
-  onClose,
-}: ProductModalProps) {
-  const [searchValue, setSearchValue] = useState('')
+  onSelectProduct,
+}: ProductDrawerProps) {
+  const [searchTerm, setSearchTerm] = useState('')
 
-  // 선택 여부 확인 함수
-  const isSelected = (product: Product) => {
-    return selectedProducts[product.category]?.id === product.id
+  const handleRecommendClick = (e: React.MouseEvent) => {
+    e.stopPropagation() // 이벤트 버블링 방지
+
+    if (onSelectProduct) {
+      // 조립자 추천 요청을 위한 특별한 BoardItem 객체 생성
+      const recommendItem: BoardItem = {
+        categoryId: 0,
+        categoryName: title,
+        itemId: -1,
+        itemName: '조립자 추천 요청',
+        price: 0,
+        imageUrl: '',
+      }
+
+      onSelectProduct(recommendItem)
+      onOpenChange(false)
+    }
   }
 
-  // 카테고리별로 상품 그룹화
-  const groupedProducts = products.reduce(
-    (acc, product) => {
-      if (!acc[product.category]) {
-        acc[product.category] = []
-      }
-      acc[product.category].push(product)
-      return acc
-    },
-    {} as Record<string, Product[]>,
-  )
-
-  // 검색어 필터링
-  const filteredProducts = Object.entries(groupedProducts).reduce(
-    (acc, [category, categoryProducts]) => {
-      const filtered = categoryProducts.filter((product) =>
-        product.name.toLowerCase().includes(searchValue.toLowerCase()),
-      )
-      if (filtered.length > 0) {
-        acc[category] = filtered
-      }
-      return acc
-    },
-    {} as Record<string, Product[]>,
-  )
-
   return (
-    <Overlay>
-      <ModalContainer>
-        <Header>
-          <CloseButton onClick={onClose}>×</CloseButton>
-          <Title>견적 상품 선택</Title>
-        </Header>
-
-        <Content>
-          {searchValue && <div tw="mb-2">검색어: {searchValue}</div>}
-
-          {Object.entries(filteredProducts).map(([category, products]) => (
-            <React.Fragment key={category}>
-              <CategoryName>{category}</CategoryName>
-              <ProductList>
-                {products.map((product) => (
-                  <ProductItem
-                    key={product.id}
-                    selected={isSelected(product)}
-                    onClick={() => onSelect(product)}
-                  >
-                    <ProductName>{product.name}</ProductName>
-                    <ProductPrice>
+    <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <Text variant="body2" weight="bold" color="darkKiwi">
+            {title} 선택
+          </Text>
+        </DrawerHeader>
+        {/* SECTION - 검색창 추가 */}
+        <SearchContainer>
+          <SearchIconWrapper>
+            <Search color={colors.darkGray} height="16px" width="16px" />
+          </SearchIconWrapper>
+          <SearchInput placeholder="상품명을 검색하세요." value={searchTerm} />
+        </SearchContainer>
+        {/* SECTION - 목록 title, 조립자 추천 버튼 */}
+        <div className="flex flex-row justify-between items-center mx-4 py-2 border-b border-[#EEEEEE]">
+          <Text variant="caption1" weight="regular" color="darkGray">
+            찜한 목록
+          </Text>
+          <div className="flex flex-row items-center gap-0.5">
+            <HelpCircle color={colors.kiwi} height={`1rem`} width={`1rem`} />
+            <div onClick={handleRecommendClick}>
+              <Text variant="caption1" weight="bold" color="kiwi">
+                조립자 추천 요청
+              </Text>
+            </div>
+          </div>
+        </div>
+        {/* SECTION - 상품 리스트 */}
+        <div className="px-4 py-2">
+          {products
+            ? products.map((product) => (
+                <CardContainer
+                  key={product.itemId}
+                  onClick={() => onSelectProduct && onSelectProduct(product)}
+                >
+                  {product.imageUrl && (
+                    <ThumbnailImage src={product.imageUrl} alt="thumbnail" />
+                  )}
+                  <div className="flex flex-col">
+                    <Text variant="caption1" weight="regular">
+                      {product.itemName}
+                    </Text>
+                    <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원
-                    </ProductPrice>
-                  </ProductItem>
-                ))}
-              </ProductList>
-            </React.Fragment>
-          ))}
-        </Content>
-
-        {/* <Numpad>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
-            <NumKey key={num} onClick={() => setSearchValue(searchValue + num)}>
-              {num}
-            </NumKey>
-          ))}
-          <NumKey onClick={() => setSearchValue('')} tw="col-span-2">
-            취소
-          </NumKey>
-          {[
-            'ㄱ',
-            'ㄴ',
-            'ㄷ',
-            'ㄹ',
-            'ㅁ',
-            'ㅂ',
-            'ㅅ',
-            'ㅇ',
-            'ㅈ',
-            'ㅊ',
-            'ㅋ',
-            'ㅌ',
-            'ㅍ',
-            'ㅎ',
-            'ㅏ',
-          ].map((char) => (
-            <NumKey
-              key={char}
-              onClick={() => setSearchValue(searchValue + char)}
-            >
-              {char}
-            </NumKey>
-          ))}
-          <NumKey
-            onClick={() => setSearchValue(searchValue.slice(0, -1))}
-            tw="col-span-3"
-          >
-            <span>←</span>
-          </NumKey>
-        </Numpad> */}
-      </ModalContainer>
-    </Overlay>
+                    </Text>
+                  </div>
+                </CardContainer>
+              ))
+            : children}
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }

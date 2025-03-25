@@ -1,8 +1,7 @@
 import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
-import { NavArrowRight } from 'iconoir-react'
-import { LuPencil } from 'react-icons/lu'
+import { NavArrowRight, Xmark } from 'iconoir-react'
 import { BoardItem } from '@/interfaces/BoardInterface'
 
 const CardContainer = tw.div`
@@ -16,20 +15,19 @@ const ThumbnailImage = tw.img`
 export default function BoardProductCard({
   data,
   mode,
+  onDelete,
 }: {
   data: BoardItem
   mode: 'edit' | 'view' | 'move'
+  onDelete?: () => void
 }) {
   return (
     <CardContainer>
       {/* 왼쪽 상품 정보 */}
       <div className="flex flex-col">
-        <div className="flex flex-row items-center gap-2">
-          <Text variant="body1" weight="bold" color="darkKiwi">
-            {data.categoryName}
-          </Text>
-          {mode === 'edit' && <LuPencil color={colors.darkKiwi} />}
-        </div>
+        <Text variant="body1" weight="bold" color="darkKiwi">
+          {data.categoryName}
+        </Text>
         <Text variant="caption1" weight="regular">
           {data.itemName}
         </Text>
@@ -44,6 +42,16 @@ export default function BoardProductCard({
           <ThumbnailImage src={data.imageUrl} alt="thumbnail" />
         )}
         {mode === 'move' && <NavArrowRight color={colors.darkKiwi} />}
+        {mode === 'edit' && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete && onDelete()
+            }}
+          >
+            <Xmark color={colors.darkKiwi} />
+          </div>
+        )}
       </div>
     </CardContainer>
   )

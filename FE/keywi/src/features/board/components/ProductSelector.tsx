@@ -1,66 +1,39 @@
-import React from 'react'
+import { Text } from '@/styles/typography'
+import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
-import styled from '@emotion/styled'
-import { Product } from '@/interfaces/BoardInterface'
+import { Plus } from 'iconoir-react'
+import { BoardItem } from '@/interfaces/BoardInterface'
+import BoardProductCard from './BoardProductCard'
+
+const CategoryRow = tw.div`
+  flex justify-between items-center pl-4 py-2 pr-1 rounded-lg mb-2 bg-pay
+`
 
 interface ProductSelectorProps {
   label: string
-  product?: Product
+  product?: BoardItem
   onAdd?: () => void
-  onEdit?: () => void
+  onDelete?: () => void
 }
-
-const Container = styled.div`
-  ${tw`flex flex-col`}
-`
-
-const LabelRow = styled.div`
-  ${tw`flex justify-between items-center mb-1`}
-`
-
-const Label = styled.label`
-  ${tw`font-medium`}
-`
-
-const AddButton = styled.button`
-  ${tw`text-xl text-green-500 font-bold`}
-`
-
-const ProductBox = styled.div`
-  ${tw`p-3 border border-gray rounded-md mb-4`}
-`
-
-const ProductName = styled.div`
-  ${tw`font-medium mb-2`}
-`
-
-const Price = styled.div`
-  ${tw`text-gray`}
-`
 
 export default function ProductSelector({
   label,
   product,
   onAdd,
-  onEdit,
+  onDelete,
 }: ProductSelectorProps) {
   return (
-    <Container>
-      <LabelRow>
-        <Label>{label}</Label>
-        {product ? (
-          <AddButton onClick={onEdit}>✏️</AddButton>
-        ) : (
-          <AddButton onClick={onAdd}>+</AddButton>
-        )}
-      </LabelRow>
-
-      {product && (
-        <ProductBox>
-          <ProductName>{product.name}</ProductName>
-          <Price>{product.price.toLocaleString()}원</Price>
-        </ProductBox>
+    <>
+      {product ? (
+        <BoardProductCard data={product} mode="edit" onDelete={onDelete} />
+      ) : (
+        <CategoryRow>
+          <Text variant="body1" weight="bold" color="darkKiwi">
+            {label}
+          </Text>
+          <Plus color={colors.darkKiwi} onClick={onAdd} />
+        </CategoryRow>
       )}
-    </Container>
+    </>
   )
 }

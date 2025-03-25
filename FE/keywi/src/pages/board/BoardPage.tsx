@@ -38,8 +38,7 @@ const posts = [
     authorNickname: '키위보다귤',
     date: '2025.03.13 | 15:43',
     chstCount: 0,
-    thumbnailUrl:
-      'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+    thumbnailUrl: 'https://picsum.photos/200',
   },
   {
     id: 124,
@@ -57,8 +56,7 @@ const posts = [
     authorNickname: '스피드게임',
     date: '2025.03.13 | 15:43',
     chstCount: 3,
-    thumbnailUrl:
-      'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+    thumbnailUrl: 'https://picsum.photos/200',
   },
   {
     id: 126,
@@ -76,8 +74,7 @@ const posts = [
     authorNickname: '큐티엔젤젤',
     date: '2025.03.13 | 15:43',
     chstCount: 0,
-    thumbnailUrl:
-      'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+    thumbnailUrl: 'https://picsum.photos/200',
   },
   {
     id: 128,
@@ -86,8 +83,7 @@ const posts = [
     authorNickname: '옹시미키위러버',
     date: '2025.03.13 | 15:43',
     chstCount: 0,
-    thumbnailUrl:
-      'https://pplx-res.cloudinary.com/image/upload/v1742650479/user_uploads/NInbhrjWbkuvzXG/image.jpg',
+    thumbnailUrl: 'https://picsum.photos/200',
   },
   {
     id: 129,
