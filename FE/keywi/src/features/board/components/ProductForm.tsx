@@ -3,6 +3,7 @@ import tw from 'twin.macro'
 import ProductSelector from './ProductSelector'
 import { BoardItem } from '@/interfaces/BoardInterface'
 import ProductModal from './ProductModal'
+import MainButton from '@/components/MainButton'
 
 const Form = tw.div`
   flex flex-col p-4 flex-1
@@ -111,9 +112,10 @@ export default function ProductForm() {
           {renderSelectedProducts()}
           {renderUnselectedCategories()}
         </div>
-
-        {/* 다음 버튼 추가하기 */}
       </Form>
+      <div className="w-full px-4 fixed bottom-12">
+        <MainButton text="확인" />
+      </div>
     </>
   )
 }
