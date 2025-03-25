@@ -1,0 +1,51 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: BOARD
+
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:mysql://localhost:3306/board?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # 파일 업로드 설정
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.ssafy.board.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 유레카 클라이언트 설정
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+# 파일 업로드 경로 설정
+file:
+  upload-dir: ./uploads
+  # 서버 기본 URL (필요시 변경)
+  server:
+    base-url: http://localhost:8082
+
+# 로깅 설정
+logging:
+  level:
+    com.ssafy.board: DEBUG
+    org.mybatis: DEBUG
+    org.springframework.web: INFO
