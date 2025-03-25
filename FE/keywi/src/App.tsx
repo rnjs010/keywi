@@ -4,6 +4,7 @@ import LoginPage from './pages/login/LoginPage'
 import Fonts from './styles/fonts'
 import { Route, Routes } from 'react-router-dom'
 import MainPage from './pages/login/MainPage'
+import HomePage from './pages/home/HomePage'
 
 function App() {
   return (
@@ -12,9 +13,10 @@ function App() {
       <LoginProvider>
         <Routes>
           {/* 처음 입장시 스플래시 화면 구성할 예정 */}
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/complete" element={<CompletePage />} />
+          <Route path="/home" element={<HomePage />} />
         </Routes>
       </LoginProvider>
     </>

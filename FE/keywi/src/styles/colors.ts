@@ -9,7 +9,7 @@ export const colors = {
   littleGray: '#DBDBDB',
   white: '#FFFFFF',
   // background
-  input: '#F7F7F7',
+  input: 'rgba(247, 247, 247, 1)',
   img: 'rgba(0, 0, 0, 0.2)',
   modal: 'rgba(0, 0, 0, 0.5)', // tag랑 같이 쓰기
   pay: 'rgba(218, 237, 193, 0.3)',

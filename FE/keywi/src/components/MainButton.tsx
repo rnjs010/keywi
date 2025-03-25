@@ -1,3 +1,4 @@
+//SECTION - 메인 버튼 (가로 전체 차지)
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 

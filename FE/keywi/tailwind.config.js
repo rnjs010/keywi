@@ -27,7 +27,7 @@ export default {
   			gray: '#B7B7B7',
   			littleGray: '#DBDBDB',
   			white: '#FFFFFF',
-  			input: 'hsl(var(--input))',
+  			input: 'rgba(247, 247, 247, 1)',
   			img: 'rgba(0, 0, 0, 0.2)',
   			modal: 'rgba(0, 0, 0, 0.5)',
   			pay: 'rgba(218, 237, 193, 0.3)',
