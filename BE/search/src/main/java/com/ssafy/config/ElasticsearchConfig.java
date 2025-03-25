@@ -23,6 +23,23 @@ public class ElasticsearchConfig {
 
         final String hostname = dotenv.get("ELASTIC_HOST");
         final int port = Integer.parseInt(dotenv.get("ELASTIC_PORT"));
+
+        RestClient restClient = RestClient.builder(
+                new HttpHost(hostname, port, "http")
+        ).build();
+
+        ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+
+        return new ElasticsearchClient(transport);
+    }
+
+/*
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        Dotenv dotenv = Dotenv.load();
+
+        final String hostname = dotenv.get("ELASTIC_HOST");
+        final int port = Integer.parseInt(dotenv.get("ELASTIC_PORT"));
         final String username = dotenv.get("ELASTIC_USERNAME");
         final String password = dotenv.get("ELASTIC_PASSWORD");
 
@@ -40,4 +57,6 @@ public class ElasticsearchConfig {
 
         return new ElasticsearchClient(transport);
     }
+*/
+
 }
