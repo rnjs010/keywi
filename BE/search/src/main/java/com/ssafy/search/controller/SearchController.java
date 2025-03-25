@@ -1,51 +1,41 @@
 package com.ssafy.search.controller;
 
+import com.ssafy.search.dto.SearchRequestDto;
+import com.ssafy.search.dto.SearchResponseDto;
 import com.ssafy.search.service.SearchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/search")
+@RequiredArgsConstructor
 public class SearchController {
 
     private final SearchService searchService;
 
-    // 게시물 검색 (SNS 탭)
-    @GetMapping("/posts")
-    public ResponseEntity<Map<String, Object>> searchPosts(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        List<Map<String, Object>> posts = searchService.searchPosts(query, page, size);
-        return ResponseEntity.ok(Map.of("posts", posts));
-    }
-/*
-    // 상품 검색
-    @GetMapping("/products")
-    public ResponseEntity<Map<String, Object>> searchProducts(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        List<Map<String, Object>> products = searchService.searchProducts(query, page, size);
-        return ResponseEntity.ok(Map.of("products", products));
+    /**
+     * 키워드 기반 검색 API
+     * @param requestDto 검색 요청 정보
+     * @return 검색 결과 목록
+     */
+    @GetMapping
+    public ResponseEntity<List<SearchResponseDto>> search(
+            @Valid SearchRequestDto requestDto) {
+        return ResponseEntity.ok(searchService.search(requestDto));
     }
 
-    // 사용자 검색
-    @GetMapping("/users")
-    public ResponseEntity<Map<String, Object>> searchUsers(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        List<Map<String, Object>> users = searchService.searchUsers(query, page, size);
-        return ResponseEntity.ok(Map.of("users", users));
+    /**
+     * 검색 결과 필터링 API
+     * @param requestDto 필터링 요청 정보
+     * @return 필터링된 검색 결과
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<List<SearchResponseDto>> filter(
+            @Valid SearchRequestDto requestDto) {
+        return ResponseEntity.ok(searchService.filterSearch(requestDto));
     }
-*/
 }
