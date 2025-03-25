@@ -8,6 +8,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel'
+import { ProductTag } from '@/interfaces/HomeInterfaces'
+import HomeFeedTag from './HomeFeedTag'
+import HomeFeedTagBtn from './HomeFeedTagBtn'
 
 const Container = tw.div`
   w-full
@@ -75,9 +78,13 @@ const createTempImages = (count: number = 3) => {
 
 interface HomeFeedImgProps {
   mainImages?: string[]
+  productTags?: ProductTag[]
 }
 
-export default function HomeFeedImg({ mainImages }: HomeFeedImgProps) {
+export default function HomeFeedImg({
+  mainImages,
+  productTags,
+}: HomeFeedImgProps) {
   // 전달된 이미지가 없으면 임시 이미지 사용
   const images =
     mainImages && mainImages.length > 0 ? mainImages : createTempImages(3)
@@ -85,12 +92,23 @@ export default function HomeFeedImg({ mainImages }: HomeFeedImgProps) {
   const hasMultipleImages = images.length > 1
   const [currentIndex, setCurrentIndex] = useState(0)
   const [api, setApi] = useState<any>(null)
+  const [showTags, setShowTags] = useState(false)
+
+  // 첫 번째 이미지에만 태그를 표시하기 위한 조건
+  const shouldShowTagToggle =
+    currentIndex === 0 && productTags && productTags.length > 0
 
   useEffect(() => {
     if (!api) return
 
     const onSelect = () => {
-      setCurrentIndex(api.selectedScrollSnap())
+      const newIndex = api.selectedScrollSnap()
+      setCurrentIndex(newIndex)
+
+      // 첫 번째 이미지가 아니면 태그 숨기기
+      if (newIndex !== 0) {
+        setShowTags(false)
+      }
     }
 
     api.on('select', onSelect)
@@ -98,6 +116,10 @@ export default function HomeFeedImg({ mainImages }: HomeFeedImgProps) {
       api.off('select', onSelect)
     }
   }, [api])
+
+  const toggleTags = () => {
+    setShowTags(!showTags)
+  }
 
   return (
     <Container>
@@ -109,12 +131,25 @@ export default function HomeFeedImg({ mainImages }: HomeFeedImgProps) {
                 <CarouselItem key={index}>
                   <ImgContainer>
                     <MainImg src={image} alt={`피드 이미지 ${index + 1}`} />
+
+                    {/* 첫 번째 이미지이고 태그 토글 버튼이 있어야 하는 경우 */}
+                    {index === 0 && shouldShowTagToggle && (
+                      <HomeFeedTagBtn onClick={toggleTags} />
+                    )}
+
+                    {/* 첫 번째 이미지에서 태그가 보여야 하는 경우 */}
+                    {index === 0 && (
+                      <HomeFeedTag
+                        productTags={productTags}
+                        showTags={showTags}
+                      />
+                    )}
                   </ImgContainer>
                 </CarouselItem>
               ))}
             </CarouselContent>
 
-            {/* 간결한 인디케이터 */}
+            {/* 인디케이터 */}
             <IndicatorContainer>
               {images.map((_, index) => (
                 <Indicator key={index} $active={currentIndex === index} />
@@ -126,6 +161,12 @@ export default function HomeFeedImg({ mainImages }: HomeFeedImgProps) {
         // 단일 이미지인 경우
         <ImgContainer>
           <MainImg src={images[0]} alt="피드 이미지" />
+
+          {/* 태그 토글 버튼 */}
+          {shouldShowTagToggle && <HomeFeedTagBtn onClick={toggleTags} />}
+
+          {/* 태그 표시 */}
+          <HomeFeedTag productTags={productTags} showTags={showTags} />
         </ImgContainer>
       )}
 

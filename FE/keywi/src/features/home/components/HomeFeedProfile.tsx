@@ -1,6 +1,7 @@
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
-// import { HomeFeedProfileProps } from '@/interfaces/HomeInterfaces'
+import { HomeFeedProfileProps } from '@/interfaces/HomeInterfaces'
+import { useEffect, useState } from 'react'
 
 const ProfileContainer = tw.div`
   flex
@@ -33,17 +34,34 @@ const FollowButton = tw.button`
   py-1
   px-1
 `
-//TODO - 백 연결 후 tanstackquery 사용해서 불러오기
-const profileImage = 'https://cataas.com/cat'
-const username = '옹시미키위러버얍'
-const description = '키보드와 고양이를 사랑하는 중'
-const isFollowing = false
+export default function HomeFeedProfile({
+  username,
+  profileImage,
+  description,
+  isFollowing: initialIsFollowing,
+  onFollowToggle,
+}: HomeFeedProfileProps) {
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
 
-export default function HomeFeedProfile() {
+  // props 값이 변경되면 상태 업데이트
+  useEffect(() => {
+    setIsFollowing(initialIsFollowing)
+  }, [initialIsFollowing])
+
+  const handleFollowToggle = () => {
+    const newFollowingState = !isFollowing
+    setIsFollowing(newFollowingState)
+
+    // 상위 컴포넌트에 상태 변경 알림 (백엔드 연동 시 사용 아마 zustand?)
+    if (onFollowToggle) {
+      onFollowToggle(newFollowingState)
+    }
+  }
+
   return (
     <ProfileContainer>
       <ProfileInfo>
-        <ProfileImage src={profileImage} alt={'프로필 이미지'} />
+        <ProfileImage src={profileImage} alt={`${username}의 프로필 이미지`} />
         <UserInfo>
           <Text variant="caption1" weight="bold">
             {username}
@@ -53,7 +71,7 @@ export default function HomeFeedProfile() {
           </Text>
         </UserInfo>
       </ProfileInfo>
-      <FollowButton>
+      <FollowButton onClick={handleFollowToggle}>
         <Text color="kiwi" variant="body1" weight="bold">
           {isFollowing ? '팔로잉' : '팔로우'}
         </Text>

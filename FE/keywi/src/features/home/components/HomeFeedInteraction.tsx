@@ -8,8 +8,9 @@ import {
   HeartSolid,
   ShareIos,
 } from 'iconoir-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
+import { HomeFeedInteractionProps } from '@/interfaces/HomeInterfaces'
 
 const Container = tw.div`
   flex
@@ -33,11 +34,22 @@ const LikeWrapper = tw.div`
   gap-1
 `
 
-export default function HomeFeedInteraction() {
-  //TODO - 백 연결 후 상태 관리 할 것임
-  const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(39)
-  const [isBookmarked, setIsBookmarked] = useState(false)
+export default function HomeFeedInteraction({
+  likeCount: initialLikeCount,
+  commentCount,
+  isLiked: initialIsLiked = false,
+  isBookmarked: initialIsBookmarked = false,
+}: HomeFeedInteractionProps) {
+  const [isLiked, setIsLiked] = useState(initialIsLiked)
+  const [likeCount, setLikeCount] = useState(initialLikeCount)
+  const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked)
+
+  // props 값이 변경되면 상태 업데이트
+  useEffect(() => {
+    setIsLiked(initialIsLiked)
+    setLikeCount(initialLikeCount)
+    setIsBookmarked(initialIsBookmarked)
+  }, [initialIsLiked, initialLikeCount, initialIsBookmarked])
 
   const handleLike = () => {
     if (isLiked) {
@@ -67,7 +79,7 @@ export default function HomeFeedInteraction() {
         </LikeWrapper>
         <CommentWrapper>
           <ChatBubbleEmpty height={22} width={22} strokeWidth={1.5} />
-          <Text variant="caption1">3</Text>
+          <Text variant="caption1">{commentCount}</Text>
         </CommentWrapper>
         <ShareIos height={22} width={22} strokeWidth={1.5} />
       </div>
