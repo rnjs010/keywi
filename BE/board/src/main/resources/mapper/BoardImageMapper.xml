@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.board.mapper.BoardImageMapper">
+
+    <!-- 이미지 기본 컬럼 -->
+    <sql id="imageColumns">
+        image_id, board_id, image_uri, display_order
+    </sql>
+
+    <!-- 게시글 ID로 이미지 목록 조회 -->
+    <select id="findByBoardId" resultType="com.ssafy.board.model.BoardImage">
+        SELECT
+        <include refid="imageColumns" />
+        FROM
+        board_images
+        WHERE
+        board_id = #{boardId}
+        ORDER BY
+        display_order ASC
+    </select>
+
+    <!-- 이미지 정보 저장 -->
+    <insert id="insert" parameterType="com.ssafy.board.model.BoardImage" useGeneratedKeys="true" keyProperty="imageId">
+        INSERT INTO board_images (
+        board_id, image_uri, display_order
+        ) VALUES (
+        #{boardId}, #{imageUri}, #{displayOrder}
+        )
+    </insert>
+
+    <!-- 이미지 정보 일괄 저장 -->
+    <insert id="insertAll" parameterType="java.util.List">
+        INSERT INTO board_images (
+        board_id, image_uri, display_order
+        ) VALUES
+        <foreach collection="list" item="image" separator=",">
+            (#{image.boardId}, #{image.imageUri}, #{image.displayOrder})
+        </foreach>
+    </insert>
+
+    <!-- 이미지 정보 수정 -->
+    <update id="update" parameterType="com.ssafy.board.model.BoardImage">
+        UPDATE board_images
+        SET
+        image_uri = #{imageUri},
+        display_order = #{displayOrder}
+        WHERE
+        image_id = #{imageId}
+    </update>
+
+    <!-- 이미지 ID로 이미지 삭제 -->
+    <delete id="deleteById">
+        DELETE FROM board_images
+        WHERE image_id = #{imageId}
+    </delete>
+
+    <!-- 게시글에 속한 모든 이미지 삭제 -->
+    <delete id="deleteByBoardId">
+        DELETE FROM board_images
+        WHERE board_id = #{boardId}
+    </delete>
+
+    <!-- 게시글의 이미지 수 조회 -->
+    <select id="countByBoardId" resultType="int">
+        SELECT COUNT(*) FROM board_images
+        WHERE board_id = #{boardId}
+    </select>
+</mapper>
