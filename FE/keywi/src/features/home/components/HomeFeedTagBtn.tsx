@@ -12,10 +12,10 @@ const ToggleButton = styled.button`
     flex
     items-center
     justify-center
-    w-8
-    h-8
+    w-7
+    h-7
     rounded-full
-    bg-white
+    bg-modal
     shadow-md
     transition-opacity
     duration-200
@@ -33,7 +33,7 @@ interface TagToggleButtonProps {
 export default function HomeFeedTagBtn({ onClick }: TagToggleButtonProps) {
   return (
     <ToggleButton onClick={onClick}>
-      <PinSolid width={16} height={16} color={colors.kiwi} />
+      <PinSolid width={16} height={16} color={colors.white} strokeWidth={2.5} />
     </ToggleButton>
   )
 }

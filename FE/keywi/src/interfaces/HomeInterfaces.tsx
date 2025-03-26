@@ -43,6 +43,7 @@ export interface HomeFeedInteractionProps {
   commentCount: number
   isLiked?: boolean
   isBookmarked?: boolean
+  feedId: number
 }
 
 export interface HomeFeedProfileProps {
@@ -70,4 +71,37 @@ export interface ProductTag {
   x: number // 이미지 내 x 좌표 (0~100 범위의 퍼센트 값)
   y: number // 이미지 내 y 좌표 (0~100 범위의 퍼센트 값)
   thumbnail?: string
+}
+
+// 태그된 상품 리스트
+export interface HomeTagListModalProps {
+  productTags?: ProductTag[]
+  triggerComponent?: React.ReactNode
+}
+
+// 댓글 데이터 모델
+export interface CommentData {
+  id: number
+  username: string
+  profileImage: string
+  content: string
+  timeAgo: string
+  // mentionedUser?: string // @ 멘션된 사용자 - 추후개발발
+}
+
+// 댓글 컴포넌트 Props
+export interface CommentProps {
+  comment: CommentData
+}
+
+// 댓글 목록 Props
+export interface CommentListProps {
+  comments: CommentData[]
+  isLoading?: boolean
+}
+
+// 댓글 입력 Props
+export interface CommentInputProps {
+  feedId: number
+  onCommentSubmit: (content: string) => void
 }

@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
 import { HomeFeedInteractionProps } from '@/interfaces/HomeInterfaces'
+import { useNavigate } from 'react-router-dom'
 
 const Container = tw.div`
   flex
@@ -28,6 +29,9 @@ const CommentWrapper = tw.div`
   items-center
   gap-1
 `
+const CommentBtn = tw.button`
+`
+
 const LikeWrapper = tw.div`
   flex 
   items-center
@@ -39,6 +43,7 @@ export default function HomeFeedInteraction({
   commentCount,
   isLiked: initialIsLiked = false,
   isBookmarked: initialIsBookmarked = false,
+  feedId,
 }: HomeFeedInteractionProps) {
   const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [likeCount, setLikeCount] = useState(initialLikeCount)
@@ -64,6 +69,12 @@ export default function HomeFeedInteraction({
     setIsBookmarked(!isBookmarked)
   }
 
+  const navigate = useNavigate()
+
+  const handleCommentClick = () => {
+    navigate(`/home/comment/${feedId}`)
+  }
+
   return (
     <Container>
       <div className="flex gap-3">
@@ -78,7 +89,9 @@ export default function HomeFeedInteraction({
           <Text variant="caption1">{likeCount}</Text>
         </LikeWrapper>
         <CommentWrapper>
-          <ChatBubbleEmpty height={22} width={22} strokeWidth={1.5} />
+          <CommentBtn onClick={handleCommentClick}>
+            <ChatBubbleEmpty height={22} width={22} strokeWidth={1.5} />
+          </CommentBtn>
           <Text variant="caption1">{commentCount}</Text>
         </CommentWrapper>
         <ShareIos height={22} width={22} strokeWidth={1.5} />

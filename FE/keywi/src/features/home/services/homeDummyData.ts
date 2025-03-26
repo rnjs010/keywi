@@ -1,4 +1,4 @@
-import { FeedData, ProductTag } from '@/interfaces/HomeInterfaces'
+import { CommentData, FeedData, ProductTag } from '@/interfaces/HomeInterfaces'
 
 // 홈 피드 리스트 용 더미 데이터
 export const dummyFeeds: FeedData[] = [
@@ -19,15 +19,15 @@ export const dummyFeeds: FeedData[] = [
         name: '하이무 바다소금축',
         price: '13,000원',
         x: 30,
-        y: 65,
+        y: 50,
         thumbnail: 'https://picsum.photos/50?random=101',
       },
       {
         id: 2,
         name: '라이프팩 키캡',
         price: '23,500원',
-        x: 65,
-        y: 50,
+        x: 75,
+        y: 30,
         thumbnail: 'https://picsum.photos/50?random=102',
       },
     ],
@@ -173,3 +173,70 @@ export const sampleProductTags: ProductTag[] = [
     thumbnail: '/images/product2.jpg',
   },
 ]
+
+// 피드별 댓글 더미 데이터
+export const dummyComments: Record<number, CommentData[]> = {
+  // 피드 ID 1의 댓글
+  1: [
+    {
+      id: 101,
+      username: '키보드매니아',
+      profileImage: 'https://cataas.com/cat/says/6',
+      content: '바다소금축 정말 좋죠! 저도 사용 중인데 타건감이 일품이에요.',
+      timeAgo: '2일 전',
+    },
+    {
+      id: 102,
+      username: '키보드초보자',
+      profileImage: 'https://cataas.com/cat/says/7',
+      content: '키캡이 예쁘네요! 어디서 구매하셨나요?',
+      timeAgo: '1일 전',
+    },
+    {
+      id: 103,
+      username: '기계식러버',
+      profileImage: 'https://cataas.com/cat/says/8',
+      content: '설명 좀 더 자세히 부탁드려요! 소리는 어떤가요?',
+      timeAgo: '12시간 전',
+    },
+  ],
+
+  // 피드 ID 2의 댓글
+  2: [
+    {
+      id: 201,
+      username: '스피드케이',
+      profileImage: 'https://cataas.com/cat/says/9',
+      content: '이거 어떤 스위치 사용하셨나요?',
+      timeAgo: '5시간 전',
+    },
+    {
+      id: 202,
+      username: '키위덕후',
+      profileImage: 'https://cataas.com/cat/says/10',
+      content: '키 배열이 독특하네요, 직접 디자인하신 건가요?',
+      timeAgo: '4시간 전',
+    },
+    {
+      id: 203,
+      username: '적축러버',
+      profileImage: 'https://cataas.com/cat/says/11',
+      content: '케이스 디자인 정말 멋지네요! 케이스만 따로 판매하시나요?',
+      timeAgo: '3시간 전',
+    },
+    {
+      id: 204,
+      username: '나눔해주세요',
+      profileImage: 'https://cataas.com/cat/says/12',
+      content: '혹시 키보드 만드는 방법 좀 알려주실 수 있나요?',
+      timeAgo: '2시간 전',
+    },
+    {
+      id: 205,
+      username: '키캡모아',
+      profileImage: 'https://cataas.com/cat/says/13',
+      content: '키캡 정보 공유 부탁드려요~',
+      timeAgo: '1시간 전',
+    },
+  ],
+}

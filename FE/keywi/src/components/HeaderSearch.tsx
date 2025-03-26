@@ -1,6 +1,5 @@
 //SECTION - Header에 있는 검색창
 import { Search } from 'iconoir-react'
-import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 
 const Container = tw.div`

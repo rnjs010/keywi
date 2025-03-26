@@ -16,7 +16,7 @@ export default function LoginNextBtn() {
 
   const handleNext = () => {
     if (!isDisabled) {
-      navigate('/complete')
+      navigate('/login/complete')
     }
   }
 

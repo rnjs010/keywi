@@ -31,6 +31,7 @@ export default function HomeFeed({ feed }: HomeFeedProps) {
         commentCount={feed.commentCount}
         isLiked={feed.isLiked}
         isBookmarked={feed.isBookmarked}
+        feedId={feed.id}
       />
       <HomeFeedText
         content={feed.content}

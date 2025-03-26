@@ -1,8 +1,10 @@
-import { useState, Fragment } from 'react'
+import { Fragment } from 'react'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import { ProductTag } from '@/interfaces/HomeInterfaces'
+import { NavArrowRight } from 'iconoir-react'
+import truncateText from '@/utils/truncateText'
 
 // 상품 태그 포인트
 const ProductTagPoint = styled.div<{ $x: number; $y: number }>`
@@ -25,11 +27,15 @@ const ProductTagPoint = styled.div<{ $x: number; $y: number }>`
   transform: translate(-50%, -50%);
 `
 
-// 상품 정보 박스
-const ProductInfoBox = styled.div<{ $x: number; $y: number }>`
+// 상품 정보 박스 - 위치 로직 수정
+const ProductInfoBox = styled.div<{
+  $x: number
+  $y: number
+  $isLeftAligned: boolean
+}>`
   ${tw`
     absolute
-    bg-white
+    bg-modal
     rounded-md
     shadow-md
     p-2
@@ -40,22 +46,26 @@ const ProductInfoBox = styled.div<{ $x: number; $y: number }>`
     max-w-[200px]
     pointer-events-none
   `}
-  left: ${(props) => {
-    // 화면 오른쪽으로 넘어가는 것 방지
-    const baseX = props.$x
-    return baseX > 70 ? `calc(${baseX}% - 180px)` : `${baseX}%`
-  }};
-  top: ${(props) => {
-    // 화면 아래로 넘어가는 것 방지
-    const baseY = props.$y
-    return baseY > 70 ? `calc(${baseY}% - 60px)` : `${baseY}%`
-  }};
-  transform: translate(-10px, -50%);
+  // 오른쪽 또는 왼쪽에 위치하도록 설정
+  ${(props) => {
+    if (props.$isLeftAligned) {
+      return `
+        left: calc(${props.$x}% - 145px);
+        transform: translate(0, -50%);
+      `
+    } else {
+      return `
+        left: calc(${props.$x}% + 12px);
+        transform: translate(0, -50%);
+      `
+    }
+  }}
+  top: ${(props) => props.$y}%;
 `
 
 const ProductThumbnail = tw.img`
-  w-10
-  h-10
+  w-8
+  h-8
   object-cover
   rounded
 `
@@ -74,44 +84,45 @@ export default function HomeFeedTag({
   productTags,
   showTags,
 }: HomeFeedTagProps) {
-  const [activeTag, setActiveTag] = useState<number | null>(null)
-
   // 표시할 태그가 있는지 확인
   const hasProductTags = productTags && productTags.length > 0
 
-  if (!hasProductTags || !showTags) {
+  // 태그가 없으면 아무것도 렌더링하지 않음
+  if (!hasProductTags) {
     return null
-  }
-
-  const handleTagClick = (tagId: number) => {
-    if (activeTag === tagId) {
-      setActiveTag(null)
-    } else {
-      setActiveTag(tagId)
-    }
   }
 
   return (
     <>
       {productTags.map((tag) => (
         <Fragment key={tag.id}>
-          <ProductTagPoint
-            $x={tag.x}
-            $y={tag.y}
-            onClick={() => handleTagClick(tag.id)}
-          />
+          {/* 포인트 항상 보이게게 */}
+          <ProductTagPoint $x={tag.x} $y={tag.y} />
 
-          {activeTag === tag.id && (
-            <ProductInfoBox $x={tag.x} $y={tag.y}>
+          {/* 정보 박스는 showTags가 true일 때만 보이게 함 */}
+          {showTags && (
+            <ProductInfoBox
+              $x={tag.x}
+              $y={tag.y}
+              $isLeftAligned={tag.x > 70} // x 좌표가 70% 이상이면 왼쪽 정렬
+            >
               {tag.thumbnail && (
                 <ProductThumbnail src={tag.thumbnail} alt={tag.name} />
               )}
               <ProductInfo>
-                <Text variant="caption2" weight="bold">
-                  {tag.name}
+                <Text variant="caption3" weight="bold" color="white">
+                  {truncateText(tag.name, 8)}
                 </Text>
-                <Text variant="caption2">{tag.price}</Text>
+                <Text variant="caption3" color="white">
+                  {tag.price}
+                </Text>
               </ProductInfo>
+              <NavArrowRight
+                width={14}
+                height={14}
+                color="white"
+                strokeWidth={2}
+              />
             </ProductInfoBox>
           )}
         </Fragment>

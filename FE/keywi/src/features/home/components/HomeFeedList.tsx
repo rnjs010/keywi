@@ -1,9 +1,18 @@
 import tw from 'twin.macro'
 import { HomeFeedListProps } from '@/interfaces/HomeInterfaces'
 import HomeFeed from './HomeFeed'
+import HomeFeedSkeleton from './HomeFeedSkeleton'
 
 const Container = tw.div`
   w-full
+`
+const EmptyFeedContainer = tw.div`
+  w-full
+  h-40
+  flex
+  justify-center
+  items-center
+  text-gray
 `
 
 export default function HomeFeedList({
@@ -11,11 +20,15 @@ export default function HomeFeedList({
   isLoading = false,
 }: HomeFeedListProps) {
   if (isLoading) {
-    return <div>피드를 불러오는 중...</div>
+    return (
+      <Container>
+        <HomeFeedSkeleton />
+      </Container>
+    )
   }
 
   if (feeds.length === 0) {
-    return <div>표시할 피드가 없습니다.</div>
+    return <EmptyFeedContainer>표시할 피드가 없습니다.</EmptyFeedContainer>
   }
 
   return (

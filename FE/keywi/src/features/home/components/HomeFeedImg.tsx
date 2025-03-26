@@ -11,6 +11,7 @@ import {
 import { ProductTag } from '@/interfaces/HomeInterfaces'
 import HomeFeedTag from './HomeFeedTag'
 import HomeFeedTagBtn from './HomeFeedTagBtn'
+import HomeTagListModal from './HomeTagListModal'
 
 const Container = tw.div`
   w-full
@@ -121,6 +122,13 @@ export default function HomeFeedImg({
     setShowTags(!showTags)
   }
 
+  const TagButtonTrigger = (
+    <TagBtn>
+      <Text variant="caption1">태그된 상품들 보러가기</Text>
+      <NavArrowRight height={18} width={18} />
+    </TagBtn>
+  )
+
   return (
     <Container>
       {hasMultipleImages ? (
@@ -137,8 +145,8 @@ export default function HomeFeedImg({
                       <HomeFeedTagBtn onClick={toggleTags} />
                     )}
 
-                    {/* 첫 번째 이미지에서 태그가 보여야 하는 경우 */}
-                    {index === 0 && (
+                    {/* 첫 번째 이미지에서만 태그가 나타나도록 */}
+                    {index === 0 && productTags && productTags.length > 0 && (
                       <HomeFeedTag
                         productTags={productTags}
                         showTags={showTags}
@@ -171,10 +179,11 @@ export default function HomeFeedImg({
       )}
 
       <TagBtnWrapper>
-        <TagBtn>
-          <Text variant="caption1">태그된 상품들 보러가기</Text>
-          <NavArrowRight height={18} width={18} />
-        </TagBtn>
+        {/* 태그 모달 컴포넌트 */}
+        <HomeTagListModal
+          productTags={productTags}
+          triggerComponent={TagButtonTrigger}
+        />
       </TagBtnWrapper>
     </Container>
   )

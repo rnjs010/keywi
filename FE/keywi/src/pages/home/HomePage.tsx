@@ -48,12 +48,12 @@ const NavBarContainer = tw.div`
   w-full
 `
 
-// API 호출을 시뮬레이션하기 위한 지연
+// API 호출을 시뮬레이션하기 위한 지연 - 로딩창 시연용
 const fetchFeeds = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(dummyFeeds)
-    }, 500)
+    }, 1500)
   })
 }
 
