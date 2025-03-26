@@ -9,10 +9,15 @@ spring:
 
   # 데이터베이스 설정
   datasource:
-    url: jdbc:mysql://localhost:3306/board?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/keywi?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      mode: always
+      platform: mysql
 
   # 파일 업로드 설정
   servlet:

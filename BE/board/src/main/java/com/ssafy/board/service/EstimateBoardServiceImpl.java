@@ -43,7 +43,7 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // 여기를 readOnly=true에서 일반 @Transactional로 변경
     public Optional<EstimateBoard> getEstimateBoardById(Long boardId) {
         // 게시글 조회수 증가
         estimateBoardMapper.incrementViewCount(boardId);
