@@ -1,5 +1,8 @@
+//SECTION - 피드 작성 버튼 : 클릭하면 바로 앨범 진입
 import { Plus } from 'iconoir-react'
+import { useState } from 'react'
 import tw from 'twin.macro'
+import MultiImagePicker from './MultiImagePicker'
 
 const Container = tw.div`
   fixed
@@ -21,11 +24,27 @@ const RoundBtn = tw.button`
 `
 
 export default function FeedWriteButton() {
+  const [showPicker, setShowPicker] = useState(false)
+
+  const handleButtonClick = () => {
+    setShowPicker(true)
+  }
+
+  const handlePickerClose = () => {
+    setShowPicker(false)
+  }
+
   return (
-    <Container>
-      <RoundBtn>
-        <Plus width={36} height={36} color="white" strokeWidth={2} />
-      </RoundBtn>
-    </Container>
+    <>
+      <Container>
+        <RoundBtn onClick={handleButtonClick}>
+          <Plus width={36} height={36} color="white" strokeWidth={2} />
+        </RoundBtn>
+      </Container>
+      <MultiImagePicker
+        visible={showPicker}
+        onPickerClose={handlePickerClose}
+      />
+    </>
   )
 }

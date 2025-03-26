@@ -3,9 +3,10 @@ import LoginCompletePage from './pages/login/LoginCompletePage'
 import LoginPage from './pages/login/LoginPage'
 import Fonts from './styles/fonts'
 import { Route, Routes } from 'react-router-dom'
-import MainPage from './pages/login/MainPage'
+// import MainPage from './pages/login/MainPage'
 import HomePage from './pages/home/HomePage'
-import CommentPage from './pages/home/CommentPage'
+import HomeCommentPage from './pages/home/HomeCommentPage'
+import HomeWritePage from './pages/home/HomeWritePage'
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/complete" element={<LoginCompletePage />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/home/comment/:feedId" element={<CommentPage />} />
+          <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
+          <Route path="/home/write" element={<HomeWritePage />} />
         </Routes>
       </LoginProvider>
     </>

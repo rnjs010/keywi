@@ -32,7 +32,7 @@ const ContentArea = styled.div`
   }
 `
 
-export default function CommentPage() {
+export default function HomeCommentPage() {
   const { feedId } = useParams<{ feedId: string }>()
   const [feed, setFeed] = useState<FeedData | null>(null)
   const [comments, setComments] = useState<CommentData[]>([])
