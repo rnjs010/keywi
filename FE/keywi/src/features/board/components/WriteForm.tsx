@@ -4,6 +4,7 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { EraseSolid } from 'iconoir-react'
 import { useBoardProductStore } from '@/stores/boardStore'
+import WriteImage from './WriteImage'
 
 const Container = tw.div`
   flex flex-col px-4 gap-1
@@ -55,10 +56,13 @@ export default function WriteForm({ onEdit }: { onEdit: () => void }) {
       />
       <textarea
         placeholder="내용을 입력해주세요. (필수)"
-        className="w-full border p-2 rounded h-32"
+        className="w-full border p-2 rounded h-64"
         value={content}
         onChange={(e) => setContent(e.target.value)}
       ></textarea>
+
+      {/* 이미지 업로드 */}
+      <WriteImage />
     </Container>
   )
 }

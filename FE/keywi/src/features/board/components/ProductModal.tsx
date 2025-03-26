@@ -155,7 +155,7 @@ export default function ProductModal({
           </div>
         </div>
         {/* SECTION - 상품 리스트 */}
-        <div className="px-4 py-2">
+        <div className="px-4 py-2 mb-4">
           {products
             ? products.map((product) => (
                 <CardContainer
