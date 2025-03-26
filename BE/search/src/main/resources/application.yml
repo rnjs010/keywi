@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: search
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/keywi
+    username: ssafy
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  data:
+    elasticsearch:
+      host: localhost
+      port: 9200
+      connection-timeout: 5s
+      socket-timeout: 3s
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.ssafy.search.dto
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 30
+
+logging:
+  level:
+    com.ssafy: DEBUG
+    org.springframework: INFO
+    org.elasticsearch: INFO

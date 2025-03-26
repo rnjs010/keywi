@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.search.mapper.SearchKeywordMapper">
+    
+    <select id="findSuggestions" resultType="string">
+        SELECT keyword
+        FROM search_keywords
+        WHERE keyword LIKE CONCAT(#{keyword}, '%')
+        GROUP BY keyword
+        ORDER BY COUNT(*) DESC, keyword ASC
+        LIMIT 10
+    </select>
+    
+    <insert id="saveKeyword">
+        INSERT INTO search_keywords (keyword, created_at)
+        VALUES (#{keyword}, NOW())
+    </insert>
+    
+</mapper> 

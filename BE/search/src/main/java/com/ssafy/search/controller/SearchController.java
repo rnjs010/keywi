@@ -8,11 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/search")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class SearchController {
 
     private final SearchService searchService;
@@ -23,8 +24,8 @@ public class SearchController {
      * @return 검색 결과 목록
      */
     @GetMapping
-    public ResponseEntity<List<SearchResponseDto>> search(
-            @Valid SearchRequestDto requestDto) {
+    public ResponseEntity<List<SearchResponseDto>> search(@Valid SearchRequestDto requestDto) {
         return ResponseEntity.ok(searchService.search(requestDto));
     }
+
 }

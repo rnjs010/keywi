@@ -1,32 +1,21 @@
 package com.ssafy.search.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Builder
 public class SearchResponseDto {
-    private Long postId;
+    private String id;
+    private String name;
     private String content;
-    private List<String> hashtags;
+    private String category;
     private LocalDateTime createdAt;
-    private List<ProductDto> taggedProducts;
-    private Float score; // 검색 관련성 점수
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class ProductDto {
-        private Long productId;
-        private String name;
-        private String description;
-    }
+    private boolean hasProducts;
+    private Double relevanceScore;
+    private String highlight;
 }

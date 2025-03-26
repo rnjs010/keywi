@@ -2,7 +2,8 @@ package com.ssafy.search.service;
 
 import com.ssafy.search.dto.SearchRequestDto;
 import com.ssafy.search.dto.SearchResponseDto;
-import java.util.*;
+
+import java.util.List;
 
 public interface SearchService {
     /**
@@ -12,4 +13,5 @@ public interface SearchService {
      */
     List<SearchResponseDto> search(SearchRequestDto requestDto);
 
+    List<String> getSuggestions(String keyword);
 }

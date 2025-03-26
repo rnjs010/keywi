@@ -11,16 +11,19 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.*;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document(indexName = "posts")
+@Setting(settingPath = "elasticsearch-settings.json")
 public class PostDocument {
 
     @Id
-    private Long postId;
+    @Field(type = FieldType.Keyword)
+    private String postId;
 
     @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String content;
@@ -31,6 +34,9 @@ public class PostDocument {
     @Field(type = FieldType.Date)
     private LocalDateTime createdAt;
 
+    @Field(type = FieldType.Keyword)
+    private String userId;
+
     @Field(type = FieldType.Nested)
     private List<TaggedProduct> taggedProducts;
 
@@ -39,13 +45,26 @@ public class PostDocument {
     @AllArgsConstructor
     @Builder
     public static class TaggedProduct {
-        @Field(type = FieldType.Long)
-        private Long productId;
+
+        @Field(type = FieldType.Keyword)
+        private String productId;
 
         @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
         private String name;
 
         @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
         private String description;
+
+        @Field(type = FieldType.Integer)
+        private int price;
+
+        @Field(type = FieldType.Keyword)
+        private String categoryId;
+
+        @Field(type = FieldType.Keyword)
+        private String categoryName;
+
+        @Field(type = FieldType.Keyword)
+        private String parentCategoryId;
     }
 }

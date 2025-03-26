@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 class AutocompleteRepositoryImpl implements AutocompleteRepository {
+
     private final ElasticsearchClient esClient;
     private static final String INDEX = "search_suggest";
 
@@ -31,11 +32,14 @@ class AutocompleteRepositoryImpl implements AutocompleteRepository {
             SearchResponse<SuggestDocument> response = esClient.search(s -> s
                             .index(INDEX)
                             .size(limit)
-                            .query(q -> q.match(m -> m.field("keyword").query(query))),
+                            .query(q -> q.match(m -> m
+                                    .field("name")
+                                    .query(query)))
+                            .sort(srt -> srt.field(f -> f.field("searchCount").order(SortOrder.Desc))),
                     SuggestDocument.class);
 
             return response.hits().hits().stream()
-                    .map(hit -> hit.source().getKeyword())
+                    .map(hit -> hit.source().getName())
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("자동완성 검색 실패", e);
@@ -49,7 +53,9 @@ class AutocompleteRepositoryImpl implements AutocompleteRepository {
             SearchResponse<SuggestDocument> response = esClient.search(s -> s
                             .index(INDEX)
                             .size(1)
-                            .query(q -> q.term(t -> t.field("keyword.keyword").value(keyword))),
+                            .query(q -> q.term(t -> t
+                                    .field("name.keyword")
+                                    .value(keyword))),
                     SuggestDocument.class);
 
             return response.hits().hits().stream()
