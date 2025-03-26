@@ -30,7 +30,7 @@ function App() {
       </Routes>
 
       {/* 현재 경로가 "/"일 때만 NavBar 표시 */}
-      {location.pathname === '/' && <NavBar />}
+      {location.pathname === '/home' && <NavBar />}
     </>
   )
 }
