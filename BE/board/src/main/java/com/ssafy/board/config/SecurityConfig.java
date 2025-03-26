@@ -1,8 +1,6 @@
 package com.ssafy.board.config;
 
-import com.ssafy.board.security.JwtAuthenticationFilter;
-import com.ssafy.board.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import com.ssafy.board.security.UserHeaderFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,24 +11,30 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserHeaderFilter userHeaderFilter;
+
+    public SecurityConfig(UserHeaderFilter userHeaderFilter) {
+        this.userHeaderFilter = userHeaderFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .formLogin().disable()
-                .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll() // 인증 API는 모두 허용
-                .requestMatchers("/api/estimate-boards/**").authenticated() // 견적 게시판 API는 인증 필요
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        // 공개 API 경로 설정
+                        .requestMatchers("/api/estimate-boards", "/api/estimate-boards/**").permitAll()
+                        // 인증이 필요한 API 경로 설정 (POST, PUT, DELETE 요청만)
+                        .requestMatchers(
+                                "/api/estimate-boards/me",
+                                "/api/estimate-boards/{boardId}").authenticated()
+                        .anyRequest().authenticated()
+                )
+                // 사용자 헤더 필터 추가
+                .addFilterBefore(userHeaderFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

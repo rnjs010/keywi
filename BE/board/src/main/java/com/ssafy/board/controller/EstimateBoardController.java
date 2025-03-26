@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +28,18 @@ import java.util.stream.Collectors;
 public class EstimateBoardController {
 
     private final EstimateBoardService estimateBoardService;
+
+    /**
+     * 현재 인증된 사용자의 ID를 가져오는 헬퍼 메서드
+     * @return 사용자 ID (Long 타입으로 변환)
+     */
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return Long.parseLong(authentication.getName());
+        }
+        return null;
+    }
 
     /**
      * 견적 게시글 목록 조회 (무한 스크롤)
@@ -112,9 +126,15 @@ public class EstimateBoardController {
             @RequestPart EstimateBoardDTO.Request request,
             @RequestPart(required = false) List<MultipartFile> images) {
 
-        // 엔티티 변환
+        // 현재 인증된 사용자의 ID를 가져옴
+        Long currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 엔티티 변환 (인증된 사용자 ID를 사용)
         EstimateBoard estimateBoard = EstimateBoard.builder()
-                .writerId(request.getWriterId())  // 요청에서 작성자 ID를 받아옴
+                .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .dealState(request.getDealState())
@@ -152,6 +172,12 @@ public class EstimateBoardController {
             @RequestPart(required = false) List<MultipartFile> images,
             @RequestParam(required = false) List<Long> deleteImageIds) {
 
+        // 현재 인증된 사용자의 ID를 가져옴
+        Long currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         // 게시글 조회
         Optional<EstimateBoard> existingBoardOptional = estimateBoardService.getEstimateBoardById(boardId);
 
@@ -161,15 +187,15 @@ public class EstimateBoardController {
 
         EstimateBoard existingBoard = existingBoardOptional.get();
 
-        // 작성자 확인
-        if (!existingBoard.getWriterId().equals(request.getWriterId())) {
+        // 작성자 확인 (인증된 사용자가 작성자인지 검증)
+        if (!existingBoard.getWriterId().equals(currentUserId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         // 엔티티 변환
         EstimateBoard estimateBoard = EstimateBoard.builder()
                 .boardId(boardId)
-                .writerId(request.getWriterId())
+                .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .dealState(request.getDealState())
@@ -196,13 +222,15 @@ public class EstimateBoardController {
     /**
      * 견적 게시글 삭제
      * @param boardId 삭제할 게시글 ID
-     * @param userId 현재 사용자 ID
      * @return 삭제 결과
      */
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<Void> deleteEstimateBoard(
-            @PathVariable Long boardId,
-            @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteEstimateBoard(@PathVariable Long boardId) {
+        // 현재 인증된 사용자의 ID를 가져옴
+        Long currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         // 게시글 조회
         Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(boardId);
@@ -211,8 +239,8 @@ public class EstimateBoardController {
             return ResponseEntity.notFound().build();
         }
 
-        // 작성자 확인
-        if (!boardOptional.get().getWriterId().equals(userId)) {
+        // 작성자 확인 (인증된 사용자가 작성자인지 검증)
+        if (!boardOptional.get().getWriterId().equals(currentUserId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -257,5 +285,26 @@ public class EstimateBoardController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
+    }
+
+    /**
+     * 내가 작성한 견적 게시글 목록 조회
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 크기
+     * @return 내가 작성한 견적 게시글 목록
+     */
+    @GetMapping("/me")
+    public ResponseEntity<List<EstimateBoardDTO.ListResponse>> getMyEstimateBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        // 현재 인증된 사용자의 ID를 가져옴
+        Long currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 현재 사용자가 작성한 게시글 목록 조회
+        return getEstimateBoardsByWriterId(currentUserId, page, size);
     }
 }
