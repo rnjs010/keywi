@@ -16,7 +16,9 @@ const HeaderContainer = tw.div`
 `
 export default function BoardWritePage() {
   const navigate = useNavigate()
-  const { resetState, title, content } = useBoardProductStore()
+  const title = useBoardProductStore((state) => state.title)
+  const content = useBoardProductStore((state) => state.content)
+  const resetState = useBoardProductStore((state) => state.resetState)
 
   // 화면 상태 관리
   const [currentScreen, setCurrentScreen] = useState<'first' | 'second'>(
