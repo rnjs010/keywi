@@ -27,15 +27,4 @@ public class SearchController {
             @Valid SearchRequestDto requestDto) {
         return ResponseEntity.ok(searchService.search(requestDto));
     }
-
-    /**
-     * 검색 결과 필터링 API
-     * @param requestDto 필터링 요청 정보
-     * @return 필터링된 검색 결과
-     */
-    @GetMapping("/filter")
-    public ResponseEntity<List<SearchResponseDto>> filter(
-            @Valid SearchRequestDto requestDto) {
-        return ResponseEntity.ok(searchService.filterSearch(requestDto));
-    }
 }

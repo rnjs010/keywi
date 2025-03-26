@@ -22,7 +22,7 @@ public class PostDocument {
     @Id
     private Long postId;
 
-    @Field(type = FieldType.Text, analyzer = "korean")
+    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String content;
 
     @Field(type = FieldType.Keyword)
@@ -42,10 +42,10 @@ public class PostDocument {
         @Field(type = FieldType.Long)
         private Long productId;
 
-        @Field(type = FieldType.Text, analyzer = "korean")
+        @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
         private String name;
 
-        @Field(type = FieldType.Text, analyzer = "korean")
+        @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
         private String description;
     }
 }

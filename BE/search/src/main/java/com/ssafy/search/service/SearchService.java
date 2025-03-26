@@ -12,10 +12,4 @@ public interface SearchService {
      */
     List<SearchResponseDto> search(SearchRequestDto requestDto);
 
-    /**
-     * 검색 결과 필터링
-     * @param requestDto 필터링 요청 정보
-     * @return 필터링된 검색 결과
-     */
-    List<SearchResponseDto> filterSearch(SearchRequestDto requestDto);
 }
