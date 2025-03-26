@@ -5,27 +5,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "suggest")
+@Document(indexName = "search_suggest")
 public class SuggestDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, analyzer = "korean")
+    @Field(type = FieldType.Text, name = "keyword")
     private String keyword;
 
-    @Field(type = FieldType.Integer)
+    @Field(type = FieldType.Integer, name = "count")
     private Integer count;
-
-    @CompletionField(analyzer = "korean")
-    private Completion suggest;
 }
