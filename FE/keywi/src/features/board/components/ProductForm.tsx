@@ -44,6 +44,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
   // 카테고리 선택 시 Drawer를 열어 상품 선택 UI 표시
   const handleAddProduct = (category: string) => {
     setCurrentCategory(category)
+    console.log(currentCategory)
     setOpenDrawer(category)
   }
 

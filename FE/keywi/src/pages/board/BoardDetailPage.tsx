@@ -6,7 +6,7 @@ import MainButton from '@/components/MainButton'
 import tw from 'twin.macro'
 import { NavArrowLeft } from 'iconoir-react'
 import { BoardData } from '@/interfaces/BoardInterface'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -22,7 +22,6 @@ const ScrollArea = tw.div`
 
 export default function BoardDetailPage() {
   const navigate = useNavigate()
-  const { postId } = useParams()
 
   return (
     <Container>
