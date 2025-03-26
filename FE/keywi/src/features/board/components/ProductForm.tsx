@@ -4,12 +4,17 @@ import ProductSelector from './ProductSelector'
 import { BoardItem } from '@/interfaces/BoardInterface'
 import ProductModal from './ProductModal'
 import MainButton from '@/components/MainButton'
+import { useBoardProductStore } from '@/stores/boardStore'
 
-const Form = tw.div`
-  flex flex-col p-4 flex-1
+const Container = tw.div`
+  w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
 `
 
-export default function ProductForm() {
+const Form = tw.div`
+  overflow-y-auto px-4 py-2 flex-1 
+`
+
+export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
   const categories = [
     { id: 1, name: '하우징' },
     { id: 2, name: '키캡' },
@@ -21,9 +26,14 @@ export default function ProductForm() {
   ]
 
   // 선택된 상품들을 카테고리별로 저장하는 객체
-  const [selectedProducts, setSelectedProducts] = useState<
-    Record<string, BoardItem>
-  >({})
+  const setSelectedProducts = useBoardProductStore(
+    (state) => state.setSelectedProducts,
+  )
+  const selectedProducts = useBoardProductStore(
+    (state) => state.selectedProducts,
+  )
+  const [selectedProductsLocal, setSelectedProductsLocal] =
+    useState<Record<string, BoardItem>>(selectedProducts)
 
   // 현재 선택된 카테고리
   const [currentCategory, setCurrentCategory] = useState<string>('')
@@ -39,8 +49,8 @@ export default function ProductForm() {
 
   // 상품 선택 시 해당 카테고리에 상품 저장 및 Drawer 닫기
   const handleSelectProduct = (product: BoardItem) => {
-    setSelectedProducts({
-      ...selectedProducts,
+    setSelectedProductsLocal({
+      ...selectedProductsLocal,
       [product.categoryName]: product,
     })
     setOpenDrawer(null)
@@ -48,14 +58,14 @@ export default function ProductForm() {
 
   // 선택된 상품 삭제
   const handleDeleteProduct = (category: string) => {
-    const newSelectedProducts = { ...selectedProducts }
+    const newSelectedProducts = { ...selectedProductsLocal }
     delete newSelectedProducts[category]
-    setSelectedProducts(newSelectedProducts)
+    setSelectedProductsLocal(newSelectedProducts)
   }
 
   // 선택된 상품 렌더링
   const renderSelectedProducts = () => {
-    return Object.entries(selectedProducts).map(([category, product]) => (
+    return Object.entries(selectedProductsLocal).map(([category, product]) => (
       <ProductModal
         key={category}
         isOpen={openDrawer === category}
@@ -81,7 +91,7 @@ export default function ProductForm() {
   const renderUnselectedCategories = () => {
     return categories.map(
       (category) =>
-        !selectedProducts[category.name] && (
+        !selectedProductsLocal[category.name] && (
           <ProductModal
             key={category.id}
             isOpen={openDrawer === category.name}
@@ -105,18 +115,24 @@ export default function ProductForm() {
     )
   }
 
+  // Zustand store에 선택된 상품 저장 후 두 번째 화면으로 이동
+  const handleConfirm = () => {
+    setSelectedProducts(selectedProductsLocal)
+    onConfirm()
+  }
+
   return (
-    <>
+    <Container>
       <Form>
         <div>
           {renderSelectedProducts()}
           {renderUnselectedCategories()}
         </div>
       </Form>
-      <div className="w-full px-4 fixed bottom-12">
-        <MainButton text="확인" />
+      <div className="px-4 mt-4 mb-12">
+        <MainButton text="확인" onClick={handleConfirm} />
       </div>
-    </>
+    </Container>
   )
 }
 

@@ -5,7 +5,7 @@ import { NavArrowRight, Xmark } from 'iconoir-react'
 import { BoardItem } from '@/interfaces/BoardInterface'
 
 const CardContainer = tw.div`
-  flex items-center content-center justify-between bg-pay pl-4 py-4 pr-1 rounded-lg my-2
+  flex items-center content-center justify-between bg-pay pl-4 py-4 pr-1 rounded-lg my-1
 `
 
 const ThumbnailImage = tw.img`
@@ -52,6 +52,7 @@ export default function BoardProductCard({
             <Xmark color={colors.darkKiwi} />
           </div>
         )}
+        {mode === 'view' && <div className="w-2 h-6"></div>}
       </div>
     </CardContainer>
   )

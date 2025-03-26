@@ -2,13 +2,13 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { HelpCircle, Search } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { BoardItem } from '@/interfaces/BoardInterface'
 import React, { useEffect, useState } from 'react'
 
 const CardContainer = tw.div`
@@ -119,7 +119,13 @@ export default function ProductModal({
           <SearchIconWrapper>
             <Search color={colors.darkGray} height="16px" width="16px" />
           </SearchIconWrapper>
-          <SearchInput placeholder="상품명을 검색하세요." value={searchTerm} />
+          <SearchInput
+            placeholder="상품명을 검색하세요."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchTerm(e.target.value)
+            }
+          />
         </SearchContainer>
         {/* SECTION - 목록 title, 조립자 추천 버튼 */}
         <div className="flex flex-row justify-between items-center mx-4 py-2 border-b border-[#EEEEEE]">
