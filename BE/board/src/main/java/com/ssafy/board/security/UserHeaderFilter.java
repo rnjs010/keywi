@@ -6,37 +6,60 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;  // 이 import 추가
 import java.util.Collections;
 
 @Component
 public class UserHeaderFilter extends OncePerRequestFilter {
 
-    private static final String USER_ID_HEADER = "X-User-ID";
-    private static final String USER_ROLE_HEADER = "X-User-Role";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String userId = request.getHeader(USER_ID_HEADER);
-        String userRole = request.getHeader(USER_ROLE_HEADER);
+        // 이전 인증 정보 제거
+        SecurityContextHolder.clearContext();
 
-        if (userId != null && !userId.isEmpty()) {
-            // 기본 권한 설정
-            String role = (userRole != null && !userRole.isEmpty()) ? userRole : "ROLE_USER";
+        // Authorization 헤더에서 JWT 토큰 추출
+        String authHeader = request.getHeader("Authorization");
 
-            // 인증 객체 생성
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userId, null, Collections.singletonList(new SimpleGrantedAuthority(role))
-            );
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-            // SecurityContext에 인증 정보 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                // JWT 토큰에서 페이로드만 디코딩해서 사용자 ID 추출
+                String[] parts = token.split("\\.");
+                if (parts.length == 3) {
+                    String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
+                    JsonNode jsonNode = new ObjectMapper().readTree(payload);
+                    String userId = jsonNode.has("sub") ? jsonNode.get("sub").asText() : null;
+
+                    if (userId != null) {
+                        try {
+                            Long.parseLong(userId);
+
+                            // 인증 객체 생성
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    userId, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                            );
+
+                            // SecurityContext에 인증 정보 저장
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        } catch (NumberFormatException e) {
+                            logger.warn("Invalid user ID format: " + userId);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("JWT token processing failed: " + e.getMessage());
+            }
         }
 
         filterChain.doFilter(request, response);
