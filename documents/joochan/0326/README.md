@@ -9,9 +9,8 @@
 ### 1. RabbitMQ 설치
 
 ```bash
-sudo systemctl start rabbitmq-server# RabbitMQ는 erlang 기반
 sudo apt-get update && sudo apt-get upgrade -y
-sudo apt-get install -y curl gnupg apt-transport-https erlang erlang-base
+sudo apt-get install -y curl gnupg apt-transport-https erlang erlang-base # RabbitMQ는 erlang 기반
 
 # RabbitMQ 저장소 추가 및 키 설치
 # ubuntu 24버전 미만
@@ -25,18 +24,33 @@ echo "deb [signed-by=/usr/share/keyrings/rabbitmq-archive-keyring.gpg] http://ww
 # RabbitMQ 설치
 sudo apt-get update && sudo apt-get install rabbitmq-server -y
 
-# 관리 플러그인 활성화
-sudo rabbitmq-plugins enable rabbitmq_management
+### 문제 발생시
+sudo rm -f /etc/apt/sources.list.d/rabbitmq.list
 
+sudo apt-get update && sudo apt-get install -y curl gnupg apt-transport-https
+
+curl -fsSL https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | sudo tee /usr/share/keyrings/erlang.gpg > /dev/null
+curl -fsSL https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | sudo tee /usr/share/keyrings/rabbitmq.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/erlang.gpg] https://packages.erlang-solutions.com/ubuntu $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/erlang.list
+echo "deb [signed-by=/usr/share/keyrings/rabbitmq.gpg] https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+
+sudo apt-get update && sudo apt install -y erlang-base rabbitmq-server
+
+
+
+sudo ufw allow 5672 # 외부 접속
 sudo ufw allow 15672 # 관리콘솔 외부접속 허용
 sudo ufw reload
 
 sudo systemctl start rabbitmq-server
 sudo systemctl enable rabbitmq-server
 
+# 관리 플러그인 활성화
+sudo rabbitmq-plugins enable rabbitmq_management
+
 #ubuntu User can only log in via localhost
 # 외부 접속하면 guest로 로그인 불가이므로 유저 만들어줘야 함 / 관리자권한 부여
-rabbitmqctl add_user 유저명 비밀번호
+sudo rabbitmqctl add_user 유저명 비밀번호
 sudo rabbitmqctl set_user_tags 유저명 administrator
 sudo rabbitmqctl set_permissions -p / 유저명 ".*" ".*" ".*"
 ```
