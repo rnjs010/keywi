@@ -1,7 +1,6 @@
 import tw from 'twin.macro'
 import { CommentListProps } from '@/interfaces/HomeInterfaces'
 import CommentItem from './CommentItem'
-import { Skeleton } from '@/components/ui/skeleton'
 
 const Container = tw.div`
   flex
@@ -19,30 +18,30 @@ const EmptyCommentContainer = tw.div`
   text-gray
 `
 
-const CommentSkeletonItem = () => (
-  <div className="flex px-4 py-3 border-b border-gray">
-    <Skeleton className="w-9 h-9 rounded-full mr-3 flex-shrink-0" />
-    <div className="flex-1">
-      <Skeleton className="w-24 h-4 mb-2" />
-      <Skeleton className="w-3/4 h-3 mb-1" />
-      <Skeleton className="w-16 h-3 mt-2" />
-    </div>
-  </div>
-)
+// const CommentSkeletonItem = () => (
+//   <div className="flex px-4 py-3 border-b border-gray">
+//     <Skeleton className="w-9 h-9 rounded-full mr-3 flex-shrink-0" />
+//     <div className="flex-1">
+//       <Skeleton className="w-24 h-4 mb-2" />
+//       <Skeleton className="w-3/4 h-3 mb-1" />
+//       <Skeleton className="w-16 h-3 mt-2" />
+//     </div>
+//   </div>
+// )
 
 export default function CommentList({
   comments,
-  isLoading = false,
+  // isLoading = false,
 }: CommentListProps) {
-  if (isLoading) {
-    return (
-      <Container>
-        <CommentSkeletonItem />
-        <CommentSkeletonItem />
-        <CommentSkeletonItem />
-      </Container>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Container>
+  //       <CommentSkeletonItem />
+  //       <CommentSkeletonItem />
+  //       <CommentSkeletonItem />
+  //     </Container>
+  //   )
+  // }
 
   if (!comments || comments.length === 0) {
     return (

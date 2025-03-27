@@ -34,9 +34,11 @@ const ContentArea = styled.div`
 
 export default function HomeCommentPage() {
   const { feedId } = useParams<{ feedId: string }>()
-  const [feed, setFeed] = useState<FeedData | null>(null)
+  // feed 정보는 나중에 피드 내용 표시 등에 사용할 예정
+  const [_feed, setFeed] = useState<FeedData | null>(null)
   const [comments, setComments] = useState<CommentData[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  //NOTE - 추후 댓글창 로딩 필요시 활성화 할 예정
+  // const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (feedId) {
@@ -74,7 +76,7 @@ export default function HomeCommentPage() {
       <DetailHeader title={`댓글 ${comments.length}`} />
       <Container>
         <ContentArea>
-          <CommentList comments={comments} isLoading={isLoading} />
+          <CommentList comments={comments} />
         </ContentArea>
         <CommentInput
           feedId={parseInt(feedId || '0')}

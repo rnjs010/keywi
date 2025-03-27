@@ -97,7 +97,7 @@ export interface CommentProps {
 // 댓글 목록 Props
 export interface CommentListProps {
   comments: CommentData[]
-  isLoading?: boolean
+  // isLoading?: boolean
 }
 
 // 댓글 입력 Props
