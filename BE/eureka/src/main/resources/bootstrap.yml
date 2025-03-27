@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: eureka
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    bus:
+      enabled: true
+      refresh:
+        enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+  endpoint:
+    health:
+      show-details: always
