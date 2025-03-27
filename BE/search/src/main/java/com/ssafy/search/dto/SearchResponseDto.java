@@ -23,7 +23,7 @@ public class SearchResponseDto {
 
     private String userId;
 
-    @JsonProperty("tagged_products")
+    @JsonProperty("taggedProducts")
     private List<TaggedProductDto> taggedProducts;
 
     @Data

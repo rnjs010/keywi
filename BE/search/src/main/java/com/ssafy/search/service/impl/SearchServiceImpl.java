@@ -32,10 +32,30 @@ public class SearchServiceImpl implements SearchService {
             log.info("🔍 검색 요청: keyword={}, page={}, size={}", keyword, request.getPage(), request.getSize());
 
             Query query = Query.of(q -> q
-                    .multiMatch(m -> m
-                            .fields("content", "taggedProducts.name", "taggedProducts.description")
-                            .query(keyword)
-                            .analyzer("suggest_search_analyzer")
+                    .bool(b -> b
+                            .should(s -> s
+                                    .multiMatch(m -> m
+                                            .fields("content", "hashtags")
+                                            .query(keyword)
+                                            .analyzer("suggest_search_analyzer")
+                                    )
+                            )
+                            .should(s -> s
+                                    .nested(n -> n
+                                            .path("taggedProducts")
+                                            .query(nq -> nq
+                                                    .multiMatch(mm -> mm
+                                                            .fields(
+                                                                    "taggedProducts.name",
+                                                                    "taggedProducts.description",
+                                                                    "taggedProducts.categoryName" // ✅ 요거 추가!!
+                                                            )
+                                                            .query(keyword)
+                                                            .analyzer("suggest_search_analyzer")
+                                                    )
+                                            )
+                                    )
+                            )
                     )
             );
 
