@@ -32,7 +32,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Chat */}
-      <NavLink to="/" style={navActiveStyle}>
+      <NavLink to="/pay" style={navActiveStyle}>
         <ChatBubble width="2rem" height="2rem" />
       </NavLink>
 

@@ -10,6 +10,7 @@ import MainPage from './pages/login/MainPage'
 import HomePage from './pages/home/HomePage'
 import HomeCommentPage from './pages/home/HomeCommentPage'
 import { Route, Routes, useLocation } from 'react-router-dom'
+import PayPage from './pages/pay/PayPage'
 
 function App() {
   const location = useLocation() // 현재 경로 가져오기
@@ -31,6 +32,7 @@ function App() {
         <Route path="/board" element={<BoardPage />} />
         <Route path="/board/:postId" element={<BoardDetailPage />} />
         <Route path="/board/write" element={<BoardWritePage />} />
+        <Route path="/pay" element={<PayPage />} />
       </Routes>
 
       {/* 현재 경로가 "/"일 때만 NavBar 표시 */}
