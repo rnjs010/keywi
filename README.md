@@ -293,12 +293,6 @@
   </pre>
 </details>
 
-<details>
-  <summary><strong>Front - wear 폴더 구조 보기</strong></summary>
-  <pre>
-  </pre>
-</details>
-
 ## 📜 산출물
 
 <details>
