@@ -15,7 +15,7 @@ import { colors } from '@/styles/colors'
 const TagItemContainer = tw.div`
   flex
   items-center
-  px-6
+  px-5
   py-2
 `
 
@@ -61,7 +61,7 @@ export default function HomeTagListModal({
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="relative">
           <DrawerTitle>
-            <Text variant="body1" weight="bold" color="darkKiwi">
+            <Text variant="body2" weight="bold" color="darkKiwi">
               태그 상품 {productTags.length}
             </Text>
           </DrawerTitle>

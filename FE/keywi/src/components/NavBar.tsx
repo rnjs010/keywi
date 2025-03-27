@@ -6,7 +6,7 @@ import { IoHomeOutline } from 'react-icons/io5'
 import { NavLink } from 'react-router-dom'
 
 const NavContainer = tw.div`
-  flex justify-between items-center px-4 pt-3 pb-8 border-t border-t-[#EEEEEE]
+  flex justify-between items-center px-7 pt-3 pb-9 border-t border-t-[#EEEEEE]
 `
 
 export default function NavBar() {
@@ -18,27 +18,27 @@ export default function NavBar() {
     <NavContainer>
       {/* Home */}
       <NavLink to="/home" style={navActiveStyle}>
-        <IoHomeOutline size="2rem" />
+        <IoHomeOutline size="1.7rem" />
       </NavLink>
 
       {/* Product */}
       <NavLink to="/" style={navActiveStyle}>
-        <ShopFourTilesWindow width="2rem" height="2rem" />
+        <ShopFourTilesWindow width="1.7rem" height="1.7rem" />
       </NavLink>
 
       {/* Board */}
       <NavLink to="/board" style={navActiveStyle}>
-        <PiClipboardText size="2rem" />
+        <PiClipboardText size="1.7rem" />
       </NavLink>
 
       {/* Chat */}
       <NavLink to="/pay" style={navActiveStyle}>
-        <ChatBubble width="2rem" height="2rem" />
+        <ChatBubble width="1.7rem" height="1.7rem" />
       </NavLink>
 
       {/* Profile */}
       <NavLink to="/" style={navActiveStyle}>
-        <ProfileCircle width="2rem" height="2rem" />
+        <ProfileCircle width="1.7rem" height="1.7rem" />
       </NavLink>
     </NavContainer>
   )

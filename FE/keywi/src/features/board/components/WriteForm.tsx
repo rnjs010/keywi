@@ -27,7 +27,7 @@ export default function WriteForm({ onEdit }: { onEdit: () => void }) {
         </Text>
         <div className="flex items-center gap-1" onClick={onEdit}>
           <EraseSolid color={colors.kiwi} height={`1rem`} width={`1rem`} />
-          <Text variant="caption1" weight="regular" color="kiwi">
+          <Text variant="caption1" weight="bold" color="kiwi">
             상품 수정
           </Text>
         </div>

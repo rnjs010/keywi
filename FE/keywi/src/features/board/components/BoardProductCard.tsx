@@ -5,7 +5,7 @@ import { NavArrowRight, Xmark } from 'iconoir-react'
 import { BoardItem } from '@/interfaces/BoardInterface'
 
 const CardContainer = tw.div`
-  flex items-center content-center justify-between bg-pay pl-4 py-4 pr-1 rounded-lg my-1
+  flex items-center content-center justify-between bg-pay pl-4 py-3 pr-1 rounded-lg my-0.5
 `
 
 const ThumbnailImage = tw.img`

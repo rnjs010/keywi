@@ -12,7 +12,7 @@ import { BoardItem } from '@/interfaces/BoardInterface'
 import React, { useEffect, useState } from 'react'
 
 const CardContainer = tw.div`
-  flex items-center gap-3 cursor-pointer my-2
+  flex items-center gap-3 cursor-pointer my-2 pb-2
 `
 
 const ThumbnailImage = tw.img`
@@ -20,7 +20,7 @@ const ThumbnailImage = tw.img`
 `
 
 const SearchContainer = tw.div`
-  relative mx-4 my-2
+  relative mx-4 mb-2
 `
 
 const SearchInput = tw.input`
@@ -132,11 +132,12 @@ export default function ProductModal({
           <Text variant="caption1" weight="regular" color="darkGray">
             찜한 목록
           </Text>
-          <div className="flex flex-row items-center gap-0.5">
+          <div className="flex flex-row items-center gap-1">
             <HelpCircle
               color={colors.kiwi}
               height={`1rem`}
               width={`1rem`}
+              strokeWidth={2}
               onClick={handleHelpClick}
             />
             {isTooltipVisible && (
@@ -148,7 +149,12 @@ export default function ProductModal({
               </Tooltip>
             )}
             <div onClick={handleRecommendClick}>
-              <Text variant="caption1" weight="bold" color="kiwi">
+              <Text
+                variant="caption1"
+                weight="bold"
+                color="kiwi"
+                className="align-text-top"
+              >
                 조립자 추천 요청
               </Text>
             </div>
