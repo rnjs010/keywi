@@ -17,7 +17,7 @@ export default function Complete() {
 
   const handleNext = () => {
     resetState()
-    navigate('/board')
+    navigate('/home')
   }
 
   return (

@@ -52,7 +52,7 @@ export default function PayPage() {
 
   const handleClose = () => {
     resetState()
-    navigate('/board')
+    navigate('/home')
   }
 
   return (
