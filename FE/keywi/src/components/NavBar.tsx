@@ -32,12 +32,12 @@ export default function NavBar() {
       </NavLink>
 
       {/* Chat */}
-      <NavLink to="/" style={navActiveStyle}>
+      <NavLink to="/pay" style={navActiveStyle}>
         <ChatBubble width="2rem" height="2rem" />
       </NavLink>
 
       {/* Profile */}
-      <NavLink to="/pay" style={navActiveStyle}>
+      <NavLink to="/" style={navActiveStyle}>
         <ProfileCircle width="2rem" height="2rem" />
       </NavLink>
     </NavContainer>

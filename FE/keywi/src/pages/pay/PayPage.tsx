@@ -22,9 +22,14 @@ export default function PayPage() {
   const step = usePayStore((state) => state.step)
   const resetState = usePayStore((state) => state.resetState)
 
-  const headerText = ['', '계좌 입력', '계좌 인증', '비밀번호 등록', ''][
-    step - 1
-  ]
+  const headerText = [
+    '',
+    '계좌 입력',
+    '계좌 인증',
+    '비밀번호 등록',
+    '비밀번호 등록',
+    '',
+  ][step - 1]
 
   const renderStepComponent = () => {
     switch (step) {
@@ -37,6 +42,8 @@ export default function PayPage() {
       case 4:
         return <RegistPassword />
       case 5:
+        return <RegistPassword />
+      case 6:
         return <Complete />
       default:
         return null
@@ -45,12 +52,12 @@ export default function PayPage() {
 
   const handleClose = () => {
     resetState()
-    navigate('/mypage')
+    navigate('/board')
   }
 
   return (
     <Container>
-      {step !== 1 && step !== 5 && (
+      {step !== 1 && step !== 6 && (
         <HeaderContainer>
           <div className="absolute left-4">
             <Xmark onClick={handleClose} />
