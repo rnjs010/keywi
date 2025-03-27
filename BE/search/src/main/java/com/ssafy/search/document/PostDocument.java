@@ -1,8 +1,5 @@
 package com.ssafy.search.document;
 
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -15,6 +12,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.*;
+import java.time.Instant;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Data
@@ -41,8 +39,7 @@ public class PostDocument {
 
     @Field(type = FieldType.Date)
     @JsonProperty("createdAt")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Field(type = FieldType.Keyword)
     @JsonProperty("userId")

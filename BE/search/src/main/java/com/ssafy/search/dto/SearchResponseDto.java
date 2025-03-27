@@ -1,6 +1,7 @@
 package com.ssafy.search.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class SearchResponseDto {
 
     private List<String> hashtags;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     private String userId;
 
