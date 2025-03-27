@@ -29,7 +29,7 @@ const ContentWrapper = tw.div`
   flex flex-col items-center justify-center h-screen
 `
 
-export default function CompletePage() {
+export default function LoginCompletePage() {
   return (
     <Container>
       <ContentWrapper>

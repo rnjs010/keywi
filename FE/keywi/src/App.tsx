@@ -3,10 +3,12 @@ import BoardDetailPage from './pages/board/BoardDetailPage'
 import BoardPage from './pages/board/BoardPage'
 import BoardWritePage from './pages/board/BoardWritePage'
 import { LoginProvider } from './features/login/services/LoginContext'
-import CompletePage from './pages/login/CompletePage'
+import LoginCompletePage from './pages/login/LoginCompletePage'
 import LoginPage from './pages/login/LoginPage'
 import Fonts from './styles/fonts'
 import MainPage from './pages/login/MainPage'
+import HomePage from './pages/home/HomePage'
+import HomeCommentPage from './pages/home/HomeCommentPage'
 import { Route, Routes, useLocation } from 'react-router-dom'
 
 function App() {
@@ -20,7 +22,9 @@ function App() {
           {/* 처음 입장시 스플래시 화면 구성할 예정 */}
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/complete" element={<CompletePage />} />
+          <Route path="/login/complete" element={<LoginCompletePage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
         </Routes>
       </LoginProvider>
       <Routes>

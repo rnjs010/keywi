@@ -17,7 +17,7 @@ export default function NavBar() {
   return (
     <NavContainer>
       {/* Home */}
-      <NavLink to="/" style={navActiveStyle}>
+      <NavLink to="/home" style={navActiveStyle}>
         <IoHomeOutline size="2rem" />
       </NavLink>
 
