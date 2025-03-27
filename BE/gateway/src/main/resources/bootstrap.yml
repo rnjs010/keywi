@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: gateway
+
+  # Config Server 설정
+  config:
+    import: configserver:http://localhost:8888
+
+  # Spring Cloud Bus 설정
+  cloud:
+    bus:
+      enabled: true
+      refresh:
+        enabled: true
+
+# Actuator 엔드포인트 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
