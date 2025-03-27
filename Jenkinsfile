@@ -250,8 +250,9 @@ pipeline {
                         
                         docker.withRegistry('https://index.docker.io/v1/', 'keywi-docker') {
                                 docker.image("${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}").push()
+                        }
+                        echo "Push ${SERVICE} Docker Image."
                     }
-                    echo "Push Docker Image."
                 }
             }
             post {
