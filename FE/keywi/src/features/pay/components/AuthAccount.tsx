@@ -1,5 +1,5 @@
 import { usePayStore } from '@/stores/payStore'
-import { SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { BsAsterisk } from 'react-icons/bs'
