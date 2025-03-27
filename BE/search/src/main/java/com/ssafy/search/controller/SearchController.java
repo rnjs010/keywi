@@ -23,7 +23,8 @@ public class SearchController {
      * @return 검색 결과 목록
      */
     @GetMapping
-    public ResponseEntity<List<SearchResponseDto>> search(@Valid SearchRequestDto requestDto) {
+    public ResponseEntity<List<SearchResponseDto>> search(
+            @ModelAttribute @Valid SearchRequestDto requestDto) {
         return ResponseEntity.ok(searchService.search(requestDto));
     }
 

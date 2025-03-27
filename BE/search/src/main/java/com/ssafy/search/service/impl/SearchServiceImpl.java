@@ -29,8 +29,8 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchResponseDto> search(SearchRequestDto request) {
         try {
             String keyword = request.getKeyword();
+            log.info("🔍 검색 요청: keyword={}, page={}, size={}", keyword, request.getPage(), request.getSize());
 
-            // 검색 쿼리 정의
             Query query = Query.of(q -> q
                     .multiMatch(m -> m
                             .fields("content", "taggedProducts.name", "taggedProducts.description")
@@ -51,13 +51,15 @@ public class SearchServiceImpl implements SearchService {
                     PostDocument.class
             );
 
+            log.info("✅ 검색 결과 수: {}", response.hits().total().value());
+
             return response.hits().hits().stream()
                     .map(Hit::source)
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
 
         } catch (IOException e) {
-            log.error("검색 실패: {}", e.getMessage(), e);
+            log.error("❌ 검색 실패: {}", e.getMessage(), e);
             throw new RuntimeException("검색에 실패했습니다.");
         }
     }

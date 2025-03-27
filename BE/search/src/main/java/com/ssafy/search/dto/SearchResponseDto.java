@@ -1,5 +1,6 @@
 package com.ssafy.search.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class SearchResponseDto {
 
     private String userId;
 
+    @JsonProperty("tagged_products")
     private List<TaggedProductDto> taggedProducts;
 
     @Data
