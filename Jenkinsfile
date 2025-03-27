@@ -56,8 +56,6 @@ pipeline {
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
                                 sh """
                                     git fetch --all --prune
-                                    git remote update --prune
-                                    git gc --prune=now
                                 """
                                 
                                 BRANCH_NAME = sh(script: """
@@ -66,7 +64,8 @@ pipeline {
                                     head -n 1
                                 """, returnStdout: true).trim()
                                 echo "Latest branch: ${BRANCH_NAME}"
-
+                                sh "git checkout ${BRANCH_NAME}"
+                                
                                 GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                                 DOCKER_TAG = "${env.BUILD_NUMBER}-${GIT_COMMIT_SHORT}"
                                 
