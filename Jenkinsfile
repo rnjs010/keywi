@@ -23,7 +23,7 @@ pipeline {
         AUTHOR = ''
         BRANCH_NAME = ''
         SERVICE_PATH = ''
-        SERVICES = []
+        SERVICES = ''
         ERROR_MSG = "false"
         
         // 서버 정보
@@ -74,12 +74,12 @@ pipeline {
                                 
                                 // 서비스 목록 설정
                                 // if (BRANCH_NAME == "develop") {
-                                //     SERVICES = ["config", "eureka", "gateway", "auth", "common", "feed", "product", "payment", "search", "chat", "notification"]
+                                //     SERVICES = "config,eureka,gateway,auth,common,feed,product,payment,search,chat,notification"
                                 // } else
                                 if (BRANCH_NAME == "feature/BE/gateway") {
-                                    SERVICES = ["eureka", "gateway"]
+                                    SERVICES = "eureka,gateway"
                                 } else {
-                                    SERVICES = [SERVICE_PATH]
+                                    SERVICES = "${SERVICE_PATH}"
                                 }
                             
                                 echo "branch: ${BRANCH_NAME}"
@@ -114,9 +114,9 @@ pipeline {
                                 
                                 // 서비스 목록 설정
                                 if (BRANCH_NAME == "feature/BE/gateway") {
-                                    SERVICES = ["gateway", "eureka"]
+                                    SERVICES = "gateway,eureka"
                                 } else {
-                                    SERVICES = [SERVICE_PATH]
+                                    SERVICES = "${SERVICE_PATH}"
                                 }
                                 
                                 echo "branch: ${BRANCH_NAME}"
@@ -158,9 +158,10 @@ pipeline {
         stage('Inject Config') {
             steps {
                 script {
+                    def servicesList = SERVICES.split(',')
                     STAGE_NAME = "Inject Config (2/6)"
                     
-                    SERVICES.each { SERVICE ->
+                    servicesList.each { SERVICE ->
                         echo "Injecting config for ${SERVICE}..."
                         
                         if (SERVICE == "config") {
@@ -181,8 +182,8 @@ pipeline {
             steps {
                 script {
                     STAGE_NAME = "Build (3/6)"
-                    
-                    SERVICES.each { SERVICE ->
+                    def servicesList = SERVICES.split(',')
+                    servicesList.each { SERVICE ->
                         echo "Building ${SERVICE}..."
                         dir("BE/${SERVICE}") {
                             try {
@@ -210,8 +211,8 @@ pipeline {
             steps {
                 script {
                     STAGE_NAME = "Docker Build (4/6)"
-                    
-                    SERVICES.each { SERVICE ->
+                    def servicesList = SERVICES.split(',')
+                    servicesList.each { SERVICE ->
                         echo "Docker building ${SERVICE}..."
                         def jarFile = sh(script: "ls BE/${SERVICE}/target/*.jar", returnStdout: true).trim()
                         
@@ -244,8 +245,8 @@ pipeline {
             steps {
                 script {
                     STAGE_NAME = "Push to Docker Hub (5/6)"//"Deploy to Test (5/9)"
-                    
-                    SERVICES.each { SERVICE ->
+                    def servicesList = SERVICES.split(',')
+                    servicesList.each { SERVICE ->
                         echo "Pushing ${SERVICE} to Docker Hub..."
                         
                         docker.withRegistry('https://index.docker.io/v1/', 'keywi-docker') {
@@ -269,8 +270,8 @@ pipeline {
             steps {
                 script {
                     STAGE_NAME = "Deploy to Prod (6/6)"
-                    
-                    SERVICES.each { SERVICE ->
+                    def servicesList = SERVICES.split(',')
+                    servicesList.each { SERVICE ->
                         echo "Deploying ${SERVICE} to production server..."
                         def memoryl=""
                         if (SERVICE == 'search'){
@@ -353,7 +354,7 @@ pipeline {
                 
                 def message = "${env.JOB_NAME} - #${env.BUILD_NUMBER}\n" + "- 결과: " +
                               (cleanedMessage.toLowerCase().contains('[fe]') ? "STOP\n" : "${currentBuild.currentResult}\n") +
-                              "- 브랜치: ${BRANCH_NAME}\n- 서비스: ${SERVICES.join(', ')}\n- 커밋: " +
+                              "- 브랜치: ${BRANCH_NAME}\n- 서비스: ${SERVICES}\n- 커밋: " +
                               (issueKey ? "[${issueKey}] " : "") +
                               "[${cleanedMessage}](${GITLAB_BASE_URL}/-/commit/${COMMIT_HASH}) (${GIT_COMMIT_SHORT}) [${AUTHOR}]\n" +
                               "- 실행 시간: ${currentBuild.durationString}\n" +
