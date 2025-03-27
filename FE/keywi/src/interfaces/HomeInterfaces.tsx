@@ -105,3 +105,32 @@ export interface CommentInputProps {
   feedId: number
   onCommentSubmit: (content: string) => void
 }
+
+// 피드 작성 드래그 이미지 Props
+export interface DraggableImageItemProps {
+  image: string
+  index: number
+  moveImage: (dragIndex: number, hoverIndex: number) => void
+  removeImage: (index: number) => void
+}
+
+// 드래그 아이템
+export interface DragItem {
+  index: number
+  id: string
+  type: string
+}
+
+// 사진 추가
+export interface WriteSelectImageProps {
+  onImagesChange?: (images: string[]) => void
+}
+
+export interface ProductItem {
+  categoryId: number
+  categoryName: string
+  itemId: number
+  itemName: string
+  price: string
+  imageUrl: string
+}

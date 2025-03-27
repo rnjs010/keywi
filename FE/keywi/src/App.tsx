@@ -1,4 +1,3 @@
-import NavBar from './components/NavBar'
 import BoardDetailPage from './pages/board/BoardDetailPage'
 import BoardPage from './pages/board/BoardPage'
 import BoardWritePage from './pages/board/BoardWritePage'
@@ -9,34 +8,38 @@ import Fonts from './styles/fonts'
 import MainPage from './pages/login/MainPage'
 import HomePage from './pages/home/HomePage'
 import HomeCommentPage from './pages/home/HomeCommentPage'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import PayPage from './pages/pay/PayPage'
+import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
+import HomeTagPage from './pages/home/HomeTagPage'
+import HomeWritePage from './pages/home/HomeWritePage'
 
 function App() {
-  const location = useLocation() // 현재 경로 가져오기
-
   return (
     <>
       <Fonts />
+      {/* 로그인 저장용 provider - 백이랑 연동 후 삭제 예정 */}
       <LoginProvider>
         <Routes>
           {/* 처음 입장시 스플래시 화면 구성할 예정 */}
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/complete" element={<LoginCompletePage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
         </Routes>
       </LoginProvider>
+      <Routes>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
+        <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
+        <Route path="/home/tag" element={<HomeTagPage />} />
+        <Route path="/home/write" element={<HomeWritePage />} />
+      </Routes>
       <Routes>
         <Route path="/board" element={<BoardPage />} />
         <Route path="/board/:postId" element={<BoardDetailPage />} />
         <Route path="/board/write" element={<BoardWritePage />} />
         <Route path="/pay" element={<PayPage />} />
       </Routes>
-
-      {/* 현재 경로가 "/"일 때만 NavBar 표시 */}
-      {location.pathname === '/home' && <NavBar />}
     </>
   )
 }

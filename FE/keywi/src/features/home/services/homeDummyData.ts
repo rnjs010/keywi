@@ -1,4 +1,9 @@
-import { CommentData, FeedData, ProductTag } from '@/interfaces/HomeInterfaces'
+import {
+  CommentData,
+  FeedData,
+  ProductTag,
+  ProductItem,
+} from '@/interfaces/HomeInterfaces'
 
 // 홈 피드 리스트 용 더미 데이터
 export const dummyFeeds: FeedData[] = [
@@ -240,3 +245,39 @@ export const dummyComments: Record<number, CommentData[]> = {
     },
   ],
 }
+
+// 예시 상품 데이터
+export const dummyProducts: ProductItem[] = [
+  {
+    categoryId: 1,
+    categoryName: '키보드',
+    itemId: 1,
+    itemName: '하이무 바다소금축 공장윤활',
+    price: '130000',
+    imageUrl: 'https://picsum.photos/100?random=1',
+  },
+  {
+    categoryId: 2,
+    categoryName: '키캡',
+    itemId: 2,
+    itemName: '라이프팩 키캡',
+    price: '45000',
+    imageUrl: 'https://picsum.photos/100?random=2',
+  },
+  {
+    categoryId: 3,
+    categoryName: '케이스',
+    itemId: 3,
+    itemName: 'TX120 알루미늄 케이스',
+    price: '85000',
+    imageUrl: 'https://picsum.photos/100?random=3',
+  },
+  {
+    categoryId: 4,
+    categoryName: '스위치',
+    itemId: 4,
+    itemName: '홀리판다 저소음축',
+    price: '15000',
+    imageUrl: 'https://picsum.photos/100?random=4',
+  },
+]

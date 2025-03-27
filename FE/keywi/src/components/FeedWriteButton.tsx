@@ -1,8 +1,7 @@
-//SECTION - 피드 작성 버튼 : 클릭하면 바로 앨범 진입
+//SECTION - 피드 작성 버튼 : 피드 작성 페이지로 이동
 import { Plus } from 'iconoir-react'
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
-import MultiImagePicker from './MultiImagePicker'
 
 const Container = tw.div`
   fixed
@@ -24,27 +23,17 @@ const RoundBtn = tw.button`
 `
 
 export default function FeedWriteButton() {
-  const [showPicker, setShowPicker] = useState(false)
+  const navigate = useNavigate()
 
   const handleButtonClick = () => {
-    setShowPicker(true)
-  }
-
-  const handlePickerClose = () => {
-    setShowPicker(false)
+    navigate('/home/imgselect')
   }
 
   return (
-    <>
-      <Container>
-        <RoundBtn onClick={handleButtonClick}>
-          <Plus width={36} height={36} color="white" strokeWidth={2} />
-        </RoundBtn>
-      </Container>
-      <MultiImagePicker
-        visible={showPicker}
-        onPickerClose={handlePickerClose}
-      />
-    </>
+    <Container>
+      <RoundBtn onClick={handleButtonClick}>
+        <Plus width={36} height={36} color="white" strokeWidth={2} />
+      </RoundBtn>
+    </Container>
   )
 }

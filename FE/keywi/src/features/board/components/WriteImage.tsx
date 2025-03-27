@@ -8,7 +8,7 @@ const ImagesContainer = tw.div`
   flex flex-row items-center gap-2 pt-3
 `
 const ImageUploadBtn = tw.div`
-  flex items-center justify-center min-w-[5rem] min-h-[5rem] rounded-md border-dashed border-2 border-gray cursor-pointer
+  flex items-center justify-center min-w-[5rem] min-h-[5rem] rounded-md bg-pay cursor-pointer
 `
 
 const ImagePreviewWrapper = tw.div`
@@ -88,8 +88,8 @@ export default function WriteImage() {
           <Camera
             width={'2rem'}
             height={'2rem'}
-            strokeWidth={1}
-            color={colors.darkGray}
+            strokeWidth={1.5}
+            color={colors.kiwi}
           />
         </ImageUploadBtn>
 

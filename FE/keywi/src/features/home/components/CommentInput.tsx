@@ -1,19 +1,21 @@
 import tw from 'twin.macro'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CommentInputProps } from '@/interfaces/HomeInterfaces'
 import { Text } from '@/styles/typography'
 
 const Container = tw.div`
-  fixed
+  sticky
   bottom-0
   left-0
   right-0
   bg-white
   border-t
   border-gray
-  p-2
+  p-3
+  pb-4
   max-w-screen-sm
   mx-auto
+  z-10
 `
 
 const InputWrapper = tw.div`
@@ -44,6 +46,45 @@ const SendButton = tw.button`
 
 export default function CommentInput({ onCommentSubmit }: CommentInputProps) {
   const [comment, setComment] = useState('')
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
+
+  // 키보드 표시 여부 감지
+  useEffect(() => {
+    // iOS
+    const handleFocus = () => setIsKeyboardVisible(true)
+    const handleBlur = () => setIsKeyboardVisible(false)
+
+    // 가상 키보드 열림/닫힘 감지 (iOS)
+    window.addEventListener('focusin', handleFocus)
+    window.addEventListener('focusout', handleBlur)
+
+    // Android (resize 이벤트 사용)
+    const initialHeight = window.innerHeight
+    const handleResize = () => {
+      // 화면 높이가 줄어들면 키보드가 표시되었다고 판단
+      const isKeyboardOpen = window.innerHeight < initialHeight * 0.75
+      setIsKeyboardVisible(isKeyboardOpen)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('focusin', handleFocus)
+      window.removeEventListener('focusout', handleBlur)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // input 요소에 포커스가 갈 때 스크롤 조정
+  const handleFocus = () => {
+    // 짧은 시간 지연 후 스크롤 조정 (키보드가 완전히 올라온 후)
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      })
+    }, 300)
+  }
 
   const handleSubmit = () => {
     if (comment.trim()) {
@@ -66,13 +107,19 @@ export default function CommentInput({ onCommentSubmit }: CommentInputProps) {
   const hasContent = comment.trim().length > 0
 
   return (
-    <Container>
+    <Container
+      style={{
+        position: isKeyboardVisible ? 'relative' : 'sticky',
+        paddingBottom: isKeyboardVisible ? '0.75rem' : '1rem',
+      }}
+    >
       <InputWrapper>
         <Input
           placeholder="댓글을 입력해주세요"
           value={comment}
           onChange={handleChange}
           onKeyPress={handleKeyPress}
+          onFocus={handleFocus}
         />
         <SendButton onClick={handleSubmit} disabled={!comment.trim()}>
           <Text variant="body2" color={hasContent ? 'kiwi' : 'littleGray'}>
