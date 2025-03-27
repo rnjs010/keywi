@@ -8,7 +8,7 @@ const HeaderContainer = tw.div`
   z-10
   items-center
   relative
-  h-14
+  h-[3.5rem]
 `
 
 const BackButton = tw.button`
@@ -34,15 +34,17 @@ const NextButton = tw.button`
 `
 
 interface WriteHeaderProps {
-  title: string
+  startTitle: string
   isNextEnabled?: boolean
   onNextClick?: () => void
+  endTitle: string
 }
 
-export default function WriteHeader({
-  title,
+export default function NextHeader({
+  startTitle,
   isNextEnabled = false,
   onNextClick,
+  endTitle,
 }: WriteHeaderProps) {
   const navigate = useNavigate()
 
@@ -56,7 +58,7 @@ export default function WriteHeader({
       </BackButton>
       <TitleContainer>
         <Text variant="body2" weight="bold">
-          {title}
+          {startTitle}
         </Text>
       </TitleContainer>
       <NextButton
@@ -69,7 +71,7 @@ export default function WriteHeader({
           weight="bold"
           color={isNextEnabled ? 'kiwi' : 'gray'}
         >
-          다음
+          {endTitle}
         </Text>
       </NextButton>
     </HeaderContainer>

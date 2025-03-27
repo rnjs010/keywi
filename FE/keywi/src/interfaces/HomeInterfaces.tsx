@@ -125,3 +125,12 @@ export interface DragItem {
 export interface WriteSelectImageProps {
   onImagesChange?: (images: string[]) => void
 }
+
+export interface ProductItem {
+  categoryId: number
+  categoryName: string
+  itemId: number
+  itemName: string
+  price: string
+  imageUrl: string
+}

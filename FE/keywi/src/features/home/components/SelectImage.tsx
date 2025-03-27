@@ -1,3 +1,4 @@
+//TODO - 핸들러, 드래그 드롭 함수 분리 필요함..
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { Camera, XmarkCircleSolid } from 'iconoir-react'
@@ -7,37 +8,29 @@ import styled from '@emotion/styled'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TouchBackend } from 'react-dnd-touch-backend'
-import {
-  DraggableImageItemProps,
-  DragItem,
-  WriteSelectImageProps,
-} from '@/interfaces/HomeInterfaces'
+import { DraggableImageItemProps, DragItem } from '@/interfaces/HomeInterfaces'
 import type { Identifier } from 'dnd-core'
+import useImageStore from '@/stores/homeStore'
 
 const Container = tw.div`
   flex flex-col
 `
-
 const ContentContainer = tw.div`
   mt-1
   px-3
 `
-
 const MainImgContainer = tw.div`
   w-full
   relative 
-  rounded-md
   overflow-hidden
   mt-3
   aspect-square
 `
-
 const MainImg = tw.img`
   w-full
   h-full
   object-cover
 `
-
 const NoImgPlaceholder = tw.div`
   w-full
   flex
@@ -47,11 +40,10 @@ const NoImgPlaceholder = tw.div`
   bg-littleGray
   aspect-square
 `
-
 const ImageUploadBtn = tw.div`
   flex items-center justify-center min-w-[6rem] min-h-[6rem] rounded-md bg-pay cursor-pointer shrink-0
 `
-
+// 썸네일 이미지들 컨테이너
 const ThumbnailsContainer = styled.div`
   ${tw`
     flex 
@@ -94,16 +86,13 @@ const ThumbnailsContainer = styled.div`
   /* 모든 브라우저에서 스크롤바 동작 개선 */
   scroll-behavior: smooth;
 `
-
 const RemoveImageBtn = tw.div`
   absolute -top-2 -right-2 z-50 cursor-pointer bg-white rounded-full
 `
-
 // 파일 입력 필드 (숨김)
 const FileInput = tw.input`
   hidden
 `
-
 // 썸네일 이미지 컴포넌트
 const ImagePreviewContainer = styled.div<{ isDragging: boolean }>`
   ${tw`relative w-[6rem] h-[6rem] rounded-md object-cover shrink-0 cursor-move`}
@@ -239,10 +228,9 @@ const CustomDndProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default function WriteSelectImage({
-  onImagesChange,
-}: WriteSelectImageProps) {
-  const [images, setImages] = useState<string[]>([])
+export default function SelectImage() {
+  const { images, setImages } = useImageStore()
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showLimitText, setShowLimitText] = useState(false)
 
@@ -285,7 +273,9 @@ export default function WriteSelectImage({
 
           // 모든 이미지 로드 완료 시 상태 업데이트
           if (processedCount === filesToProcess) {
-            setImages((prev) => [...prev, ...newImages])
+            // Zustand 스토어 업데이트
+            const updatedImages = [...images, ...newImages]
+            setImages(updatedImages)
           }
         }
 
@@ -301,23 +291,23 @@ export default function WriteSelectImage({
 
   // 이미지 제거 핸들러
   const handleRemoveImage = (indexToRemove: number) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove))
+    const updatedImages = images.filter((_, index) => index !== indexToRemove)
+    setImages(updatedImages)
   }
 
   // 이미지 순서 변경 핸들러
   const moveImage = (dragIndex: number, hoverIndex: number) => {
-    setImages((prevImages) => {
-      const newImages = [...prevImages]
-      const draggedImage = newImages[dragIndex]
+    const newImages = [...images]
+    const draggedImage = newImages[dragIndex]
 
-      // 배열에서 드래그된 항목 제거
-      newImages.splice(dragIndex, 1)
+    // 배열에서 드래그된 항목 제거
+    newImages.splice(dragIndex, 1)
 
-      // 새 위치에 드래그된 항목 삽입
-      newImages.splice(hoverIndex, 0, draggedImage)
+    // 새 위치에 드래그된 항목 삽입
+    newImages.splice(hoverIndex, 0, draggedImage)
 
-      return newImages
-    })
+    // Zustand 스토어 업데이트
+    setImages(newImages)
   }
 
   // 브라우저에서 드래그 시 기본 동작 방지
@@ -332,13 +322,6 @@ export default function WriteSelectImage({
       document.removeEventListener('dragover', preventDefaultDragOver)
     }
   }, [])
-
-  // useEffect를 사용하여 images 상태가 변경될 때마다 상위 컴포넌트에 알림
-  useEffect(() => {
-    if (onImagesChange) {
-      onImagesChange(images)
-    }
-  }, [images, onImagesChange])
 
   return (
     <CustomDndProvider>
@@ -373,7 +356,6 @@ export default function WriteSelectImage({
                 color={colors.kiwi}
               />
             </ImageUploadBtn>
-
             {/* 이미지 썸네일 (드래그 가능) */}
             {images.map((image, index) => (
               <DraggableImageItem

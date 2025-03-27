@@ -1,5 +1,5 @@
 import DetailHeader from '@/components/DetailHeader'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
@@ -17,13 +17,25 @@ const Container = tw.div`
   mx-auto 
   flex 
   flex-col 
-  h-screen  
-  overflow-x-hidden
+  h-screen
+  pb-4
+`
+
+const HeaderWrapper = tw.div`
+  sticky
+  top-0
+  z-10
+  bg-white
+  w-full
 `
 
 const ContentArea = styled.div`
   ${tw`
-    flex-1 
+    flex
+    flex-col
+    flex-1
+    overflow-y-auto
+    pb-20
   `}
 
   /* 스크롤바 숨기기 */
@@ -37,8 +49,7 @@ export default function HomeCommentPage() {
   // feed 정보는 나중에 피드 내용 표시 등에 사용할 예정
   const [_feed, setFeed] = useState<FeedData | null>(null)
   const [comments, setComments] = useState<CommentData[]>([])
-  //NOTE - 추후 댓글창 로딩 필요시 활성화 할 예정
-  // const [isLoading, setIsLoading] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (feedId) {
@@ -52,6 +63,13 @@ export default function HomeCommentPage() {
       setComments(feedComments)
     }
   }, [feedId])
+
+  // 새 댓글이 추가되면 자동 스크롤
+  useEffect(() => {
+    if (contentRef.current && comments.length > 0) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight
+    }
+  }, [comments.length])
 
   const handleCommentSubmit = (content: string) => {
     if (!feedId) return
@@ -72,17 +90,19 @@ export default function HomeCommentPage() {
   }
 
   return (
-    <>
-      <DetailHeader title={`댓글 ${comments.length}`} />
-      <Container>
-        <ContentArea>
-          <CommentList comments={comments} />
-        </ContentArea>
-        <CommentInput
-          feedId={parseInt(feedId || '0')}
-          onCommentSubmit={handleCommentSubmit}
-        />
-      </Container>
-    </>
+    <Container>
+      <HeaderWrapper>
+        <DetailHeader title={`댓글 ${comments.length}`} />
+      </HeaderWrapper>
+
+      <ContentArea ref={contentRef}>
+        <CommentList comments={comments} />
+      </ContentArea>
+
+      <CommentInput
+        feedId={parseInt(feedId || '0')}
+        onCommentSubmit={handleCommentSubmit}
+      />
+    </Container>
   )
 }

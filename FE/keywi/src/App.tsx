@@ -11,6 +11,7 @@ import HomeCommentPage from './pages/home/HomeCommentPage'
 import { Route, Routes } from 'react-router-dom'
 import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
+import HomeWritePage from './pages/home/HomeWritePage'
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
       <LoginProvider>
         <Routes>
           {/* 처음 입장시 스플래시 화면 구성할 예정 */}
-          <Route path="/" element={<HomeImgSelectPage />} />
+          <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/complete" element={<LoginCompletePage />} />
         </Routes>
@@ -30,6 +31,7 @@ function App() {
         <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
         <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
         <Route path="/home/tag" element={<HomeTagPage />} />
+        <Route path="/home/write" element={<HomeWritePage />} />
       </Routes>
       <Routes>
         <Route path="/board" element={<BoardPage />} />
