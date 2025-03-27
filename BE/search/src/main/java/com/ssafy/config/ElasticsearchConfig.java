@@ -5,16 +5,23 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ElasticsearchConfig {
 
+    @Value("${spring.config.elastic.host}")
+    private String host;
+
+    @Value("${spring.config.elastic.port}")
+    private int port;
+
     @Bean
     public ElasticsearchClient elasticsearchClient() {
         RestClient restClient = RestClient.builder(
-                new HttpHost("localhost", 9200) // 너의 설정에 맞게 host 수정
+                new HttpHost(host, port, "http")
         ).build();
 
         RestClientTransport transport = new RestClientTransport(
