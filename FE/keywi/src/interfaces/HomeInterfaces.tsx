@@ -131,6 +131,16 @@ export interface ProductItem {
   categoryName: string
   itemId: number
   itemName: string
-  price: string
+  price: number
   imageUrl: string
+}
+
+// 태그 포인트 박스
+export interface TagPointAndInfoProps {
+  tag: ProductTag
+  isBeingDragged: boolean
+  tagX: number
+  tagY: number
+  onDragStart: (e: React.MouseEvent<HTMLDivElement>, tag: ProductTag) => void
+  onTouchStart: (e: React.TouchEvent<HTMLDivElement>, tag: ProductTag) => void
 }

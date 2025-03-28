@@ -253,7 +253,7 @@ export const dummyProducts: ProductItem[] = [
     categoryName: '키보드',
     itemId: 1,
     itemName: '하이무 바다소금축 공장윤활',
-    price: '130000',
+    price: 130000,
     imageUrl: 'https://picsum.photos/100?random=1',
   },
   {
@@ -261,7 +261,7 @@ export const dummyProducts: ProductItem[] = [
     categoryName: '키캡',
     itemId: 2,
     itemName: '라이프팩 키캡',
-    price: '45000',
+    price: 45000,
     imageUrl: 'https://picsum.photos/100?random=2',
   },
   {
@@ -269,7 +269,7 @@ export const dummyProducts: ProductItem[] = [
     categoryName: '케이스',
     itemId: 3,
     itemName: 'TX120 알루미늄 케이스',
-    price: '85000',
+    price: 85000,
     imageUrl: 'https://picsum.photos/100?random=3',
   },
   {
@@ -277,7 +277,7 @@ export const dummyProducts: ProductItem[] = [
     categoryName: '스위치',
     itemId: 4,
     itemName: '홀리판다 저소음축',
-    price: '15000',
+    price: 15000,
     imageUrl: 'https://picsum.photos/100?random=4',
   },
 ]
