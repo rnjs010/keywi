@@ -12,4 +12,10 @@ public interface SearchService {
      * @return 검색 결과 목록
      */
     List<SearchResponseDto> search(SearchRequestDto requestDto);
+
+    /**
+     * 검색어 저장 또는 카운트 증가
+     * @param keyword 검색 키워드
+     */
+    void saveOrIncrementKeyword(String keyword);
 }

@@ -25,7 +25,12 @@ public class SearchController {
     @GetMapping
     public ResponseEntity<List<SearchResponseDto>> search(
             @ModelAttribute @Valid SearchRequestDto requestDto) {
-        return ResponseEntity.ok(searchService.search(requestDto));
-    }
+        List<SearchResponseDto> results = searchService.search(requestDto);
 
+        if (results.isEmpty()) {
+            searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+        }
+
+        return ResponseEntity.ok(results);
+    }
 }

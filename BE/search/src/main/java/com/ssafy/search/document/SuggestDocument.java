@@ -1,4 +1,4 @@
-package com.ssafy.autocomplete.document;
+package com.ssafy.search.document;
 
 import lombok.Builder;
 import lombok.Getter;
