@@ -121,6 +121,66 @@ public class MemberService {
     }
 
     /**
+     * 카카오 ID로 회원 존재 여부 확인
+     *
+     * @param kakaoId 카카오 서비스의 고유 ID
+     * @return 회원이 존재하면 true, 아니면 false
+     */
+    @Transactional(readOnly = true)
+    public boolean isMemberExistsByKakaoId(Long kakaoId) {
+        return memberRepository.findByKakaoId(kakaoId).isPresent();
+    }
+
+    /**
+     * 카카오 로그인 정보와 닉네임, 프로필 이미지로 회원가입 진행
+     *
+     * @param email 사용자 이메일
+     * @param userName 사용자 이름 (카카오에서 받아온 이름)
+     * @param userNickname 사용자가 입력한 닉네임
+     * @param profileImage 프로필 이미지 파일
+     * @param kakaoId 카카오 서비스의 고유 ID
+     * @return 생성된 회원 ID
+     * @throws IllegalArgumentException 닉네임 중복 등의 검증 오류
+     * @throws InvalidFileException 파일 관련 검증 오류
+     */
+    @Transactional
+    public Long signUpWithKakao(String email, String userName, String userNickname, MultipartFile profileImage, Long kakaoId) {
+        // 닉네임 유효성 검사
+        if (userNickname == null || userNickname.trim().isEmpty()) {
+            throw new IllegalArgumentException("닉네임은 필수 입력 항목입니다.");
+        }
+
+        // 닉네임 중복 확인
+        if (!isNicknameAvailable(userNickname)) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        // 카카오 ID로 회원 중복 확인
+        if (isMemberExistsByKakaoId(kakaoId)) {
+            throw new IllegalArgumentException("이미 가입된 회원입니다.");
+        }
+
+        // 프로필 이미지 처리
+        String profileUrl = defaultProfileImageUrl; // 기본 이미지 URL로 초기화
+        if (profileImage != null && !profileImage.isEmpty()) {
+            validateFileSize(profileImage);
+            validateFileType(profileImage);
+            // S3에 이미지 업로드 후 URL 받아오기
+            profileUrl = s3Service.uploadFile(profileImage, "profiles");
+        }
+
+        // Member 엔티티 생성
+        Member member = Member.createMember(email, userName, userNickname, "KAKAO", kakaoId);
+        member.updateProfile(userNickname, profileUrl, ""); // 프로필 URL과 빈 상태 메시지 설정
+
+        // 회원 저장
+        Member savedMember = memberRepository.save(member);
+        log.info("카카오 회원가입 완료: {}, 닉네임: {}, 카카오ID: {}", savedMember.getId(), userNickname, kakaoId);
+
+        return savedMember.getId();
+    }
+
+    /**
      * 닉네임 중복 확인
      *
      * @param nickname 확인할 닉네임
@@ -134,6 +194,18 @@ public class MemberService {
         return !memberRepository.existsByUserNickname(nickname);
     }
 
+    /**
+     * 카카오 ID로 회원 정보 조회
+     *
+     * @param kakaoId 카카오 서비스의 고유 ID
+     * @return 회원 정보
+     * @throws IllegalArgumentException 회원 정보 없음
+     */
+    @Transactional(readOnly = true)
+    public Member findMemberByKakaoId(Long kakaoId) {
+        return memberRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+    }
 
     /**
      * 간소화된 회원 프로필 정보 수정

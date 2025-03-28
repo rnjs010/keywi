@@ -22,14 +22,17 @@ public class MemberController {
     private final MemberService memberService;
 
     /**
-     * 회원가입 처리 (간소화 버전)
-     * 닉네임과 프로필 이미지만 받아서 처리
-     * 소셜 로그인 정보는 인증 토큰에서 가져옴
+     * 회원가입 처리
+     * 닉네임과 프로필 이미지를 받아서 처리
+     * 카카오 로그인 정보는 인증 토큰에서 가져옴
      */
     @PostMapping(value = "/signup", consumes = {"multipart/form-data"})
     public ApiResponse<String> signUp(
             @AuthenticationPrincipal String memberId,  // 소셜 로그인 후 발급된 토큰으로부터 정보 가져옴
             @RequestPart(value = "userNickname") String userNickname,
+            @RequestPart(value = "email", required = false) String email,
+            @RequestPart(value = "userName", required = false) String userName,
+            @RequestPart(value = "kakaoId", required = false) String kakaoId,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
         try {
@@ -38,9 +41,24 @@ public class MemberController {
                 return ApiResponse.error("닉네임은 필수 입력 항목입니다.");
             }
 
-            // 간소화된 회원가입 처리
-            memberService.signUpSimplified(Long.parseLong(memberId), userNickname, profileImage);
-            return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
+            // 카카오 로그인으로 회원가입 진행
+            if (kakaoId != null && !kakaoId.trim().isEmpty()) {
+                // 카카오 ID로 회원 가입 진행
+                Long kakaoIdLong = Long.parseLong(kakaoId);
+
+                // 이미 가입된 회원인지 확인
+                if (memberService.isMemberExistsByKakaoId(kakaoIdLong)) {
+                    return ApiResponse.error("이미 가입된 회원입니다.");
+                }
+
+                // 회원가입 처리
+                memberService.signUpWithKakao(email, userName, userNickname, profileImage, kakaoIdLong);
+                return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
+            } else {
+                // 기존 간소화된 회원가입 처리 (토큰에서 ID 추출)
+                memberService.signUpSimplified(Long.parseLong(memberId), userNickname, profileImage);
+                return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
+            }
         } catch (IllegalArgumentException e) {
             // 중복 닉네임 등의 검증 오류
             log.error("회원가입 실패 (검증 오류): {}", e.getMessage());

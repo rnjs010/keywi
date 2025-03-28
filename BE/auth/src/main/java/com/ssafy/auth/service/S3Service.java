@@ -1,7 +1,6 @@
 package com.ssafy.auth.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssafy.auth.exception.FileDeleteException;
@@ -44,9 +43,9 @@ public class S3Service {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
 
+            // ACL 설정 제거하여 S3 버킷 정책에 의존
             amazonS3.putObject(
                     new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
             );
 
             return amazonS3.getUrl(bucket, fileName).toString();
@@ -72,15 +71,15 @@ public class S3Service {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
 
+            // ACL 설정 제거하여 S3 버킷 정책에 의존
             amazonS3.putObject(
                     new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
             );
 
             return amazonS3.getUrl(bucket, fileName).toString();
         } catch (IOException e) {
             log.error("파일 업로드 중 오류가 발생했습니다: {}", e.getMessage());
-            throw new FileUploadException("파일 업로드 중 오류가 발생했습니다.");
+            throw new FileUploadException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
