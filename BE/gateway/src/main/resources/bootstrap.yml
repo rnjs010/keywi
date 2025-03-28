@@ -4,7 +4,7 @@ spring:
 
   # Config Server 설정
   config:
-    import: configserver:http://localhost:8888
+    import: configserver:https://j12e202.p.ssafy.io/config
 
   # Spring Cloud Bus 설정
   cloud:
@@ -18,7 +18,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh,gateway,env
+        include: health,info,refresh,gateway
   endpoint:
     health:
       show-details: always
