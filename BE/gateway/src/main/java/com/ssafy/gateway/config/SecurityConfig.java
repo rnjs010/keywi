@@ -14,7 +14,7 @@ import org.springframework.web.server.WebFilter;
 import java.util.Arrays;
 
 @Configuration
-// WebFlux 보안 활성화
+@EnableWebFluxSecurity  // WebFlux 보안 활성화
 public class SecurityConfig {
 
     @Bean
@@ -56,12 +56,14 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "http://localhost:8080",
-                "http://i12e205.p.ssafy.io"
+                "http://i12e205.p.ssafy.io",
+                "https://j12e202.p.ssafy.io"  // 카카오 콜백 URL 도메인 추가
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // 프리플라이트 요청 캐싱 시간 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
