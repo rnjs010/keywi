@@ -1,4 +1,4 @@
-![시작사진](https://github.com/user-attachments/assets/601bb0bf-e5ff-489a-85ea-c027c8561c26)
+![시작사진](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/427367306-601bb0bf-e5ff-489a-85ea-c027c8561c26.png)
 <br />
 
 ## 📌 목차
@@ -9,7 +9,7 @@
 4. [시연 영상](#-시연-영상)
 5. [주요 기술](#-주요-기술)
 6. [기술 스택](#-기술-)
-7. [기술 아키텍처](#-기술-아키텍처처)
+7. [기술 아키텍처](#-기술-아키텍처)
 8. [프로젝트 구조](#-프로젝트-구조)
 9. [산출물](#-산출물)
    <br />
@@ -40,7 +40,7 @@
 키보드 커뮤니티에서 정보를 얻고 자신의 작품을 자랑하고 싶은 분<br />
 안전하고 신뢰할 수 있는 거래로 키보드를 구매하고 싶은 분<br />
 
-**🥝 로캣냥만의 특별한 기능**<br />
+**🥝 키위만의 특별한 기능**<br />
 최근 검색어 기반 맞춤 추천 검색 (피드, 사용자, 상품 통합 검색)<br />
 전문가와 실시간 채팅으로 진행되는 1:1 맞춤 견적 서비스<br />
 안전한 거래를 보장하는 에스크로 결제 시스템<br />
@@ -56,11 +56,11 @@
 
 <table style="text-align: center;" width="100%">
   <tr>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/ca19764f-8292-4a8d-ab05-17e9d653f288" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/88D65731-09D7-4950-A1A8-3FB20363A192-43052-00001CFE9E7EA0C9.png" width="150" height="150"/></th>
     <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/76820bca-f807-4af5-bf93-09c9335fcbee" width="150" height="150"/></th>
     <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/4b2e42fb-1005-4453-a418-02ae430bcd93" width="150" height="150"/></th>
     <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/f3be0d04-1132-46c5-affb-929d97fb0b58" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/78f4a4c4-2d6d-4ed5-ae9d-5c487372d770" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/C1DFE235-A57E-467C-A243-013363DDFBCC-43052-00001CFE3E2204E4.png" width="150" height="150"/></th>
     <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/4ac5efaf-080e-4b20-8796-13416f9e6cd5" width="150" height="150"/></th>
   </tr>
   <tr>
@@ -272,12 +272,12 @@
 
 ## 🔧 기술 스택
 
-![기술스택1](https://github.com/user-attachments/assets/db16407b-9394-4278-9ee6-4a6ab34ead8a)
-![기술스택2](https://github.com/user-attachments/assets/eaa6537c-8020-4a60-9b12-b43cbffc9930)
+![기술스택1](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D1.png)
+![기술스택2](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D2.png)
 
 ## 🗺️ 기술 아키텍처
 
-![아키텍처](https://github.com/user-attachments/assets/7dca9068-0601-48bd-8767-845d12c847ec)
+![아키텍처](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(5)+(1).png)
 
 ## 📂 프로젝트 구조 (추후 작성)
 
@@ -298,50 +298,50 @@
 <details>
   <summary><strong>기능 명세서</strong></summary>
   <h3>🔹 소셜 로그인</h3>
-  <img src="https://github.com/user-attachments/assets/c3cc78dd-6065-4dc2-939c-8d7a99025f90" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(3).png" alt="기능명세서">
   <h3>🔹 견적 게시판</h3>
-  <img src="https://github.com/user-attachments/assets/3c6b7e45-fb06-433c-a96d-0bcdd908a9d7" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%AC%EC%A0%81+(2).png" alt="기능명세서">
   <h3>🔹 채팅</h3>
-  <img src="https://github.com/user-attachments/assets/1b2b5b5a-246b-488f-a002-b6a1237a0a30" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85+(1).png" alt="기능명세서">
   <h3>🔹 키위페이</h3>
-  <img src="https://github.com/user-attachments/assets/e058358c-42e6-4ca4-8727-3b76629290e9" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%8E%98%EC%9D%B4.png" alt="기능명세서">
   <h3>🔹 마이페이지</h3>
-  <img src="https://github.com/user-attachments/assets/c9c785c4-1ef0-49d9-9c44-6446f2ff73f8" alt="기능명세서">
-  <img src="https://github.com/user-attachments/assets/7ecde092-2509-4aea-bf1d-ad9fe8195f2a" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80.png" alt="기능명세서">
+  <img scr="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%95%8C%EB%A6%BC.png" alt="기능명세서">
   <h3>🔹 SNS 피드</h3>
-  <img src="https://github.com/user-attachments/assets/f9b7905e-2f4e-4a9b-b29f-40311422c5f4" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%94%BC%EB%93%9C.png" alt="기능명세서">
   <h3>🔹 검색</h3>
-  <img src="https://github.com/user-attachments/assets/d05b766c-99dc-4697-8715-9eb715b84395" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%80%EC%83%89.png" alt="기능명세서">
   <h3>🔹 상품 게시판</h3>
-  <img src="https://github.com/user-attachments/assets/be1f32f8-323a-4e76-8211-8df116a637c7" alt="기능명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%83%81%ED%92%88.png" alt="기능명세서">
 </details>
 
 <details>
   <summary><strong>erd</strong></summary>
-  <img src="https://github.com/user-attachments/assets/850d9f41-d1b4-4de8-a930-101879e4dca5" alt="erd">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/KeyWi_ERD+(2).png" alt="erd">
 </details>
 
 <details>
   <summary><strong>피그마</strong></summary>
-  <img src="https://github.com/user-attachments/assets/72146db3-f25e-47cc-b745-72acaf044701" alt="피그마">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%94%BC%EA%B7%B8%EB%A7%88.png" alt="피그마">
 </details>
 
 <details>
   <summary><strong>api 명세서</strong></summary>
   <h3>🔹 소셜 로그인</h3>
-  <img src="https://github.com/user-attachments/assets/c09969d5-4def-4459-8b32-a3420470806e" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(2).png" alt="api명세서">
   <h3>🔹 견적 게시판</h3>
-  <img src="https://github.com/user-attachments/assets/e6169d85-2b09-4f7f-ab36-ef6c5e59c586" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%AC%EC%A0%81.png" alt="api명세서">
   <h3>🔹 채팅</h3>
-  <img src="https://github.com/user-attachments/assets/e0d686e3-5669-4a6b-b073-f2dcf35ff42c" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85+(2).png" alt="api명세서">
   <h3>🔹 키위페이</h3>
-  <img src="https://github.com/user-attachments/assets/5683763c-4f6e-4f02-9ec9-e61dae204b33" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%82%A4%EC%9C%84%ED%8E%98%EC%9D%B4.png" alt="api명세서">
   <h3>🔹 마이페이지</h3>
-  <img src="https://github.com/user-attachments/assets/56cedbe4-bb19-4b6d-921c-9d5e423b9de1" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80+(2).png" alt="api명세서">
   <h3>🔹 SNS 피드</h3>
-  <img src="https://github.com/user-attachments/assets/1bc3f40e-5588-49c8-89be-718fd4e71e9c" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(6).png" alt="api명세서">
   <h3>🔹 검색</h3>
-  <img src="https://github.com/user-attachments/assets/71795e14-456c-42dc-bb09-d0b8c34c46f5" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%80%EC%83%89+(2).png" alt="api명세서">
   <h3>🔹 상품 게시판</h3>
-  <img src="https://github.com/user-attachments/assets/a87f5d4f-bfbf-41c6-9e1a-4532f937a538" alt="api명세서">
+  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%83%81%ED%92%88%EA%B2%8C%EC%8B%9C%ED%8C%90.png" alt="api명세서">
 </details>
