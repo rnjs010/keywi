@@ -1,9 +1,6 @@
 package com.ssafy.autocomplete.document;
 
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,35 +24,24 @@ public class SuggestDocument {
     @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String name;
 
-    // 해당 키워드에 대한 추가 설명 (선택 사항)
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
-    private String content;
-
-    // 분류 정보 (ex. 게시글, 상품, 카테고리 등)
-    @Field(type = FieldType.Keyword)
-    private String category;
-
-    // 생성 일시
-    @Field(type = FieldType.Date)
-    private LocalDateTime createdAt;
-
-    // 검색된 횟수 (인기 자동완성 정렬용)
+    // 검색된 횟수
     @Field(type = FieldType.Integer)
     private int searchCount;
 
-    // 검색어 relevance 점수 (선택적으로 사용 가능)
+    // 광고여부
+    @Field(type = FieldType.Boolean)
+    private boolean isAd;
+
+    // 광고 등급 (노출순위 판단)
     @Field(type = FieldType.Float)
-    private float score;
+    private float adScore;
 
     @Builder
-    public SuggestDocument(String id, String name, String content, String category,
-                          LocalDateTime createdAt, int searchCount, float score) {
+    public SuggestDocument(String id, String name, int searchCount, boolean isAd, float adScore) {
         this.id = id;
         this.name = name;
-        this.content = content;
-        this.category = category;
-        this.createdAt = createdAt;
         this.searchCount = searchCount;
-        this.score = score;
+        this.isAd = isAd;
+        this.adScore = adScore;
     }
 }

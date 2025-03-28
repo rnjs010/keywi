@@ -4,8 +4,6 @@ import com.ssafy.autocomplete.service.AutocompleteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +18,7 @@ public class AutocompleteController {
     private final AutocompleteService autocompleteService;
 
     /**
-     * 자동완성 제안 APIW
+     * 자동완성 제안 API
      * @param query 사용자 입력 쿼리
      * @return 자동완성 제안 목록
      */
@@ -29,10 +27,4 @@ public class AutocompleteController {
         return ResponseEntity.ok(autocompleteService.suggest(query));
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Void> saveKeyword(@RequestBody Map<String, String> body) {
-        String keyword = body.get("keyword");
-        autocompleteService.saveOrIncrementKeyword(keyword);
-        return ResponseEntity.ok().build();
-    }
 }

@@ -10,9 +10,4 @@ public interface AutocompleteService {
      */
     List<String> suggest(String query);
 
-    /**
-     * 검색어 저장 또는 카운트 증가
-     * @param keyword 검색 키워드
-     */
-    void saveOrIncrementKeyword(String keyword);
 }
