@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/estimate-boards/**").permitAll()
                         .pathMatchers("/actuator/health").permitAll()
+                        .pathMatchers("/actuator/refresh").permitAll()
+                        .pathMatchers("/actuator/env").permitAll()
                         .anyExchange().authenticated()
                 )
                 .build();
@@ -53,23 +55,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 허용할 출처 명시적으로 추가 (카카오 도메인 포함)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
+                "http://localhost:5173",
                 "http://localhost:8080",
-                "http://i12e205.p.ssafy.io",
-                "https://j12e202.p.ssafy.io",
-                "https://kauth.kakao.com"  // 카카오 인증 도메인 추가
+                "http://j12e202.p.ssafy.io",
+                "https://j12e202.p.ssafy.io"
         ));
-
-        // 또는 패턴을 사용하여 모든 출처 허용 (allowCredentials와 함께 사용 가능)
-        // configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
