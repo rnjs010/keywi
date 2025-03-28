@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: feed-service
+  # Config Server ??
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    bus:
+      enabled: true
+      refresh:
+        enabled: true
+
+# Actuator ????? ??
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
