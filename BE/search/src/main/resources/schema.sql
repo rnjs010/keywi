@@ -70,16 +70,14 @@ create table board_images (
                               foreign key (board_id) references board (board_id)
 );
 
-create table board_products (
-                                board_post_id       int     not null    auto_increment ,
-                                board_id            int     not null ,
-                                product_id          int     not null ,
-                                category_id         int     not null ,
-                                created_at          datetime default current_timestamp ,
-                                primary key (board_post_id) ,
-                                foreign key (board_id) references board(board_id) ,
-                                foreign key (product_id) references products(product_id) ,
-                                foreign key (category_id) references products(category_id)
+CREATE TABLE board_products (
+                                board_id     INT NOT NULL,
+                                product_id   INT NOT NULL,
+                                category_id  INT NOT NULL,
+                                created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                PRIMARY KEY (board_id, product_id),
+                                FOREIGN KEY (board_id) REFERENCES board(board_id),
+                                FOREIGN KEY (product_id) REFERENCES products(product_id),
 );
 
 create table wishes (
@@ -91,6 +89,4 @@ create table wishes (
                         primary key (wish_id) ,
                         foreign key (user_id) references users(user_id) ,
                         foreign key (product_id) references products(product_id),
-                        foreign key (category_id) references products(category_id)
-
 )
