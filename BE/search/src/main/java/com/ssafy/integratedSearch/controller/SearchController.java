@@ -1,8 +1,13 @@
-package com.ssafy.search.controller;
+package com.ssafy.integratedSearch.controller;
 
-import com.ssafy.search.dto.SearchRequestDto;
-import com.ssafy.search.dto.SearchResponseDto;
-import com.ssafy.search.service.SearchService;
+import com.ssafy.integratedSearch.dto.FeedSearchResultDto;
+import com.ssafy.integratedSearch.dto.ProductSearchResultDto;
+import com.ssafy.integratedSearch.dto.SearchRequestDto;
+import com.ssafy.integratedSearch.dto.UserSearchResultDto;
+import com.ssafy.integratedSearch.service.FeedSearchService;
+import com.ssafy.integratedSearch.service.ProductSearchService;
+import com.ssafy.integratedSearch.service.SearchService;
+import com.ssafy.integratedSearch.service.UserSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +21,39 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
+    private final FeedSearchService feedSearchService;
+    private final UserSearchService userSearchService;
+    private final ProductSearchService productSearchService;
+
 
     /**
-     * 키워드 기반 검색 API
+     * 통합 검색 API
      * @param requestDto 검색 요청 정보
      * @return 검색 결과 목록
      */
     @GetMapping
-    public ResponseEntity<List<SearchResponseDto>> search(
+    public ResponseEntity<?> search(
+            @RequestParam(defaultValue = "feeds") String tab,
             @ModelAttribute @Valid SearchRequestDto requestDto) {
-        List<SearchResponseDto> results = searchService.search(requestDto);
 
-        if (results.isEmpty()) {
-            searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+        switch (tab.toLowerCase()) {
+            case "feeds":
+                List<FeedSearchResultDto> feeds = feedSearchService.search(requestDto);
+                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                return ResponseEntity.ok(feeds);
+
+            case "users":
+                List<UserSearchResultDto> users = userSearchService.search(requestDto);
+                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                return ResponseEntity.ok(users);
+
+            case "products":
+                List<ProductSearchResultDto> products = productSearchService.search(requestDto);
+                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                return ResponseEntity.ok(products);
+
+            default:
+                return ResponseEntity.badRequest().body("지원하지 않는 tab: " + tab);
         }
-
-        return ResponseEntity.ok(results);
     }
 }

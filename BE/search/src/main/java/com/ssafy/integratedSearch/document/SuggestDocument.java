@@ -1,4 +1,4 @@
-package com.ssafy.search.document;
+package com.ssafy.integratedSearch.document;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -20,19 +20,15 @@ public class SuggestDocument {
     @Id
     private String id;
 
-    // 자동완성에 사용될 텍스트
     @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String name;
 
-    // 검색된 횟수
     @Field(type = FieldType.Integer)
     private int searchCount;
 
-    // 광고여부
     @Field(type = FieldType.Boolean)
     private boolean isAd;
 
-    // 광고 등급 (노출순위 판단)
     @Field(type = FieldType.Float)
     private float adScore;
 

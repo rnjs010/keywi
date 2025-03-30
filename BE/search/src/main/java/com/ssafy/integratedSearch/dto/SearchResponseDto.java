@@ -1,10 +1,9 @@
-package com.ssafy.search.dto;
+package com.ssafy.integratedSearch.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data

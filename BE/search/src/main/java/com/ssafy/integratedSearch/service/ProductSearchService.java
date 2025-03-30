@@ -1,2 +1,9 @@
-package com.ssafy.IntegratedSearch.service;public interface ProductSearchService {
+package com.ssafy.integratedSearch.service;
+
+import com.ssafy.integratedSearch.dto.ProductSearchResultDto;
+import com.ssafy.integratedSearch.dto.SearchRequestDto;
+import java.util.List;
+
+public interface ProductSearchService {
+    List<ProductSearchResultDto> search(SearchRequestDto requestDto);
 }

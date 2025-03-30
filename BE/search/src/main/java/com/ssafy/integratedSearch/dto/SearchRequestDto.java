@@ -1,22 +1,17 @@
-package com.ssafy.search.dto;
+package com.ssafy.integratedSearch.dto;
 
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class SearchRequestDto {
+    @NotBlank
     private String keyword;
-    
+
     @Min(0)
-    private Integer page = 0;
-    
+    private int page = 0;
+
     @Min(1)
-    private Integer size = 20;
-    
-    private String category;
-    private boolean hasProducts;
-    private String sortBy; // relevance, newest, oldest
-    private String timeRange; // day, week, month, year
+    private int size = 10;
 }

@@ -1,7 +1,6 @@
-package com.ssafy.IntegratedSearch.document;
+package com.ssafy.integratedSearch.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,59 +14,55 @@ import java.util.*;
 import java.time.Instant;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+@Document(indexName = "feeds")
+@Setting(settingPath = "elasticsearch-settings.json")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "posts")
-@Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedDocument {
 
     @Id
     @Field(type = FieldType.Keyword)
-    private String postId;
+    private String feedId;
 
     @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String content;
 
-    @Field(type = FieldType.Keyword)
-    private List<String> hashtags;
+    @Field(type = FieldType.Nested)
+    private List<Hashtag> hashtags;
+
+    @Field(type = FieldType.Nested)
+    private List<TaggedProduct> taggedProducts;
 
     @Field(type = FieldType.Date)
     private Instant createdAt;
 
     @Field(type = FieldType.Keyword)
-    private String userId;
+    private String thumbnailUrl;
 
-    @Field(type = FieldType.Nested)
-    private List<TaggedProduct> taggedProducts;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Hashtag {
+        @Field(type = FieldType.Text)
+        private String name;
+
+        @Field(type = FieldType.Keyword)
+        private String category;
+    }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class TaggedProduct {
-
         @Field(type = FieldType.Keyword)
         private String productId;
 
-        @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
-        private String name;
-
-        @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
-        private String description;
-
-        @Field(type = FieldType.Integer)
-        private int price;
-
-        @Field(type = FieldType.Keyword)
-        private String categoryId;
-
-        @Field(type = FieldType.Keyword)
-        private String categoryName;
-
-        @Field(type = FieldType.Keyword)
-        private String parentCategoryId;
+        @Field(type = FieldType.Text)
+        private String productName;
     }
 }
