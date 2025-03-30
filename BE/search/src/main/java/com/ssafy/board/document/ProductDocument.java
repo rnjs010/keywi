@@ -1,6 +1,7 @@
 package com.ssafy.board.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.Instant;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -16,13 +17,13 @@ import org.springframework.data.elasticsearch.annotations.*;
 public class ProductDocument {
 
     @Id
-    private String productId;
+    private int productId;
 
     @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
     private String productName;
 
     @Field(type = FieldType.Keyword)
-    private String categoryId;
+    private int categoryId;
 
     @Field(type = FieldType.Keyword)
     private String categoryName;
@@ -30,6 +31,9 @@ public class ProductDocument {
     @Field(type = FieldType.Integer)
     private Integer price;
 
+    @Field(type = FieldType.Keyword)
+    private String thumbnailUrl;
+
     @Field(type = FieldType.Date)
-    private String createdAt;
+    private Instant createdAt;
 }
