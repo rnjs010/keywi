@@ -13,7 +13,8 @@ import PayPage from './pages/pay/PayPage'
 import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
 import HomeWritePage from './pages/home/HomeWritePage'
-import ChatPage from './pages/chat/ChatPage'
+import ChatListPage from './pages/chat/ChatListPage'
+import ChatRoomPage from './pages/chat/ChatRoomPage'
 
 function App() {
   return (
@@ -40,7 +41,8 @@ function App() {
         <Route path="/board/:postId" element={<BoardDetailPage />} />
         <Route path="/board/write" element={<BoardWritePage />} />
         <Route path="/pay" element={<PayPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat" element={<ChatListPage />} />
+        <Route path="/chat/:roomId" element={<ChatRoomPage />} />
       </Routes>
     </>
   )
