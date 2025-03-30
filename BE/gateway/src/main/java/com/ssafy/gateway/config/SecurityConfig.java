@@ -40,12 +40,21 @@ public class SecurityConfig {
 
                 // 경로별 권한 설정
                 .authorizeExchange(authorize -> authorize
-                        // Auth 서비스 경로 허용
+                        // 임시로 모든 서비스 경로 허용. 이후 인증된 사용자만 가능하도록 변경해야함.
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/estimate-boards/**").permitAll()
+                        .pathMatchers("/api/chat/**").permitAll()
+                        .pathMatchers("/api/transactions/**").permitAll()
+                        .pathMatchers("/api/search/**").permitAll()
+                        .pathMatchers("/api/feeds/**").permitAll()
+                        .pathMatchers("/api/users/**").permitAll()
+                        .pathMatchers("/api/products/**").permitAll()
+                        .pathMatchers("/api/notification/**").permitAll()
+                        // 액츄에이터는 전체 허용
                         .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/actuator/refresh").permitAll()
-                        .pathMatchers("/actuator/env").permitAll()
+                        .pathMatchers("/actuator/gateway").permitAll()
+                        .pathMatchers("/actuator/bus-refresh").permitAll()
                         .anyExchange().authenticated()
                 )
                 .build();

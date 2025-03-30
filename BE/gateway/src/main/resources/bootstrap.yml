@@ -18,9 +18,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh,gateway
+        include: health,info,refresh,busrefresh,gateway
   endpoint:
     health:
-      show-details: always
+      show-details: never
     gateway:
       enabled: true
