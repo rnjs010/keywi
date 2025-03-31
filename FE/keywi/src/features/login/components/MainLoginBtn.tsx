@@ -2,7 +2,7 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import kakaoLogo from '@/assets/logo_kakao.svg'
-import { useKakaoLogin } from '../hooks/useKakaoLogin'
+import { KAKAO_AUTH_URL } from '@/config'
 // import { useNavigate } from 'react-router-dom'
 
 const Button = styled.button`
@@ -27,12 +27,12 @@ const Img = tw.img`
   `
 
 export default function MainLoginBtn() {
-  const { handleKakaoLogin } = useKakaoLogin()
-  // const navigate = useNavigate()
+  const handleKakaoLogin = () => {
+    window.location.href = KAKAO_AUTH_URL
+  }
 
   return (
     <Button onClick={handleKakaoLogin}>
-      {/* <Button onClick={() => navigate('/login')}> */}
       <Img src={kakaoLogo} alt="kakao-logo" />
       <Text variant="body1" weight="bold" color="black">
         카카오로 시작하기

@@ -12,7 +12,7 @@ import PayPage from './pages/pay/PayPage'
 import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
 import HomeWritePage from './pages/home/HomeWritePage'
-import { ProtectedRoute } from './components/ProtectedRoute'
+import KakaoHandler from './features/login/hooks/KakaoHandler'
 
 function App() {
   return (
@@ -23,15 +23,14 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/complete" element={<LoginCompletePage />} />
-      </Routes>
-      <Routes>
+        <Route path="/callback/kakao" element={<KakaoHandler />} />
+        {/* 홈 */}
         <Route path="/home" element={<HomePage />} />
         <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
         <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
         <Route path="/home/tag" element={<HomeTagPage />} />
         <Route path="/home/write" element={<HomeWritePage />} />
-      </Routes>
-      <Routes>
+        {/* 게시판 */}
         <Route path="/board" element={<BoardPage />} />
         <Route path="/board/:postId" element={<BoardDetailPage />} />
         <Route path="/board/write" element={<BoardWritePage />} />
