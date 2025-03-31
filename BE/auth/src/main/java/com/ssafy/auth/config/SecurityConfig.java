@@ -94,7 +94,8 @@ public class SecurityConfig {
                 "http://localhost:8081",
                 "https://localhost:8081",
                 "http://localhost:5173", // 프론트엔드 개발 서버
-                "https://keywi.poloceleste.site" // 프론트엔드 배포 URL
+                "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
+                "https://key-wi.netlify.app"
         };
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
 
