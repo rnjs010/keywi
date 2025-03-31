@@ -8,6 +8,10 @@ pipeline {
         jdk 'Zulu17'
         git 'Default Git'
     }
+    parameters {
+        string(name: 'GIT_COMMIT', defaultValue: '')
+        string(name: 'GIT_BRANCH', defaultValue: '')
+    }
     environment {
         STAGE_NAME = ''
         
@@ -50,7 +54,8 @@ pipeline {
                                 ]],
                                 extensions: [
                                     [$class: 'CleanBeforeCheckout'],
-                                    [$class: 'PruneStaleBranch']
+                                    [$class: 'PruneStaleBranch'],
+                                    [$class: 'CloneOption', depth: 0, shallow: false]
                                 ]
                             ])
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
@@ -58,12 +63,11 @@ pipeline {
                                     git fetch --all --prune
                                 """
                                 
-                                BRANCH_NAME = sh(script: """
-                                    git ls-remote --sort=-committerdate origin 'refs/heads/*' |
-                                    awk -F'/' '{print substr(\$0, index(\$0,\$3))}' |
-                                    head -n 1
+                                BRANCH_NAME = params.GIT_BRANCH ?: sh(script: """
+                                    git name-rev --name-only ${params.GIT_COMMIT} |
+                                    sed 's/^origin\\///;s/\\^0$//'
                                 """, returnStdout: true).trim()
-                                echo "Latest branch: ${BRANCH_NAME}"
+                                echo "Target branch: ${BRANCH_NAME}"
                                 sh "git checkout ${BRANCH_NAME}"
                                 
                                 GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
@@ -97,10 +101,9 @@ pipeline {
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
                                 sh "git clone ${GITLAB_BASE_URL}.git ."
                                 
-                                BRANCH_NAME = sh(script: """
-                                    git ls-remote --sort=-committerdate origin 'refs/heads/*' |
-                                    awk -F'/' '{print substr(\$0, index(\$0,\$3))}' |
-                                    head -n 1
+                                BRANCH_NAME = params.GIT_BRANCH ?: sh(script: """
+                                    git name-rev --name-only ${params.GIT_COMMIT} |
+                                    sed 's/^origin\\///;s/\\^0$//'
                                 """, returnStdout: true).trim()
                                 echo "Latest branch: ${BRANCH_NAME}"
 
@@ -278,8 +281,10 @@ pipeline {
                             memoryl = " --memory=4g --memory-swap=4g"
                         } else if (SERVICE == 'config'){
                             memoryl = " --memory=512m --memory-swap=512m"
-                        } else {
-                            memoryl = " --memory=512m --memory-swap=1g"
+                        } else if (SERVICE == 'auth'){
+                            memoryl = " --memory=1g --memory-swap=1.5g"
+                        }else {
+                            memoryl = " --memory=768m --memory-swap=1g"
                         }
                         sshagent(['ec2-ssafy']) {
                             sh """
@@ -287,7 +292,7 @@ pipeline {
                                     docker pull ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
                                     docker stop ${SERVICE} || true
                                     docker rm ${SERVICE} || true
-                                    docker run${memoryl} -d --network host --name ${SERVICE} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
+                                    docker run${memoryl} --restart=unless-stopped -d --network host --name ${SERVICE} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
                                 "
                             """
                         }
