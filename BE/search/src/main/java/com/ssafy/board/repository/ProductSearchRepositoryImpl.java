@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RequiredArgsConstructor
 public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCustom {
 
     private final ElasticsearchClient esClient;
-    private final String INDEX = "products_board";
+    private final String INDEX = "products";
 
     @Override
     public List<ProductDocument> searchByCategoryAndQuery(String categoryId, String query, int page, int size) {
@@ -29,9 +31,8 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
 
             if (query != null && !query.isBlank()) {
                 keywordQuery = MultiMatchQuery.of(m -> m
-                        .fields("productName")
+                        .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5")
                         .query(query)
-                        .analyzer("suggest_search_analyzer")
                         .fuzziness("AUTO")
                         .minimumShouldMatch("80%")
                         .operator(Operator.And)
@@ -44,7 +45,7 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
             if (categoryId != null && !categoryId.isBlank()) {
                 boolQuery.filter(f -> f.term(t -> t
                         .field("categoryId")
-                        .value(categoryId)));
+                        .value(Integer.parseInt(categoryId))));
             }
 
             SearchRequest request = new SearchRequest.Builder()
@@ -63,6 +64,43 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
 
         } catch (IOException e) {
             throw new RuntimeException("상품 검색 실패: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<ProductDocument> searchByProductName(String keyword, String categoryId, int size) {
+        try {
+            // 키워드 쿼리
+            Query keywordQuery = MultiMatchQuery.of(m -> m
+                    .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5")
+                    .query(keyword)
+                    .operator(Operator.And)
+            )._toQuery();
+
+            // bool 쿼리로 category 필터 추가
+            BoolQuery.Builder boolQuery = new BoolQuery.Builder();
+            boolQuery.must(keywordQuery);
+
+            if (categoryId != null && !categoryId.isBlank()) {
+                boolQuery.filter(f -> f.term(t -> t
+                        .field("categoryId")
+                        .value(Integer.parseInt(categoryId)))); // ✅ 숫자 필터로 일치
+            }
+
+            SearchRequest request = new SearchRequest.Builder()
+                    .index(INDEX)
+                    .query(boolQuery.build()._toQuery())
+                    .size(size)
+                    .build();
+
+            SearchResponse<ProductDocument> response = esClient.search(request, ProductDocument.class);
+
+            return response.hits().hits().stream()
+                    .map(Hit::source)
+                    .collect(Collectors.toList());
+
+        } catch (IOException e) {
+            throw new RuntimeException("자동완성 검색 실패: " + e.getMessage(), e);
         }
     }
 }

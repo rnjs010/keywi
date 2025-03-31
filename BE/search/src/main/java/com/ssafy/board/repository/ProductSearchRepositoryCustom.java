@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface ProductSearchRepositoryCustom {
     List<ProductDocument> searchByCategoryAndQuery(String categoryId, String query, int page, int size);
+    List<ProductDocument> searchByProductName(String keyword, String categoryId, int size);
 }

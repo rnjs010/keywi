@@ -11,19 +11,19 @@ import org.springframework.data.elasticsearch.annotations.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "products_board")
+@Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDocument {
 
     @Id
-    private int productId;
+    private Integer productId;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String productName;
 
     @Field(type = FieldType.Keyword)
-    private int categoryId;
+    private Integer categoryId;
 
     @Field(type = FieldType.Keyword)
     private String categoryName;
@@ -32,8 +32,11 @@ public class ProductDocument {
     private Integer price;
 
     @Field(type = FieldType.Keyword)
-    private String thumbnailUrl;
+    private String imageUrl;
 
     @Field(type = FieldType.Date)
     private Instant createdAt;
+
+    @Field(type = FieldType.Integer)
+    private Integer searchCount;
 }
