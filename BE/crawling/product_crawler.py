@@ -1,4 +1,6 @@
+import traceback
 from time import sleep
+from product_detail import detail_crawling
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -51,15 +53,17 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
         if Dic[l]:
             # 마우스 호버해서 얻은 세부 카테고리
             for detail, cid in Dic[l]:
-                d=sub_menu.find_element(By.XPATH, f"//a[text()='{detail}']")
-                detail_page=d.get_attribute('href').replace("?cp=1", query)
-                print(detail, detail_page)
-                driver.execute_script(f'window.open("{detail_page}");')
-                driver.switch_to.window(driver.window_handles[-1])
-                if cid in tab:
-                    tab[cid]+=[driver.current_window_handle]
-                else:tab[cid]=[driver.current_window_handle]
-                driver.switch_to.window(tab[0])
+                try:
+                    d=sub_menu.find_element(By.XPATH, f"//a[text()='{detail}']")
+                    detail_page=d.get_attribute('href').replace("?cp=1", query)
+                    print(detail, detail_page)
+                    driver.execute_script(f'window.open("{detail_page}");')
+                    driver.switch_to.window(driver.window_handles[-1])
+                    if cid in tab:
+                        tab[cid]+=[driver.current_window_handle]
+                    else:tab[cid]=[driver.current_window_handle]
+                    driver.switch_to.window(tab[0])
+                except:print(f"{l}-{detail} 없음.")
         else:
             # 만약 조회할 세부 디렉토리가 없는 경우
             subpage=sub.get_attribute('href').replace("?cp=1", query)
@@ -110,6 +114,11 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
                     if KeyWi.exist_product(product_name):
                         print(f"\n{product_name} 존재.\n")
                         continue
+                    sleep(0.5)
+                    if KeyWi.exist_product(product_name):
+                        print(f"\n{product_name} 존재.\n")
+                        continue
+                    product_get=product.find_element(By.CLASS_NAME, '_25CKxIKjAk')
                     product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
                     price = int(product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',',''))
                     product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('src')
@@ -162,13 +171,26 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
                         if category_id==0: category_id=21
                     
                     if category_id in [2,14,15,16,17] and price>1200 and price<14000: price=price//10
-                    
+                    KeyWi.insert_product(category_id, product_name, price, product_url, product_image)
                     product_id+=1
-                    
                     print(product_id, category_id, product_name, price, product_url, product_image)
-                    
                     product_list[product_id]=(category_id, product_name, price, product_url, product_image, None)
-                    # KeyWi.insert_product(category_id, product_name, price, product_url, product_image)
+                    
+                    try:
+                        lasttab=driver.current_window_handle
+                        act.move_to_element(product).perform()
+                        sleep(0.3)
+                        act.key_down(Keys.CONTROL).move_to_element_with_offset(product_get, 10, 10).click().key_up(Keys.CONTROL).perform()
+                        sleep(1)
+                        driver.switch_to.window(driver.window_handles[-1])
+                        # 작업
+                        detail_crawling(KeyWi, driver, act, wait, product_id, product_name)
+                        # 완료
+                    except Exception as e:
+                        print(e)
+                        traceback.print_exc()
+                        print("상세 크롤링 실패.")
+                    driver.switch_to.window(lasttab)
             driver.close()
             driver.switch_to.window(driver.window_handles[-1])
         
