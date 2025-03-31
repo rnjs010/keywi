@@ -11,7 +11,7 @@ const Container = tw.div`
 `
 
 const DownBtnBox = tw.button`
-  relative top-[64vh] left-[84vw] z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center
+  absolute top-[84vh] left-[84vw] z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center
 `
 
 export default function ChatApp() {
@@ -19,13 +19,15 @@ export default function ChatApp() {
 
   return (
     <Container>
-      <ChatRoomHeader {...chatParticipant} />
-      <ChatRoomPostInfo {...post} />
+      <div className="sticky top-0">
+        <ChatRoomHeader {...chatParticipant} />
+        <ChatRoomPostInfo {...post} />
+      </div>
 
       {/* Down Button */}
-      {/* <DownBtnBox>
+      <DownBtnBox>
         <ArrowDown />
-      </DownBtnBox> */}
+      </DownBtnBox>
 
       {/* Date + Chat */}
       <div className="flex-1 overflow-y-auto px-4">
