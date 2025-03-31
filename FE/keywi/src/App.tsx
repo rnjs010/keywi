@@ -13,6 +13,7 @@ import PayPage from './pages/pay/PayPage'
 import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
 import HomeWritePage from './pages/home/HomeWritePage'
+import MyPage from './pages/mypage/MyPage'
 
 function App() {
   return (
@@ -22,9 +23,10 @@ function App() {
       <LoginProvider>
         <Routes>
           {/* 처음 입장시 스플래시 화면 구성할 예정 */}
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<MyPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/complete" element={<LoginCompletePage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </LoginProvider>
       <Routes>
