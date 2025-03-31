@@ -21,15 +21,18 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class UserDocument {
 
     @Id
-    @Field(type = FieldType.Keyword)
-    private String userId;
+    @Field(type = FieldType.Integer)
+    private Integer userId;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String nickname;
-
-    @Field(type = FieldType.Keyword)
-    private String profileImageUrl;
 
     @Field(type = FieldType.Text)
     private String profileContent;
+
+    @Field(type = FieldType.Integer)
+    private Integer brix;
+
+    @Field(type = FieldType.Keyword)
+    private String profileImageUrl;
 }

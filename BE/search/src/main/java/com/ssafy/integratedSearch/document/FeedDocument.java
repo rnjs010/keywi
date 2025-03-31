@@ -27,7 +27,7 @@ public class FeedDocument {
     @Field(type = FieldType.Keyword)
     private String feedId;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String content;
 
     @Field(type = FieldType.Nested)

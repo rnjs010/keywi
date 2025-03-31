@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserSearchResultDto {
-    private String userId;
+    private Integer userId;
     private String nickname;
+    private Integer brix;
     private String profileImageUrl;
     private String profileContent;
 }

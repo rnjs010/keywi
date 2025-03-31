@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProductSearchResultDto {
-    private String productId;
+    private Integer productId;
     private String productName;
+    private Integer categoryId;
     private String categoryName;
     private Integer price;
     private String thumbnailUrl;

@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "products_board")
+@Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @Data
 @NoArgsConstructor
@@ -22,13 +22,13 @@ public class ProductDocument {
 
     @Id
     @Field(type = FieldType.Keyword)
-    private String productId;
+    private Integer productId;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String productName;
 
     @Field(type = FieldType.Keyword)
-    private String categoryId;
+    private Integer categoryId;
 
     @Field(type = FieldType.Text)
     private String categoryName;

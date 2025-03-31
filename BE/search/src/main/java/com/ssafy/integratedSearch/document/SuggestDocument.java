@@ -20,7 +20,7 @@ public class SuggestDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String name;
 
     @Field(type = FieldType.Integer)

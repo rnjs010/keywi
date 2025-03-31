@@ -1,6 +1,7 @@
 package com.ssafy.integratedSearch.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.ssafy.integratedSearch.document.ProductDocument;
 import com.ssafy.integratedSearch.dto.ProductSearchResultDto;
@@ -23,13 +24,18 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     public List<ProductSearchResultDto> search(SearchRequestDto requestDto) {
         try {
             SearchResponse<ProductDocument> response = esClient.search(s -> s
-                            .index("products_board")
+                            .index("products")
                             .from(requestDto.getPage() * requestDto.getSize())
                             .size(requestDto.getSize())
                             .query(q -> q
                                     .bool(b -> b
-                                            .should(s1 -> s1.match(m -> m.field("productName").query(requestDto.getKeyword())))
-                                            .should(s2 -> s2.match(m -> m.field("categoryName").query(requestDto.getKeyword())))
+                                            .must(m -> m.multiMatch(mq -> mq
+                                                    .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5", "categoryName^1")
+                                                    .query(requestDto.getKeyword())
+                                                    .fuzziness("AUTO")
+                                                    .minimumShouldMatch("80%")
+                                                    .operator(Operator.And)
+                                            ))
                                     )
                             ),
                     ProductDocument.class

@@ -1,6 +1,7 @@
 package com.ssafy.integratedSearch.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.ssafy.integratedSearch.document.UserDocument;
 import com.ssafy.integratedSearch.dto.SearchRequestDto;
@@ -27,9 +28,12 @@ public class UserSearchServiceImpl implements UserSearchService {
                             .from(requestDto.getPage() * requestDto.getSize())
                             .size(requestDto.getSize())
                             .query(q -> q
-                                    .match(m -> m
-                                            .field("nickname")
+                                    .multiMatch(m -> m
+                                            .fields("nickname.jaso^3", "nickname.standard_en^2", "nickname.ngram_en^0.5")
                                             .query(requestDto.getKeyword())
+                                            .fuzziness("AUTO")
+                                            .minimumShouldMatch("80%")
+                                            .operator(Operator.And)
                                     )
                             ),
                     UserDocument.class
