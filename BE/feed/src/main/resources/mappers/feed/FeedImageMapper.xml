@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FeedImageMapper">
+
+    <resultMap id="feedImageResultMap" type="com.ssafy.feed.model.FeedImage">
+        <id property="imageId" column="image_id"/>
+        <result property="feedId" column="feed_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="isMainImage" column="is_main_image"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" parameterType="long" resultMap="feedImageResultMap">
+        SELECT * FROM feed_images WHERE image_id = #{imageId}
+    </select>
+
+    <select id="findByFeedId" parameterType="long" resultMap="feedImageResultMap">
+        SELECT * FROM feed_images WHERE feed_id = #{feedId}
+        ORDER BY display_order ASC
+    </select>
+
+    <insert id="insert" parameterType="com.ssafy.feed.model.FeedImage" useGeneratedKeys="true" keyProperty="imageId">
+        INSERT INTO feed_images (
+            feed_id, image_url, display_order, is_main_image
+        ) VALUES (
+                     #{feedId}, #{imageUrl}, #{displayOrder}, #{isMainImage}
+                 )
+    </insert>
+
+    <update id="update" parameterType="com.ssafy.feed.model.FeedImage">
+        UPDATE feed_images
+        SET
+            image_url = #{imageUrl},
+            display_order = #{displayOrder},
+            is_main_image = #{isMainImage},
+            updated_at = NOW()
+        WHERE image_id = #{imageId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM feed_images WHERE image_id = #{imageId}
+    </delete>
+
+    <delete id="deleteByFeedId" parameterType="long">
+        DELETE FROM feed_images WHERE feed_id = #{feedId}
+    </delete>
+
+    <select id="findMainImageByFeedId" parameterType="long" resultMap="feedImageResultMap">
+        SELECT * FROM feed_images WHERE feed_id = #{feedId} AND is_main_image = true
+            LIMIT 1
+    </select>
+
+    <update id="updateDisplayOrder">
+        UPDATE feed_images
+        SET display_order = #{displayOrder}, updated_at = NOW()
+        WHERE image_id = #{imageId}
+    </update>
+
+    <update id="setMainImage">
+        UPDATE feed_images
+        SET is_main_image = #{isMain}, updated_at = NOW()
+        WHERE image_id = #{imageId}
+    </update>
+
+</mapper>

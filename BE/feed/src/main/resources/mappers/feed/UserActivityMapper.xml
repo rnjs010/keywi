@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.UserActivityMapper">
+    <resultMap id="UserActivityResultMap" type="com.ssafy.feed.model.UserActivity">
+        <id property="activityId" column="activity_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="activityData" column="activity_data" typeHandler="com.ssafy.feed.config.JsonTypeHandler"/>
+        <result property="timestamp" column="timestamp" typeHandler="com.ssafy.feed.config.LocalDateTimeTypeHandler"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities WHERE activity_id = #{activityId}
+    </select>
+
+    <select id="findByUserId" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findByUserIdAndActivityTypeAndAfter" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND activity_type = #{activityType}
+          AND timestamp > #{after}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findRecentActivities" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND timestamp > #{timestamp}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findActiveUserIds" resultType="java.lang.Long">
+        SELECT DISTINCT user_id FROM user_activities
+        WHERE timestamp > #{timestamp}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="activityId">
+        INSERT INTO user_activities (user_id, activity_type, activity_data, timestamp)
+        VALUES (#{userId}, #{activityType},
+                #{activityData, typeHandler=com.ssafy.feed.config.JsonTypeHandler},
+                NOW())
+    </insert>
+</mapper>

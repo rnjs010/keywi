@@ -1,7 +1,6 @@
 spring:
   application:
     name: feed-service
-  # Config Server ??
   config:
     import: configserver:http://localhost:8888
   cloud:
@@ -10,7 +9,6 @@ spring:
       refresh:
         enabled: true
 
-# Actuator ????? ??
 management:
   endpoints:
     web:

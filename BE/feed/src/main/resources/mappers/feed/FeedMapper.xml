@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FeedMapper">
+    <resultMap id="FeedResultMap" type="com.ssafy.feed.model.Feed">
+        <id property="feedId" column="feed_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="bookmarkCount" column="bookmark_count"/>
+    </resultMap>
+
+    <select id="findById" resultMap="FeedResultMap">
+        SELECT * FROM feeds WHERE feed_id = #{feedId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="feedId">
+        INSERT INTO feeds (user_id, content, created_at, like_count, comment_count, bookmark_count)
+        VALUES (#{userId}, #{content}, NOW(), 0, 0, 0)
+    </insert>
+
+    <update id="update">
+        UPDATE feeds SET content = #{content}, updated_at = NOW()
+        WHERE feed_id = #{feedId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM feeds WHERE feed_id = #{id}
+    </delete>
+
+    <select id="findUnreadFeedsByFollowings" resultMap="FeedResultMap">
+        SELECT f.* FROM feeds f
+                            JOIN follow_user fu ON f.user_id = fu.followed_id
+                            LEFT JOIN feed_read fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
+        WHERE fu.follower_id = #{userId} AND fr.id IS NULL
+        ORDER BY f.created_at DESC LIMIT 50
+    </select>
+
+    <select id="findPopularFeeds" resultMap="FeedResultMap">
+        SELECT f.* FROM feeds f
+                            LEFT JOIN feed_likes fl ON f.feed_id = fl.feed_id
+                            LEFT JOIN feed_bookmarks fb ON f.feed_id = fb.feed_id
+                            LEFT JOIN comments c ON f.feed_id = c.feed_id
+        WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        GROUP BY f.feed_id
+        ORDER BY (COUNT(DISTINCT fl.id) * 1.5 + COUNT(DISTINCT fb.id) * 2 + COUNT(DISTINCT c.id)) DESC
+            LIMIT 50
+    </select>
+
+    <select id="findFeedsByCategories" resultMap="FeedResultMap">
+        SELECT f.*, fp.category FROM feeds f
+        JOIN feed_products fp ON f.feed_id = fp.feed_id
+        WHERE fp.category IN
+        <foreach item="category" collection="categories" open="(" separator="," close=")">
+            #{category}
+        </foreach>
+        GROUP BY f.feed_id
+        ORDER BY f.created_at DESC LIMIT 50
+    </select>
+
+    <select id="isLikedByUser" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM feed_likes WHERE feed_id = #{feedId} AND user_id = #{userId})
+    </select>
+
+    <select id="isBookmarkedByUser" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM feed_bookmarks WHERE feed_id = #{feedId} AND user_id = #{userId})
+    </select>
+
+    <insert id="addLike">
+        INSERT INTO feed_likes (feed_id, user_id, created_at) VALUES (#{feedId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="removeLike">
+        DELETE FROM feed_likes WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </delete>
+
+    <update id="updateLikeCount">
+        UPDATE feeds SET like_count = like_count + #{increment} WHERE feed_id = #{feedId}
+    </update>
+
+    <insert id="addBookmark">
+        INSERT INTO feed_bookmarks (feed_id, user_id, created_at) VALUES (#{feedId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="removeBookmark">
+        DELETE FROM feed_bookmarks WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </delete>
+
+    <update id="updateBookmarkCount">
+        UPDATE feeds SET bookmark_count = bookmark_count + #{increment} WHERE feed_id = #{feedId}
+    </update>
+
+    <select id="findLikedFeedsByUserAndFeedIds" resultType="long">
+        SELECT feed_id FROM feed_likes WHERE user_id = #{userId} AND feed_id IN
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+    </select>
+
+    <select id="findBookmarkedFeedsByUserAndFeedIds" resultType="long">
+        SELECT feed_id FROM feed_bookmarks WHERE user_id = #{userId} AND feed_id IN
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+    </select>
+</mapper>
