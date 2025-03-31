@@ -11,26 +11,36 @@
       }
     },
     "tokenizer": {
-      "jaso_index_tokenizer": {
-        "type": "jaso_tokenizer",
-        "mistype": true,
-        "chosung": true
-      },
       "jaso_search_tokenizer": {
         "type": "jaso_tokenizer",
-        "mistype": true,
+        "mistype": false,
         "chosung": false
+      },
+      "jaso_index_tokenizer": {
+        "type": "jaso_tokenizer",
+        "mistype": false,
+        "chosung": true
       }
     },
     "analyzer": {
-      "suggest_index_analyzer": {
+      "jaso_index_analyzer": {
         "type": "custom",
         "tokenizer": "jaso_index_tokenizer",
         "filter": ["suggest_filter"]
       },
-      "suggest_search_analyzer": {
+      "jaso_search_analyzer": {
         "type": "custom",
         "tokenizer": "jaso_search_tokenizer"
+      },
+      "ngram_en_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": ["lowercase", "suggest_filter"]
+      },
+      "standard_en_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": ["lowercase"]
       }
     }
   }
