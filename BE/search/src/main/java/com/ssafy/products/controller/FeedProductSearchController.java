@@ -1,7 +1,7 @@
-package com.ssafy.feed.controller;
+package com.ssafy.products.controller;
 
-import com.ssafy.feed.dto.FeedProductSearchResponse;
-import com.ssafy.feed.service.FeedProductSearchService;
+import com.ssafy.products.dto.FeedProductSearchResponse;
+import com.ssafy.products.service.FeedProductSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

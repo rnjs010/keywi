@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.relational.core.sql.In;
 
 @Getter
 @Setter
@@ -17,16 +18,16 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FeedProductDocument {
+public class ProductDocument {
 
     @Id
-    private Long productId;
+    private Integer productId;
 
-    @Field(type = FieldType.Text, analyzer = "suggest_index_analyzer", searchAnalyzer = "suggest_search_analyzer")
+    @Field(type = FieldType.Text)
     private String productName;
 
     @Field(type = FieldType.Keyword)
-    private String categoryId;
+    private Integer categoryId;
 
     @Field(type = FieldType.Keyword)
     private String categoryName;
@@ -39,4 +40,7 @@ public class FeedProductDocument {
 
     @Field(type = FieldType.Date)
     private Instant createdAt;
+
+    @Field(type = FieldType.Integer)
+    private Integer searchCount;
 }

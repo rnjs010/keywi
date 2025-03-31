@@ -1,8 +1,8 @@
-package com.ssafy.feed.service;
+package com.ssafy.products.service;
 
-import com.ssafy.feed.document.FeedProductDocument;
-import com.ssafy.feed.dto.FeedProductSearchResponse;
-import com.ssafy.feed.repository.FeedProductSearchRepository;
+import com.ssafy.products.document.ProductDocument;
+import com.ssafy.products.dto.FeedProductSearchResponse;
+import com.ssafy.products.repository.FeedProductSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +24,22 @@ public class FeedProductSearchServiceImpl implements FeedProductSearchService {
 
     @Override
     public List<FeedProductSearchResponse> search(String keyword, int size, String sort) {
-        return searchRepository.search(keyword, size, sort).stream()
+        List<ProductDocument> results = searchRepository.search(keyword, size, sort);
+
+        // 인기순 정렬일 때는 증가시키지 않음
+        if (!"popular".equals(sort)) {
+            results.stream()
+                    .limit(3) // 너무 많으면 성능 부담이 되므로 상위 N개만 추천
+                    .forEach(doc -> searchRepository.increaseSearchCount(doc.getProductId()));
+        }
+
+        return results.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    private FeedProductSearchResponse convertToDto(FeedProductDocument doc) {
+
+    private FeedProductSearchResponse convertToDto(ProductDocument doc) {
         return FeedProductSearchResponse.builder()
                 .productId(doc.getProductId())
                 .productName(doc.getProductName())

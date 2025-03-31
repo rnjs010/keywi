@@ -1,6 +1,6 @@
-package com.ssafy.feed.service;
+package com.ssafy.products.service;
 
-import com.ssafy.feed.dto.FeedProductSearchResponse;
+import com.ssafy.products.dto.FeedProductSearchResponse;
 
 import java.util.List;
 

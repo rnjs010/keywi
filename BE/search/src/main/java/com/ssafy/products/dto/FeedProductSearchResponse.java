@@ -1,4 +1,4 @@
-package com.ssafy.feed.dto;
+package com.ssafy.products.dto;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class FeedProductSearchResponse {
-    private Long productId;
+    private Integer productId;
     private String productName;
     private String imageUrl;
     private Integer price;
