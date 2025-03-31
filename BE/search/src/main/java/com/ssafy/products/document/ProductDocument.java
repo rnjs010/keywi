@@ -1,4 +1,4 @@
-package com.ssafy.feed.document;
+package com.ssafy.products.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.Instant;
@@ -14,7 +14,7 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "products_feeds")
+@Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedProductDocument {

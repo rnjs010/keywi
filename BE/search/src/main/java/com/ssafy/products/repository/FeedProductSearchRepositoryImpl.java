@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class FeedProductSearchRepositoryImpl implements FeedProductSearchRepository {
 
     private final ElasticsearchClient esClient;
-    private static final String INDEX = "feed_products";
+    private static final String INDEX = "products";
 
     @Override
     public List<FeedProductDocument> searchByProductName(String keyword, int size) {
