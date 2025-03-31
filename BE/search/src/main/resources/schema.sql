@@ -7,6 +7,8 @@ CREATE TABLE users (
                        user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                        user_name VARCHAR(255),
                        user_nickname VARCHAR(255),
+                       profile_content text,
+                       profile_image_url varchar(500),
                        brix INT
 );
 
