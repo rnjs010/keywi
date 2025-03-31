@@ -12,15 +12,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 /**
  * 보안 설정을 담당하는 클래스
- * Spring Security 설정, CORS, JWT 인증 필터 등을 구성함
+ * Spring Security 설정, JWT 인증 필터 등을 구성함
+ * CORS는 게이트웨이에서 처리하므로 여기서는 비활성화
  */
 @Configuration
 @EnableWebSecurity
@@ -40,8 +36,8 @@ public class SecurityConfig {
                 // CSRF 보안 설정 비활성화 (JWT 토큰 방식 사용으로 불필요)
                 .csrf(csrf -> csrf.disable())
 
-                // CORS 설정 적용 (Cross-Origin Resource Sharing)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // CORS 설정 비활성화 (게이트웨이에서 처리)
+                .cors(cors -> cors.disable())
 
                 // 세션 관리 설정 (JWT 사용으로 세션은 STATELESS로 설정)
                 .sessionManagement(session -> session
@@ -79,44 +75,5 @@ public class SecurityConfig {
         return firewall;
     }
 
-    /**
-     * CORS 설정 구성
-     * @return 구성된 CorsConfigurationSource
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // 허용할 오리진(출처) 목록 설정 - 프론트엔드 URL 추가
-        String[] allowedOrigins = {
-                "http://localhost:8080",
-                "https://localhost:8080",
-                "http://localhost:8081",
-                "https://localhost:8081",
-                "http://localhost:5173", // 프론트엔드 개발 서버
-                "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
-                "https://key-wi.netlify.app"
-        };
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
-
-        // 허용할 HTTP 메서드 설정
-        String[] allowedMethods = {"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"};
-        configuration.setAllowedMethods(Arrays.asList(allowedMethods));
-
-        // 허용할 헤더 설정
-        configuration.addAllowedHeader("*");                  // 모든 헤더 허용
-        configuration.addExposedHeader("Authorization");     // Authorization 헤더 노출
-        configuration.addExposedHeader("Refresh-Token");     // Refresh-Token 헤더 노출
-
-        // 인증 정보 포함 허용 (쿠키 등)
-        configuration.setAllowCredentials(true);
-
-        // pre-flight 요청 캐시 시간 설정 (초 단위)
-        configuration.setMaxAge(3600L);
-
-        // 모든 경로(/**)에 위 설정 적용
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    // corsConfigurationSource 메서드 제거 (게이트웨이에서 CORS 처리)
 }
