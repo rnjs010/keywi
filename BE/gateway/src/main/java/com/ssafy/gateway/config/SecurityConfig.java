@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // 경로별 권한 설정
+                // 경로별 권한 설정
                 .authorizeExchange(authorize -> authorize
                         // 임시로 모든 서비스 경로 허용. 이후 인증된 사용자만 가능하도록 변경해야함.
                         .pathMatchers("/api/auth/**").permitAll()
@@ -64,17 +65,29 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // 프론트엔드 URL 추가 (개발 및 배포 환경)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "http://localhost:5173",
                 "http://localhost:8080",
-                "http://j12e202.p.ssafy.io",
-                "https://j12e202.p.ssafy.io"
+                "http://localhost:5173", // 프론트엔드 개발 서버
+                "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
+                "http://i12e205.p.ssafy.io"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 허용 메서드
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // 허용 헤더
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        // 노출 헤더
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh-Token")); // Refresh-Token 헤더 추가
+
+        // 자격 증명 허용
         configuration.setAllowCredentials(true);
+
+        // pre-flight 요청 캐시 시간
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
