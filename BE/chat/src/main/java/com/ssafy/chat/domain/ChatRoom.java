@@ -1,4 +1,45 @@
 package com.ssafy.chat.domain;
 
-public class ChatRoom {
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;  // LocalDateTime import 추가
+
+/**
+ * 채팅방 정보를 저장하는 도메인 모델
+ * MongoDB에 저장됨
+ */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "chat_rooms")
+public class ChatRoom extends BaseTimeEntity {
+
+    @Id
+    private String id;              // 채팅방 ID
+
+    private String postId;          // 연결된 게시글 ID
+    private String postTitle;       // 게시글 제목
+    private String postThumbnail;   // 게시글 대표 이미지 URL
+    private String postStatus;      // 게시글 상태 (진행중, 완료 등)
+
+    private String buyerId;         // 구매자 ID (키보드 조립 요청자)
+    private String buyerNickname;   // 구매자 닉네임
+
+    private String assemblerId;     // 조립자 ID
+    private String assemblerNickname; // 조립자 닉네임
+
+    private boolean buyerActive;    // 구매자 채팅방 활성화 상태
+    private boolean assemblerActive; // 조립자 채팅방 활성화 상태
+
+    private String lastMessage;     // 마지막 메시지 내용
+    private LocalDateTime lastMessageTime; // 마지막 메시지 시간
+
+    // 거래 정보
+    private boolean hasTransaction; // 거래 요청 여부
+    private Integer transactionAmount; // 거래 금액
+    private String transactionStatus; // 거래 상태 (요청, 진행중, 완료)
 }
