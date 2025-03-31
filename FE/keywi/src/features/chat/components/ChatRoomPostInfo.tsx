@@ -5,11 +5,11 @@ import { PostInfo } from '@/interfaces/ChatInterfaces'
 import getBadgeData from '@/utils/getBadgeData'
 
 const Container = tw.div`
-flex items-center gap-4 p-4 border-b border-[#dbdbdb]
+  flex items-center gap-4 p-4 border-b border-[#dbdbdb] 
 `
 
 const ThumbnailImage = tw.img`
-    w-[3rem] h-[3rem] rounded-md object-cover self-start
+  w-[3rem] h-[3rem] rounded-md object-cover self-start
 `
 
 export default function ChatRoomPostInfo({

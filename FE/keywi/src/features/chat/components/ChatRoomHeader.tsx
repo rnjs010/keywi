@@ -3,6 +3,8 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { NavArrowLeft, MoreVert } from 'iconoir-react'
 import { ChatParticipant } from '@/interfaces/ChatInterfaces'
+import getDangdoBadgeData from '@/utils/getDandoBadgeData'
+import { useNavigate } from 'react-router-dom'
 
 const Container = tw.div`
   flex items-center justify-between p-4 border-b border-[#dbdbdb]
@@ -12,14 +14,17 @@ export default function ChatRoomHeader({
   nickname,
   reliability,
 }: ChatParticipant) {
+  const navigate = useNavigate()
+  const getDangdoColor = getDangdoBadgeData(reliability)
+
   return (
     <Container>
-      <NavArrowLeft />
+      <NavArrowLeft onClick={() => navigate('/board')} />
       <div className="flex items-center">
         <Text variant="body1" weight="bold" color="black">
           {nickname}
         </Text>
-        <Badge title={`당도 ${reliability}`} color={'high'} />
+        <Badge title={`당도 ${reliability}`} color={getDangdoColor || 'gray'} />
       </div>
       <MoreVert />
     </Container>
