@@ -11,6 +11,7 @@ import com.ssafy.auth.service.KakaoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,18 +32,31 @@ public class SocialLoginController {
 
     private final KakaoService kakaoService;
 
-    // 카카오 로그인 콜백 처리
+    @Value("${oauth2.kakao.redirect_uri}")
+    private String defaultRedirectUri;
+
+    /**
+     * 카카오 로그인 콜백 처리
+     * 프론트엔드에서 전달하는 redirect_uri를 사용하거나 없으면 설정 파일의 기본값 사용
+     */
     @GetMapping("/callback/kakao")
     public ApiResponse<LoginResponse> kakaoCallback(
             @RequestParam String code,
-            HttpServletRequest request
+            @RequestParam(required = false) String redirect_uri
     ) {
-        log.debug("카카오 콜백 받음: code={}", code);
-        String currentDomain = request.getServerName();
-        return ApiResponse.success(kakaoService.kakaoLogin(code, currentDomain));
+        log.debug("카카오 콜백 받음: code={}, redirect_uri={}", code, redirect_uri);
+
+        // 프론트엔드에서 전달한 리다이렉트 URI 또는 기본값 사용
+        String frontendRedirectUri = redirect_uri != null && !redirect_uri.isEmpty()
+                ? redirect_uri
+                : defaultRedirectUri;
+
+        return ApiResponse.success(kakaoService.kakaoLogin(code, frontendRedirectUri));
     }
 
-    // 카카오 토큰 리프레시 처리
+    /**
+     * 카카오 토큰 리프레시 처리
+     */
     @PostMapping("/refresh/kakao")
     public ApiResponse<JwtTokens> refreshKakaoToken(
             @RequestHeader("Refresh-Token") String refreshToken // HTTP 헤더에서 리프레시 토큰을 추출

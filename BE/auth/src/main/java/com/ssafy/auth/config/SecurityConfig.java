@@ -87,12 +87,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 허용할 오리진(출처) 목록 설정
+        // 허용할 오리진(출처) 목록 설정 - 프론트엔드 URL 추가
         String[] allowedOrigins = {
                 "http://localhost:8080",
                 "https://localhost:8080",
                 "http://localhost:8081",
-                "https://localhost:8081"
+                "https://localhost:8081",
+                "http://localhost:5173", // 프론트엔드 개발 서버
+                "https://keywi.poloceleste.site" // 프론트엔드 배포 URL
         };
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
 
@@ -101,8 +103,9 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList(allowedMethods));
 
         // 허용할 헤더 설정
-        configuration.addAllowedHeader("*");             // 모든 헤더 허용
-        configuration.addExposedHeader("Authorization"); // Authorization 헤더 노출
+        configuration.addAllowedHeader("*");                  // 모든 헤더 허용
+        configuration.addExposedHeader("Authorization");     // Authorization 헤더 노출
+        configuration.addExposedHeader("Refresh-Token");     // Refresh-Token 헤더 노출
 
         // 인증 정보 포함 허용 (쿠키 등)
         configuration.setAllowCredentials(true);

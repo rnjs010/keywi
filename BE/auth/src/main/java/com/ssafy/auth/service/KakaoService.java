@@ -43,22 +43,30 @@ public class KakaoService {
     private String clientId;
 
     @Value("${oauth2.kakao.redirect_uri}")
-    private String redirectUri;
+    private String defaultRedirectUri;
 
     private static final long TOKEN_EXPIRATION_TIME_MS = 1000 * 60 * 60 * 24 * 14;
 
     /**
      * 카카오 로그인
+     * @param code 인가 코드
+     * @param frontendRedirectUri 프론트엔드 리다이렉트 URI
      */
-    public LoginResponse kakaoLogin(String code, String currentDomain) {
+    public LoginResponse kakaoLogin(String code, String frontendRedirectUri) {
         log.info("인가 코드: {}", code);
+        log.info("프론트엔드 리다이렉트 URI: {}", frontendRedirectUri);
 
-        // 카카오 토큰 정보 받아오기 - 항상 설정 파일에 정의된 고정 리다이렉트 URI 사용
-        KakaoTokenInfo kakaoTokenInfo = getKakaoTokens(code, redirectUri);
+        // 프론트엔드에서 제공한 리다이렉트 URI 사용 (카카오 개발자 콘솔에 등록된 URI여야 함)
+        String redirectUriToUse = frontendRedirectUri != null && !frontendRedirectUri.isEmpty()
+                ? frontendRedirectUri
+                : defaultRedirectUri;
+
+        // 카카오 토큰 정보 받아오기
+        KakaoTokenInfo kakaoTokenInfo = getKakaoTokens(code, redirectUriToUse);
         log.info("카카오 액세스 토큰: {}", kakaoTokenInfo.accessToken);
 
         // 카카오 사용자 정보 조회
-        HashMap<String, Object> userInfo = getKakaoUserInfoMap(kakaoTokenInfo.accessToken);
+        HashMap<String, Object> userInfo = getKakaoUserInfo(kakaoTokenInfo.accessToken);
         log.info("카카오 사용자 정보: {}", userInfo);
 
         return processKakaoLogin(userInfo, kakaoTokenInfo);
@@ -165,12 +173,7 @@ public class KakaoService {
         );
     }
 
-    /**
-     * 카카오 사용자 정보를 Map으로 조회
-     * @param accessToken 카카오 액세스 토큰
-     * @return 사용자 정보 (ID, 닉네임 등)
-     */
-    private HashMap<String, Object> getKakaoUserInfoMap(String accessToken) {
+    private HashMap<String, Object> getKakaoUserInfo(String accessToken) {
         HashMap<String, Object> userInfo = new HashMap<>();
 
         HttpHeaders headers = new HttpHeaders();
@@ -204,21 +207,9 @@ public class KakaoService {
             log.warn("카카오에서 닉네임을 가져오지 못했습니다. 기본값 사용: User{}", id);
         }
 
-        // 이메일 정보 추출 (있는 경우에만)
-        JsonNode kakaoAccount = jsonNode.get("kakao_account");
-        if (kakaoAccount != null && kakaoAccount.has("email") && !kakaoAccount.get("email").isNull()) {
-            String email = kakaoAccount.get("email").asText();
-            userInfo.put("email", email);
-        }
-
         return userInfo;
     }
 
-    /**
-     * JSON 응답 파싱
-     * @param response JSON 문자열
-     * @return 파싱된 JsonNode
-     */
     private JsonNode parseJsonResponse(String response) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -229,44 +220,23 @@ public class KakaoService {
         }
     }
 
-    /**
-     * 카카오 로그인 처리
-     * 회원이 존재하면 로그인 처리, 없으면 임시 회원 정보 생성
-     * @param userInfo 카카오에서 가져온 사용자 정보
-     * @param kakaoTokenInfo 카카오 토큰 정보
-     * @return 로그인 응답 정보
-     */
     private LoginResponse processKakaoLogin(HashMap<String, Object> userInfo, KakaoTokenInfo kakaoTokenInfo) {
         String socialId = String.valueOf(userInfo.get("id"));
         String nickname = userInfo.get("nickname").toString();
         Long kakaoId = Long.parseLong(socialId); // String을 Long으로 변환
-        String email = (String) userInfo.getOrDefault("email", null);
 
-        // 회원 정보 조회
-        boolean isNewMember = !memberRepository.findByKakaoId(kakaoId).isPresent();
-        Member member;
-
-        if (isNewMember) {
-            // 신규 회원인 경우, 임시 회원 정보 생성 - user_nickname은 비워두고 회원가입 페이지에서 입력받음
-            Member newMember = Member.builder()
-                    .email(email)
-                    .userName(nickname)  // userName만 카카오 닉네임으로 설정
-                    .loginType("KAKAO")
-                    .kakaoId(kakaoId)
-                    .isDeleted(false)
-                    .accountConnected(false)
-                    .brix(0)
-                    .role("USER")
-                    .build();
-
-            // 임시 회원 정보 저장
-            member = memberRepository.save(newMember);
-            log.info("임시 회원 정보 생성 완료. ID: {}, 카카오ID: {}", member.getId(), kakaoId);
-        } else {
-            // 기존 회원이면 정보 조회
-            member = memberRepository.findByKakaoId(kakaoId).get();
-            log.info("기존 회원 정보 조회 완료. ID: {}", member.getId());
-        }
+        Member member = memberRepository.findByKakaoIdAndLoginType(kakaoId, "KAKAO")
+                .orElseGet(() -> {
+                    // 수정된 createMember 메서드 호출 - 5개 매개변수 전달
+                    Member newMember = Member.createMember(
+                            null,           // email
+                            nickname,       // userName
+                            nickname,       // userNickname (닉네임을 이름과 동일하게 설정)
+                            "KAKAO",        // loginType
+                            kakaoId         // kakaoId
+                    );
+                    return memberRepository.save(newMember);
+                });
 
         // JWT 토큰 생성
         JwtTokens jwtTokens = jwtTokensGenerator.generate(member.getId().toString());
@@ -297,70 +267,6 @@ public class KakaoService {
                 TOKEN_EXPIRATION_TIME_MS
         );
 
-        // LoginResponse 생성 - JwtTokens 객체 전달
-        LoginResponse response = new LoginResponse(jwtTokens);
-        // 신규 회원 여부 설정 (isNewMember 필드가 있다고 가정)
-        response.setNewUser(isNewMember);
-
-        return response;
-    }
-
-    /**
-     * 카카오 액세스 토큰 얻기
-     * @param code 인가 코드
-     * @return 카카오 액세스 토큰
-     */
-    public String getKakaoAccessToken(String code) {
-        KakaoTokenInfo tokenInfo = getKakaoTokens(code, redirectUri);
-        return tokenInfo.accessToken;
-    }
-
-    /**
-     * 카카오 사용자 정보 조회
-     * @param accessToken 카카오 액세스 토큰
-     * @return 카카오 사용자 정보 DTO
-     */
-    public KakaoUserInfoResponseDto getKakaoUserInfo(String accessToken) {
-        HashMap<String, Object> userInfo = getKakaoUserInfoMap(accessToken);
-
-        KakaoUserInfoResponseDto dto = new KakaoUserInfoResponseDto();
-        dto.setId(Long.parseLong(String.valueOf(userInfo.get("id"))));
-        dto.setNickname((String) userInfo.get("nickname"));
-        dto.setEmail((String) userInfo.getOrDefault("email", null));
-
-        return dto;
-    }
-
-    /**
-     * 카카오 사용자 정보 응답 DTO
-     */
-    public static class KakaoUserInfoResponseDto {
-        private Long id;
-        private String nickname;
-        private String email;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getNickname() {
-            return nickname;
-        }
-
-        public void setNickname(String nickname) {
-            this.nickname = nickname;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
+        return new LoginResponse(jwtTokens);
     }
 }
