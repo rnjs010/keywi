@@ -40,3 +40,9 @@ export interface Message {
   formattedTime: string
   read: boolean
 }
+
+export interface DealMessageProps {
+  messageType: string
+  content: string
+  isMine: boolean
+}

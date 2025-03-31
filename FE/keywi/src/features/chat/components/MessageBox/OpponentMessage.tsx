@@ -1,7 +1,7 @@
+import DealMessage from './DealMessage'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Message } from '@/interfaces/ChatInterfaces'
-import DealMessage from './DealMessage'
 
 const Container = tw.div`
   flex items-start mb-4 gap-2
@@ -27,8 +27,20 @@ export default function OpponentMessage({
               {content}
             </Text>
           </div>
+        ) : messageType === 'IMAGE' ? (
+          <div className="rounded-lg overflow-hidden max-w-[240px]">
+            <img
+              src={content}
+              alt="Sent image"
+              className="w-full h-auto object-cover"
+            />
+          </div>
         ) : (
-          <DealMessage />
+          <DealMessage
+            messageType={messageType}
+            content={content}
+            isMine={false}
+          />
         )}
         <Text variant="caption3" weight="regular" color="littleGray">
           {formattedTime}

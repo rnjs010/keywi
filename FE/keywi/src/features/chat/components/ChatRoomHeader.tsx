@@ -1,7 +1,7 @@
 import Badge from '@/components/Badge'
 import { Text } from '@/styles/typography'
-import { NavArrowLeft, MoreVert } from 'iconoir-react'
 import tw from 'twin.macro'
+import { NavArrowLeft, MoreVert } from 'iconoir-react'
 import { ChatParticipant } from '@/interfaces/ChatInterfaces'
 
 const Container = tw.div`

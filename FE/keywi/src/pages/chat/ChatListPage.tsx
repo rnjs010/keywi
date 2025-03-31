@@ -1,6 +1,6 @@
-import NavBar from '@/components/NavBar'
 import SubHeader from '@/components/SubHeader'
 import ChatCard from '@/features/chat/components/ChatCard'
+import NavBar from '@/components/NavBar'
 import tw from 'twin.macro'
 
 const Container = tw.div`
