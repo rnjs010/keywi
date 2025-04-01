@@ -5,6 +5,13 @@ spring:
   application:
     name: chat
 
+  # Spring Cloud Config 비활성화
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+
   # MongoDB 설정
   data:
     mongodb:
@@ -31,6 +38,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+    # Eureka 서버가 없는 경우 아래 설정 추가 가능
+    # register-with-eureka: false
+    # fetch-registry: false
   instance:
     instance-id: ${spring.application.name}:${server.port}
     prefer-ip-address: true
@@ -42,4 +52,5 @@ jwt:
 
 # FCM 설정
 fcm:
+  enabled: false
   service-account-file: classpath:firebase-service-account.json

@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;  // LocalDateTime import 추가
+import java.time.LocalDateTime;
 
 /**
  * 채팅방 정보를 저장하는 도메인 모델
@@ -21,10 +21,10 @@ public class ChatRoom extends BaseTimeEntity {
     @Id
     private String id;              // 채팅방 ID
 
-    private String postId;          // 연결된 게시글 ID
-    private String postTitle;       // 게시글 제목
-    private String postThumbnail;   // 게시글 대표 이미지 URL
-    private String postStatus;      // 게시글 상태 (진행중, 완료 등)
+    private String boardId;         // 연결된 게시글 ID (board_id)
+    private String title;           // 게시글 제목
+    private String thumbnailUrl;    // 게시글 대표 이미지 URL
+    private String dealState;       // 게시글 상태 (진행중, 완료 등)
 
     private String buyerId;         // 구매자 ID (키보드 조립 요청자)
     private String buyerNickname;   // 구매자 닉네임
@@ -42,4 +42,7 @@ public class ChatRoom extends BaseTimeEntity {
     private boolean hasTransaction; // 거래 요청 여부
     private Integer transactionAmount; // 거래 금액
     private String transactionStatus; // 거래 상태 (요청, 진행중, 완료)
+
+    // 알림 설정
+    private boolean notificationEnabled = true; // 기본값 true로 설정
 }

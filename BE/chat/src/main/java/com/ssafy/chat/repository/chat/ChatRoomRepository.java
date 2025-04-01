@@ -16,7 +16,7 @@ public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
     /**
      * 특정 게시글 ID에 해당하는 채팅방 조회
      */
-    Optional<ChatRoom> findByPostId(String postId);
+    Optional<ChatRoom> findByBoardId(String boardId);
 
     /**
      * 특정 구매자와 조립자 사이의 채팅방 조회

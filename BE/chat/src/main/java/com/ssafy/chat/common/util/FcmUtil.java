@@ -9,6 +9,7 @@ import com.ssafy.chat.common.exception.ErrorCode;
 import com.ssafy.chat.dto.notification.FcmMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "fcm.enabled", havingValue = "true", matchIfMissing = false)
 @RequiredArgsConstructor
 public class FcmUtil {
 

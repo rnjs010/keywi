@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,22 +32,25 @@ public class ChatRoomService {
 
     /**
      * 채팅방 생성 (조립자가 구매자에게 채팅 요청 시)
-     * @param postId 게시글 ID
+     * @param boardId 게시글 ID (board_id)
      * @param assemblerId 조립자 ID
      * @return 생성된 채팅방 정보
      */
-    public ChatRoomDto createChatRoom(String postId, String assemblerId) {
+    public ChatRoomDto createChatRoom(String boardId, String assemblerId) {
         // 게시글 정보 조회 (Feign 클라이언트 사용)
-        // 임시 구현: 실제로는 게시글 서비스에서 정보를 가져와야 함
-        String postTitle = "키보드 조립 요청";
-        String postThumbnail = "https://example.com/thumbnail.jpg";
-        String postStatus = "대기중";
-        String buyerId = "user123"; // 게시글 작성자 ID
-        String buyerNickname = "구매자닉네임";
-        String assemblerNickname = "조립자닉네임";
+        // 실제 구현: 게시글 서비스에서 정보를 가져와야 함
+        // 예: BoardDto boardInfo = boardServiceClient.getBoardInfo(boardId);
+
+        // 여기서는 schema.sql 기반 게시글 정보를 가정
+        String title = "키보드 조립 요청";  // boardInfo.getTitle();
+        String thumbnailUrl = "https://example.com/thumbnail.jpg";  // boardInfo.getThumbnailUrl();
+        String dealState = "대기중";  // boardInfo.getDealState();
+        String buyerId = "user123";  // String.valueOf(boardInfo.getWriterId());
+        String buyerNickname = "구매자닉네임";  // userServiceClient.getUserNickname(buyerId);
+        String assemblerNickname = "조립자닉네임";  // userServiceClient.getUserNickname(assemblerId);
 
         // 이미 해당 게시글에 대한 채팅방이 있는지 확인
-        Optional<ChatRoom> existingRoom = chatRoomRepository.findByPostId(postId);
+        Optional<ChatRoom> existingRoom = chatRoomRepository.findByBoardId(boardId);
         if (existingRoom.isPresent()) {
             ChatRoom room = existingRoom.get();
 
@@ -63,11 +68,11 @@ public class ChatRoomService {
 
         // 새 채팅방 생성
         ChatRoom chatRoom = ChatRoom.builder()
-                .postId(postId)
-                .postTitle(postTitle)
-                .postThumbnail(postThumbnail)
-                .postStatus(postStatus)
-                .buyerId(buyerId)
+                .boardId(boardId)  // 게시글 ID (board_id)
+                .title(title)
+                .thumbnailUrl(thumbnailUrl)
+                .dealState(dealState)
+                .buyerId(buyerId)  // 구매자 ID (writer_id)
                 .buyerNickname(buyerNickname)
                 .assemblerId(assemblerId)
                 .assemblerNickname(assemblerNickname)
@@ -76,10 +81,11 @@ public class ChatRoomService {
                 .lastMessage("채팅방이 생성되었습니다.")
                 .lastMessageTime(LocalDateTime.now())
                 .hasTransaction(false)
+                .notificationEnabled(true)
                 .build();
 
         chatRoomRepository.save(chatRoom);
-        log.info("채팅방 생성 완료: roomId={}, postId={}", chatRoom.getId(), postId);
+        log.info("채팅방 생성 완료: roomId={}, boardId={}", chatRoom.getId(), boardId);
 
         return convertToDto(chatRoom);
     }
@@ -115,6 +121,60 @@ public class ChatRoomService {
     }
 
     /**
+     * 채팅 상대방 정보 조회
+     * @param roomId 채팅방 ID
+     * @param userId 사용자 ID
+     * @return 상대방 사용자 정보
+     */
+    public Object getChatPartner(String roomId, String userId) {
+        ChatRoom chatRoom = findChatRoomById(roomId);
+
+        // 채팅방에 해당 사용자가 있는지 확인
+        if (!chatRoom.getBuyerId().equals(userId) && !chatRoom.getAssemblerId().equals(userId)) {
+            throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 해당 채팅방에 속해있지 않습니다.");
+        }
+
+        // 상대방 정보 조회
+        String partnerId = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerId() : chatRoom.getBuyerId();
+        String partnerNickname = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerNickname() : chatRoom.getBuyerNickname();
+
+        // 실제 구현에서는 User 서비스에서 상세 정보를 조회해야 함
+        // UserDto partnerInfo = userServiceClient.getUserInfo(partnerId);
+
+        // 임시 구현: 간단한 맵으로 상대방 정보 반환
+        Map<String, String> partnerInfo = new HashMap<>();
+        partnerInfo.put("userId", partnerId);
+        partnerInfo.put("nickname", partnerNickname);
+        partnerInfo.put("profileImage", "https://example.com/profiles/" + partnerId + ".jpg");
+        partnerInfo.put("userType", chatRoom.getBuyerId().equals(userId) ? "조립자" : "구매자");
+
+        return partnerInfo;
+    }
+
+    /**
+     * 거래 게시글 정보 조회
+     * @param roomId 채팅방 ID
+     * @return 게시글 정보
+     */
+    public Object getBoardInfo(String roomId) {
+        ChatRoom chatRoom = findChatRoomById(roomId);
+
+        // 실제 구현에서는 Board 서비스에서 게시글 정보를 조회해야 함
+        // BoardDto boardInfo = boardServiceClient.getBoardInfo(chatRoom.getBoardId());
+
+        // 임시 구현: 채팅방에 저장된 간단한 게시글 정보 반환
+        Map<String, Object> boardInfo = new HashMap<>();
+        boardInfo.put("boardId", chatRoom.getBoardId());
+        boardInfo.put("title", chatRoom.getTitle());
+        boardInfo.put("thumbnailUrl", chatRoom.getThumbnailUrl());
+        boardInfo.put("dealState", chatRoom.getDealState());
+        boardInfo.put("buyerId", chatRoom.getBuyerId());
+        boardInfo.put("assemblerId", chatRoom.getAssemblerId());
+
+        return boardInfo;
+    }
+
+    /**
      * 채팅방 나가기 (비활성화)
      * @param roomId 채팅방 ID
      * @param userId 사용자 ID
@@ -133,6 +193,62 @@ public class ChatRoomService {
 
         // 양쪽 모두 비활성화된 경우 논리적 삭제 처리를 할 수도 있음
         chatRoomRepository.save(chatRoom);
+    }
+
+    /**
+     * 채팅방 알림 설정
+     * @param roomId 채팅방 ID
+     * @param userId 사용자 ID
+     * @param enabled 알림 활성화 여부
+     * @return 업데이트된 채팅방 정보
+     */
+    public ChatRoomDto setRoomNotification(String roomId, String userId, boolean enabled) {
+        ChatRoom chatRoom = findChatRoomById(roomId);
+
+        // 사용자가 채팅방에 속해있는지 확인
+        if (!chatRoom.getBuyerId().equals(userId) && !chatRoom.getAssemblerId().equals(userId)) {
+            throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 해당 채팅방에 속해있지 않습니다.");
+        }
+
+        // 알림 설정 변경
+        chatRoom.setNotificationEnabled(enabled);
+        chatRoomRepository.save(chatRoom);
+
+        return convertToDto(chatRoom);
+    }
+
+    /**
+     * 채팅방 내 사용자 신고
+     * @param roomId 채팅방 ID
+     * @param reporterId 신고자 ID
+     * @param reportedUserId 피신고자 ID
+     * @param reason 신고 사유
+     */
+    public void reportUser(String roomId, String reporterId, String reportedUserId, String reason) {
+        ChatRoom chatRoom = findChatRoomById(roomId);
+
+        // 신고자가 채팅방에 속해있는지 확인
+        if (!chatRoom.getBuyerId().equals(reporterId) && !chatRoom.getAssemblerId().equals(reporterId)) {
+            throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "신고자가 해당 채팅방에 속해있지 않습니다.");
+        }
+
+        // 피신고자가 채팅방에 속해있는지 확인
+        if (!chatRoom.getBuyerId().equals(reportedUserId) && !chatRoom.getAssemblerId().equals(reportedUserId)) {
+            throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "피신고자가 해당 채팅방에 속해있지 않습니다.");
+        }
+
+        // 자기 자신을 신고하는 경우
+        if (reporterId.equals(reportedUserId)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "자기 자신을 신고할 수 없습니다.");
+        }
+
+        // 실제 구현에서는 신고 처리 로직이 필요함
+        // 예: 신고 정보를 DB에 저장하거나, 관리자에게 알림을 보내는 등
+        log.info("사용자 신고: 채팅방={}, 신고자={}, 피신고자={}, 사유={}",
+                roomId, reporterId, reportedUserId, reason);
+
+        // 여기에서 User 서비스 또는 Admin 서비스로 신고 정보를 전달할 수 있음
+        // userServiceClient.reportUser(reporterId, reportedUserId, reason, roomId);
     }
 
     /**
@@ -184,10 +300,10 @@ public class ChatRoomService {
 
         return ChatRoomDto.builder()
                 .roomId(chatRoom.getId())
-                .postId(chatRoom.getPostId())
-                .postTitle(chatRoom.getPostTitle())
-                .postThumbnail(chatRoom.getPostThumbnail())
-                .postStatus(chatRoom.getPostStatus())
+                .boardId(chatRoom.getBoardId())
+                .title(chatRoom.getTitle())
+                .thumbnailUrl(chatRoom.getThumbnailUrl())
+                .dealState(chatRoom.getDealState())
                 .buyerId(chatRoom.getBuyerId())
                 .buyerNickname(chatRoom.getBuyerNickname())
                 .assemblerId(chatRoom.getAssemblerId())
@@ -197,6 +313,7 @@ public class ChatRoomService {
                 .hasTransaction(chatRoom.isHasTransaction())
                 .transactionAmount(chatRoom.getTransactionAmount())
                 .transactionStatus(chatRoom.getTransactionStatus())
+                .notificationEnabled(chatRoom.isNotificationEnabled())
                 .build();
     }
 }
