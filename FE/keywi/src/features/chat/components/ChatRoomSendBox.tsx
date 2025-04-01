@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
@@ -22,6 +23,13 @@ const IconCircle = tw.div`
 `
 
 export default function ChatRoomSendBox() {
+  const navigate = useNavigate()
+  const { roomId } = useParams()
+
+  const handleDealRequestClick = () => {
+    navigate(`/chat/${roomId}/dealrequest`)
+  }
+
   return (
     <Container>
       <DropdownMenu>
@@ -47,14 +55,12 @@ export default function ChatRoomSendBox() {
               카메라
             </Text>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => alert('거래요청')}>
+          <DropdownMenuItem onClick={handleDealRequestClick}>
             <IconCircle className="bg-kiwi">
               <Wallet color={colors.white} />
             </IconCircle>
             <Text variant="body1" weight="regular" color="darkGray">
-              <Text variant="body1" weight="regular" color="darkGray">
-                거래요청
-              </Text>
+              거래요청
             </Text>
           </DropdownMenuItem>
         </DropdownMenuContent>
