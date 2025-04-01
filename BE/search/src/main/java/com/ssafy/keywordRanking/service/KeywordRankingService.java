@@ -1,4 +1,4 @@
-package com.ssafy.keywordRanking;
+package com.ssafy.keywordRanking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ZSetOperations;

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KeywordDto {
     private String keyword;
-    private int rank;
+    private int ranking;
     private double score;
 }
