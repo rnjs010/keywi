@@ -97,48 +97,48 @@ public class FeedController {
         return ResponseEntity.ok(createdFeed);
     }
 
-//    /**
-//     * 피드 좋아요 추가/취소
-//     */
-//    @PostMapping("/{feedId}/like")
-//    public ResponseEntity<LikeResponse> toggleLike(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long feedId) {
-//
-//        LikeResponse response = feedService.toggleLike(feedId, userId);
-//
-//        // 사용자 활동 이벤트 발행 (좋아요 추가/취소)
-//        String activityType = response.isLiked() ? "LIKE_FEED" : "UNLIKE_FEED";
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", activityType,
-//                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    /**
-//     * 피드 북마크 추가/취소
-//     */
-//    @PostMapping("/{feedId}/bookmark")
-//    public ResponseEntity<BookmarkResponse> toggleBookmark(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long feedId) {
-//
-//        BookmarkResponse response = feedService.toggleBookmark(feedId, userId);
-//
-//        // 사용자 활동 이벤트 발행 (북마크 추가/취소)
-//        String activityType = response.isBookmarked() ? "BOOKMARK_FEED" : "UNBOOKMARK_FEED";
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", activityType,
-//                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.ok(response);
-//    }
-//
+    /**
+     * 피드 좋아요 추가/취소
+     */
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<LikeResponse> toggleLike(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long feedId) {
+
+        LikeResponse response = feedService.toggleLike(feedId, userId);
+
+        // 사용자 활동 이벤트 발행 (좋아요 추가/취소)
+        String activityType = response.isLiked() ? "LIKE_FEED" : "UNLIKE_FEED";
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", activityType,
+                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
+        ));
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 피드 북마크 추가/취소
+     */
+    @PostMapping("/{feedId}/bookmark")
+    public ResponseEntity<BookmarkResponse> toggleBookmark(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long feedId) {
+
+        BookmarkResponse response = feedService.toggleBookmark(feedId, userId);
+
+        // 사용자 활동 이벤트 발행 (북마크 추가/취소)
+        String activityType = response.isBookmarked() ? "BOOKMARK_FEED" : "UNBOOKMARK_FEED";
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", activityType,
+                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
+        ));
+
+        return ResponseEntity.ok(response);
+    }
+
 //    /**
 //     * 피드 댓글 조회
 //     */
@@ -200,37 +200,37 @@ public class FeedController {
 //        return ResponseEntity.ok(comment);
 //    }
 //
-//    /**
-//     * 유저 팔로우/언팔로우
-//     */
-//    @PostMapping("/follow/{targetUserId}")
-//    public ResponseEntity<FollowResponse> toggleFollow(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long targetUserId) {
-//
-//        FollowResponse response = feedService.toggleFollow(userId, targetUserId);
-//
-//        // 사용자 활동 이벤트 발행 (팔로우/언팔로우)
-//        String activityType = response.isFollowed() ? "FOLLOW_USER" : "UNFOLLOW_USER";
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", activityType,
-//                "activityData", Map.of("targetUserId", targetUserId, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        // 팔로우 시 알림 발송
-//        if (response.isFollowed()) {
-//            kafkaTemplate.send("notification-events", Map.of(
-//                    "type", "NEW_FOLLOWER",
-//                    "receiverId", targetUserId,
-//                    "senderId", userId,
-//                    "data", Map.of("timestamp", System.currentTimeMillis())
-//            ));
-//        }
-//
-//        return ResponseEntity.ok(response);
-//    }
-//
+    /**
+     * 유저 팔로우/언팔로우
+     */
+    @PostMapping("/follow/{targetUserId}")
+    public ResponseEntity<FollowResponse> toggleFollow(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long targetUserId) {
+
+        FollowResponse response = feedService.toggleFollow(userId, targetUserId);
+
+        // 사용자 활동 이벤트 발행 (팔로우/언팔로우)
+        String activityType = response.isFollowed() ? "FOLLOW_USER" : "UNFOLLOW_USER";
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", activityType,
+                "activityData", Map.of("targetUserId", targetUserId, "timestamp", System.currentTimeMillis())
+        ));
+
+        // 팔로우 시 알림 발송
+        if (response.isFollowed()) {
+            kafkaTemplate.send("notification-events", Map.of(
+                    "type", "NEW_FOLLOWER",
+                    "receiverId", targetUserId,
+                    "senderId", userId,
+                    "data", Map.of("timestamp", System.currentTimeMillis())
+            ));
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
 //    /**
 //     * 상품 즐겨찾기 추가/취소
 //     */

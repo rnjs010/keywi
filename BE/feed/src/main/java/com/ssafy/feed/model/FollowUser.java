@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FollowUser {
+    private Long id;
     private Long followerId;
     private Long followingId;
     private boolean isActive;

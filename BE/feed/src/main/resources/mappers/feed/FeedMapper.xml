@@ -33,9 +33,9 @@
 
     <select id="findUnreadFeedsByFollowings" resultMap="FeedResultMap">
         SELECT f.* FROM feeds f
-                            JOIN follow_user fu ON f.user_id = fu.followed_id
-                            LEFT JOIN feed_read fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
-        WHERE fu.follower_id = #{userId} AND fr.id IS NULL
+                            JOIN follow_user fu ON f.user_id = fu.following_id
+                            LEFT JOIN feed_reads fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
+        WHERE fu.follower_id = #{userId} AND fr.read_id IS NULL
         ORDER BY f.created_at DESC LIMIT 50
     </select>
 
@@ -46,7 +46,7 @@
                             LEFT JOIN comments c ON f.feed_id = c.feed_id
         WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
         GROUP BY f.feed_id
-        ORDER BY (COUNT(DISTINCT fl.id) * 1.5 + COUNT(DISTINCT fb.id) * 2 + COUNT(DISTINCT c.id)) DESC
+        ORDER BY (COUNT(DISTINCT fl.like_id) * 1.5 + COUNT(DISTINCT fb.bookmark_id) * 2 + COUNT(DISTINCT c.id)) DESC
             LIMIT 50
     </select>
 
