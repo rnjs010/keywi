@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import MypageHeader from '@/features/mypage/components/MypageHeader'
@@ -105,7 +105,7 @@ const NavBarContainer = tw.div`
 
 export default function MyPage() {
   // 더미 데이터
-  const [profileData, setProfileData] = useState({
+  const [profileData] = useState({
     nickname: '규리몽땅',
     profileImage: 'https://picsum.photos/200',
     // levelBadgeText: '당도 16',
@@ -115,7 +115,7 @@ export default function MyPage() {
     description: '감성만땅',
   })
 
-  const [feeds, setFeeds] = useState([
+  const [feeds] = useState([
     { id: 1, imageUrl: 'https://picsum.photos/300?random=1' },
     { id: 2, imageUrl: 'https://picsum.photos/300?random=2' },
     { id: 3, imageUrl: 'https://picsum.photos/300?random=3' },
@@ -133,7 +133,7 @@ export default function MyPage() {
     { id: 15, imageUrl: 'https://picsum.photos/300?random=15' },
   ])
 
-  const [quotes, setQuotes] = useState([
+  const [quotes] = useState([
     {
       id: 1,
       status: 'REQUEST',
