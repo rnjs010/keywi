@@ -1,3 +1,4 @@
+//SECTION - 뒤로가기 있는 소제목 헤더
 import { Text } from '@/styles/typography'
 import { NavArrowLeft } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'

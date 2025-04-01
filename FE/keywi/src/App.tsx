@@ -14,6 +14,8 @@ import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
 import HomeWritePage from './pages/home/HomeWritePage'
 import MyPage from './pages/mypage/MyPage'
+import { SettingPage } from './pages/mypage/SettingPage'
+import { SettingAccountPage } from './pages/mypage/SettingAccountPage'
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/complete" element={<LoginCompletePage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/setting" element={<SettingPage />} />
+          <Route path="/setting/account" element={<SettingAccountPage />} />
         </Routes>
       </LoginProvider>
       <Routes>
