@@ -33,8 +33,8 @@
 
     <select id="findUnreadFeedsByFollowings" resultMap="FeedResultMap">
         SELECT f.* FROM feeds f
-                            JOIN follow_user fu ON f.user_id = fu.following_id
-                            LEFT JOIN feed_reads fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
+            JOIN follow_user fu ON f.user_id = fu.following_id AND fu.is_active = true
+            LEFT JOIN feed_reads fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
         WHERE fu.follower_id = #{userId} AND fr.read_id IS NULL
         ORDER BY f.created_at DESC LIMIT 50
     </select>

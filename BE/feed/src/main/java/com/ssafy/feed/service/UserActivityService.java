@@ -72,14 +72,25 @@ public class UserActivityService {
             // 활동 데이터에서 카테고리 정보 추출
             String category = extractCategoryFromActivity(activity);
             if (category != null) {
-                categoryScores.merge(category, weight, Double::sum);
+                if (categoryScores.containsKey(category)) {
+                    // 키가 이미 존재하면 기존 값에 weight를 더함
+                    categoryScores.put(category, categoryScores.get(category) + weight);
+                } else {
+                    // 키가 없으면 새로 추가
+                    categoryScores.put(category, weight);
+                }
             }
         }
 
-        // 점수 정규화 (총합이 1이 되도록)
-        double totalScore = categoryScores.values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalScore = 0;
+        for (Double score : categoryScores.values()) {
+            totalScore += score;
+        }
+
         if (totalScore > 0) {
-            categoryScores.replaceAll((k, v) -> v / totalScore);
+            for (String category : categoryScores.keySet()) {
+                categoryScores.put(category, categoryScores.get(category) / totalScore);
+            }
         }
 
         return categoryScores;

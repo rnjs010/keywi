@@ -47,141 +47,118 @@ public class FeedService {
      * 사용자별 맞춤 피드 추천 목록을 생성하고 Redis에 캐싱
      * 30분마다 실행
      */
-//    @Scheduled(fixedRate = 30 * 60 * 1000) // 30분마다 실행
-//    public void generateRecommendedFeeds() {
-//        log.info("사용자 맞춤 피드 추천 목록 생성 작업 시작");
-//
-//        // 활성 사용자 목록 조회
-//        List<Long> activeUserIds = userActivityService.getActiveUserIds();
-//
-//        activeUserIds.forEach(userId -> {
-//            // 1. 팔로우 기반 추천 피드
-//            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
-//            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
-//                    .map(this::convertToFeedDTO)
-//                    .collect(Collectors.toList());
-//
-//            // 2. 사용자 활동 기반 맞춤 피드
-//            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
-//
-//            // 추천 목록 합치기 (중복 제거)
-//            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
-//
-//            // Redis에 저장 (24시간 유효)
-//            redisTemplate.opsForValue().set(
-//                    RECOMMENDED_FEEDS_PREFIX + userId,
-//                    recommendedFeeds,
-//                    24, TimeUnit.HOURS
-//            );
-//
-//            // 추천 내용 변경 이벤트 발행
-//            kafkaTemplate.send("feed-recommendation-updates",
-//                    Map.of("userId", userId, "updatedAt", System.currentTimeMillis()));
-//        });
-//
-//        // 3. 전체 인기 피드 갱신 (모든 사용자에게 공통 적용)
-//        updatePopularFeeds();
-//
-//        log.info("사용자 맞춤 피드 추천 목록 생성 작업 완료");
-//    }
+    @Scheduled(fixedRate = 30 * 60 * 1000) // 30분마다 실행
+    public void generateRecommendedFeeds() {
+        log.info("사용자 맞춤 피드 추천 목록 생성 작업 시작");
+
+        // 활성 사용자 목록 조회
+        List<Long> activeUserIds = userActivityService.getActiveUserIds();
+
+        activeUserIds.forEach(userId -> {
+            // 1. 팔로우 기반 추천 피드
+            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
+            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
+                    .map(this::convertToFeedDTO)
+                    .collect(Collectors.toList());
+
+            // 2. 사용자 활동 기반 맞춤 피드
+            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
+
+            // 추천 목록 합치기 (중복 제거)
+            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
+
+            // Redis에 저장 (24시간 유효)
+            redisTemplate.opsForValue().set(
+                    RECOMMENDED_FEEDS_PREFIX + userId,
+                    recommendedFeeds,
+                    24, TimeUnit.HOURS
+            );
+
+            // 추천 내용 변경 이벤트 발행
+            kafkaTemplate.send("feed-recommendation-updates",
+                    Map.of("userId", userId, "updatedAt", System.currentTimeMillis()));
+        });
+
+        // 3. 전체 인기 피드 갱신 (모든 사용자에게 공통 적용)
+        updatePopularFeeds();
+
+        log.info("사용자 맞춤 피드 추천 목록 생성 작업 완료");
+    }
 
     /**
      * 인기 피드 목록 갱신 (1시간마다 실행)
      */
-//    @Scheduled(fixedRate = 60 * 60 * 1000)
-//    public void updatePopularFeeds() {
-//        log.info("인기 피드 목록 갱신 작업 시작");
-//
-//        // 최근 24시간 내 인기 피드 (좋아요, 댓글, 북마크 기준)
-//        List<Feed> popularFeeds = feedMapper.findPopularFeeds();
-//        List<FeedDTO> popularFeedDTOs = popularFeeds.stream()
-//                .map(this::convertToFeedDTO)
-//                .collect(Collectors.toList());
-//
-//        // Redis에 저장 (24시간 유효)
-//        redisTemplate.opsForValue().set(
-//                POPULAR_FEEDS_KEY,
-//                popularFeedDTOs,
-//                24, TimeUnit.HOURS
-//        );
-//
-//        log.info("인기 피드 목록 갱신 작업 완료: {} 개의 피드", popularFeedDTOs.size());
-//    }
+    @Scheduled(fixedRate = 60 * 60 * 1000)
+    public void updatePopularFeeds() {
+        log.info("인기 피드 목록 갱신 작업 시작");
+
+        // 최근 24시간 내 인기 피드 (좋아요, 댓글, 북마크 기준)
+        List<Feed> popularFeeds = feedMapper.findPopularFeeds();
+        List<FeedDTO> popularFeedDTOs = popularFeeds.stream()
+                .map(this::convertToFeedDTO)
+                .collect(Collectors.toList());
+
+        // Redis에 저장 (24시간 유효)
+        redisTemplate.opsForValue().set(
+                POPULAR_FEEDS_KEY,
+                popularFeedDTOs,
+                24, TimeUnit.HOURS
+        );
+
+        log.info("인기 피드 목록 갱신 작업 완료: {} 개의 피드", popularFeedDTOs.size());
+    }
 
     /**
      * 사용자 맞춤 피드 조회 (무한 스크롤 지원)
      */
-//    @Transactional(readOnly = true)
-//    public FeedPageResponse getRecommendedFeeds(Long userId, Pageable pageable) {
-//        // Redis에서 추천 피드 조회
-//        List<FeedDTO> cachedRecommendedFeeds = (List<FeedDTO>) redisTemplate.opsForValue()
-//                .get(RECOMMENDED_FEEDS_PREFIX + userId);
-//
-//        // 캐시가 없으면 실시간 생성
-//        if (cachedRecommendedFeeds == null || cachedRecommendedFeeds.isEmpty()) {
-//            // 1. 팔로우 기반 추천 피드
-//            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
-//            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
-//                    .map(this::convertToFeedDTO)
-//                    .collect(Collectors.toList());
-//
-//            // 2. 사용자 활동 기반 맞춤 피드
-//            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
-//
-//            cachedRecommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
-//        }
-//
-//        // 캐시된 추천 피드가 부족하면 인기 피드로 보충
-//        if (cachedRecommendedFeeds.size() < pageable.getPageSize() * 2) {
-//            List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
-//            if (popularFeeds != null && !popularFeeds.isEmpty()) {
-//                cachedRecommendedFeeds = mergeFeeds(cachedRecommendedFeeds, popularFeeds);
-//            }
-//        }
-//
-//        // 페이지네이션 적용
-//        int start = (int) pageable.getOffset();
-//        int end = Math.min((start + pageable.getPageSize()), cachedRecommendedFeeds.size());
-//
-//        List<FeedDTO> pageContent = cachedRecommendedFeeds.subList(start, end);
-//
-//        // 피드 정보 보강 (작성자, 좋아요/북마크 상태 등)
-//        enrichFeedInformation(pageContent, userId);
-//
-//        return FeedPageResponse.builder()
-//                .content(pageContent)
-//                .currentPage(pageable.getPageNumber())
-//                .totalElements(cachedRecommendedFeeds.size())
-//                .totalPages((int) Math.ceil((double) cachedRecommendedFeeds.size() / pageable.getPageSize()))
-//                .last(end >= cachedRecommendedFeeds.size())
-//                .build();
-//    }
+    @Transactional(readOnly = true)
+    public FeedPageResponse getRecommendedFeeds(Long userId, Pageable pageable) {
+        // Redis에서 추천 피드 조회
+        List<FeedDTO> cachedRecommendedFeeds = (List<FeedDTO>) redisTemplate.opsForValue()
+                .get(RECOMMENDED_FEEDS_PREFIX + userId);
 
-    /**
-     * 사용자 활동 기반 맞춤 피드 조회
-     */
-//    private List<FeedDTO> getPersonalizedFeeds(Long userId) {
-//        // 사용자 관심사, 활동 기록 분석
-//        Map<String, Double> userInterests = userActivityService.getUserInterests(userId);
-//
-//        // 관심사 기반 상위 카테고리 5개 추출
-//        List<String> topCategories = userInterests.entrySet()
-//                .stream()
-//                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-//                .limit(5)
-//                .map(Map.Entry::getKey)
-//                .collect(Collectors.toList());
-//
-//        if (topCategories.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        // 관심 카테고리 기반 피드 조회
-//        List<Feed> personalizedFeeds = feedMapper.findFeedsByCategories(topCategories);
-//        return personalizedFeeds.stream()
-//                .map(this::convertToFeedDTO)
-//                .collect(Collectors.toList());
-//    }
+        // 캐시가 없으면 실시간 생성
+        if (cachedRecommendedFeeds == null || cachedRecommendedFeeds.isEmpty()) {
+            // 1. 팔로우 기반 추천 피드
+            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
+            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
+                    .map(this::convertToFeedDTO)
+                    .collect(Collectors.toList());
+
+            // 2. 사용자 활동 기반 맞춤 피드
+            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
+
+            cachedRecommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
+        }
+
+        // 캐시된 추천 피드가 부족하면 인기 피드로 보충
+        if (cachedRecommendedFeeds.size() < pageable.getPageSize() * 2) {
+            List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
+            if (popularFeeds != null && !popularFeeds.isEmpty()) {
+                cachedRecommendedFeeds = mergeFeeds(cachedRecommendedFeeds, popularFeeds);
+            }
+        }
+
+        // 페이지네이션 적용
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), cachedRecommendedFeeds.size());
+
+        List<FeedDTO> pageContent = cachedRecommendedFeeds.subList(start, end);
+
+        // 피드 정보 보강 (작성자, 좋아요/북마크 상태 등)
+        enrichFeedInformation(pageContent, userId);
+
+        // 읽음 처리
+        pageContent.forEach(feed -> markFeedAsRead(feed.getId(), userId));
+
+        return FeedPageResponse.builder()
+                .content(pageContent)
+                .currentPage(pageable.getPageNumber())
+                .totalElements(cachedRecommendedFeeds.size())
+                .totalPages((int) Math.ceil((double) cachedRecommendedFeeds.size() / pageable.getPageSize()))
+                .last(end >= cachedRecommendedFeeds.size())
+                .build();
+    }
 
     /**
      * 단일 피드 상세 조회

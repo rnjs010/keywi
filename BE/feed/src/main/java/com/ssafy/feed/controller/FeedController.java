@@ -13,12 +13,11 @@ import com.ssafy.feed.service.FeedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Map;
 
@@ -30,22 +29,22 @@ public class FeedController {
     private final FeedService feedService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-//    @GetMapping("/recommended")
-//    public ResponseEntity<FeedPageResponse> getRecommendedFeeds(
-//            @RequestHeader("userId") Long userId,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        FeedPageResponse response = feedService.getRecommendedFeeds(userId, pageable);
-//
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", "VIEW_FEED_LIST",
-//                "activityData", Map.of("page", page, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.of(response);
-//    }
+    @GetMapping("/recommended")
+    public ResponseEntity<FeedPageResponse> getRecommendedFeeds(
+            @RequestHeader("userId") Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        FeedPageResponse response = feedService.getRecommendedFeeds(userId, pageable);
+
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", "VIEW_FEED_LIST",
+                "activityData", Map.of("page", page, "timestamp", System.currentTimeMillis())
+        ));
+
+        return ResponseEntity.ok(response);
+    }
 
     /**
      * 단일 피드 상세 조회
@@ -231,71 +230,18 @@ public class FeedController {
         return ResponseEntity.ok(response);
     }
 
-//    /**
-//     * 상품 즐겨찾기 추가/취소
-//     */
-//    @PostMapping("/product/{productId}/favorite")
-//    public ResponseEntity<ProductFavoriteResponse> toggleProductFavorite(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long productId) {
-//
-//        ProductFavoriteResponse response = feedService.toggleProductFavorite(userId, productId);
-//
-//        // 사용자 활동 이벤트 발행 (상품 즐겨찾기 추가/취소)
-//        String activityType = response.isFavorited() ? "ADD_PRODUCT_TO_WISHLIST" : "REMOVE_PRODUCT_FROM_WISHLIST";
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", activityType,
-//                "activityData", Map.of("productId", productId, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    /**
-//     * 즐겨찾기한 상품 조회
-//     */
-//    @GetMapping("/products/favorites")
-//    public ResponseEntity<List<ProductDTO>> getFavoriteProducts(
-//            @RequestHeader("X-User-Id") Long userId) {
-//
-//        List<ProductDTO> favoriteProducts = feedService.getFavoriteProducts(userId);
-//
-//        // 사용자 활동 이벤트 발행 (즐겨찾기 상품 조회)
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", "VIEW_FAVORITE_PRODUCTS",
-//                "activityData", Map.of("timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.ok(favoriteProducts);
-//    }
-//
-//    /**
-//     * 피드 내 태그된 상품 즐겨찾기 상태 조회
-//     */
-//    @GetMapping("/{feedId}/products/favorite-status")
-//    public ResponseEntity<Map<Long, Boolean>> getProductFavoriteStatus(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long feedId) {
-//
-//        Map<Long, Boolean> favoriteStatus = feedService.getProductFavoriteStatus(userId, feedId);
-//
-//        return ResponseEntity.ok(favoriteStatus);
-//    }
-//
-//    /**
-//     * 피드에 없는 상품 정보 추가 (피드 상품 태그용)
-//     */
-//    @PostMapping("/product/temporary")
-//    public ResponseEntity<ProductDTO> addTemporaryProduct(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @RequestBody ProductCreateRequest request) {
-//
-//        ProductDTO product = feedService.addTemporaryProduct(userId, request);
-//
-//        return ResponseEntity.ok(product);
-//    }
+    /**
+     * 피드에 없는 상품 정보 추가 (피드 상품 태그용)
+     */
+    @PostMapping("/product/temporary")
+    public ResponseEntity<ProductDTO> addTemporaryProduct(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestBody ProductCreateRequest request) {
+
+        ProductDTO product = feedService.addTemporaryProduct(userId, request);
+
+        return ResponseEntity.ok(product);
+    }
 }
 
 
