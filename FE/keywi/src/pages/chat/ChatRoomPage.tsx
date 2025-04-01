@@ -24,7 +24,7 @@ export default function ChatRoomPage() {
     const handleVisualViewPortResize = () => {
       const currentVisualViewport = Number(window.visualViewport?.height)
       if (containerRef.current) {
-        containerRef.current.style.height = `${currentVisualViewport + 10}px`
+        containerRef.current.style.height = `${currentVisualViewport}px`
         window.scrollTo(0, 20)
       }
 
