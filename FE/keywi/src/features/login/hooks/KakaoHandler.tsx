@@ -16,11 +16,17 @@ const KakaoHandler = () => {
 
     console.log('인가 코드:', code)
 
-    if (!code) {
-      console.error('인가 코드가 없습니다')
+    // 이미 처리된 코드인지 확인하는 로직 추가
+    const isProcessed = sessionStorage.getItem('processed_code') === code
+
+    if (!code || isProcessed) {
+      if (!code) console.error('인가 코드가 없습니다')
       navigate('/')
       return
     }
+
+    // 처리 중인 코드 표시
+    sessionStorage.setItem('processed_code', code)
 
     setLoading(true)
     setError(null)
@@ -53,7 +59,9 @@ const KakaoHandler = () => {
         setLoading(false)
         navigate('/')
       })
-  }, [navigate, setLoading, setError, login])
+
+    return () => {}
+  }, [])
 
   // 로딩 중 표시
   return (

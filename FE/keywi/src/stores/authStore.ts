@@ -33,15 +33,15 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     // 액세스 토큰 저장
     setCookie(TOKEN_NAME, accessToken, {
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: window.location.protocol === 'https:', // 개발 환경에서는 false
+      sameSite: window.location.protocol === 'https:' ? 'None' : 'Lax', // 개발 환경에서는 Lax
     })
 
     // 리프레시 토큰 저장
     setCookie(REFRESH_TOKEN_NAME, refreshToken, {
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: window.location.protocol === 'https:', // 개발 환경에서는 false
+      sameSite: window.location.protocol === 'https:' ? 'None' : 'Lax', // 개발 환경에서는 Lax
     })
 
     set({ isAuthenticated: true, isLoading: false, error: null })
@@ -58,12 +58,14 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const refreshToken = getCookie(REFRESH_TOKEN_NAME)
 
     if (!accessToken && !refreshToken) {
+      console.log('토큰 없음')
       set({ isAuthenticated: false, isLoading: false, error: null })
       return
     }
 
     // 토큰이 있으면 인증됨으로 간주
     set({ isAuthenticated: true, isLoading: false })
+    console.log('인증됨')
   },
 
   refreshTokens: async () => {
@@ -85,16 +87,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       // 액세스 토큰 저장
       setCookie(TOKEN_NAME, accessToken, {
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: true,
+        sameSite: 'None',
       })
 
       // 리프레시 토큰 저장
       if (newRefreshToken) {
         setCookie(REFRESH_TOKEN_NAME, refreshToken, {
           path: '/',
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          secure: true,
+          sameSite: 'None',
         })
       }
 

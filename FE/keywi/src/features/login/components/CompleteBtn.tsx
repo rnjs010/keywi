@@ -1,4 +1,6 @@
 import MainButton from '@/components/MainButton'
+import { useAuthStore } from '@/stores/authStore'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 
@@ -10,6 +12,11 @@ const BtnWrapper = tw.div`
 
 export default function CompleteBtn() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const authState = useAuthStore.getState()
+    console.log('현재 인증 상태', authState.isAuthenticated)
+  })
 
   return (
     <BtnWrapper>

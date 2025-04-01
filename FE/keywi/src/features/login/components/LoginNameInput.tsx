@@ -1,7 +1,8 @@
 import tw from 'twin.macro'
 import { handleViewPortResize } from '../hooks/handleViewPortResize'
 import { Text } from '@/styles/typography'
-import { useLogin } from '../services/LoginContext'
+import { useSignupStore } from '@/stores/signupStore'
+import { useState } from 'react'
 
 const NicknameSection = tw.div`
   mt-10
@@ -28,7 +29,7 @@ const InfoText = tw.div`
   `
 
 export default function LoginNameInput() {
-  const { nickname, setNickname } = useLogin()
+  const { nickname, setNickname } = useSignupStore()
   handleViewPortResize()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -7,7 +7,6 @@ interface SignupState {
   profileImage: string | null
   isLoading: boolean
   error: string | null
-  isNicknameAvailable: boolean | null
 
   // 액션
   setNickname: (nickname: string) => void
@@ -22,7 +21,6 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   profileImage: null,
   isLoading: false,
   error: null,
-  isNicknameAvailable: null,
 
   // 액션 메서드
   setNickname: (nickname) => set({ nickname }),
@@ -31,7 +29,6 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   // 닉네임 중복 체크
   checkNickname: async (nickname) => {
     if (nickname.length < 2) {
-      set({ isNicknameAvailable: false })
       return false
     }
 
@@ -40,11 +37,9 @@ export const useSignupStore = create<SignupState>((set, get) => ({
       const response = await apiRequester.get(
         `/api/auth/check-nickname/${nickname}`,
       )
-      const isAvailable = response.data.data.available
-      set({ isNicknameAvailable: isAvailable })
-      return isAvailable
+      console.log(response.data.data.available)
+      return response.data.data.available
     } catch (error) {
-      set({ isNicknameAvailable: false })
       return false
     } finally {
       set({ isLoading: false })

@@ -7,34 +7,50 @@ import Fonts from './styles/fonts'
 import MainPage from './pages/login/MainPage'
 import HomePage from './pages/home/HomePage'
 import HomeCommentPage from './pages/home/HomeCommentPage'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
 import PayPage from './pages/pay/PayPage'
 import HomeImgSelectPage from './pages/home/HomeImgSelectPage'
 import HomeTagPage from './pages/home/HomeTagPage'
 import HomeWritePage from './pages/home/HomeWritePage'
 import KakaoHandler from './features/login/hooks/KakaoHandler'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 function App() {
   return (
     <>
       <Fonts />
       <Routes>
-        {/* 처음 입장시 스플래시 화면 구성할 예정 */}
+        {/* 공개 라우트 - 인증 필요 없음 */}
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/complete" element={<LoginCompletePage />} />
         <Route path="/callback/kakao" element={<KakaoHandler />} />
-        {/* 홈 */}
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
-        <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
-        <Route path="/home/tag" element={<HomeTagPage />} />
-        <Route path="/home/write" element={<HomeWritePage />} />
-        {/* 게시판 */}
-        <Route path="/board" element={<BoardPage />} />
-        <Route path="/board/:postId" element={<BoardDetailPage />} />
-        <Route path="/board/write" element={<BoardWritePage />} />
-        <Route path="/pay" element={<PayPage />} />
+        {/* 보호된 라우트 - 인증 필요 */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          {/* 홈 관련 라우트 */}
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
+          <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
+          <Route path="/home/tag" element={<HomeTagPage />} />
+          <Route path="/home/write" element={<HomeWritePage />} />
+
+          {/* 게시판 관련 라우트 */}
+          <Route path="/board" element={<BoardPage />} />
+          <Route path="/board/:postId" element={<BoardDetailPage />} />
+          <Route path="/board/write" element={<BoardWritePage />} />
+
+          {/* 결제 라우트 */}
+          <Route path="/pay" element={<PayPage />} />
+        </Route>
+
+        {/* 404 페이지나 기타 예외 처리 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )
