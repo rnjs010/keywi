@@ -8,6 +8,7 @@ import com.ssafy.integratedSearch.service.FeedSearchService;
 import com.ssafy.integratedSearch.service.ProductSearchService;
 import com.ssafy.integratedSearch.service.SearchService;
 import com.ssafy.integratedSearch.service.UserSearchService;
+import com.ssafy.recentSearch.service.RecentSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class SearchController {
     private final UserSearchService userSearchService;
     private final ProductSearchService productSearchService;
 
+    private final RecentSearchService recentSearchService;
 
     /**
      * 통합 검색 API
@@ -36,20 +38,25 @@ public class SearchController {
             @RequestParam(defaultValue = "feeds") String tab,
             @ModelAttribute @Valid SearchRequestDto requestDto) {
 
+        Integer userId = 1;
+
         switch (tab.toLowerCase()) {
             case "feeds":
                 List<FeedSearchResultDto> feeds = feedSearchService.search(requestDto);
                 searchService.saveOrIncrementKeyword(requestDto.getQuery());
+                recentSearchService.saveKeyword(userId, requestDto.getQuery());
                 return ResponseEntity.ok(feeds);
 
             case "users":
                 List<UserSearchResultDto> users = userSearchService.search(requestDto);
                 searchService.saveOrIncrementKeyword(requestDto.getQuery());
+                recentSearchService.saveKeyword(userId, requestDto.getQuery());
                 return ResponseEntity.ok(users);
 
             case "products":
                 List<ProductSearchResultDto> products = productSearchService.search(requestDto);
                 searchService.saveOrIncrementKeyword(requestDto.getQuery());
+                recentSearchService.saveKeyword(userId, requestDto.getQuery());
                 return ResponseEntity.ok(products);
 
             default:
