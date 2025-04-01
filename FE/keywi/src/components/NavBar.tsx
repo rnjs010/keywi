@@ -37,7 +37,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Profile */}
-      <NavLink to="/" style={navActiveStyle}>
+      <NavLink to="/mypage" style={navActiveStyle}>
         <ProfileCircle width="1.7rem" height="1.7rem" />
       </NavLink>
     </NavContainer>
