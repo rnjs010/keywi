@@ -8,10 +8,6 @@ pipeline {
         jdk 'Zulu17'
         git 'Default Git'
     }
-    parameters {
-        string(name: 'GIT_COMMIT', defaultValue: '')
-        string(name: 'GIT_BRANCH', defaultValue: '')
-    }
     environment {
         STAGE_NAME = ''
         
@@ -40,6 +36,9 @@ pipeline {
         stage('Checkout and Update') {
             steps {
                 script {
+                    echo "Branch: ${env.GIT_BRANCH}"
+                    echo "Commit: ${env.GIT_COMMIT}"
+                    BRANCH_NAME = env.GIT_BRANCH.replaceFirst("refs/heads/", "")
                     STAGE_NAME = "Checkout and Update (1/6)"
                     def repoExists = fileExists('.git')
                     if (repoExists) {
@@ -47,28 +46,20 @@ pipeline {
                         try {
                             checkout([
                                 $class: 'GitSCM',
-                                branches: [[name: '*/develop']],
+                                branches: [[name: '*/${BRANCH_NAME}']],
                                 userRemoteConfigs: [[
                                     url: "${GITLAB_BASE_URL}.git",
                                     credentialsId: 'gitlab-credentials'
                                 ]],
                                 extensions: [
                                     [$class: 'CleanBeforeCheckout'],
-                                    [$class: 'PruneStaleBranch'],
-                                    [$class: 'CloneOption', depth: 0, shallow: false]
+                                    [$class: 'PruneStaleBranch']
                                 ]
                             ])
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
-                                sh """
-                                    git fetch --all --prune
-                                """
-                                
-                                BRANCH_NAME = params.GIT_BRANCH ?: sh(script: """
-                                    git name-rev --name-only ${params.GIT_COMMIT} |
-                                    sed 's/^origin\\///;s/\\^0$//'
-                                """, returnStdout: true).trim()
-                                echo "Target branch: ${BRANCH_NAME}"
+                                sh "git fetch --all --prune"
                                 sh "git checkout ${BRANCH_NAME}"
+                                sh "git pull origin ${BRANCH_NAME}"
                                 
                                 GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                                 DOCKER_TAG = "${env.BUILD_NUMBER}-${GIT_COMMIT_SHORT}"
@@ -78,7 +69,7 @@ pipeline {
                                 
                                 // 서비스 목록 설정
                                 // if (BRANCH_NAME == "develop") {
-                                //     SERVICES = "config,eureka,gateway,auth,common,feed,product,payment,search,chat,notification"
+                                //     env.SERVICES = "config,eureka,gateway,auth,common,feed,product,payment,search,chat,notification"
                                 // } else
                                 if (BRANCH_NAME == "feature/BE/gateway") {
                                     SERVICES = "eureka,gateway"
@@ -100,12 +91,6 @@ pipeline {
                         try {
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
                                 sh "git clone ${GITLAB_BASE_URL}.git ."
-                                
-                                BRANCH_NAME = params.GIT_BRANCH ?: sh(script: """
-                                    git name-rev --name-only ${params.GIT_COMMIT} |
-                                    sed 's/^origin\\///;s/\\^0$//'
-                                """, returnStdout: true).trim()
-                                echo "Latest branch: ${BRANCH_NAME}"
 
                                 sh "git checkout ${BRANCH_NAME}"
 
@@ -142,17 +127,17 @@ pipeline {
                         returnStatus: true
                     ) != 0) {
                         currentBuild.result = 'ABORTED'
-                        ERROR_MSG = "BE 디렉토리가 원격 브랜치에 존재하지 않음"
+                        env.ERROR_MSG = "BE 디렉토리가 원격 브랜치에 존재하지 않음"
                         error ERROR_MSG
                     }
                     
                     if (!fileExists("BE")) {
-                        ERROR_MSG = "BE 디렉토리가 로컬에 존재하지 않음"
+                        env.ERROR_MSG = "BE 디렉토리가 로컬에 존재하지 않음"
                         error ERROR_MSG
                     }
                     
                     if (COMMIT_MSG.toLowerCase().contains('[fe]')) {
-                        ERROR_MSG = "FE 커밋으로 빌드 중단"
+                        env.ERROR_MSG = "FE 커밋으로 빌드 중단"
                         error ERROR_MSG
                     }
                 }
@@ -162,7 +147,7 @@ pipeline {
             steps {
                 script {
                     def servicesList = SERVICES.split(',')
-                    STAGE_NAME = "Inject Config (2/6)"
+                    env.STAGE_NAME = "Inject Config (2/6)"
                     
                     servicesList.each { SERVICE ->
                         echo "Injecting config for ${SERVICE}..."
@@ -184,7 +169,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    STAGE_NAME = "Build (3/6)"
+                    env.STAGE_NAME = "Build (3/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Building ${SERVICE}..."
@@ -193,7 +178,7 @@ pipeline {
                                 // Maven 빌드 사용
                                 sh "mvn clean package -DskipTests"
                             } catch(Exception e) {
-                                ERROR_MSG = e.getMessage()
+                                env.ERROR_MSG = e.getMessage()
                                 error "Build failed for ${SERVICE}: ${ERROR_MSG}"
                             }
                         }
@@ -204,7 +189,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        ERROR_MSG += "\nBuild failed"
+                        env.ERROR_MSG += "\nBuild failed"
                         error ERROR_MSG
                     }
                 }
@@ -213,7 +198,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    STAGE_NAME = "Docker Build (4/6)"
+                    env.STAGE_NAME = "Docker Build (4/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Docker building ${SERVICE}..."
@@ -228,7 +213,7 @@ pipeline {
                             sh "docker tag ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:latest"
                             // sh "docker save ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}-test | gzip > ${SERVICE}-image.tar.gz"
                         } catch(Exception e) {
-                            ERROR_MSG = e.getMessage()
+                            env.ERROR_MSG = e.getMessage()
                             error "Docker build failed for ${SERVICE}: ${ERROR_MSG}"
                         }
                     }
@@ -238,7 +223,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        ERROR_MSG += "\nDocker Build failed"
+                        env.ERROR_MSG += "\nDocker Build failed"
                         error ERROR_MSG
                     }
                 }
@@ -247,7 +232,7 @@ pipeline {
         stage('Push to Docker Hub') {//('Deploy to Test') {
             steps {
                 script {
-                    STAGE_NAME = "Push to Docker Hub (5/6)"//"Deploy to Test (5/9)"
+                    env.STAGE_NAME = "Push to Docker Hub (5/6)"//"Deploy to Test (5/9)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Pushing ${SERVICE} to Docker Hub..."
@@ -263,7 +248,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        ERROR_MSG = "Docker Push failed"
+                        env.ERROR_MSG = "Docker Push failed"
                         error ERROR_MSG
                     }
                 }
@@ -272,7 +257,7 @@ pipeline {
         stage('Deploy to Prod') {
             steps {
                 script {
-                    STAGE_NAME = "Deploy to Prod (6/6)"
+                    env.STAGE_NAME = "Deploy to Prod (6/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Deploying ${SERVICE} to production server..."
@@ -292,7 +277,7 @@ pipeline {
                                     docker pull ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
                                     docker stop ${SERVICE} || true
                                     docker rm ${SERVICE} || true
-                                    docker run${memoryl} --restart=unless-stopped -d --network host --name ${SERVICE} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
+                                    docker run${memoryl} -d --network host --name ${SERVICE} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}
                                 "
                             """
                         }
@@ -303,7 +288,7 @@ pipeline {
             post {
                 failure {
                     script {
-                        ERROR_MSG = "Production deployment failed"
+                        env.ERROR_MSG = "Production deployment failed"
                         error ERROR_MSG
                     }
                 }
@@ -344,7 +329,7 @@ pipeline {
         stage('Complete') {
             steps {
                 script {
-                    STAGE_NAME = "Completed"
+                    env.STAGE_NAME = "Completed"
                 }
             }
         }
