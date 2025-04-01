@@ -19,7 +19,7 @@ export default function ChatRoomHeader({
 
   return (
     <Container>
-      <NavArrowLeft onClick={() => navigate('/board')} />
+      <NavArrowLeft onClick={() => navigate('/chat')} />
       <div className="flex items-center">
         <Text variant="body1" weight="bold" color="black">
           {nickname}

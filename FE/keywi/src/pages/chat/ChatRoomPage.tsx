@@ -5,27 +5,65 @@ import OpponentMessage from '@/features/chat/components/MessageBox/OpponentMessa
 import ChatRoomSendBox from '@/features/chat/components/ChatRoomSendBox'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
+import { useEffect, useRef } from 'react'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
 `
 
 const DownBtnBox = tw.button`
-  absolute top-[84vh] left-[84vw] z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center
+  fixed left-[84vw] z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center
 `
 
-export default function ChatApp() {
+export default function ChatRoomPage() {
   const myId = 'user789'
+  const containerRef = useRef<HTMLDivElement>(null)
+  const downBtnRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const handleVisualViewPortResize = () => {
+      const currentVisualViewport = Number(window.visualViewport?.height)
+      if (containerRef.current) {
+        containerRef.current.style.height = `${currentVisualViewport + 10}px`
+        window.scrollTo(0, 20)
+      }
+
+      if (downBtnRef.current) {
+        downBtnRef.current.style.top = `${currentVisualViewport - 130}px`
+      }
+    }
+
+    // 초기 설정
+    handleVisualViewPortResize()
+
+    // 이벤트 리스너 등록
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener(
+        'resize',
+        handleVisualViewPortResize,
+      )
+    }
+
+    // 클린업 함수
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener(
+          'resize',
+          handleVisualViewPortResize,
+        )
+      }
+    }
+  }, [])
 
   return (
-    <Container>
+    <Container ref={containerRef}>
       <div className="sticky top-0">
         <ChatRoomHeader {...chatParticipant} />
         <ChatRoomPostInfo {...post} />
       </div>
 
       {/* Down Button */}
-      <DownBtnBox>
+      <DownBtnBox ref={downBtnRef}>
         <ArrowDown />
       </DownBtnBox>
 
