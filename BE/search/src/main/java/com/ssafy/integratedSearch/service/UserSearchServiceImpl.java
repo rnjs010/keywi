@@ -30,7 +30,7 @@ public class UserSearchServiceImpl implements UserSearchService {
                             .query(q -> q
                                     .multiMatch(m -> m
                                             .fields("nickname.jaso^3", "nickname.standard_en^2", "nickname.ngram_en^0.5")
-                                            .query(requestDto.getKeyword())
+                                            .query(requestDto.getQuery())
                                             .fuzziness("AUTO")
                                             .minimumShouldMatch("80%")
                                             .operator(Operator.And)

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class SearchRequestDto {
     @NotBlank
-    private String keyword;
+    private String query;
 
     @Min(0)
     private int page = 0;

@@ -39,17 +39,17 @@ public class SearchController {
         switch (tab.toLowerCase()) {
             case "feeds":
                 List<FeedSearchResultDto> feeds = feedSearchService.search(requestDto);
-                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                searchService.saveOrIncrementKeyword(requestDto.getQuery());
                 return ResponseEntity.ok(feeds);
 
             case "users":
                 List<UserSearchResultDto> users = userSearchService.search(requestDto);
-                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                searchService.saveOrIncrementKeyword(requestDto.getQuery());
                 return ResponseEntity.ok(users);
 
             case "products":
                 List<ProductSearchResultDto> products = productSearchService.search(requestDto);
-                searchService.saveOrIncrementKeyword(requestDto.getKeyword());
+                searchService.saveOrIncrementKeyword(requestDto.getQuery());
                 return ResponseEntity.ok(products);
 
             default:

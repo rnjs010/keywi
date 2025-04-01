@@ -31,7 +31,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                                     .bool(b -> b
                                             .must(m -> m.multiMatch(mq -> mq
                                                     .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5", "categoryName^1")
-                                                    .query(requestDto.getKeyword())
+                                                    .query(requestDto.getQuery())
                                                     .fuzziness("AUTO")
                                                     .minimumShouldMatch("80%")
                                                     .operator(Operator.And)
