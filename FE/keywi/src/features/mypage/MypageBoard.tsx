@@ -1,5 +1,5 @@
 import tw from 'twin.macro'
-import BoardCard from '@/features/board/components/BoardCard'
+import MypageBoardCard from './MypageBoardCard'
 
 const ListContainer = tw.div`
   flex flex-col px-4
@@ -17,8 +17,8 @@ interface Quote {
   id: number
   status: string
   title: string
-  authorNickname: string
   date: string
+  time: string
   chatCount?: number
   thumbnailUrl: string
 }
@@ -39,13 +39,13 @@ export default function MypageBoard({ quotes }: MypageBoardProps) {
   return (
     <ListContainer>
       {quotes.map((quote) => (
-        <BoardCard
+        <MypageBoardCard
           key={quote.id}
           id={quote.id}
           status={quote.status}
           title={quote.title}
-          authorNickname={quote.authorNickname}
           date={quote.date}
+          time={quote.time}
           chstCount={quote.chatCount}
           thumbnailUrl={quote.thumbnailUrl}
         />

@@ -3,8 +3,8 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import MypageHeader from '@/features/mypage/MypageHeader'
 import MypageProfile from '@/features/mypage/MypageProfile'
-import MypageFeedGrid from '@/features/mypage/MypageFeed'
-import MypageQuoteList from '@/features/mypage/MypageBoard'
+import MypageFeed from '@/features/mypage/MypageFeed'
+import MypageBoard from '@/features/mypage/MypageBoard'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import NavBar from '@/components/NavBar'
 
@@ -16,37 +16,40 @@ const Container = tw.div`
   flex-col 
   h-screen 
   box-border 
-  overflow-x-hidden
+  overflow-hidden
+  relative
 `
 
-const ScrollArea = styled.div`
-  ${tw`
-    flex-1 
-    overflow-y-auto 
-    pb-16
-  `}
-
-  /* 스크롤바 숨기기 - 웹킷 기반 브라우저 (Chrome, Safari, Edge) */
-  &::-webkit-scrollbar {
-    display: none;
-  }
+// 상단 고정 영역 위한 컨테이너
+const FixedTopSection = tw.div`
+  w-full
 `
 
 const TabContainer = tw.div`
-  border-b border-[#EEEEEE]
+  mt-1
+  flex 
+  flex-col
+  flex-1
 `
 
 const StyledTabs = styled(Tabs)`
-  ${tw`w-full`}
+  ${tw`
+    w-full
+    flex
+    flex-col
+    h-full
+  `}
 `
 
 const StyledTabsList = styled(TabsList)`
   ${tw`
     w-full 
     bg-transparent 
-    border-b-0
+    border-b
+    border-white
     justify-center
-    h-12
+    h-9
+    shrink-0
   `}
 `
 
@@ -62,6 +65,30 @@ const StyledTabsTrigger = styled(TabsTrigger)`
     data-[state=active]:font-bold
     py-3
   `}
+`
+
+const ContentWrapper = tw.div`
+  flex-1
+  relative
+`
+
+const StyledTabsContent = styled(TabsContent)`
+  ${tw`
+    hidden
+    data-[state=active]:block
+    absolute
+    inset-0
+    overflow-y-auto 
+    pb-16
+  `}
+
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* iOS 스크롤 부드럽게 */
+  -webkit-overflow-scrolling: touch;
 `
 
 const NavBarContainer = tw.div`
@@ -81,7 +108,7 @@ export default function MyPage() {
   const [profileData, setProfileData] = useState({
     nickname: '규리몽땅',
     profileImage: 'https://picsum.photos/200',
-    // levelBadgeText: '런타이 16',
+    // levelBadgeText: '당도 16',
     followers: 0,
     following: 3,
     posts: 0,
@@ -98,24 +125,30 @@ export default function MyPage() {
     { id: 7, imageUrl: 'https://picsum.photos/300?random=7' },
     { id: 8, imageUrl: 'https://picsum.photos/300?random=8' },
     { id: 9, imageUrl: 'https://picsum.photos/300?random=9' },
+    { id: 10, imageUrl: 'https://picsum.photos/300?random=10' },
+    { id: 11, imageUrl: 'https://picsum.photos/300?random=11' },
+    { id: 12, imageUrl: 'https://picsum.photos/300?random=12' },
+    { id: 13, imageUrl: 'https://picsum.photos/300?random=13' },
+    { id: 14, imageUrl: 'https://picsum.photos/300?random=14' },
+    { id: 15, imageUrl: 'https://picsum.photos/300?random=15' },
   ])
 
   const [quotes, setQuotes] = useState([
     {
       id: 1,
-      status: '진행중',
+      status: 'REQUEST',
       title: '견적부탁드립니다...',
-      authorNickname: '지민춘',
       date: '2023.03.13',
+      time: '15:43',
       chatCount: 1,
       thumbnailUrl: 'https://picsum.photos/50?random=10',
     },
     {
       id: 2,
-      status: '구매완료',
+      status: 'COMPLETED',
       title: '키위에 견적 부탁드려요...!!',
-      authorNickname: '규리몽땅',
-      date: '2023.03.13',
+      date: '2023.03.10',
+      time: '10:43',
       chatCount: 3,
       thumbnailUrl: 'https://picsum.photos/50?random=11',
     },
@@ -123,34 +156,36 @@ export default function MyPage() {
 
   return (
     <Container>
-      <MypageHeader />
-      <MypageProfile
-        nickname={profileData.nickname}
-        profileImage={profileData.profileImage}
-        // levelBadgeText={profileData.levelBadgeText}
-        followers={profileData.followers}
-        following={profileData.following}
-        posts={profileData.posts}
-        description={profileData.description}
-      />
+      {/* 상단 고정 영역 */}
+      <FixedTopSection>
+        <MypageHeader />
+        <MypageProfile
+          nickname={profileData.nickname}
+          profileImage={profileData.profileImage}
+          // levelBadgeText={profileData.levelBadgeText}
+          followers={profileData.followers}
+          following={profileData.following}
+          posts={profileData.posts}
+          description={profileData.description}
+        />
+      </FixedTopSection>
 
       <TabContainer>
-        <ScrollArea>
-          <StyledTabs defaultValue="feed">
-            <StyledTabsList>
-              <StyledTabsTrigger value="feed">피드</StyledTabsTrigger>
-              <StyledTabsTrigger value="quote">견적</StyledTabsTrigger>
-            </StyledTabsList>
+        <StyledTabs defaultValue="feed">
+          <StyledTabsList>
+            <StyledTabsTrigger value="feed">피드</StyledTabsTrigger>
+            <StyledTabsTrigger value="quote">견적</StyledTabsTrigger>
+          </StyledTabsList>
 
-            <TabsContent value="feed" className="mt-0">
-              <MypageFeedGrid feeds={feeds} />
-            </TabsContent>
-
-            <TabsContent value="quote" className="mt-0">
-              <MypageQuoteList quotes={quotes} />
-            </TabsContent>
-          </StyledTabs>
-        </ScrollArea>
+          <ContentWrapper>
+            <StyledTabsContent value="feed">
+              <MypageFeed feeds={feeds} />
+            </StyledTabsContent>
+            <StyledTabsContent value="quote">
+              <MypageBoard quotes={quotes} />
+            </StyledTabsContent>
+          </ContentWrapper>
+        </StyledTabs>
       </TabContainer>
 
       <NavBarContainer>
