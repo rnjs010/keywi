@@ -10,7 +10,7 @@
         INSERT INTO keyword_rank (time_block, keyword, ranking, change_status)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.timeBlock}, #{item.keyword}, #{item.rank}, #{item.changeStatus})
+            (#{item.timeBlock}, #{item.keyword}, #{item.ranking}, #{item.changeStatus})
         </foreach>
     </insert>
 
