@@ -1,7 +1,13 @@
 import React from 'react';
 
-const SuggestionItem = ({ text, query, onClick }) => {
-  const renderHighlighted = () => {
+interface Props {
+  text: string;
+  query: string;
+  onClick: () => void;
+}
+
+const SuggestionItem: React.FC<Props> = ({ text, query, onClick }) => {
+  const highlightMatch = () => {
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
     return parts.map((part, i) =>
@@ -15,10 +21,10 @@ const SuggestionItem = ({ text, query, onClick }) => {
 
   return (
     <li
-      onClick={() => onClick(text)}
+      onClick={onClick}
       style={{
         listStyle: 'none',
-        padding: '10px 16px',
+        padding: '12px 16px',
         cursor: 'pointer',
         borderBottom: '1px solid #eee',
         backgroundColor: '#fff',
@@ -27,7 +33,7 @@ const SuggestionItem = ({ text, query, onClick }) => {
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
     >
-      {renderHighlighted()}
+      {highlightMatch()}
     </li>
   );
 };
