@@ -34,27 +34,31 @@ export default function ProductForm() {
   const [selectedProductsLocal, setSelectedProductsLocal] =
     useState<Record<string, BoardItem>>(selectedProducts)
 
+  // 추가한 기타 카테고리
+  const increaseCategory = useDealProductStore(
+    (state) => state.increaseCategory,
+  )
+
+  const etcCategoryCount = useDealProductStore(
+    (state) => state.etcCategoryCount,
+  )
+
   // 현재 선택된 카테고리
   const [currentCategory, setCurrentCategory] = useState<string>('')
   const [currentCategoryId, setCurrentCategoryId] = useState<number>(0)
-
-  // 추가한 기타 카테고리 ID와 개수
-  const [nextEtcCategoryId, setNextEtcCategoryId] = useState<number>(8)
-  const [etcCount, setEtcCount] = useState<number>(1)
 
   // 현재 열려있는 Drawer를 추적
   const [openMethodModal, setOpenMethodModal] = useState<boolean>(false)
   const [openSearchModal, setOpenSearchModal] = useState<boolean>(false)
   const [openDirectModal, setOpenDirectModal] = useState<boolean>(false)
 
-  // 카테고리 선택 시 AddMethodModal 열기
+  // Modal 상태 변경
   const handleAddProduct = (category: string, categoryId: number) => {
     setCurrentCategory(category)
     setCurrentCategoryId(categoryId)
     setOpenMethodModal(true)
   }
 
-  // AddMethodModal에서 방법 선택 시 호출될 함수들
   const handleSelectDirectInput = () => {
     setOpenMethodModal(false)
     setOpenDirectModal(true)
@@ -65,6 +69,15 @@ export default function ProductForm() {
     setOpenSearchModal(true)
   }
 
+  // 하단 + 버튼 클릭 시 DirectModal 열기 (기타 카테고리 추가)
+  const handleAddEtcCategory = () => {
+    const etcCategoryName = '기타'
+    setCurrentCategory(etcCategoryName)
+    setCurrentCategoryId(currentCategoryId + etcCategoryCount)
+    setOpenDirectModal(true)
+  }
+
+  // 상품 추가 (검색용, 직접 입력)
   const handleSelectProduct = (product: BoardItem) => {
     setSelectedProductsLocal({
       ...selectedProductsLocal,
@@ -73,19 +86,6 @@ export default function ProductForm() {
     setOpenSearchModal(false)
   }
 
-  // 하단 + 버튼 클릭 시 DirectModal 열기 (기타 카테고리 추가)
-  const handleAddEtcCategory = () => {
-    const etcCategoryName = `기타${etcCount}`
-    setCurrentCategory(etcCategoryName)
-    setCurrentCategoryId(nextEtcCategoryId)
-    setOpenDirectModal(true)
-
-    // 기타 카테고리 정보 업데이트
-    setNextEtcCategoryId(nextEtcCategoryId + 1)
-    setEtcCount(etcCount + 1)
-  }
-
-  // 직접 입력된 상품 추가
   const handleAddDirectProduct = (name: string, price: number) => {
     const directProduct: BoardItem = {
       itemId: Date.now(), // 임시 ID 생성
@@ -100,6 +100,10 @@ export default function ProductForm() {
       ...selectedProductsLocal,
       [currentCategory]: directProduct,
     })
+
+    if (currentCategory === '기타') {
+      increaseCategory()
+    }
     setOpenDirectModal(false)
   }
 
