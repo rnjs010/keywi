@@ -139,67 +139,67 @@ public class FeedController {
         return ResponseEntity.ok(response);
     }
 
-//    /**
-//     * 피드 댓글 조회
-//     */
-//    @GetMapping("/{feedId}/comments")
-//    public ResponseEntity<List<CommentDTO>> getComments(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long feedId) {
-//
-//        List<CommentDTO> comments = feedService.getComments(feedId, userId);
-//
-//        // 사용자 활동 이벤트 발행 (댓글 목록 조회)
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", "VIEW_COMMENTS",
-//                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
-//        ));
-//
-//        return ResponseEntity.ok(comments);
-//    }
-//
-//    /**
-//     * 피드 댓글 작성
-//     */
-//    @PostMapping("/{feedId}/comments")
-//    public ResponseEntity<CommentDTO> addComment(
-//            @RequestHeader("X-User-Id") Long userId,
-//            @PathVariable Long feedId,
-//            @RequestBody CommentRequest request) {
-//
-//        CommentDTO comment = feedService.addComment(feedId, userId, request);
-//
-//        // 사용자 활동 이벤트 발행 (댓글 작성)
-//        kafkaTemplate.send("user-activity-events", Map.of(
-//                "userId", userId,
-//                "activityType", "ADD_COMMENT",
-//                "activityData", Map.of(
-//                        "feedId", feedId,
-//                        "commentId", comment.getId(),
-//                        "timestamp", System.currentTimeMillis()
-//                )
-//        ));
-//
-//        // 댓글에 멘션된 사용자가 있으면 알림 발송
-//        if (request.getMentionedUserIds() != null && !request.getMentionedUserIds().isEmpty()) {
-//            request.getMentionedUserIds().forEach(mentionedUserId -> {
-//                kafkaTemplate.send("notification-events", Map.of(
-//                        "type", "COMMENT_MENTION",
-//                        "receiverId", mentionedUserId,
-//                        "senderId", userId,
-//                        "data", Map.of(
-//                                "feedId", feedId,
-//                                "commentId", comment.getId(),
-//                                "text", comment.getContent()
-//                        )
-//                ));
-//            });
-//        }
-//
-//        return ResponseEntity.ok(comment);
-//    }
-//
+    /**
+     * 피드 댓글 조회
+     */
+    @GetMapping("/{feedId}/comments")
+    public ResponseEntity<List<CommentDTO>> getComments(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long feedId) {
+
+        List<CommentDTO> comments = feedService.getComments(feedId, userId);
+
+        // 사용자 활동 이벤트 발행 (댓글 목록 조회)
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", "VIEW_COMMENTS",
+                "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
+        ));
+
+        return ResponseEntity.ok(comments);
+    }
+
+    /**
+     * 피드 댓글 작성
+     */
+    @PostMapping("/{feedId}/comments")
+    public ResponseEntity<CommentDTO> addComment(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long feedId,
+            @RequestBody CommentRequest request) {
+
+        CommentDTO comment = feedService.addComment(feedId, userId, request);
+
+        // 사용자 활동 이벤트 발행 (댓글 작성)
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", "ADD_COMMENT",
+                "activityData", Map.of(
+                        "feedId", feedId,
+                        "commentId", comment.getId(),
+                        "timestamp", System.currentTimeMillis()
+                )
+        ));
+
+        // 댓글에 멘션된 사용자가 있으면 알림 발송
+        if (request.getMentionedUserIds() != null && !request.getMentionedUserIds().isEmpty()) {
+            request.getMentionedUserIds().forEach(mentionedUserId -> {
+                kafkaTemplate.send("notification-events", Map.of(
+                        "type", "COMMENT_MENTION",
+                        "receiverId", mentionedUserId,
+                        "senderId", userId,
+                        "data", Map.of(
+                                "feedId", feedId,
+                                "commentId", comment.getId(),
+                                "text", comment.getContent()
+                        )
+                ));
+            });
+        }
+
+        return ResponseEntity.ok(comment);
+    }
+
     /**
      * 유저 팔로우/언팔로우
      */

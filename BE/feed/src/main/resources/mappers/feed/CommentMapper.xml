@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.CommentMapper">
+
+    <resultMap id="commentResultMap" type="com.ssafy.feed.model.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="feedId" column="feed_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments WHERE comment_id = #{commentId}
+    </select>
+
+    <select id="findByFeedId" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments
+        WHERE feed_id = #{feedId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findTop3ByFeedId" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments
+        WHERE feed_id = #{feedId}
+        ORDER BY created_at DESC
+            LIMIT 3
+    </select>
+
+    <select id="findByUserId" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ssafy.feed.model.Comment" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO comments (
+            feed_id, user_id, content, created_at, updated_at
+        ) VALUES (
+                     #{feedId}, #{userId}, #{content}, NOW(), NOW()
+                 )
+    </insert>
+
+    <update id="update" parameterType="com.ssafy.feed.model.Comment">
+        UPDATE comments
+        SET
+            content = #{content},
+            updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>
+
+    <delete id="deleteByFeedId" parameterType="long">
+        DELETE FROM comments WHERE feed_id = #{feedId}
+    </delete>
+
+    <insert id="insertMention" parameterType="com.ssafy.feed.model.CommentMention">
+        INSERT INTO comment_mentions (comment_id, user_id, created_at)
+        VALUES (#{commentId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="deleteMention">
+        DELETE FROM comment_mentions
+        WHERE comment_id = #{commentId} AND user_id = #{userId}
+    </delete>
+
+    <select id="findMentionedUserIds" parameterType="long" resultType="long">
+        SELECT user_id FROM comment_mentions
+        WHERE comment_id = #{commentId}
+    </select>
+
+    <update id="incrementCommentCount" parameterType="long">
+        UPDATE feeds
+        SET
+            comment_count = comment_count + 1,
+            updated_at = NOW()
+        WHERE feed_id = #{feedId}
+    </update>
+
+    <update id="decrementCommentCount" parameterType="long">
+        UPDATE feeds
+        SET
+            comment_count = GREATEST(0, comment_count - 1),
+            updated_at = NOW()
+        WHERE feed_id = #{feedId}
+    </update>
+
+</mapper>

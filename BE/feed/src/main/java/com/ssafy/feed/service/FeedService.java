@@ -361,42 +361,42 @@ public class FeedService {
     /**
      * 피드 댓글 작성
      */
-//    @Transactional
-//    public CommentDTO addComment(Long feedId, Long userId, CommentRequest request) {
-//        // 댓글 저장
-//        Comment comment = Comment.builder()
-//                .feedId(feedId)
-//                .userId(userId)
-//                .content(request.getContent())
-//                .build();
-//
-//        commentMapper.insert(comment);
-//
-//        // 멘션된 사용자 저장
-//        if (request.getMentionedUserIds() != null && !request.getMentionedUserIds().isEmpty()) {
-//            for (Long mentionedUserId : request.getMentionedUserIds()) {
-//                commentMapper.insertMention(comment.getCommentId(), mentionedUserId);
-//            }
-//        }
-//
-//        // 댓글 수 증가
-//        commentMapper.incrementCommentCount(feedId);
-//
-//        // 작성자 정보 조회
-//        UserDTO author = userServiceAdapter.getUserById(userId);
-//
-//        // 멘션된 사용자 목록 조회
-//        List<Long> mentionedUserIds = commentMapper.findMentionedUserIds(comment.getCommentId());
-//
-//        return CommentDTO.builder()
-//                .id(comment.getCommentId())
-//                .feedId(comment.getFeedId())
-//                .author(author)
-//                .content(comment.getContent())
-//                .createdAt(comment.getCreatedAt())
-//                .mentionedUserIds(mentionedUserIds)
-//                .build();
-//    }
+    @Transactional
+    public CommentDTO addComment(Long feedId, Long userId, CommentRequest request) {
+        // 댓글 저장
+        Comment comment = Comment.builder()
+                .feedId(feedId)
+                .userId(userId)
+                .content(request.getContent())
+                .build();
+
+        commentMapper.insert(comment);
+
+        // 멘션된 사용자 저장
+        if (request.getMentionedUserIds() != null && !request.getMentionedUserIds().isEmpty()) {
+            for (Long mentionedUserId : request.getMentionedUserIds()) {
+                commentMapper.insertMention(comment.getCommentId(), mentionedUserId);
+            }
+        }
+
+        // 댓글 수 증가
+        commentMapper.incrementCommentCount(feedId);
+
+        // 작성자 정보 조회
+        UserDTO author = userServiceAdapter.getUserById(userId);
+
+        // 멘션된 사용자 목록 조회
+        List<Long> mentionedUserIds = commentMapper.findMentionedUserIds(comment.getCommentId());
+
+        return CommentDTO.builder()
+                .id(comment.getCommentId())
+                .feedId(comment.getFeedId())
+                .author(author)
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .mentionedUserIds(mentionedUserIds)
+                .build();
+    }
 
     /**
      * 유저 팔로우/언팔로우
