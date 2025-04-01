@@ -16,10 +16,10 @@ public class ChatRoomDto {
 
     private String roomId;         // 채팅방 ID
 
-    private String postId;         // 연결된 게시글 ID
-    private String postTitle;      // 게시글 제목
-    private String postThumbnail;  // 게시글 대표 이미지 URL
-    private String postStatus;     // 게시글 상태
+    private String boardId;        // 연결된 게시글 ID
+    private String title;          // 게시글 제목
+    private String thumbnailUrl;   // 게시글 대표 이미지 URL
+    private String dealState;      // 게시글 상태
 
     private String buyerId;        // 구매자 ID
     private String buyerNickname;  // 구매자 닉네임
@@ -37,4 +37,7 @@ public class ChatRoomDto {
     private boolean hasTransaction; // 거래 요청 여부
     private Integer transactionAmount; // 거래 금액
     private String transactionStatus; // 거래 상태
+
+    // 알림 설정
+    private boolean notificationEnabled; // 알림 활성화 여부
 }

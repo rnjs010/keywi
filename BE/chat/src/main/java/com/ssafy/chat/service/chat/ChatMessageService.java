@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -97,6 +98,27 @@ public class ChatMessageService {
         Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, pageable);
 
         return messages.map(this::convertToDto);
+    }
+
+    /**
+     * 이전 메시지 로딩 (스크롤 시 이전 메시지 로딩)
+     * @param roomId 채팅방 ID
+     * @param lastMessageId 마지막으로 로드된 메시지 ID
+     * @param size 로드할 메시지 수
+     * @return 이전 채팅 메시지 목록
+     */
+    public List<ChatMessageDto> getPreviousMessages(String roomId, String lastMessageId, int size) {
+        // 마지막 메시지 찾기
+        ChatMessage lastMessage = chatMessageRepository.findById(lastMessageId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MESSAGE_NOT_FOUND, "메시지를 찾을 수 없습니다."));
+
+        // 이전 메시지 조회 (마지막 메시지 시간보다 이전에 보낸 메시지)
+        List<ChatMessage> messages = chatMessageRepository.findByRoomIdAndSentAtBeforeOrderBySentAtDesc(
+                roomId, lastMessage.getSentAt(), PageRequest.of(0, size));
+
+        return messages.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -239,6 +261,55 @@ public class ChatMessageService {
 
         // 메시지 전송
         return sendMessage(messageDto, userId);
+    }
+
+    /**
+     * 이미지 업로드
+     * @param roomId 채팅방 ID
+     * @param userId 사용자 ID
+     * @param file 업로드할 이미지 파일
+     * @return 업로드된 이미지 URL
+     */
+    public String uploadMedia(String roomId, String userId, MultipartFile file) {
+        // 채팅방 확인
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
+
+        // 메시지 발신자가 채팅방 참여자인지 확인
+        if (!chatRoom.getBuyerId().equals(userId) && !chatRoom.getAssemblerId().equals(userId)) {
+            throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 채팅방에 속해있지 않습니다.");
+        }
+
+        // 파일 유효성 검사
+        if (file.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "파일이 비어있습니다.");
+        }
+
+        // 파일 확장자 검사
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !(
+                originalFilename.toLowerCase().endsWith(".jpg") ||
+                        originalFilename.toLowerCase().endsWith(".jpeg") ||
+                        originalFilename.toLowerCase().endsWith(".png") ||
+                        originalFilename.toLowerCase().endsWith(".gif")
+        )) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "지원하지 않는 파일 형식입니다.");
+        }
+
+        // 실제 구현에서는 여기서 파일 저장 로직 필요 (S3 등)
+        String fileUrl = "https://example.com/images/" + UUID.randomUUID().toString() + "-" + originalFilename;
+
+        // 이미지 메시지 생성 및 전송
+        ChatMessageDto messageDto = ChatMessageDto.builder()
+                .roomId(roomId)
+                .messageType(ChatMessageType.IMAGE)
+                .content("이미지")
+                .imageUrl(fileUrl)
+                .build();
+
+        sendMessage(messageDto, userId);
+
+        return fileUrl;
     }
 
     /**

@@ -31,6 +31,11 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
     List<ChatMessage> findByRoomIdAndSentAtAfterOrderBySentAtAsc(String roomId, LocalDateTime time);
 
     /**
+     * 특정 시간 이전의 채팅방 메시지 조회 (페이지네이션)
+     */
+    List<ChatMessage> findByRoomIdAndSentAtBeforeOrderBySentAtDesc(String roomId, LocalDateTime time, Pageable pageable);
+
+    /**
      * 특정 채팅방의 특정 사용자가 받은 읽지 않은 메시지 조회
      */
     List<ChatMessage> findByRoomIdAndReceiverIdAndReadFalse(String roomId, String receiverId);
