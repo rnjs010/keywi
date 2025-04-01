@@ -199,6 +199,14 @@ CREATE TABLE wishes (
                         UNIQUE (user_id, product_id)
 );
 
+CREATE TABLE keyword_rank (
+                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              time_block DATETIME,
+                              keyword VARCHAR(255),
+                              ranking INT,
+                              change_status ENUM('UP', 'DOWN', 'SAME', 'NEW')
+);
+
 -- feeds
 CREATE INDEX idx_feeds_user_id ON feeds(user_id);
 CREATE INDEX idx_feeds_created_at ON feeds(created_at);
