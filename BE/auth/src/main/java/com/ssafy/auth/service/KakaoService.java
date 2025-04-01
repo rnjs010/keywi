@@ -25,6 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * 카카오 소셜 로그인 관련 서비스
@@ -225,18 +226,25 @@ public class KakaoService {
         String nickname = userInfo.get("nickname").toString();
         Long kakaoId = Long.parseLong(socialId); // String을 Long으로 변환
 
-        Member member = memberRepository.findByKakaoIdAndLoginType(kakaoId, "KAKAO")
-                .orElseGet(() -> {
-                    // 수정된 createMember 메서드 호출 - 5개 매개변수 전달
-                    Member newMember = Member.createMember(
-                            null,           // email
-                            nickname,       // userName
-                            nickname,       // userNickname (닉네임을 이름과 동일하게 설정)
-                            "KAKAO",        // loginType
-                            kakaoId         // kakaoId
-                    );
-                    return memberRepository.save(newMember);
-                });
+        // Optional을 이용해 회원 존재 여부 먼저 확인
+        Optional<Member> existingMember = memberRepository.findByKakaoIdAndLoginType(kakaoId, "KAKAO");
+        boolean isNewUser = !existingMember.isPresent();
+
+        Member member;
+        if (isNewUser) {
+            // 새 회원 생성
+            Member newMember = Member.createMember(
+                    null,           // email
+                    nickname,       // userName
+                    nickname,       // userNickname (닉네임을 이름과 동일하게 설정)
+                    "KAKAO",        // loginType
+                    kakaoId         // kakaoId
+            );
+            member = memberRepository.save(newMember);
+        } else {
+            // 기존 회원 사용
+            member = existingMember.get();
+        }
 
         // JWT 토큰 생성
         JwtTokens jwtTokens = jwtTokensGenerator.generate(member.getId().toString());
@@ -267,6 +275,7 @@ public class KakaoService {
                 TOKEN_EXPIRATION_TIME_MS
         );
 
-        return new LoginResponse(jwtTokens);
+        // isNewUser 값을 전달하는 생성자 사용
+        return new LoginResponse(jwtTokens, isNewUser);
     }
 }
