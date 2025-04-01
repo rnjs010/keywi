@@ -3,7 +3,7 @@
 <mapper namespace="com.ssafy.feed.mapper.FeedProductMapper">
 
     <resultMap id="feedProductResultMap" type="com.ssafy.feed.model.FeedProduct">
-        <id property="feedProductId" column="feed_product_id"/>
+        <id property="productTagId" column="product_tag_id"/>
         <result property="feedId" column="feed_id"/>
         <result property="productId" column="product_id"/>
         <result property="isTemporary" column="is_temporary"/>
@@ -13,12 +13,10 @@
         <result property="feedImageId" column="feed_image_id"/>
         <result property="positionX" column="position_x"/>
         <result property="positionY" column="position_y"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="findById" parameterType="long" resultMap="feedProductResultMap">
-        SELECT * FROM feed_products WHERE feed_product_id = #{feedProductId}
+        SELECT * FROM feed_products WHERE product_tag_id = #{productTagId}
     </select>
 
     <select id="findByFeedId" parameterType="long" resultMap="feedProductResultMap">
@@ -33,7 +31,7 @@
         SELECT * FROM feed_products WHERE feed_image_id = #{feedImageId}
     </select>
 
-    <insert id="insert" parameterType="com.ssafy.feed.model.FeedProduct" useGeneratedKeys="true" keyProperty="feedProductId">
+    <insert id="insert" parameterType="com.ssafy.feed.model.FeedProduct" useGeneratedKeys="true" keyProperty="productTagId">
         INSERT INTO feed_products (
             feed_id, product_id, is_temporary, product_name, price,
             category, image_id, position_x, position_y
@@ -55,11 +53,11 @@
             position_x = #{positionX},
             position_y = #{positionY},
             updated_at = NOW()
-        WHERE feed_product_id = #{feedProductId}
+        WHERE product_tag_id = #{productTagId}
     </update>
 
     <delete id="deleteById" parameterType="long">
-        DELETE FROM feed_products WHERE feed_product_id = #{feedProductId}
+        DELETE FROM feed_products WHERE product_tag_id = #{productTagId}
     </delete>
 
     <delete id="deleteByFeedId" parameterType="long">
@@ -76,11 +74,7 @@
             position_x = #{positionX},
             position_y = #{positionY},
             updated_at = NOW()
-        WHERE feed_product_id = #{feedProductId}
+        WHERE product_tag_id = #{productTagId}
     </update>
-
-    <select id="findTemporaryProducts" parameterType="long" resultMap="feedProductResultMap">
-        SELECT * FROM feed_products WHERE feed_id = #{feedId} AND is_temporary = true
-    </select>
 
 </mapper>
