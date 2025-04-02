@@ -17,6 +17,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import MyPage from './pages/mypage/MyPage'
 import { SettingPage } from './pages/mypage/SettingPage'
 import { SettingAccountPage } from './pages/mypage/SettingAccountPage'
+import SearchingPage from './pages/search/SearchingPage'
 
 function App() {
   return (
@@ -55,6 +56,9 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/setting" element={<SettingPage />} />
           <Route path="/setting/account" element={<SettingAccountPage />} />
+
+          {/* 검색 라우트 */}
+          <Route path="/search" element={<SearchingPage />} />
         </Route>
 
         {/* 404 페이지나 기타 예외 처리 */}
