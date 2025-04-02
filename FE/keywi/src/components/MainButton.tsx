@@ -1,5 +1,4 @@
 //SECTION - 메인 버튼 (가로 전체 차지)
-import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 
@@ -22,9 +21,15 @@ const StyledButton = styled.button<{ disabled: boolean; cancle: boolean }>`
     justify-center
     text-white
   `}
-  ${({ disabled }) => (disabled ? tw`bg-disabled` : tw`bg-default`)}
-  ${({ cancle }) =>
-    cancle ? tw`text-darkKiwi bg-disabled` : tw`text-white bg-default`}
+  ${({ disabled, cancle }) => {
+    if (cancle) {
+      return tw`text-darkKiwi bg-disabled`
+    } else if (disabled) {
+      return tw`text-white bg-disabled`
+    } else {
+      return tw`text-white bg-default`
+    }
+  }}
 `
 
 export default function MainButton({

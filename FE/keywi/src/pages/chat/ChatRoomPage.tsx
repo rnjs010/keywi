@@ -3,11 +3,11 @@ import ChatRoomPostInfo from '@/features/chat/components/ChatRoomPostInfo'
 import MyMessage from '@/features/chat/components/MessageBox/MyMessage'
 import OpponentMessage from '@/features/chat/components/MessageBox/OpponentMessage'
 import ChatRoomSendBox from '@/features/chat/components/ChatRoomSendBox'
+import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
-import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/stores/ChatStore'
-import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
+import { useEffect, useRef } from 'react'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -30,9 +30,7 @@ export default function ChatRoomPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-
   const showImage = useChatStore((state) => state.showImage)
-  const setShowImage = useChatStore((state) => state.setShowImage)
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -68,7 +66,6 @@ export default function ChatRoomPage() {
     // 초기 설정
     handleVisualViewPortResize()
     startToBottom()
-    setShowImage(false)
 
     // 이벤트 리스너 등록
     if (window.visualViewport) {
@@ -87,7 +84,7 @@ export default function ChatRoomPage() {
         )
       }
     }
-  }, [])
+  }, [[showImage]])
 
   return (
     <>

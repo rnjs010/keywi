@@ -9,8 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useNavigate, useParams } from 'react-router-dom'
 import { useChatStore } from '@/stores/ChatStore'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3

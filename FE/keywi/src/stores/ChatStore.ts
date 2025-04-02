@@ -5,13 +5,17 @@ import { create } from 'zustand'
 interface ChatStore {
   showImage: boolean
   setShowImage: (showImage: boolean) => void
+  selectedImage: string | null
+  setSelectedImage: (image: string | null) => void
   resetState: () => void
 }
 
 export const useChatStore = create<ChatStore>((set) => ({
   showImage: false,
   setShowImage: (showImage) => set({ showImage }),
-  resetState: () => set({ showImage: false }),
+  selectedImage: null,
+  setSelectedImage: (image) => set({ selectedImage: image }),
+  resetState: () => set({ showImage: false, selectedImage: null }),
 }))
 
 // 거래 요청
