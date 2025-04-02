@@ -16,7 +16,7 @@ public class ProductController {
 
     private final ProductService productService;
     // 카테고리별 상품 조회 (오름차순/내림차순 정렬 지원)
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResponse<List<ProductDto>> getProductsAll(
             @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
 
