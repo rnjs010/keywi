@@ -39,10 +39,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // /ws-chat 엔드포인트로 WebSocket 연결 설정, SockJS 폴백 지원
+        // 기존 엔드포인트 유지
         registry.addEndpoint("/ws-chat")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+
+        // 추가로 /ws-endpoint 엔드포인트도 등록
+        registry.addEndpoint("/ws-endpoint")
+                .setAllowedOriginPatterns("*");
     }
 
     /**

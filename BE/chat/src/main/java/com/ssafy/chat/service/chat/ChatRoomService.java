@@ -36,18 +36,24 @@ public class ChatRoomService {
      * @param assemblerId 조립자 ID
      * @return 생성된 채팅방 정보
      */
-    public ChatRoomDto createChatRoom(String boardId, String assemblerId) {
-        // 게시글 정보 조회 (Feign 클라이언트 사용)
-        // 실제 구현: 게시글 서비스에서 정보를 가져와야 함
-        // 예: BoardDto boardInfo = boardServiceClient.getBoardInfo(boardId);
+    public ChatRoomDto createChatRoom(Long boardId, Long assemblerId) {
+        // 게시글 정보 조회
+        // 미구현: Feign 클라이언트를 통해 board 서비스에서 정보를 가져오는 부분
 
-        // 여기서는 schema.sql 기반 게시글 정보를 가정
-        String title = "키보드 조립 요청";  // boardInfo.getTitle();
-        String thumbnailUrl = "https://example.com/thumbnail.jpg";  // boardInfo.getThumbnailUrl();
-        String dealState = "대기중";  // boardInfo.getDealState();
-        String buyerId = "user123";  // String.valueOf(boardInfo.getWriterId());
-        String buyerNickname = "구매자닉네임";  // userServiceClient.getUserNickname(buyerId);
-        String assemblerNickname = "조립자닉네임";  // userServiceClient.getUserNickname(assemblerId);
+        // 임시 해결책: 하드코딩된 값으로 테스트 (실제 존재하는 사용자 ID 사용)
+        // users 테이블에 실제 존재하는 ID를 사용하세요
+        String title = "키보드 조립 요청";
+        String thumbnailUrl = "https://example.com/thumbnail.jpg";
+        String dealState = "대기중";
+
+        // board_id=1인 게시글의 writer_id를 직접 설정
+        // 실제 데이터베이스에서 확인한 값으로 변경해야 합니다
+        Long buyerId = 8L; // users 테이블에 존재하는 ID로 변경
+
+        // 사용자 정보 조회 (임시)
+        String buyerNickname = "구매자닉네임";
+        String assemblerNickname = "조립자닉네임";
+
 
         // 이미 해당 게시글에 대한 채팅방이 있는지 확인
         Optional<ChatRoom> existingRoom = chatRoomRepository.findByBoardId(boardId);
@@ -81,7 +87,8 @@ public class ChatRoomService {
                 .lastMessage("채팅방이 생성되었습니다.")
                 .lastMessageTime(LocalDateTime.now())
                 .hasTransaction(false)
-                .notificationEnabled(true)
+                .buyerNotificationEnabled(true)
+                .assemblerNotificationEnabled(true)
                 .build();
 
         chatRoomRepository.save(chatRoom);
@@ -95,7 +102,7 @@ public class ChatRoomService {
      * @param userId 사용자 ID
      * @return 채팅방 목록
      */
-    public List<ChatRoomDto> getChatRoomsByUserId(String userId) {
+    public List<ChatRoomDto> getChatRoomsByUserId(Long userId) {
         // 사용자가 구매자 또는 조립자로 참여 중인 활성화된 채팅방 검색
         List<ChatRoom> buyerRooms = chatRoomRepository.findByBuyerIdAndBuyerActiveTrue(userId);
         List<ChatRoom> assemblerRooms = chatRoomRepository.findByAssemblerIdAndAssemblerActiveTrue(userId);
@@ -115,7 +122,7 @@ public class ChatRoomService {
      * @param roomId 채팅방 ID
      * @return 채팅방 정보
      */
-    public ChatRoomDto getChatRoom(String roomId) {
+    public ChatRoomDto getChatRoom(Long roomId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
         return convertToDto(chatRoom);
     }
@@ -126,7 +133,7 @@ public class ChatRoomService {
      * @param userId 사용자 ID
      * @return 상대방 사용자 정보
      */
-    public Object getChatPartner(String roomId, String userId) {
+    public Object getChatPartner(Long roomId, Long userId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         // 채팅방에 해당 사용자가 있는지 확인
@@ -135,15 +142,15 @@ public class ChatRoomService {
         }
 
         // 상대방 정보 조회
-        String partnerId = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerId() : chatRoom.getBuyerId();
+        Long partnerId = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerId() : chatRoom.getBuyerId();
         String partnerNickname = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerNickname() : chatRoom.getBuyerNickname();
 
         // 실제 구현에서는 User 서비스에서 상세 정보를 조회해야 함
         // UserDto partnerInfo = userServiceClient.getUserInfo(partnerId);
 
         // 임시 구현: 간단한 맵으로 상대방 정보 반환
-        Map<String, String> partnerInfo = new HashMap<>();
-        partnerInfo.put("userId", partnerId);
+        Map<String, Object> partnerInfo = new HashMap<>();
+        partnerInfo.put("userId", partnerId.toString()); // Long을 String으로 변환
         partnerInfo.put("nickname", partnerNickname);
         partnerInfo.put("profileImage", "https://example.com/profiles/" + partnerId + ".jpg");
         partnerInfo.put("userType", chatRoom.getBuyerId().equals(userId) ? "조립자" : "구매자");
@@ -156,7 +163,7 @@ public class ChatRoomService {
      * @param roomId 채팅방 ID
      * @return 게시글 정보
      */
-    public Object getBoardInfo(String roomId) {
+    public Object getBoardInfo(Long roomId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         // 실제 구현에서는 Board 서비스에서 게시글 정보를 조회해야 함
@@ -164,12 +171,12 @@ public class ChatRoomService {
 
         // 임시 구현: 채팅방에 저장된 간단한 게시글 정보 반환
         Map<String, Object> boardInfo = new HashMap<>();
-        boardInfo.put("boardId", chatRoom.getBoardId());
+        boardInfo.put("boardId", chatRoom.getBoardId().toString()); // Long을 String으로 변환
         boardInfo.put("title", chatRoom.getTitle());
         boardInfo.put("thumbnailUrl", chatRoom.getThumbnailUrl());
         boardInfo.put("dealState", chatRoom.getDealState());
-        boardInfo.put("buyerId", chatRoom.getBuyerId());
-        boardInfo.put("assemblerId", chatRoom.getAssemblerId());
+        boardInfo.put("buyerId", chatRoom.getBuyerId().toString()); // Long을 String으로 변환
+        boardInfo.put("assemblerId", chatRoom.getAssemblerId().toString()); // Long을 String으로 변환
 
         return boardInfo;
     }
@@ -179,7 +186,7 @@ public class ChatRoomService {
      * @param roomId 채팅방 ID
      * @param userId 사용자 ID
      */
-    public void leaveChatRoom(String roomId, String userId) {
+    public void leaveChatRoom(Long roomId, Long userId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         // 사용자 유형에 따라 채팅방 비활성화
@@ -202,7 +209,7 @@ public class ChatRoomService {
      * @param enabled 알림 활성화 여부
      * @return 업데이트된 채팅방 정보
      */
-    public ChatRoomDto setRoomNotification(String roomId, String userId, boolean enabled) {
+    public ChatRoomDto setRoomNotification(Long roomId, Long userId, boolean enabled) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         // 사용자가 채팅방에 속해있는지 확인
@@ -211,7 +218,7 @@ public class ChatRoomService {
         }
 
         // 알림 설정 변경
-        chatRoom.setNotificationEnabled(enabled);
+        chatRoom.setNotificationEnabled(userId, enabled);
         chatRoomRepository.save(chatRoom);
 
         return convertToDto(chatRoom);
@@ -224,7 +231,7 @@ public class ChatRoomService {
      * @param reportedUserId 피신고자 ID
      * @param reason 신고 사유
      */
-    public void reportUser(String roomId, String reporterId, String reportedUserId, String reason) {
+    public void reportUser(Long roomId, Long reporterId, Long reportedUserId, String reason) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         // 신고자가 채팅방에 속해있는지 확인
@@ -258,7 +265,7 @@ public class ChatRoomService {
      * @param transactionStatus 거래 상태
      * @return 업데이트된 채팅방 정보
      */
-    public ChatRoomDto updateChatRoomTransaction(String roomId, Integer transactionAmount, String transactionStatus) {
+    public ChatRoomDto updateChatRoomTransaction(Long roomId, Integer transactionAmount, String transactionStatus) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         chatRoom.setHasTransaction(true);
@@ -275,7 +282,7 @@ public class ChatRoomService {
      * @param roomId 채팅방 ID
      * @param message 마지막 메시지
      */
-    public void updateLastMessage(String roomId, String message) {
+    public void updateLastMessage(Long roomId, String message) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
         chatRoom.setLastMessage(message);
@@ -287,7 +294,7 @@ public class ChatRoomService {
     /**
      * ID로 채팅방 조회 (내부 메서드)
      */
-    private ChatRoom findChatRoomById(String roomId) {
+    private ChatRoom findChatRoomById(Long roomId) {
         return chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다."));
     }
@@ -298,22 +305,25 @@ public class ChatRoomService {
     private ChatRoomDto convertToDto(ChatRoom chatRoom) {
         // 읽지 않은 메시지 수 조회 로직은 실제 구현에서 추가 필요
 
+        // 사용자에 따라 알림 설정 정보 결정 (예: 구매자 관점에서의 알림 설정)
+        boolean notificationEnabled = chatRoom.isBuyerNotificationEnabled();
+
         return ChatRoomDto.builder()
-                .roomId(chatRoom.getId())
-                .boardId(chatRoom.getBoardId())
+                .roomId(chatRoom.getId().toString())
+                .boardId(chatRoom.getBoardId().toString())
                 .title(chatRoom.getTitle())
                 .thumbnailUrl(chatRoom.getThumbnailUrl())
                 .dealState(chatRoom.getDealState())
-                .buyerId(chatRoom.getBuyerId())
+                .buyerId(chatRoom.getBuyerId().toString())
                 .buyerNickname(chatRoom.getBuyerNickname())
-                .assemblerId(chatRoom.getAssemblerId())
+                .assemblerId(chatRoom.getAssemblerId().toString())
                 .assemblerNickname(chatRoom.getAssemblerNickname())
                 .lastMessage(chatRoom.getLastMessage())
                 .lastMessageTime(chatRoom.getLastMessageTime())
                 .hasTransaction(chatRoom.isHasTransaction())
                 .transactionAmount(chatRoom.getTransactionAmount())
                 .transactionStatus(chatRoom.getTransactionStatus())
-                .notificationEnabled(chatRoom.isNotificationEnabled())
+                .notificationEnabled(notificationEnabled)
                 .build();
     }
 }

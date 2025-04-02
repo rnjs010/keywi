@@ -2,31 +2,38 @@ package com.ssafy.chat.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
-/**
- * MongoDB 설정 클래스
- */
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Date;
+
 @Configuration
-@EnableMongoAuditing
-@EnableMongoRepositories(basePackages = "com.ssafy.chat.repository")
 public class MongoConfig {
 
-    /**
-     * MongoDB 템플릿 설정
-     * _class 필드 제거 및 컨버터 설정
-     */
     @Bean
-    public MongoTemplate mongoTemplate(MongoDatabaseFactory mongoDatabaseFactory, MongoMappingContext context) {
-        MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(mongoDatabaseFactory), context);
-        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
-        return new MongoTemplate(mongoDatabaseFactory, converter);
+    public MongoCustomConversions mongoCustomConversions() {
+        return new MongoCustomConversions(Arrays.asList(
+                new LocalDateTimeToDateConverter(),
+                new DateToLocalDateTimeConverter()
+        ));
+    }
+
+    // LocalDateTime -> Date 변환기
+    static class LocalDateTimeToDateConverter implements Converter<LocalDateTime, Date> {
+        @Override
+        public Date convert(LocalDateTime source) {
+            return source == null ? null : Date.from(source.atZone(ZoneId.systemDefault()).toInstant());
+        }
+    }
+
+    // Date -> LocalDateTime 변환기
+    static class DateToLocalDateTimeConverter implements Converter<Date, LocalDateTime> {
+        @Override
+        public LocalDateTime convert(Date source) {
+            return source == null ? null : LocalDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault());
+        }
     }
 }

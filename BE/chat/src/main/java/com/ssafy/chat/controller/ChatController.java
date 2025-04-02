@@ -1,7 +1,6 @@
 package com.ssafy.chat.controller;
 
 import com.ssafy.chat.common.exception.handler.ApiResponse;
-import com.ssafy.chat.common.util.TokenHandler;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
 import com.ssafy.chat.service.chat.ChatMessageService;
@@ -27,40 +26,34 @@ public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final TokenHandler tokenHandler;
 
     /**
      * 채팅방 생성 (조립자가 구매자에게 채팅 요청)
      * @param boardId 게시글 ID (board_id)
-     * @param token JWT 토큰
      * @return 생성된 채팅방 정보
      */
     @PostMapping("/rooms")
     public ResponseEntity<ApiResponse<ChatRoomDto>> createChatRoom(
             @RequestParam String boardId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String assemblerId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String assemblerId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        ChatRoomDto chatRoom = chatRoomService.createChatRoom(boardId, assemblerId);
+        log.info("채팅방 생성 요청: boardId={}, assemblerId={}", boardId, assemblerId);
+        // String -> Long 변환
+        ChatRoomDto chatRoom = chatRoomService.createChatRoom(Long.parseLong(boardId), Long.parseLong(assemblerId));
 
         return ResponseEntity.ok(ApiResponse.success("채팅방이 생성되었습니다.", chatRoom));
     }
 
     /**
      * 사용자의 채팅방 목록 조회
-     * @param token JWT 토큰
      * @return 채팅방 목록
      */
     @GetMapping("/rooms")
     public ResponseEntity<ApiResponse<List<ChatRoomDto>>> getChatRooms(
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        List<ChatRoomDto> rooms = chatRoomService.getChatRoomsByUserId(userId);
+        // String -> Long 변환
+        List<ChatRoomDto> rooms = chatRoomService.getChatRoomsByUserId(Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success(rooms));
     }
@@ -68,18 +61,15 @@ public class ChatController {
     /**
      * 채팅방 정보 조회
      * @param roomId 채팅방 ID
-     * @param token JWT 토큰
      * @return 채팅방 정보
      */
     @GetMapping("/rooms/{roomId}")
     public ResponseEntity<ApiResponse<ChatRoomDto>> getChatRoom(
             @PathVariable String roomId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        ChatRoomDto room = chatRoomService.getChatRoom(roomId);
+        // String -> Long 변환
+        ChatRoomDto room = chatRoomService.getChatRoom(Long.parseLong(roomId));
 
         // 채팅 메시지 읽음 처리
         chatMessageService.markMessagesAsRead(roomId, userId);
@@ -90,18 +80,15 @@ public class ChatController {
     /**
      * 채팅방 나가기
      * @param roomId 채팅방 ID
-     * @param token JWT 토큰
      * @return 처리 결과
      */
     @DeleteMapping("/rooms/{roomId}")
     public ResponseEntity<ApiResponse<Void>> leaveChatRoom(
             @PathVariable String roomId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        chatRoomService.leaveChatRoom(roomId, userId);
+        // String -> Long 변환
+        chatRoomService.leaveChatRoom(Long.parseLong(roomId), Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success("채팅방을 나갔습니다.", null));
     }
@@ -111,7 +98,6 @@ public class ChatController {
      * @param roomId 채팅방 ID
      * @param page 페이지 번호
      * @param size 페이지 크기
-     * @param token JWT 토큰
      * @return 채팅 메시지 목록
      */
     @GetMapping("/rooms/{roomId}/messages")
@@ -119,10 +105,7 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         Page<ChatMessageDto> messages = chatMessageService.getChatHistory(roomId, page, size);
 
@@ -134,7 +117,6 @@ public class ChatController {
      * @param roomId 채팅방 ID
      * @param lastMessageId 마지막으로 로드된 메시지 ID
      * @param size 로드할 메시지 수
-     * @param token JWT 토큰
      * @return 이전 채팅 메시지 목록
      */
     @GetMapping("/rooms/{roomId}/messages/history")
@@ -142,10 +124,7 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestParam String lastMessageId,
             @RequestParam(defaultValue = "20") int size,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         List<ChatMessageDto> messages = chatMessageService.getPreviousMessages(roomId, lastMessageId, size);
 
@@ -156,17 +135,13 @@ public class ChatController {
      * 최근 채팅 메시지 조회
      * @param roomId 채팅방 ID
      * @param limit 조회할 메시지 수
-     * @param token JWT 토큰
      * @return 최근 채팅 메시지 목록
      */
     @GetMapping("/rooms/{roomId}/messages/recent")
     public ResponseEntity<ApiResponse<List<ChatMessageDto>>> getRecentMessages(
             @PathVariable String roomId,
             @RequestParam(defaultValue = "20") int limit,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         List<ChatMessageDto> messages = chatMessageService.getRecentMessages(roomId, limit);
 
@@ -176,16 +151,12 @@ public class ChatController {
     /**
      * 읽지 않은 메시지 수 조회
      * @param roomId 채팅방 ID (선택)
-     * @param token JWT 토큰
      * @return 읽지 않은 메시지 수
      */
     @GetMapping("/messages/unread")
     public ResponseEntity<ApiResponse<Long>> getUnreadMessageCount(
             @RequestParam(required = false) String roomId,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         Long count;
         if (roomId != null) {
@@ -202,16 +173,12 @@ public class ChatController {
     /**
      * 메시지 읽음 처리
      * @param roomId 채팅방 ID
-     * @param token JWT 토큰
      * @return 처리된 메시지 수
      */
     @PutMapping("/rooms/{roomId}/messages/read")
     public ResponseEntity<ApiResponse<Integer>> markMessagesAsRead(
             @PathVariable String roomId,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         int count = chatMessageService.markMessagesAsRead(roomId, userId);
 
@@ -221,18 +188,15 @@ public class ChatController {
     /**
      * 채팅 상대방 정보 조회
      * @param roomId 채팅방 ID
-     * @param token JWT 토큰
      * @return 상대방 사용자 정보
      */
     @GetMapping("/rooms/{roomId}/partner")
     public ResponseEntity<ApiResponse<Object>> getChatPartner(
             @PathVariable String roomId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        Object partnerInfo = chatRoomService.getChatPartner(roomId, userId);
+        // String -> Long 변환
+        Object partnerInfo = chatRoomService.getChatPartner(Long.parseLong(roomId), Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success(partnerInfo));
     }
@@ -240,18 +204,15 @@ public class ChatController {
     /**
      * 거래 게시글 정보 조회
      * @param roomId 채팅방 ID
-     * @param token JWT 토큰
      * @return 게시글 정보
      */
     @GetMapping("/rooms/{roomId}/board")
     public ResponseEntity<ApiResponse<Object>> getBoardInfo(
             @PathVariable String roomId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        Object boardInfo = chatRoomService.getBoardInfo(roomId);
+        // String -> Long 변환
+        Object boardInfo = chatRoomService.getBoardInfo(Long.parseLong(roomId));
 
         return ResponseEntity.ok(ApiResponse.success(boardInfo));
     }
@@ -260,19 +221,16 @@ public class ChatController {
      * 채팅방 알림 설정
      * @param roomId 채팅방 ID
      * @param notificationEnabled 알림 활성화 여부
-     * @param token JWT 토큰
      * @return 처리 결과
      */
     @PutMapping("/rooms/{roomId}/notification")
     public ResponseEntity<ApiResponse<Void>> setRoomNotification(
             @PathVariable String roomId,
             @RequestBody Map<String, Boolean> notificationEnabled,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
-
-        chatRoomService.setRoomNotification(roomId, userId, notificationEnabled.get("enabled"));
+        // String -> Long 변환
+        chatRoomService.setRoomNotification(Long.parseLong(roomId), Long.parseLong(userId), notificationEnabled.get("enabled"));
 
         return ResponseEntity.ok(ApiResponse.success("채팅방 알림 설정이 변경되었습니다.", null));
     }
@@ -281,22 +239,24 @@ public class ChatController {
      * 채팅방 내 사용자 신고
      * @param roomId 채팅방 ID
      * @param reportData 신고 정보
-     * @param token JWT 토큰
      * @return 처리 결과
      */
     @PostMapping("/rooms/{roomId}/reports")
     public ResponseEntity<ApiResponse<Void>> reportUser(
             @PathVariable String roomId,
             @RequestBody Map<String, String> reportData,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String reporterId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String reporterId) {
 
         String reportedUserId = reportData.get("userId");
         String reason = reportData.get("reason");
 
-        chatRoomService.reportUser(roomId, reporterId, reportedUserId, reason);
+        // String -> Long 변환
+        chatRoomService.reportUser(
+                Long.parseLong(roomId),
+                Long.parseLong(reporterId),
+                Long.parseLong(reportedUserId),
+                reason
+        );
 
         return ResponseEntity.ok(ApiResponse.success("신고가 접수되었습니다.", null));
     }
@@ -305,17 +265,13 @@ public class ChatController {
      * 이미지 업로드
      * @param roomId 채팅방 ID
      * @param file 업로드할 이미지 파일
-     * @param token JWT 토큰
      * @return 업로드된 이미지 URL
      */
     @PostMapping("/rooms/{roomId}/media")
     public ResponseEntity<ApiResponse<String>> uploadMedia(
             @PathVariable String roomId,
             @RequestParam("file") MultipartFile file,
-            @RequestHeader("Authorization") String token) {
-
-        String extractedToken = tokenHandler.extractTokenFromHeader(token);
-        String userId = tokenHandler.getUserIdFromToken(extractedToken);
+            @RequestHeader("X-User-ID") String userId) {
 
         String mediaUrl = chatMessageService.uploadMedia(roomId, userId, file);
 
