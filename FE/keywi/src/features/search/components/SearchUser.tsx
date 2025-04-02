@@ -2,13 +2,14 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import { Link } from 'react-router-dom'
+import Badge from '@/components/Badge'
+import getDangdoBadgeData from '@/utils/getDandoBadgeData'
 
 const Container = tw.div`
   flex
   flex-col
-  p-4
+  px-4
 `
-
 const UserItem = styled(Link)`
   ${tw`
     flex
@@ -16,43 +17,19 @@ const UserItem = styled(Link)`
     py-3
   `}
 `
-
 const ProfileImage = tw.img`
   w-12
   h-12
   rounded-full
   bg-gray
   object-cover
-  mr-4
+  mr-3
 `
-
 const UserInfo = tw.div`
   flex
   flex-col
   flex-1
 `
-
-const Username = tw.div`
-  font-medium
-  text-base
-`
-
-const Description = tw.div`
-  text-xs
-  text-gray
-  mt-1
-`
-
-const SubscriptionBadge = tw.span`
-  bg-kiwi
-  text-kiwi
-  text-xs
-  px-2
-  py-0.5
-  rounded
-  ml-2
-`
-
 const EmptyContainer = tw.div`
   w-full 
   py-12
@@ -63,11 +40,11 @@ const EmptyContainer = tw.div`
 
 // 사용자 타입 정의
 export interface User {
-  id: number
-  username: string
-  profileImage: string
-  description: string
-  subscription?: string
+  userId: number
+  nickname: string
+  profileImageUrl?: string
+  profileContent: string
+  brix: number
 }
 
 interface SearchUserProps {
@@ -78,7 +55,7 @@ export default function SearchUser({ users }: SearchUserProps) {
   if (!users || users.length === 0) {
     return (
       <EmptyContainer>
-        <p className="text-gray-500">검색 결과가 없습니다.</p>
+        <p className="text-gray">검색 결과가 없습니다.</p>
       </EmptyContainer>
     )
   }
@@ -86,16 +63,20 @@ export default function SearchUser({ users }: SearchUserProps) {
   return (
     <Container>
       {users.map((user) => (
-        <UserItem key={user.id} to={`/user/${user.id}`}>
-          <ProfileImage src={user.profileImage} alt={user.username} />
+        <UserItem key={user.userId} to={`/user/${user.userId}`}>
+          <ProfileImage src={user.profileImageUrl} alt={user.nickname} />
           <UserInfo>
-            <div className="flex items-center">
-              <Username>{user.username}</Username>
-              {user.subscription && (
-                <SubscriptionBadge>{user.subscription}</SubscriptionBadge>
-              )}
+            <div className="flex items-center gap-2">
+              <Text variant="body1">{user.nickname}</Text>
+              <Badge
+                title={`당도 ${user.brix}`}
+                color={getDangdoBadgeData(user.brix) || 'gray'}
+                size="small"
+              />
             </div>
-            <Description>{user.description}</Description>
+            <Text variant="caption1" color="gray">
+              {user.profileContent}
+            </Text>
           </UserInfo>
         </UserItem>
       ))}

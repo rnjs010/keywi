@@ -26,8 +26,8 @@ const EmptyContainer = tw.div`
 `
 
 interface Feed {
-  id: number
-  imageUrl: string
+  feedId: number
+  thumbnailUrl: string
 }
 
 interface SearchFeedProps {
@@ -46,8 +46,8 @@ export default function SearchFeed({ feeds }: SearchFeedProps) {
   return (
     <GridContainer>
       {feeds.map((feed) => (
-        <FeedItem key={feed.id} to={`/home/feed/${feed.id}`}>
-          <FeedImage src={feed.imageUrl} alt={`피드 ${feed.id}`} />
+        <FeedItem key={feed.feedId} to={`/home/feed/${feed.feedId}`}>
+          <FeedImage src={feed.thumbnailUrl} alt={`피드 ${feed.feedId}`} />
         </FeedItem>
       ))}
     </GridContainer>

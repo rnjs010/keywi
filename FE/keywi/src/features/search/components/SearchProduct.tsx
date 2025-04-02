@@ -4,7 +4,7 @@ import { Text } from '@/styles/typography'
 import { Link } from 'react-router-dom'
 
 const GridContainer = tw.div`
-  grid grid-cols-2 gap-4 p-4
+  grid grid-cols-2 gap-2 px-2 py-2
 `
 
 const ProductItem = styled(Link)`
@@ -14,7 +14,6 @@ const ProductItem = styled(Link)`
     pb-6
   `}
 `
-
 const ProductImage = tw.img`
   w-full
   aspect-square
@@ -22,29 +21,13 @@ const ProductImage = tw.img`
   rounded-md
   mb-2
 `
-
 const ProductInfo = tw.div`
   flex
   flex-col
 `
-
-const Manufacturer = tw.span`
-  text-xs
-  text-gray
-  mb-1
-`
-
 const ProductName = tw.div`
-  font-medium
-  text-sm
   mb-1
 `
-
-const Price = tw.div`
-  font-bold
-  text-sm
-`
-
 const EmptyContainer = tw.div`
   w-full 
   py-12
@@ -55,10 +38,10 @@ const EmptyContainer = tw.div`
 
 // 제품 타입 정의
 export interface Product {
-  id: number
-  imageUrl: string
+  productId: number
+  thumbnailUrl: string
   manufacturer: string
-  name: string
+  productName: string
   price: number
 }
 
@@ -70,7 +53,7 @@ export default function SearchProduct({ products }: SearchProductProps) {
   if (!products || products.length === 0) {
     return (
       <EmptyContainer>
-        <p className="text-gray-500">검색 결과가 없습니다.</p>
+        <p className="text-gray">검색 결과가 없습니다.</p>
       </EmptyContainer>
     )
   }
@@ -83,12 +66,21 @@ export default function SearchProduct({ products }: SearchProductProps) {
   return (
     <GridContainer>
       {products.map((product) => (
-        <ProductItem key={product.id} to={`/product/${product.id}`}>
-          <ProductImage src={product.imageUrl} alt={product.name} />
+        <ProductItem
+          key={product.productId}
+          to={`/product/${product.productId}`}
+        >
+          <ProductImage src={product.thumbnailUrl} alt={product.productName} />
           <ProductInfo>
-            <Manufacturer>{product.manufacturer}</Manufacturer>
-            <ProductName>{product.name}</ProductName>
-            <Price>{formatPrice(product.price)}</Price>
+            <Text variant="caption1" color="gray">
+              {product.manufacturer}
+            </Text>
+            <ProductName>
+              <Text variant="body1">{product.productName}</Text>
+            </ProductName>
+            <Text variant="body2" weight="bold">
+              {formatPrice(product.price)}
+            </Text>
           </ProductInfo>
         </ProductItem>
       ))}
