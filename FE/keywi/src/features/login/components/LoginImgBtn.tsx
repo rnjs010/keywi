@@ -2,8 +2,8 @@ import tw from 'twin.macro'
 import { Camera } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import styled from '@emotion/styled'
-import { useLogin } from '../services/LoginContext'
 import { useRef } from 'react'
+import { useSignupStore } from '@/stores/signupStore'
 
 // 프로필 이미지 섹션
 const ProfileImgSection = tw.div`
@@ -37,7 +37,7 @@ const FileInput = tw.input`
 `
 
 export default function LoginImgBtn() {
-  const { profileImage, setProfileImage } = useLogin()
+  const { profileImage, setProfileImage } = useSignupStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 프로필 이미지 버튼 클릭 핸들러

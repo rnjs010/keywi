@@ -2,7 +2,7 @@ import { colors } from '@/styles/colors'
 import { CheckCircleSolid } from 'iconoir-react'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { useLogin } from '../services/LoginContext'
+import { useSignupStore } from '@/stores/signupStore'
 
 const TextWrapper = tw.div`
   flex flex-col items-center text-center gap-1
@@ -13,7 +13,7 @@ const ContentWrapper = tw.div`
 `
 
 export default function CompleteContent() {
-  const { nickname } = useLogin()
+  const { nickname } = useSignupStore()
 
   return (
     <ContentWrapper>

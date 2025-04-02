@@ -29,11 +29,11 @@ const Container = styled.div`
 
 export default function LoginPage() {
   return (
-      <Container>
-        <LoginHeader />
-        <LoginImgBtn />
-        <LoginNameInput />
-        <LoginNextBtn />
-      </Container>
+    <Container>
+      <LoginHeader />
+      <LoginImgBtn />
+      <LoginNameInput />
+      <LoginNextBtn />
+    </Container>
   )
 }

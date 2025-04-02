@@ -1,6 +1,7 @@
 import MainButton from '@/components/MainButton'
+import { useSignupStore } from '@/stores/signupStore'
+import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { useLogin } from '../services/LoginContext'
 import { useNavigate } from 'react-router-dom'
 
 const BtnWrapper = tw.div`
@@ -9,20 +10,39 @@ const BtnWrapper = tw.div`
   w-full
 `
 
+const ErrorMessage = tw.div`
+  text-center mb-4
+`
+
 export default function LoginNextBtn() {
-  const { nickname } = useLogin()
-  const isDisabled = nickname.length < 2
+  const { nickname, isLoading, error, signup } = useSignupStore()
   const navigate = useNavigate()
 
-  const handleNext = () => {
-    if (!isDisabled) {
-      navigate('/login/complete')
+  const isDisabled = nickname.length < 2 || isLoading
+
+  const handleSignup = async () => {
+    if (isDisabled) return
+
+    try {
+      const success = await signup()
+
+      if (success) {
+        navigate('/login/complete')
+      }
+    } finally {
     }
   }
 
   return (
     <BtnWrapper>
-      <MainButton text="다음" disabled={isDisabled} onClick={handleNext} />
+      {error && (
+        <ErrorMessage>
+          <Text variant="caption1" style={{ color: 'red' }}>
+            {error}
+          </Text>
+        </ErrorMessage>
+      )}
+      <MainButton text="다음" disabled={isDisabled} onClick={handleSignup} />
     </BtnWrapper>
   )
 }
