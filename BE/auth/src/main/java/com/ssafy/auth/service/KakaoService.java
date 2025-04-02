@@ -14,6 +14,7 @@ import com.ssafy.auth.repository.RefreshTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,7 @@ import java.util.Optional;
  * 카카오 소셜 로그인 관련 서비스
  */
 @Slf4j
+@RefreshScope
 @Service
 @RequiredArgsConstructor
 @Transactional

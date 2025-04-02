@@ -8,10 +8,12 @@ import com.ssafy.auth.dto.userinfo.KakaoUserInfoResponseDto;
 import com.ssafy.auth.entity.Member;
 import com.ssafy.auth.service.MemberService;
 import com.ssafy.auth.service.KakaoService;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,7 @@ import java.util.Optional;
  */
 
 @Slf4j
+@RefreshScope
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -34,6 +37,11 @@ public class SocialLoginController {
 
     @Value("${oauth2.kakao.redirect_uri}")
     private String defaultRedirectUri;
+
+    @PostConstruct  // Bean 초기화 후 실행되는 메서드
+    public void init() {
+        log.info("설정 갱신 - 기본 리다이렉트 URI: {}", defaultRedirectUri);
+    }
 
     /**
      * 카카오 로그인 콜백 처리
