@@ -2,9 +2,7 @@ package com.ssafy.keywordRanking.processor;
 
 import com.ssafy.keywordRanking.dto.KeywordDto;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 @StepScope // 💡 Reader를 매 Step마다 새로 생성하도록 설정
-public class KeywordRankingReader implements ItemReader<KeywordDto> {
+public class KeywordRankReader implements ItemReader<KeywordDto> {
 
     private final ZSetOperations<String, String> zSetOperations;
 

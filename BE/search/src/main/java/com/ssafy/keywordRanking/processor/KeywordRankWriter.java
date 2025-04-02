@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class KeywordRankingWriter implements ItemWriter<KeywordRankDto> {
+public class KeywordRankWriter implements ItemWriter<KeywordRankDto> {
 
     private final KeywordRankMapper keywordRankMapper;
     private final RedisTemplate<String, String> redisTemplate;

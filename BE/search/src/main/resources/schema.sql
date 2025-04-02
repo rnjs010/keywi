@@ -1,4 +1,22 @@
-DROP DATABASE IF EXISTS keywi;
+drop table users;
+drop table category;
+drop table products;
+drop table products_descriptions;
+drop table product_images;
+drop table feeds;
+drop table feed_images;
+drop table feed_products;
+drop table hashtags;
+drop table feed_hashtags;
+drop table feed_likes;
+drop table comments;
+drop table feed_bookmarks;
+drop table boards;
+drop table board_products;
+drop table board_images;
+drop table wishes;
+drop table keyword_rank;
+
 CREATE DATABASE keywi;
 USE keywi;
 

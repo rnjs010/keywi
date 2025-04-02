@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @StepScope // ✅ 매 배치 실행마다 새로운 인스턴스 생성
-public class KeywordRankingProcessor implements ItemProcessor<KeywordDto, KeywordRankDto> {
+public class KeywordRankProcessor implements ItemProcessor<KeywordDto, KeywordRankDto> {
 
     private final KeywordRankMapper keywordRankMapper;
 

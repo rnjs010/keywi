@@ -19,6 +19,11 @@
         SELECT time_block, keyword, ranking, change_status
         FROM keyword_rank
         WHERE time_block = #{timeBlock}
+        ORDER BY ranking ASC
+    </select>
+
+    <select id="findLatestTimeBlock" resultType="java.time.LocalDateTime">
+        SELECT MAX(time_block) FROM keyword_rank
     </select>
 
 </mapper>

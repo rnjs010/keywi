@@ -8,7 +8,7 @@ import com.ssafy.integratedSearch.service.FeedSearchService;
 import com.ssafy.integratedSearch.service.ProductSearchService;
 import com.ssafy.integratedSearch.service.SearchService;
 import com.ssafy.integratedSearch.service.UserSearchService;
-import com.ssafy.keywordRanking.service.KeywordRankingService;
+import com.ssafy.keywordRanking.service.KeywordRankServiceImpl;
 import com.ssafy.recentSearch.service.RecentSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class SearchController {
     private final ProductSearchService productSearchService;
 
     private final RecentSearchService recentSearchService;
-    private final KeywordRankingService keywordRankingService;
+    private final KeywordRankServiceImpl keywordRankingService;
 
     /**
      * 통합 검색 API

@@ -15,5 +15,8 @@ public interface KeywordRankMapper {
 
     // 이전 시간대의 랭킹 불러오기 (Processor에서 사용)
     List<KeywordRankDto> selectRanksByTime(@Param("timeBlock") LocalDateTime timeBlock);
+
+    // 최신 time_block 조회
+    LocalDateTime findLatestTimeBlock();
 }
 
