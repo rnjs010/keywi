@@ -28,10 +28,10 @@ const Img = tw.img`
   `
 
 export default function MainLoginBtn() {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const handleKakaoLogin = () => {
-    // window.location.href = KAKAO_AUTH_URL
-    navigate('/home')
+    window.location.href = KAKAO_AUTH_URL
+    // navigate('/home')
   }
 
   return (

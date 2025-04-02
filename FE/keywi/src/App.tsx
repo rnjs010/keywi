@@ -31,37 +31,37 @@ function App() {
         <Route path="/login/complete" element={<LoginCompletePage />} />
         <Route path="/callback/kakao" element={<KakaoHandler />} />
         {/* 보호된 라우트 - 인증 필요 */}
-        {/* <Route
+        <Route
           element={
             <ProtectedRoute>
               <Outlet />
             </ProtectedRoute>
           }
-        > */}
-        {/* 홈 관련 라우트 */}
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
-        <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
-        <Route path="/home/tag" element={<HomeTagPage />} />
-        <Route path="/home/write" element={<HomeWritePage />} />
+        >
+          {/* 홈 관련 라우트 */}
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
+          <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
+          <Route path="/home/tag" element={<HomeTagPage />} />
+          <Route path="/home/write" element={<HomeWritePage />} />
 
-        {/* 게시판 관련 라우트 */}
-        <Route path="/board" element={<BoardPage />} />
-        <Route path="/board/:postId" element={<BoardDetailPage />} />
-        <Route path="/board/write" element={<BoardWritePage />} />
+          {/* 게시판 관련 라우트 */}
+          <Route path="/board" element={<BoardPage />} />
+          <Route path="/board/:postId" element={<BoardDetailPage />} />
+          <Route path="/board/write" element={<BoardWritePage />} />
 
-        {/* 결제 라우트 */}
-        <Route path="/pay" element={<PayPage />} />
+          {/* 결제 라우트 */}
+          <Route path="/pay" element={<PayPage />} />
 
-        {/* 마이페이지 라우트 */}
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/setting" element={<SettingPage />} />
-        <Route path="/setting/account" element={<SettingAccountPage />} />
+          {/* 마이페이지 라우트 */}
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/setting" element={<SettingPage />} />
+          <Route path="/setting/account" element={<SettingAccountPage />} />
 
-        {/* 검색 라우트 */}
-        <Route path="/search" element={<SearchingPage />} />
-        <Route path="/search/:query" element={<AfterSearchPage />} />
-        {/* </Route> */}
+          {/* 검색 라우트 */}
+          <Route path="/search" element={<SearchingPage />} />
+          <Route path="/search/:query" element={<AfterSearchPage />} />
+        </Route>
 
         {/* 404 페이지나 기타 예외 처리 */}
         <Route path="*" element={<Navigate to="/" replace />} />
