@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS products (
     price INT NOT NULL,
     product_url VARCHAR(500) NOT NULL,
     product_image VARCHAR(255),
-    options VARCHAR(500),
+    manufacturer VARCHAR(500),
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
