@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
 import ProductForm from '@/features/chat/components/DealRequest/ProductForm'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDealProductStore } from '@/stores/ChatStore'
 
 const CostInput = tw.input`
@@ -13,7 +13,23 @@ const CostInput = tw.input`
 
 export default function DealRequestForm() {
   const setStep = useDealProductStore((state) => state.setStep)
+  const selectedProducts = useDealProductStore(
+    (state) => state.selectedProducts,
+  )
+  const totalPrice = useDealProductStore((state) => state.totalPrice)
+  const setTotalPrice = useDealProductStore((state) => state.setTotalPrice)
   const [assemblyCost, setAssemblyCost] = useState('')
+
+  // 총 금액 계산 및 저장
+  useEffect(() => {
+    const productsTotal = Object.values(selectedProducts).reduce(
+      (sum, product) => sum + (product?.price || 0),
+      0,
+    )
+
+    const assembly = Number(assemblyCost) || 0
+    setTotalPrice(productsTotal + assembly)
+  }, [selectedProducts, assemblyCost, setTotalPrice])
 
   const handleNext = () => {
     setStep(2)
@@ -56,7 +72,7 @@ export default function DealRequestForm() {
           총 금액
         </Text>
         <Text variant="body2" weight="bold" color="kiwi">
-          381,000원
+          {totalPrice.toLocaleString()}원
         </Text>
       </div>
 

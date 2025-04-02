@@ -31,8 +31,8 @@ export default function ProductForm() {
   const selectedProducts = useDealProductStore(
     (state) => state.selectedProducts,
   )
-  const [selectedProductsLocal, setSelectedProductsLocal] =
-    useState<Record<string, BoardItem>>(selectedProducts)
+  // const [selectedProductsLocal, setSelectedProductsLocal] =
+  //   useState<Record<string, BoardItem>>(selectedProducts)
 
   // 추가한 기타 카테고리
   const increaseCategory = useDealProductStore(
@@ -79,8 +79,8 @@ export default function ProductForm() {
 
   // 상품 추가 (검색용, 직접 입력)
   const handleSelectProduct = (product: BoardItem) => {
-    setSelectedProductsLocal({
-      ...selectedProductsLocal,
+    setSelectedProducts({
+      ...selectedProducts,
       [product.categoryName]: product,
     })
     setOpenSearchModal(false)
@@ -96,8 +96,8 @@ export default function ProductForm() {
       imageUrl: '',
     }
 
-    setSelectedProductsLocal({
-      ...selectedProductsLocal,
+    setSelectedProducts({
+      ...selectedProducts,
       [currentCategory]: directProduct,
     })
 
@@ -109,14 +109,14 @@ export default function ProductForm() {
 
   // 선택된 상품 삭제
   const handleDeleteProduct = (category: string) => {
-    const newSelectedProducts = { ...selectedProductsLocal }
+    const newSelectedProducts = { ...selectedProducts }
     delete newSelectedProducts[category]
-    setSelectedProductsLocal(newSelectedProducts)
+    setSelectedProducts(newSelectedProducts)
   }
 
   // 선택된 상품 렌더링
   const renderSelectedProducts = () => {
-    return Object.entries(selectedProductsLocal).map(([category, product]) => (
+    return Object.entries(selectedProducts).map(([category, product]) => (
       <div key={category}>
         <ProductSelector
           label={category}
@@ -131,7 +131,7 @@ export default function ProductForm() {
   const renderUnselectedCategories = () => {
     return categories.map(
       (category) =>
-        !selectedProductsLocal[category.name] && (
+        !selectedProducts[category.name] && (
           <div key={category.id}>
             <ProductSelector
               label={category.name}
