@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class KeywordRankingService {
+public class KeywordRankService {
 
     private final ZSetOperations<String, String> zSetOperations;
     private final RedisTemplate redisTemplate;

@@ -4,6 +4,7 @@ import com.ssafy.keywordRanking.dto.KeywordDto;
 import com.ssafy.keywordRanking.dto.KeywordRankDto;
 import com.ssafy.keywordRanking.mapper.KeywordRankMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -14,19 +15,15 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@StepScope // ✅ 매 배치 실행마다 새로운 인스턴스 생성
 public class KeywordRankingProcessor implements ItemProcessor<KeywordDto, KeywordRankDto> {
 
     private final KeywordRankMapper keywordRankMapper;
 
-    private Map<String, Integer> previousRankMap;
-    private LocalDateTime timeBlock;
-
     @Override
     public KeywordRankDto process(KeywordDto current) {
-        if (timeBlock == null) {
-            timeBlock = getTargetTimeBlock();
-            previousRankMap = loadPreviousRankMap(timeBlock.minusMinutes(2));
-        }
+        LocalDateTime timeBlock = getTargetTimeBlock(); // ✅ 매번 새로 구함
+        Map<String, Integer> previousRankMap = loadPreviousRankMap(timeBlock.minusMinutes(2));
 
         String keyword = current.getKeyword();
         int currentRank = current.getRanking();

@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.support.ListItemReader;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
@@ -22,16 +21,17 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@StepScope // 💡 Reader를 매 Step마다 새로 생성하도록 설정
 public class KeywordRankingReader implements ItemReader<KeywordDto> {
 
     private final ZSetOperations<String, String> zSetOperations;
+
     private ListItemReader<KeywordDto> delegate;
-    private LocalDateTime timeBlock;
 
     @Override
     public KeywordDto read() {
         if (delegate == null) {
-            timeBlock = getTargetTimeBlock();
+            LocalDateTime timeBlock = getTargetTimeBlock();
             String redisKey = getTimeBlockKey(timeBlock);
             log.info("🔍 읽는 Redis 키: {}", redisKey);
 
@@ -51,7 +51,8 @@ public class KeywordRankingReader implements ItemReader<KeywordDto> {
             log.info("✅ 키워드 개수: {}", keywords.size());
             delegate = new ListItemReader<>(keywords);
         }
-        return delegate.read();
+
+        return delegate.read(); // ✅ 이게 핵심: 내부 Reader에서 하나씩 꺼냄
     }
 
     private LocalDateTime getTargetTimeBlock() {
