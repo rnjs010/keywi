@@ -1,8 +1,8 @@
 spring:
   application:
     name: product
-  profiles:
-    active: dev # 활성화 할 프로파일 설정
+#  profiles:
+#    active: dev # 활성화 할 프로파일 설정
   # Config Server 설정
   config:
     import: configserver:https://j12e202.p.ssafy.io/config
