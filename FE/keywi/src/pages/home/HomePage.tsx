@@ -19,7 +19,6 @@ const Container = tw.div`
 `
 
 const HeaderContainer = tw.div`
-  px-4
   z-10
 `
 

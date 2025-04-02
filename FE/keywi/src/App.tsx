@@ -20,6 +20,8 @@ import KakaoHandler from './features/login/hooks/KakaoHandler'
 import MyPage from './pages/mypage/MyPage'
 import { SettingPage } from './pages/mypage/SettingPage'
 import { SettingAccountPage } from './pages/mypage/SettingAccountPage'
+import ProductPage from './pages/product/ProductPage'
+import ProductDetailPage from './pages/product/ProductDetailPage'
 
 function App() {
   return (
@@ -54,6 +56,10 @@ function App() {
 
         {/* 결제 라우트 */}
         <Route path="/pay" element={<PayPage />} />
+
+        {/* 상품 라우트 */}
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/product/:productId" element={<ProductDetailPage />} />
 
         {/* 마이페이지 라우트 */}
         <Route path="/mypage" element={<MyPage />} />
