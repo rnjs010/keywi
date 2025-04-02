@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/search/**").permitAll()
                         .pathMatchers("/api/feeds/**").permitAll()
                         .pathMatchers("/api/users/**").permitAll()
-                        .pathMatchers("/api/products/**").permitAll()
+                        .pathMatchers("/api/product/**").permitAll()
                         .pathMatchers("/api/notification/**").permitAll()
                         // 액츄에이터는 전체 허용
                         .pathMatchers("/actuator/health").permitAll()
@@ -71,7 +71,8 @@ public class SecurityConfig {
                 "http://localhost:8080",
                 "http://localhost:5173", // 프론트엔드 개발 서버
                 "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
-                "http://i12e205.p.ssafy.io"
+                "https://key-wi.netlify.app",
+                "http://j12e202.p.ssafy.io"
         ));
 
         // 허용 메서드
