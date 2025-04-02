@@ -11,6 +11,10 @@ const CostInput = tw.input`
   [caret-color: #70C400]
 `
 
+const TotalBox = tw.div`
+  flex flex-row gap-2 justify-end mb-4
+`
+
 export default function DealReqFormScreen() {
   const setStep = useDealRequestStore((state) => state.setStep)
   const selectedProducts = useDealRequestStore(
@@ -67,17 +71,16 @@ export default function DealReqFormScreen() {
         />
       </>
 
-      <div className="flex flex-row gap-2 justify-end mt-8">
-        <Text variant="body2" weight="bold">
-          총 금액
-        </Text>
-        <Text variant="body2" weight="bold" color="kiwi">
-          {totalPrice.toLocaleString()}원
-        </Text>
-      </div>
-
       {/* 다음 버튼 */}
       <div className="mt-auto mb-8">
+        <TotalBox>
+          <Text variant="body2" weight="bold">
+            총 금액
+          </Text>
+          <Text variant="body2" weight="bold" color="kiwi">
+            {totalPrice.toLocaleString()}원
+          </Text>
+        </TotalBox>
         <MainButton text="다음" onClick={handleNext} />
       </div>
     </>

@@ -3,6 +3,8 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { DealMessageProps } from '@/interfaces/ChatInterfaces'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import TwoBtnModal from '@/components/TwoBtnModal'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -23,6 +25,19 @@ export default function DealMessage({
 }: DealMessageProps) {
   const navigate = useNavigate()
   const { roomId } = useParams()
+
+  // 모달 관련 상태
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  let modalTitle = ''
+  let modalContent = ''
+  let modalActions: {
+    cancel: string
+    confirm: string
+    onCancle: () => void
+    onConfirm: () => void
+  } = { cancel: '', confirm: '', onCancle: () => {}, onConfirm: () => {} }
+  const handleOpenModal = () => setIsModalOpen(true)
+  const handleCloseModal = () => setIsModalOpen(false)
 
   let title = ''
   let imageSrc = ''
@@ -50,6 +65,33 @@ export default function DealMessage({
         : '거래를 수락했어요. 상대방이 구매를 확정하면 조립금을 전달드려요.\n구매자에게 물품을 전달한 후 거래완료를 요청해 주세요.'
       buttonText = isMine ? '거래 완료하기' : '거래완료 요청'
       showButton = true // 양쪽 다 버튼 표시 (텍스트만 다름)
+      onClickHandler = handleOpenModal
+      if (isMine) {
+        modalTitle = '거래를 완료할까요?'
+        modalContent =
+          '거래 완료 후에는 거래 금액이 전달되고, 취소할 수 없어요.'
+        modalActions = {
+          cancel: '닫기',
+          confirm: '확정하기',
+          onCancle: handleCloseModal,
+          onConfirm: () => {
+            console.log('거래 완료 처리')
+            handleCloseModal()
+          },
+        }
+      } else {
+        modalTitle = '거래 완료를 요청할까요?'
+        modalContent = '구매자에게 물품을 전달하셨나요?'
+        modalActions = {
+          cancel: '닫기',
+          confirm: '요청하기',
+          onCancle: handleCloseModal,
+          onConfirm: () => {
+            console.log('거래 완료 요청')
+            handleCloseModal()
+          },
+        }
+      }
       break
     case 'DEALCOMPLETE':
       title = '거래 완료'
@@ -90,11 +132,25 @@ export default function DealMessage({
           {contentText}
         </Text>
         {showButton && (
-          <MainButton
-            text={buttonText}
-            className="mt-3"
-            onClick={onClickHandler}
-          />
+          <>
+            <MainButton
+              text={buttonText}
+              className="mt-3"
+              onClick={onClickHandler}
+            />
+
+            {/* 모달 */}
+            <TwoBtnModal
+              isOpen={isModalOpen}
+              onOpenChange={setIsModalOpen}
+              title={modalTitle}
+              content={modalContent}
+              cancleText={modalActions.cancel}
+              confirmText={modalActions.confirm}
+              onCancle={handleCloseModal}
+              onConfirm={modalActions.onConfirm}
+            />
+          </>
         )}
       </BottomBox>
     </Container>

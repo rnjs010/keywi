@@ -11,6 +11,14 @@ const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
 `
 
+const ChatContainer = tw.div`
+  flex-1 overflow-y-auto px-4
+`
+
+const DateBox = tw.div`
+  flex justify-center py-4
+`
+
 const DownBtnBox = tw.button`
   fixed left-[84vw] z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center
 `
@@ -68,13 +76,13 @@ export default function ChatRoomPage() {
       </DownBtnBox>
 
       {/* Date + Chat */}
-      <div className="flex-1 overflow-y-auto px-4">
+      <ChatContainer>
         {messageGroup.map((group) => (
           <>
             {/* Date */}
-            <div key={group.dateGroup} className="flex justify-center py-4">
+            <DateBox key={group.dateGroup}>
               <span className="text-sm text-[#a4a8ae]">{group.dateGroup}</span>
-            </div>
+            </DateBox>
 
             {/* Chat */}
             {group.messages.map((message) =>
@@ -86,7 +94,7 @@ export default function ChatRoomPage() {
             )}
           </>
         ))}
-      </div>
+      </ChatContainer>
 
       {/* Input */}
       <ChatRoomSendBox />

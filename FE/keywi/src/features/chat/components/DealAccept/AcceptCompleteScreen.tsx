@@ -23,7 +23,7 @@ export default function AcceptCompleteScreen() {
 
   return (
     <Container>
-      <div className="flex flex-col items-center py-56 text-center">
+      <div className="flex flex-col items-center py-56 text-center gap-4">
         <CheckCircleSolid height={`5rem`} width={`5rem`} color={colors.kiwi} />
         <Text variant="title2" weight="bold" color="black">
           {totalPrice.toLocaleString()}원을 결제하고

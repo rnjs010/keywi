@@ -10,7 +10,7 @@ import { PlusCircleSolid } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 
 const Form = tw.div`
-  overflow-y-auto my-2 h-80
+  overflow-y-auto my-2 h-96
 `
 
 export default function ProductForm() {
