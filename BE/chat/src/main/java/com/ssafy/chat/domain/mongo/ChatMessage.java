@@ -3,6 +3,7 @@ package com.ssafy.chat.domain.mongo;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -19,21 +20,35 @@ import java.time.LocalDateTime;
 public class ChatMessage {
 
     @Id
-    private String id;          // 메시지 ID
+    private String id;
 
-    private String roomId;      // 채팅방 ID
-    private String senderId;    // 발신자 ID
-    private String senderNickname; // 발신자 닉네임
-    private String receiverId;  // 수신자 ID
+    @Field("room_id")
+    private Long roomId;  // MySQL의 채팅방 ID (Long 타입)
 
-    private String messageType; // 메시지 타입 (TEXT, IMAGE, TRANSACTION_REQUEST, TRANSACTION_PROGRESS, TRANSACTION_COMPLETE)
-    private String content;     // 메시지 내용
-    private String imageUrl;    // 이미지 URL (이미지 메시지인 경우)
+    @Field("sender_id")
+    private Long senderId;  // 발신자 ID
 
-    // 거래 관련 정보 (거래 관련 메시지인 경우)
-    private Integer transactionAmount; // 거래 금액
-    private String transactionStatus;  // 거래 상태
+    @Field("message_type")
+    private String messageType;  // 메시지 타입 (TEXT, IMAGE, TRANSACTION 등)
 
+    @Field("message")
+    private String message;  // 메시지 내용
+
+    @Field("sent_at")
     private LocalDateTime sentAt;  // 전송 시간
-    private boolean read;          // 읽음 여부
+
+    @Field("is_read_by_buyer")
+    private boolean isReadByBuyer;  // 구매자 읽음 여부
+
+    @Field("is_read_by_assembler")
+    private boolean isReadByAssembler;  // 조립자 읽음 여부
+
+    @Field("media_url")
+    private String mediaUrl;  // 미디어 URL (이미지, 파일 등)
+
+    @Field("transaction_amount")
+    private Integer transactionAmount;  // 거래 금액 (거래 관련 메시지인 경우)
+
+    @Field("transaction_status")
+    private String transactionStatus;  // 거래 상태
 }

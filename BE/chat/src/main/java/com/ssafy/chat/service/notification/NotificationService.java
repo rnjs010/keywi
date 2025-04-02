@@ -42,9 +42,12 @@ public class NotificationService {
      * @return 저장된 알림 정보
      */
     public NotificationDto sendNotification(NotificationDto notificationDto) {
+        // String userId를 Long으로 변환
+        Long userIdLong = Long.parseLong(notificationDto.getUserId());
+
         // 알림 객체 생성 및 저장
         Notification notification = Notification.builder()
-                .userId(notificationDto.getUserId())
+                .userId(userIdLong)
                 .title(notificationDto.getTitle())
                 .content(notificationDto.getContent())
                 .notificationType(notificationDto.getNotificationType())
@@ -74,7 +77,6 @@ public class NotificationService {
     private void sendFcmNotification(NotificationDto notificationDto) {
         try {
             // 사용자 FCM 토큰 조회 (Feign 클라이언트 사용)
-            // 실제 구현 시에는 사용자 서비스에서 토큰을 가져와야 함
             String fcmToken = userServiceClient.getUserFcmToken(notificationDto.getUserId());
 
             if (fcmToken != null && !fcmToken.isEmpty()) {
@@ -102,22 +104,24 @@ public class NotificationService {
 
     /**
      * 사용자의 알림 목록 조회
-     * @param userId 사용자 ID
+     * @param userId 사용자 ID (String)
      * @param pageable 페이지 정보
      * @return 알림 목록
      */
     public Page<NotificationDto> getNotifications(String userId, Pageable pageable) {
-        Page<Notification> notifications = notificationRepository.findByUserId(userId, pageable);
+        Long userIdLong = Long.parseLong(userId);
+        Page<Notification> notifications = notificationRepository.findByUserId(userIdLong, pageable);
         return notifications.map(this::convertToDto);
     }
 
     /**
      * 읽지 않은 알림 목록 조회
-     * @param userId 사용자 ID
+     * @param userId 사용자 ID (String)
      * @return 읽지 않은 알림 목록
      */
     public List<NotificationDto> getUnreadNotifications(String userId) {
-        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndReadFalseOrderBySentAtDesc(userId);
+        Long userIdLong = Long.parseLong(userId);
+        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndReadFalseOrderBySentAtDesc(userIdLong);
         return unreadNotifications.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -125,24 +129,28 @@ public class NotificationService {
 
     /**
      * 읽지 않은 알림 수 조회
-     * @param userId 사용자 ID
+     * @param userId 사용자 ID (String)
      * @return 읽지 않은 알림 수
      */
     public long countUnreadNotifications(String userId) {
-        return notificationRepository.countByUserIdAndReadFalse(userId);
+        Long userIdLong = Long.parseLong(userId);
+        return notificationRepository.countByUserIdAndReadFalse(userIdLong);
     }
 
     /**
      * 알림 읽음 처리
-     * @param notificationId 알림 ID
-     * @param userId 사용자 ID
+     * @param notificationId 알림 ID (String)
+     * @param userId 사용자 ID (String)
      */
     public void markAsRead(String notificationId, String userId) {
-        Notification notification = notificationRepository.findById(notificationId)
+        Long notificationIdLong = Long.parseLong(notificationId);
+        Long userIdLong = Long.parseLong(userId);
+
+        Notification notification = notificationRepository.findById(notificationIdLong)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOTIFICATION_NOT_FOUND, "알림을 찾을 수 없습니다."));
 
         // 자신의 알림만 읽음 처리 가능
-        if (!notification.getUserId().equals(userId)) {
+        if (!notification.getUserId().equals(userIdLong)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED, "해당 알림에 접근 권한이 없습니다.");
         }
 
@@ -152,11 +160,12 @@ public class NotificationService {
 
     /**
      * 모든 알림 읽음 처리
-     * @param userId 사용자 ID
+     * @param userId 사용자 ID (String)
      * @return 처리된 알림 수
      */
     public int markAllAsRead(String userId) {
-        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndReadFalseOrderBySentAtDesc(userId);
+        Long userIdLong = Long.parseLong(userId);
+        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndReadFalseOrderBySentAtDesc(userIdLong);
 
         unreadNotifications.forEach(notification -> {
             notification.setRead(true);
@@ -171,8 +180,8 @@ public class NotificationService {
      */
     private NotificationDto convertToDto(Notification notification) {
         return NotificationDto.builder()
-                .id(notification.getId())
-                .userId(notification.getUserId())
+                .id(notification.getId().toString()) // Long -> String 변환
+                .userId(notification.getUserId().toString()) // Long -> String 변환
                 .title(notification.getTitle())
                 .content(notification.getContent())
                 .notificationType(notification.getNotificationType())

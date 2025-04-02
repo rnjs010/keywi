@@ -12,6 +12,18 @@ spring:
       import-check:
         enabled: false
 
+  # MySQL 설정
+  datasource:
+    url: jdbc:mysql://localhost:3306/keywi?createDatabaseIfNotExist=true
+    username: root
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
   # MongoDB 설정
   data:
     mongodb:
@@ -54,3 +66,9 @@ jwt:
 fcm:
   enabled: false
   service-account-file: classpath:firebase-service-account.json
+
+logging:
+  level:
+    root: INFO
+    com.ssafy.chat: DEBUG
+    org.springframework.web: DEBUG

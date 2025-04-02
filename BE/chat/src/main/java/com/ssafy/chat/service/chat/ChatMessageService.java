@@ -44,21 +44,19 @@ public class ChatMessageService {
      * @return 저장된 메시지 정보
      */
     public ChatMessageDto sendMessage(ChatMessageDto messageDto, String senderId) {
-        // 채팅방 존재 여부 확인
-        ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomId())
+        // 채팅방 존재 여부 확인 - String을 Long으로 변환
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(messageDto.getRoomId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 메시지 발신자가 채팅방 참여자인지 확인
-        if (!chatRoom.getBuyerId().equals(senderId) && !chatRoom.getAssemblerId().equals(senderId)) {
+        // 메시지 발신자가 채팅방 참여자인지 확인 - String을 Long으로 변환
+        Long senderIdLong = Long.parseLong(senderId);
+        if (!chatRoom.getBuyerId().equals(senderIdLong) && !chatRoom.getAssemblerId().equals(senderIdLong)) {
             throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 채팅방에 속해있지 않습니다.");
         }
 
         // 수신자 ID 설정
-        String receiverId = chatRoom.getBuyerId().equals(senderId)
-                ? chatRoom.getAssemblerId() : chatRoom.getBuyerId();
-
         // 발신자 닉네임 설정
-        String senderNickname = chatRoom.getBuyerId().equals(senderId)
+        String senderNickname = chatRoom.getBuyerId().equals(senderIdLong)
                 ? chatRoom.getBuyerNickname() : chatRoom.getAssemblerNickname();
 
         // 메시지 ID 생성
@@ -66,12 +64,19 @@ public class ChatMessageService {
         messageDto.setMessageId(messageId);
         messageDto.setSenderId(senderId);
         messageDto.setSenderNickname(senderNickname);
-        messageDto.setReceiverId(receiverId);
         messageDto.setSentAt(LocalDateTime.now());
-        messageDto.setRead(false);
+
+        // 구매자와 조립자 읽음 상태 설정
+        // 구매자가 보낸 메시지면 구매자는 이미 읽음
+        boolean isBuyer = chatRoom.getBuyerId().equals(senderIdLong);
 
         // MongoDB에 메시지 저장
-        ChatMessage chatMessage = convertToEntity(messageDto);
+        ChatMessage chatMessage = convertToEntity(messageDto, chatRoom.getId());
+
+        // 구매자와 조립자 읽음 상태 설정 (발신자는 이미 읽음)
+        chatMessage.setReadByBuyer(isBuyer);
+        chatMessage.setReadByAssembler(!isBuyer);
+
         chatMessageRepository.save(chatMessage);
 
         // 채팅방의 마지막 메시지 정보 업데이트
@@ -81,7 +86,7 @@ public class ChatMessageService {
         messageSender.sendChatMessage(messageDto);
 
         // 알림 생성 및 발송
-        sendNotification(messageDto);
+        sendNotification(messageDto, chatRoom.getBuyerId(), chatRoom.getAssemblerId());
 
         return messageDto;
     }
@@ -95,7 +100,8 @@ public class ChatMessageService {
      */
     public Page<ChatMessageDto> getChatHistory(String roomId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, pageable);
+        // String을 Long으로 변환
+        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAtDesc(Long.parseLong(roomId), pageable);
 
         return messages.map(this::convertToDto);
     }
@@ -113,8 +119,10 @@ public class ChatMessageService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MESSAGE_NOT_FOUND, "메시지를 찾을 수 없습니다."));
 
         // 이전 메시지 조회 (마지막 메시지 시간보다 이전에 보낸 메시지)
-        List<ChatMessage> messages = chatMessageRepository.findByRoomIdAndSentAtBeforeOrderBySentAtDesc(
-                roomId, lastMessage.getSentAt(), PageRequest.of(0, size));
+        // String을 Long으로 변환
+        Pageable pageable = PageRequest.of(0, size);
+        List<ChatMessage> messages = chatMessageRepository.findMessagesBeforeTimestamp(
+                Long.parseLong(roomId), lastMessage.getSentAt(), pageable);
 
         return messages.stream()
                 .map(this::convertToDto)
@@ -129,7 +137,8 @@ public class ChatMessageService {
      */
     public List<ChatMessageDto> getRecentMessages(String roomId, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
-        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, pageable);
+        // String을 Long으로 변환
+        List<ChatMessage> messages = chatMessageRepository.findRecentMessagesByRoomId(Long.parseLong(roomId), pageable);
 
         return messages.stream()
                 .map(this::convertToDto)
@@ -143,20 +152,68 @@ public class ChatMessageService {
      * @return 처리된 메시지 수
      */
     public int markMessagesAsRead(String roomId, String userId) {
-        // 채팅방 확인
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
+        try {
+            // 채팅방 확인 - String을 Long으로 변환
+            ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 읽지 않은 메시지 조회
-        List<ChatMessage> unreadMessages = chatMessageRepository.findByRoomIdAndReceiverIdAndReadFalse(roomId, userId);
+            Long userIdLong = Long.parseLong(userId);
 
-        // 읽음 처리
-        unreadMessages.forEach(message -> {
-            message.setRead(true);
-            chatMessageRepository.save(message);
-        });
+            // 해당 사용자의 읽지 않은 메시지 조회 및 읽음 처리
+            List<ChatMessage> unreadMessages = findUnreadMessages(Long.parseLong(roomId), userIdLong, chatRoom);
 
-        return unreadMessages.size();
+            // 읽음 처리
+            int count = 0;
+            for (ChatMessage message : unreadMessages) {
+                boolean updated = updateReadStatus(message, userIdLong, chatRoom);
+                if (updated) {
+                    chatMessageRepository.save(message);
+                    count++;
+                }
+            }
+
+            return count;
+        } catch (Exception e) {
+            log.error("메시지 읽음 처리 실패: {}", e.getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * 사용자에 따른 읽지 않은 메시지 목록 조회
+     */
+    private List<ChatMessage> findUnreadMessages(Long roomId, Long userId, ChatRoom chatRoom) {
+        // 구매자인 경우 구매자가 읽지 않은 메시지 조회
+        if (chatRoom.getBuyerId().equals(userId)) {
+            // MongoDB에서 구매자가 읽지 않은 메시지 조회 로직 추가 필요
+            // 임시 구현: 구매자가 읽지 않은 메시지 조회
+            return chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, PageRequest.of(0, 100))
+                    .getContent().stream()
+                    .filter(msg -> !msg.isReadByBuyer())
+                    .collect(Collectors.toList());
+        } else if (chatRoom.getAssemblerId().equals(userId)) {
+            // 조립자인 경우 조립자가 읽지 않은 메시지 조회
+            return chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, PageRequest.of(0, 100))
+                    .getContent().stream()
+                    .filter(msg -> !msg.isReadByAssembler())
+                    .collect(Collectors.toList());
+        }
+
+        return List.of(); // 해당 사용자가 채팅방에 없는 경우
+    }
+
+    /**
+     * 메시지 읽음 상태 업데이트
+     */
+    private boolean updateReadStatus(ChatMessage message, Long userId, ChatRoom chatRoom) {
+        if (chatRoom.getBuyerId().equals(userId) && !message.isReadByBuyer()) {
+            message.setReadByBuyer(true);
+            return true;
+        } else if (chatRoom.getAssemblerId().equals(userId) && !message.isReadByAssembler()) {
+            message.setReadByAssembler(true);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -167,11 +224,13 @@ public class ChatMessageService {
      * @return 전송된 메시지 정보
      */
     public ChatMessageDto sendTransactionRequest(String roomId, String senderId, int amount) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        // String을 Long으로 변환
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 조립자만 거래 요청 가능
-        if (!chatRoom.getAssemblerId().equals(senderId)) {
+        // 조립자만 거래 요청 가능 - String을 Long으로 변환
+        Long senderIdLong = Long.parseLong(senderId);
+        if (!chatRoom.getAssemblerId().equals(senderIdLong)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 요청은 조립자만 가능합니다.");
         }
 
@@ -184,8 +243,8 @@ public class ChatMessageService {
                 .transactionStatus("요청")
                 .build();
 
-        // 채팅방 정보 업데이트
-        chatRoomService.updateChatRoomTransaction(roomId, amount, "요청");
+        // 채팅방 정보 업데이트 - String을 Long으로 변환
+        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), amount, "요청");
 
         // 메시지 전송
         return sendMessage(messageDto, senderId);
@@ -198,11 +257,13 @@ public class ChatMessageService {
      * @return 전송된 메시지 정보
      */
     public ChatMessageDto sendTransactionProgress(String roomId, String userId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        // String을 Long으로 변환
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 구매자만 거래 진행 가능
-        if (!chatRoom.getBuyerId().equals(userId)) {
+        // 구매자만 거래 진행 가능 - String을 Long으로 변환
+        Long userIdLong = Long.parseLong(userId);
+        if (!chatRoom.getBuyerId().equals(userIdLong)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 진행은 구매자만 가능합니다.");
         }
 
@@ -220,8 +281,8 @@ public class ChatMessageService {
                 .transactionStatus("진행중")
                 .build();
 
-        // 채팅방 정보 업데이트
-        chatRoomService.updateChatRoomTransaction(roomId, chatRoom.getTransactionAmount(), "진행중");
+        // 채팅방 정보 업데이트 - String을 Long으로 변환
+        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), chatRoom.getTransactionAmount(), "진행중");
 
         // 메시지 전송
         return sendMessage(messageDto, userId);
@@ -234,11 +295,13 @@ public class ChatMessageService {
      * @return 전송된 메시지 정보
      */
     public ChatMessageDto sendTransactionComplete(String roomId, String userId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        // String을 Long으로 변환
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 구매자만 거래 완료 가능
-        if (!chatRoom.getBuyerId().equals(userId)) {
+        // 구매자만 거래 완료 가능 - String을 Long으로 변환
+        Long userIdLong = Long.parseLong(userId);
+        if (!chatRoom.getBuyerId().equals(userIdLong)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 완료는 구매자만 가능합니다.");
         }
 
@@ -256,8 +319,8 @@ public class ChatMessageService {
                 .transactionStatus("완료")
                 .build();
 
-        // 채팅방 정보 업데이트
-        chatRoomService.updateChatRoomTransaction(roomId, chatRoom.getTransactionAmount(), "완료");
+        // 채팅방 정보 업데이트 - String을 Long으로 변환
+        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), chatRoom.getTransactionAmount(), "완료");
 
         // 메시지 전송
         return sendMessage(messageDto, userId);
@@ -271,12 +334,13 @@ public class ChatMessageService {
      * @return 업로드된 이미지 URL
      */
     public String uploadMedia(String roomId, String userId, MultipartFile file) {
-        // 채팅방 확인
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        // 채팅방 확인 - String을 Long으로 변환
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 메시지 발신자가 채팅방 참여자인지 확인
-        if (!chatRoom.getBuyerId().equals(userId) && !chatRoom.getAssemblerId().equals(userId)) {
+        // 메시지 발신자가 채팅방 참여자인지 확인 - String을 Long으로 변환
+        Long userIdLong = Long.parseLong(userId);
+        if (!chatRoom.getBuyerId().equals(userIdLong) && !chatRoom.getAssemblerId().equals(userIdLong)) {
             throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 채팅방에 속해있지 않습니다.");
         }
 
@@ -344,7 +408,11 @@ public class ChatMessageService {
     /**
      * 알림 전송
      */
-    private void sendNotification(ChatMessageDto messageDto) {
+    private void sendNotification(ChatMessageDto messageDto, Long buyerId, Long assemblerId) {
+        // 발신자와 수신자 구분
+        boolean isSenderBuyer = buyerId.toString().equals(messageDto.getSenderId());
+        String receiverId = isSenderBuyer ? assemblerId.toString() : buyerId.toString();
+
         // 알림 타입 설정
         String notificationType;
         String notificationTitle;
@@ -378,7 +446,7 @@ public class ChatMessageService {
 
         // 알림 DTO 생성
         NotificationDto notificationDto = NotificationDto.builder()
-                .userId(messageDto.getReceiverId())
+                .userId(receiverId)
                 .title(notificationTitle)
                 .content(notificationContent)
                 .notificationType(notificationType)
@@ -400,41 +468,46 @@ public class ChatMessageService {
             messageType = ChatMessageType.TEXT;  // 기본값
         }
 
+        // 발신자가 구매자인지 확인하기 위해서는 채팅방 정보가 필요
+        // 간단히 발신자와 수신자 모두 기준으로 읽음 상태 결정
+        boolean isRead = chatMessage.isReadByBuyer() && chatMessage.isReadByAssembler();
+
+        // 수정된 ChatMessage 클래스에 맞게 변환
         return ChatMessageDto.builder()
                 .messageId(chatMessage.getId())
-                .roomId(chatMessage.getRoomId())
-                .senderId(chatMessage.getSenderId())
-                .senderNickname(chatMessage.getSenderNickname())
-                .receiverId(chatMessage.getReceiverId())
+                .roomId(chatMessage.getRoomId().toString())
+                .senderId(chatMessage.getSenderId().toString())
+                .content(chatMessage.getMessage())
                 .messageType(messageType)
-                .content(chatMessage.getContent())
-                .imageUrl(chatMessage.getImageUrl())
+                .sentAt(chatMessage.getSentAt())
+                .read(isRead) // 양쪽 모두 읽었으면 true
+                .imageUrl(chatMessage.getMediaUrl())
                 .transactionAmount(chatMessage.getTransactionAmount())
                 .transactionStatus(chatMessage.getTransactionStatus())
-                .sentAt(chatMessage.getSentAt())
-                .read(chatMessage.isRead())
                 .build();
     }
 
     /**
      * DTO를 엔티티로 변환
      */
-    private ChatMessage convertToEntity(ChatMessageDto messageDto) {
+    private ChatMessage convertToEntity(ChatMessageDto messageDto, Long roomIdLong) {
+        boolean isSenderBuyer = false; // 기본값, 실제로는 구매자/조립자 판단 로직 추가 필요
+
         return ChatMessage.builder()
                 .id(messageDto.getMessageId())
-                .roomId(messageDto.getRoomId())
-                .senderId(messageDto.getSenderId())
-                .senderNickname(messageDto.getSenderNickname())
-                .receiverId(messageDto.getReceiverId())
+                .roomId(roomIdLong)
+                .senderId(Long.parseLong(messageDto.getSenderId()))
                 .messageType(messageDto.getMessageType().name())
-                .content(messageDto.getContent())
-                .imageUrl(messageDto.getImageUrl())
+                .message(messageDto.getContent())
+                .sentAt(messageDto.getSentAt())
+                .isReadByBuyer(isSenderBuyer) // 발신자가 구매자면 구매자는 이미 읽음
+                .isReadByAssembler(!isSenderBuyer) // 발신자가 조립자면 조립자는 이미 읽음
+                .mediaUrl(messageDto.getImageUrl())
                 .transactionAmount(messageDto.getTransactionAmount())
                 .transactionStatus(messageDto.getTransactionStatus())
-                .sentAt(messageDto.getSentAt())
-                .read(messageDto.isRead())
                 .build();
     }
+
     /**
      * 특정 채팅방의 읽지 않은 메시지 수 조회
      * @param roomId 채팅방 ID
@@ -442,7 +515,29 @@ public class ChatMessageService {
      * @return 읽지 않은 메시지 수
      */
     public long countUnreadMessagesInRoom(String roomId, String userId) {
-        return chatMessageRepository.countByRoomIdAndReceiverIdAndReadFalse(roomId, userId);
+        try {
+            // 채팅방 확인
+            ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
+
+            Long userIdLong = Long.parseLong(userId);
+
+            // 구매자인 경우
+            if (chatRoom.getBuyerId().equals(userIdLong)) {
+                return chatMessageRepository.countByRoomIdAndIsReadByBuyerFalseAndSenderIdNot(
+                        Long.parseLong(roomId), userIdLong);
+            }
+            // 조립자인 경우
+            else if (chatRoom.getAssemblerId().equals(userIdLong)) {
+                return chatMessageRepository.countByRoomIdAndIsReadByAssemblerFalseAndSenderIdNot(
+                        Long.parseLong(roomId), userIdLong);
+            }
+
+            return 0;
+        } catch (Exception e) {
+            log.error("읽지 않은 메시지 수 조회 실패: {}", e.getMessage());
+            return 0;
+        }
     }
 
     /**
@@ -451,6 +546,27 @@ public class ChatMessageService {
      * @return 읽지 않은 메시지 수
      */
     public long countAllUnreadMessages(String userId) {
-        return chatMessageRepository.countByReceiverIdAndReadFalse(userId);
+        try {
+            Long userIdLong = Long.parseLong(userId);
+
+            // 사용자가 참여 중인 모든 채팅방 ID 목록 조회
+            List<Long> roomIds = chatRoomRepository.findByBuyerIdAndBuyerActiveTrue(userIdLong).stream()
+                    .map(ChatRoom::getId)
+                    .collect(Collectors.toList());
+
+            roomIds.addAll(chatRoomRepository.findByAssemblerIdAndAssemblerActiveTrue(userIdLong).stream()
+                    .map(ChatRoom::getId)
+                    .collect(Collectors.toList()));
+
+            if (roomIds.isEmpty()) {
+                return 0;
+            }
+
+            // 모든 채팅방의 읽지 않은 메시지 수 조회
+            return chatMessageRepository.countAllUnreadMessages(roomIds, userIdLong);
+        } catch (Exception e) {
+            log.error("전체 읽지 않은 메시지 수 조회 실패: {}", e.getMessage());
+            return 0;
+        }
     }
 }
