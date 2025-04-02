@@ -1,16 +1,20 @@
 package com.ssafy.feed.service;
 
+import com.ssafy.feed.dto.HashtagDTO;
+import com.ssafy.feed.mapper.FeedHashtagMapper;
+import com.ssafy.feed.mapper.HashtagMapper;
 import com.ssafy.feed.mapper.UserActivityMapper;
+import com.ssafy.feed.mapper.UserHashtagPreferenceMapper;
+import com.ssafy.feed.model.Hashtag;
 import com.ssafy.feed.model.UserActivity;
+import com.ssafy.feed.model.UserHashtagPreference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,6 +23,9 @@ import java.util.stream.Collectors;
 public class UserActivityService {
 
     private final UserActivityMapper userActivityMapper;
+    private final FeedHashtagMapper feedHashtagMapper;
+    private final HashtagMapper hashtagMapper;
+    private final UserHashtagPreferenceMapper userHashtagPreferenceMapper;
 
     private static final int DAYS_TO_ANALYZE = 30;
     private static final Map<String, Double> ACTIVITY_WEIGHTS = Map.of(
@@ -26,8 +33,7 @@ public class UserActivityService {
             "LIKE_FEED", 2.0,
             "BOOKMARK_FEED", 3.0,
             "ADD_COMMENT", 2.5,
-            "VIEW_PRODUCT_DETAIL", 2.0,
-            "ADD_PRODUCT_TO_WISHLIST", 3.0
+            "SHARE_FEED", 1.5
     );
 
     /**
@@ -42,6 +48,70 @@ public class UserActivityService {
                 .build();
 
         userActivityMapper.insert(activity);
+
+        // 피드 관련 활동이면 해시태그 선호도 업데이트
+        updateHashtagPreferences(userId, activityType, (Map<String, Object>) activityData);
+    }
+
+    /**
+     * 피드 관련 활동 시 해시태그 선호도 업데이트
+     */
+    private void updateHashtagPreferences(Long userId, String activityType, Map<String, Object> activityData) {
+        // 피드 관련 활동 필터링
+        if (activityData == null || !isFeedRelatedActivity(activityType)) {
+            return;
+        }
+
+        // 피드 ID 추출
+        Long feedId = extractFeedId(activityData);
+        if (feedId == null) {
+            return;
+        }
+
+        // 해시태그 ID 목록 조회
+        List<Long> hashtagIds = feedHashtagMapper.findHashtagIdsByFeedId(feedId);
+        if (hashtagIds.isEmpty()) {
+            return;
+        }
+
+        // 활동별 가중치 부여
+        Double weight = ACTIVITY_WEIGHTS.getOrDefault(activityType, 1.0);
+
+        // 각 해시태그 점수 갱신
+        for (Long hashtagId : hashtagIds) {
+            userHashtagPreferenceMapper.incrementScore(userId, hashtagId, weight);
+        }
+
+        log.info("사용자 {} 해시태그 선호도 업데이트: 활동={}, 피드={}, 해시태그={}, 가중치={}",
+                userId, activityType, feedId, hashtagIds, weight);
+    }
+
+    /**
+     * 활동 데이터에서 피드 ID 추출
+     */
+    private Long extractFeedId(Map<String, Object> activityData) {
+        if (activityData.containsKey("feedId")) {
+            Object feedIdObj = activityData.get("feedId");
+            if (feedIdObj instanceof Number) {
+                return ((Number) feedIdObj).longValue();
+            } else if (feedIdObj instanceof String) {
+                return Long.parseLong((String) feedIdObj);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 피드 관련 활동인지 확인
+     */
+    private boolean isFeedRelatedActivity(String activityType) {
+        return Arrays.asList(
+                "VIEW_FEED_DETAIL",
+                "LIKE_FEED",
+                "BOOKMARK_FEED",
+                "ADD_COMMENT",
+                "SHARE_FEED"
+        ).contains(activityType);
     }
 
     /**
@@ -54,46 +124,68 @@ public class UserActivityService {
     }
 
     /**
-     * 사용자 관심사 분석 (카테고리별 가중치)
+     * 사용자 관심 해시태그 분석
      */
     @Transactional(readOnly = true)
-    public Map<String, Double> getUserInterests(Long userId) {
-        // 최근 30일 활동 조회
-        LocalDateTime startDate = LocalDateTime.now().minusDays(DAYS_TO_ANALYZE);
-        List<UserActivity> recentActivities = userActivityMapper.findRecentActivities(userId, startDate);
+    public Map<Long, Double> getUserHashtagInterests(Long userId) {
+        // 저장된 해시태그 선호도 데이터 조회
+        List<UserHashtagPreference> preferences = userHashtagPreferenceMapper.findByUserId(userId);
 
-        Map<String, Double> categoryScores = new HashMap<>();
+        // 선호도 데이터가 있으면 그대로 사용
+        if (!preferences.isEmpty()) {
+            Map<Long, Double> hashtagWeights = new HashMap<>();
+            double totalScore = preferences.stream()
+                    .mapToDouble(UserHashtagPreference::getScore)
+                    .sum();
 
-        // 카테고리별 점수 계산
-        for (UserActivity activity : recentActivities) {
-            // 활동 유형에 따른 가중치
-            Double weight = ACTIVITY_WEIGHTS.getOrDefault(activity.getActivityType(), 1.0);
-
-            // 활동 데이터에서 카테고리 정보 추출
-            String category = extractCategoryFromActivity(activity);
-            if (category != null) {
-                if (categoryScores.containsKey(category)) {
-                    // 키가 이미 존재하면 기존 값에 weight를 더함
-                    categoryScores.put(category, categoryScores.get(category) + weight);
-                } else {
-                    // 키가 없으면 새로 추가
-                    categoryScores.put(category, weight);
+            // 정규화된 선호도 값 계산
+            if (totalScore > 0) {
+                for (UserHashtagPreference pref : preferences) {
+                    hashtagWeights.put(pref.getHashtagId(), pref.getScore() / totalScore);
                 }
+                return hashtagWeights;
             }
         }
 
-        double totalScore = 0;
-        for (Double score : categoryScores.values()) {
-            totalScore += score;
+        // 저장된 선호도가 없으면 활동 로그 기반으로 계산
+        List<Map<String, Object>> hashtagStats = feedHashtagMapper.findUserInteractionHashtagStats(userId);
+
+        if (hashtagStats.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        if (totalScore > 0) {
-            for (String category : categoryScores.keySet()) {
-                categoryScores.put(category, categoryScores.get(category) / totalScore);
-            }
+        // 총 상호작용 수 계산
+        int totalInteractions = hashtagStats.stream()
+                .mapToInt(stat -> ((Number) stat.get("count")).intValue())
+                .sum();
+
+        // 해시태그별 가중치 계산 (정규화)
+        Map<Long, Double> hashtagWeights = new HashMap<>();
+        for (Map<String, Object> stat : hashtagStats) {
+            Long hashtagId = ((Number) stat.get("hashtag_id")).longValue();
+            int count = ((Number) stat.get("count")).intValue();
+            double weight = (double) count / totalInteractions;
+            hashtagWeights.put(hashtagId, weight);
         }
 
-        return categoryScores;
+        return hashtagWeights;
+    }
+
+    /**
+     * 점수 정규화 (총합 1)
+     */
+    private Map<String, Double> normalizeScores(Map<String, Double> scores) {
+        double sum = scores.values().stream().mapToDouble(Double::doubleValue).sum();
+        if (sum == 0) {
+            return scores;
+        }
+
+        Map<String, Double> normalizedScores = new HashMap<>();
+        for (Map.Entry<String, Double> entry : scores.entrySet()) {
+            normalizedScores.put(entry.getKey(), entry.getValue() / sum);
+        }
+
+        return normalizedScores;
     }
 
     /**
@@ -137,44 +229,6 @@ public class UserActivityService {
     }
 
     /**
-     * 활동 로그에서 카테고리 정보 추출
-     */
-    private String extractCategoryFromActivity(UserActivity activity) {
-        Map<String, Object> data = activity.getActivityData();
-
-        if (data == null) {
-            return null;
-        }
-
-        switch (activity.getActivityType()) {
-            case "VIEW_PRODUCT_DETAIL":
-            case "ADD_PRODUCT_TO_WISHLIST":
-                // 상품 관련 활동에서 카테고리 추출
-                if (data.containsKey("productCategory")) {
-                    return (String) data.get("productCategory");
-                }
-                break;
-
-            case "VIEW_FEED_DETAIL":
-            case "LIKE_FEED":
-            case "BOOKMARK_FEED":
-                // 피드 관련 활동에서 메인 카테고리 추출
-                if (data.containsKey("feedCategories") && data.get("feedCategories") instanceof List) {
-                    List<String> categories = (List<String>) data.get("feedCategories");
-                    if (!categories.isEmpty()) {
-                        return categories.get(0);
-                    }
-                }
-                break;
-
-            default:
-                return null;
-        }
-
-        return null;
-    }
-
-    /**
      * 인기 시간대 계산 (사용자 활동이 가장 많은 시간대)
      */
     @Transactional(readOnly = true)
@@ -191,16 +245,53 @@ public class UserActivityService {
     }
 
     /**
-     * 사용자의 선호 카테고리 Top N 추출
+     * 사용자의 선호 해시태그 Top N 추출
      */
     @Transactional(readOnly = true)
-    public List<String> getTopCategories(Long userId, int limit) {
-        Map<String, Double> interests = getUserInterests(userId);
+    public List<HashtagDTO> getTopHashtags(Long userId, int limit) {
+        Map<Long, Double> hashtagInterests = getUserHashtagInterests(userId);
 
-        return interests.entrySet().stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+        if (hashtagInterests.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 선호도 기준 상위 해시태그 ID 추출
+        List<Long> topHashtagIds = hashtagInterests.entrySet().stream()
+                .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
                 .limit(limit)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+
+        // 해시태그 정보 조회
+        List<Hashtag> hashtags = hashtagMapper.findByIds(new HashSet<>(topHashtagIds));
+
+        // ID 기준 정렬 (선호도 순서 유지)
+        Map<Long, Hashtag> hashtagMap = hashtags.stream()
+                .collect(Collectors.toMap(Hashtag::getHashtagId, h -> h));
+
+        return topHashtagIds.stream()
+                .map(hashtagMap::get)
+                .filter(Objects::nonNull)
+                .map(this::convertToHashtagDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 유사한 해시태그 관심사를 가진 사용자 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Long> findSimilarUsers(Long userId, int limit) {
+        // 구현 필요시 추가
+        return Collections.emptyList();
+    }
+
+    /**
+     * Hashtag 엔티티를 HashtagDTO로 변환
+     */
+    private HashtagDTO convertToHashtagDTO(Hashtag hashtag) {
+        return HashtagDTO.builder()
+                .id(hashtag.getHashtagId())
+                .name(hashtag.getName())
+                .build();
     }
 }

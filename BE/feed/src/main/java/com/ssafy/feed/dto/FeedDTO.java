@@ -19,6 +19,7 @@ public class FeedDTO {
     private String content;
     private List<FeedImageDTO> images;
     private List<ProductDTO> products;
+    private List<HashtagDTO> hashtags;
     private LocalDateTime createdAt;
     private int likeCount;
     private int commentCount;

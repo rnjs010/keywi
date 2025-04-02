@@ -14,4 +14,5 @@ import java.util.List;
 public class FeedCreateRequest {
     private String content;
     private List<FeedProductRequest> products;
+    private List<String> hashtags;
 }

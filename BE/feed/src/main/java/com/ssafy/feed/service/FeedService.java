@@ -34,6 +34,7 @@ public class FeedService {
     private final FollowUserMapper followUserMapper;
     private final FeedReadMapper feedReadMapper;
     private final UserActivityService userActivityService;
+    private final HashtagService hashtagService;
     private final UserServiceAdapter userServiceAdapter;
     private final ProductServiceAdapter productServiceAdapter;
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -61,11 +62,11 @@ public class FeedService {
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
 
-            // 2. 사용자 활동 기반 맞춤 피드
-            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
+            // 2. 해시태그 기반 맞춤 피드
+            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
 
-            // 추천 목록 합치기 (중복 제거)
-            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
+            // 추천 목록 합치기 (중복 제거, 우선순위: 팔로우 > 해시태그)
+            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
 
             // Redis에 저장 (24시간 유효)
             redisTemplate.opsForValue().set(
@@ -111,7 +112,7 @@ public class FeedService {
     /**
      * 사용자 맞춤 피드 조회 (무한 스크롤 지원)
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public FeedPageResponse getRecommendedFeeds(Long userId, Pageable pageable) {
         // Redis에서 추천 피드 조회
         List<FeedDTO> cachedRecommendedFeeds = (List<FeedDTO>) redisTemplate.opsForValue()
@@ -125,10 +126,10 @@ public class FeedService {
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
 
-            // 2. 사용자 활동 기반 맞춤 피드
-            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
+            // 2. 해시태그 기반 맞춤 피드
+            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
 
-            cachedRecommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
+            cachedRecommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
         }
 
         // 캐시된 추천 피드가 부족하면 인기 피드로 보충
@@ -159,6 +160,60 @@ public class FeedService {
                 .last(end >= cachedRecommendedFeeds.size())
                 .build();
     }
+
+    /**
+     * 해시태그 기반 맞춤 피드 조회
+     */
+    private List<FeedDTO> getHashtagBasedRecommendedFeeds(Long userId) {
+        // 1. 사용자 관심 해시태그 분석 (좋아요, 북마크한 피드의 해시태그)
+        Map<Long, Double> hashtagWeights = userActivityService.getUserHashtagInterests(userId);
+
+        if (hashtagWeights.isEmpty()) {
+            // 관심 해시태그가 없는 경우 인기 해시태그로 대체
+            List<HashtagDTO> popularHashtags = hashtagService.getPopularHashtags(15);
+            Set<Long> popularHashtagIds = popularHashtags.stream()
+                    .map(HashtagDTO::getId)
+                    .collect(Collectors.toSet());
+
+            // 인기 해시태그 관련 피드 조회
+            List<Long> feedIds = hashtagService.findFeedsByHashtagIds(popularHashtagIds, 50);
+            return getFeedDTOsByIds(feedIds);
+        }
+
+        // 2. 상위 관심 해시태그 추출
+        Set<Long> topHashtagIds = hashtagWeights.entrySet().stream()
+                .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
+                .limit(15)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        // 3. 관심 해시태그 관련 피드 조회
+        List<Long> feedIds = hashtagService.findFeedsByHashtagIds(topHashtagIds, 50);
+
+        // 4. 피드 정보 조회
+        return getFeedDTOsByIds(feedIds);
+    }
+
+    /**
+     * 피드 ID 목록으로 FeedDTO 목록 조회
+     */
+    private List<FeedDTO> getFeedDTOsByIds(List<Long> feedIds) {
+        if (feedIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 일괄 조회를 위한 쿼리 추가 필요
+        List<FeedDTO> feeds = new ArrayList<>();
+        for (Long feedId : feedIds) {
+            Feed feed = feedMapper.findById(feedId);
+            if (feed != null) {
+                feeds.add(convertToFeedDTO(feed));
+            }
+        }
+
+        return feeds;
+    }
+
 
     /**
      * 단일 피드 상세 조회
@@ -539,6 +594,18 @@ public class FeedService {
             }
         }
 
+        // 해시태그 정보 저장
+        if (request.getHashtags() != null && !request.getHashtags().isEmpty()) {
+            // 기본 카테고리 추출 (첫 번째 상품 카테고리 사용)
+            String defaultCategory = null;
+            if (request.getProducts() != null && !request.getProducts().isEmpty()) {
+                defaultCategory = request.getProducts().get(0).getCategory();
+            }
+
+            // 해시태그 추가
+            hashtagService.addHashtagsToFeed(feed.getFeedId(), request.getHashtags(), defaultCategory);
+        }
+
         // 4. 작성된 피드 정보 반환
         return getFeedById(feed.getFeedId(), userId);
     }
@@ -593,6 +660,13 @@ public class FeedService {
         for (Long feedId : feedIds) {
             List<FeedProduct> products = feedProductMapper.findByFeedId(feedId);
             feedProductsMap.put(feedId, products);
+        }
+
+        // 피드별 해시태그 정보 조회
+        Map<Long, List<HashtagDTO>> feedHashtagsMap = new HashMap<>();
+        for (Long feedId : feedIds) {
+            List<HashtagDTO> hashtags = hashtagService.getHashtagsByFeedId(feedId);
+            feedHashtagsMap.put(feedId, hashtags);
         }
 
         // 좋아요, 북마크 상태 조회
@@ -669,6 +743,10 @@ public class FeedService {
                     .collect(Collectors.toList());
 
             feed.setProducts(products);
+
+            // 해시태그 정보 설정
+            List<HashtagDTO> hashtags = feedHashtagsMap.getOrDefault(feed.getId(), Collections.emptyList());
+            feed.setHashtags(hashtags);
 
             // 좋아요, 북마크 상태 설정
             feed.setLiked(likedFeedIds.contains(feed.getId()));
@@ -781,11 +859,11 @@ public class FeedService {
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
 
-            // 2. 사용자 활동 기반 맞춤 피드
-            List<FeedDTO> personalizedFeeds = getPersonalizedFeeds(userId);
+            // 2. 해시태그 기반 맞춤 피드
+            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
 
             // 추천 목록 합치기
-            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, personalizedFeeds);
+            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
 
             // Redis에 저장 (24시간 유효)
             redisTemplate.opsForValue().set(
@@ -798,32 +876,6 @@ public class FeedService {
             kafkaTemplate.send("feed-recommendation-updates",
                     Map.of("userId", userId, "updatedAt", System.currentTimeMillis()));
         }
-    }
-
-    /**
-     * 사용자 활동 기반 맞춤 피드 조회
-     */
-    private List<FeedDTO> getPersonalizedFeeds(Long userId) {
-        // 사용자 관심사, 활동 기록 분석
-        Map<String, Double> userInterests = userActivityService.getUserInterests(userId);
-
-        // 관심사 기반 상위 카테고리 5개 추출
-        List<String> topCategories = userInterests.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                .limit(5)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        if (topCategories.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 관심 카테고리 기반 피드 조회
-        List<Feed> personalizedFeeds = feedMapper.findFeedsByCategories(topCategories);
-        return personalizedFeeds.stream()
-                .map(this::convertToFeedDTO)
-                .collect(Collectors.toList());
     }
 
     /**

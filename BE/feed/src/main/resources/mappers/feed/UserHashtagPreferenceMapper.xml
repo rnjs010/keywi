@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.UserHashtagPreferenceMapper">
+    <resultMap id="UserHashtagPreferenceResultMap" type="com.ssafy.feed.model.UserHashtagPreference">
+        <id property="id" column="preference_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="hashtagId" column="hashtag_id"/>
+        <result property="score" column="score"/>
+        <result property="lastUpdated" column="last_updated"/>
+    </resultMap>
+
+    <select id="findByUserIdAndHashtagId" resultMap="UserHashtagPreferenceResultMap">
+        SELECT * FROM user_hashtag_preferences
+        WHERE user_id = #{userId} AND hashtag_id = #{hashtagId}
+    </select>
+
+    <select id="findByUserId" resultMap="UserHashtagPreferenceResultMap">
+        SELECT * FROM user_hashtag_preferences
+        WHERE user_id = #{userId}
+        ORDER BY score DESC
+    </select>
+
+    <select id="findTopHashtagsByUserId" resultType="map">
+        SELECT uhp.hashtag_id, h.name, h.category, uhp.score
+        FROM user_hashtag_preferences uhp
+                 JOIN hashtags h ON uhp.hashtag_id = h.hashtag_id
+        WHERE uhp.user_id = #{userId}
+        ORDER BY uhp.score DESC
+            LIMIT #{limit}
+    </select>
+
+    <insert id="insertOrUpdate">
+        INSERT INTO user_hashtag_preferences (user_id, hashtag_id, score, last_updated)
+        VALUES (#{userId}, #{hashtagId}, #{score}, NOW())
+            ON DUPLICATE KEY UPDATE
+                                 score = #{score},
+                                 last_updated = NOW()
+    </insert>
+
+    <update id="incrementScore">
+        INSERT INTO user_hashtag_preferences (user_id, hashtag_id, score, last_updated)
+        VALUES (#{userId}, #{hashtagId}, #{weight}, NOW())
+            ON DUPLICATE KEY UPDATE
+                                 score = score + #{weight},
+                                 last_updated = NOW()
+    </update>
+
+    <delete id="cleanupOldPreferences">
+    <![CDATA[
+        DELETE FROM user_hashtag_preferences
+        WHERE last_updated < DATE_SUB(NOW(), INTERVAL #{daysToKeep} DAY)
+        ]]>
+    </delete>
+</mapper>

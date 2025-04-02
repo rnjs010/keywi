@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.HashtagMapper">
+    <resultMap id="HashtagResultMap" type="com.ssafy.feed.model.Hashtag">
+        <id property="hashtagId" column="hashtag_id"/>
+        <result property="name" column="name"/>
+        <result property="category" column="category"/>
+        <result property="usageCount" column="usage_count"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="HashtagResultMap">
+        SELECT * FROM hashtags WHERE hashtag_id = #{hashtagId}
+    </select>
+
+    <select id="findByName" resultMap="HashtagResultMap">
+        SELECT * FROM hashtags WHERE name = #{name}
+    </select>
+
+    <select id="findPopularHashtags" resultMap="HashtagResultMap">
+        SELECT * FROM hashtags ORDER BY usage_count DESC LIMIT #{limit}
+    </select>
+
+    <select id="findPopularHashtagsByCategory" resultMap="HashtagResultMap">
+        SELECT * FROM hashtags WHERE category = #{category}
+        ORDER BY usage_count DESC LIMIT #{limit}
+    </select>
+
+    <select id="findByIds" resultMap="HashtagResultMap">
+        SELECT h.* FROM hashtags h
+        WHERE h.hashtag_id IN
+        <foreach item="hashtagId" collection="ids" open="(" separator="," close=")">
+            #{hashtagId}
+        </foreach>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="hashtagId">
+        INSERT INTO hashtags (name, category, usage_count, created_at)
+        VALUES (#{name}, #{category}, #{usageCount}, NOW())
+    </insert>
+
+    <update id="incrementUsageCount">
+        UPDATE hashtags SET usage_count = usage_count + 1 WHERE hashtag_id = #{hashtagId}
+    </update>
+
+    <update id="updateCategory">
+        UPDATE hashtags SET category = #{category} WHERE hashtag_id = #{hashtagId}
+    </update>
+</mapper>
