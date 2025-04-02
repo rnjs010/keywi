@@ -27,6 +27,7 @@ export default function ChatRoomPage() {
   const myId = 'user789'
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleVisualViewPortResize = () => {
@@ -52,6 +53,8 @@ export default function ChatRoomPage() {
       )
     }
 
+    scrollToBottom()
+
     // 클린업 함수
     return () => {
       if (window.visualViewport) {
@@ -63,6 +66,15 @@ export default function ChatRoomPage() {
     }
   }, [])
 
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  }
+
   return (
     <Container ref={containerRef}>
       <div className="sticky top-0">
@@ -71,12 +83,12 @@ export default function ChatRoomPage() {
       </div>
 
       {/* Down Button */}
-      <DownBtnBox ref={downBtnRef}>
+      <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
         <ArrowDown />
       </DownBtnBox>
 
       {/* Date + Chat */}
-      <ChatContainer>
+      <ChatContainer ref={chatContainerRef}>
         {messageGroup.map((group) => (
           <>
             {/* Date */}

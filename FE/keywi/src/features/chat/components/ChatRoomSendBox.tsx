@@ -1,7 +1,7 @@
 import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
-import { Plus, Send, MediaImage, Camera, Wallet } from 'iconoir-react'
+import { Plus, Send, MediaImagePlus, Wallet } from 'iconoir-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,20 +39,12 @@ export default function ChatRoomSendBox() {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-40">
-          <DropdownMenuItem onClick={() => alert('갤러리')}>
+          <DropdownMenuItem onClick={() => alert('사진 첨부')}>
             <IconCircle className="bg-[#F0D61B]">
-              <MediaImage color={colors.white} />
+              <MediaImagePlus color={colors.white} />
             </IconCircle>
             <Text variant="body1" weight="regular" color="darkGray">
-              갤러리
-            </Text>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => alert('카메라')}>
-            <IconCircle className="bg-[#61B2E2]">
-              <Camera color={colors.white} />
-            </IconCircle>
-            <Text variant="body1" weight="regular" color="darkGray">
-              카메라
+              사진 첨부
             </Text>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleDealRequestClick}>
