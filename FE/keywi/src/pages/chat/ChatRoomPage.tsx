@@ -5,7 +5,9 @@ import OpponentMessage from '@/features/chat/components/MessageBox/OpponentMessa
 import ChatRoomSendBox from '@/features/chat/components/ChatRoomSendBox'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useChatStore } from '@/stores/ChatStore'
+import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -29,6 +31,27 @@ export default function ChatRoomPage() {
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
+  const showImage = useChatStore((state) => state.showImage)
+  const setShowImage = useChatStore((state) => state.setShowImage)
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  }
+
+  const startToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'auto',
+      })
+    }
+  }
+
   useEffect(() => {
     const handleVisualViewPortResize = () => {
       const currentVisualViewport = Number(window.visualViewport?.height)
@@ -44,6 +67,8 @@ export default function ChatRoomPage() {
 
     // 초기 설정
     handleVisualViewPortResize()
+    startToBottom()
+    setShowImage(false)
 
     // 이벤트 리스너 등록
     if (window.visualViewport) {
@@ -52,8 +77,6 @@ export default function ChatRoomPage() {
         handleVisualViewPortResize,
       )
     }
-
-    scrollToBottom()
 
     // 클린업 함수
     return () => {
@@ -66,51 +89,50 @@ export default function ChatRoomPage() {
     }
   }, [])
 
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior: 'smooth',
-      })
-    }
-  }
-
   return (
-    <Container ref={containerRef}>
-      <div className="sticky top-0">
-        <ChatRoomHeader {...chatParticipant} />
-        <ChatRoomPostInfo {...post} />
-      </div>
+    <>
+      {!showImage && (
+        <Container ref={containerRef}>
+          <div className="sticky top-0">
+            <ChatRoomHeader {...chatParticipant} />
+            <ChatRoomPostInfo {...post} />
+          </div>
 
-      {/* Down Button */}
-      <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
-        <ArrowDown />
-      </DownBtnBox>
+          {/* Down Button */}
+          <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
+            <ArrowDown />
+          </DownBtnBox>
 
-      {/* Date + Chat */}
-      <ChatContainer ref={chatContainerRef}>
-        {messageGroup.map((group) => (
-          <>
-            {/* Date */}
-            <DateBox key={group.dateGroup}>
-              <span className="text-sm text-[#a4a8ae]">{group.dateGroup}</span>
-            </DateBox>
+          {/* Date + Chat */}
+          <ChatContainer ref={chatContainerRef}>
+            {messageGroup.map((group) => (
+              <>
+                {/* Date */}
+                <DateBox key={group.dateGroup}>
+                  <span className="text-sm text-[#a4a8ae]">
+                    {group.dateGroup}
+                  </span>
+                </DateBox>
 
-            {/* Chat */}
-            {group.messages.map((message) =>
-              message.senderId === myId ? (
-                <MyMessage key={message.messageId} {...message} />
-              ) : (
-                <OpponentMessage key={message.messageId} {...message} />
-              ),
-            )}
-          </>
-        ))}
-      </ChatContainer>
+                {/* Chat */}
+                {group.messages.map((message) =>
+                  message.senderId === myId ? (
+                    <MyMessage key={message.messageId} {...message} />
+                  ) : (
+                    <OpponentMessage key={message.messageId} {...message} />
+                  ),
+                )}
+              </>
+            ))}
+          </ChatContainer>
 
-      {/* Input */}
-      <ChatRoomSendBox />
-    </Container>
+          {/* Input */}
+          <ChatRoomSendBox />
+        </Container>
+      )}
+
+      {showImage && <ImageInputScreen />}
+    </>
   )
 }
 

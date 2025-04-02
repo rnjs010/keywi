@@ -1,6 +1,19 @@
 import { BoardItem } from '@/interfaces/BoardInterface'
 import { create } from 'zustand'
 
+// 채팅
+interface ChatStore {
+  showImage: boolean
+  setShowImage: (showImage: boolean) => void
+  resetState: () => void
+}
+
+export const useChatStore = create<ChatStore>((set) => ({
+  showImage: false,
+  setShowImage: (showImage) => set({ showImage }),
+  resetState: () => set({ showImage: false }),
+}))
+
 // 거래 요청
 interface DealRequestStore {
   step: number

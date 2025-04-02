@@ -1,6 +1,7 @@
 import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
+import styled from '@emotion/styled'
 import { Plus, Send, MediaImagePlus, Wallet } from 'iconoir-react'
 import {
   DropdownMenu,
@@ -9,13 +10,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useChatStore } from '@/stores/ChatStore'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
 `
 
-const InputBox = tw.div`
-  bg-[#f5f5f8] rounded-full px-4 py-2 w-72
+const InputBox = styled.textarea`
+  ${tw`bg-[#f5f5f8] rounded-full px-4 py-2 w-72 h-10 items-center`}
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const IconCircle = tw.div`
@@ -25,6 +31,11 @@ const IconCircle = tw.div`
 export default function ChatRoomSendBox() {
   const navigate = useNavigate()
   const { roomId } = useParams()
+  const setShowImage = useChatStore((state) => state.setShowImage)
+
+  const handleAddImageClick = () => {
+    setShowImage(true)
+  }
 
   const handleDealRequestClick = () => {
     navigate(`/chat/${roomId}/dealrequest`)
@@ -39,7 +50,7 @@ export default function ChatRoomSendBox() {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-40">
-          <DropdownMenuItem onClick={() => alert('사진 첨부')}>
+          <DropdownMenuItem onClick={handleAddImageClick}>
             <IconCircle className="bg-[#F0D61B]">
               <MediaImagePlus color={colors.white} />
             </IconCircle>
@@ -58,13 +69,10 @@ export default function ChatRoomSendBox() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <InputBox>
-        <input
-          type="text"
-          placeholder="메시지 보내기"
-          className="bg-transparent outline-none text-[#303337]"
-        />
-      </InputBox>
+      <InputBox
+        placeholder="메시지 보내기"
+        className="bg-transparent outline-none text-[#303337]"
+      />
       <Send height="1.6rem" width="1.5rem" color={colors.darkGray} />
     </Container>
   )

@@ -71,6 +71,9 @@ export default function ProductDirectModal({
         {/* SECTION - 가격 입력 */}
         <InputContainer>
           <InputBox
+            type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="가격을 입력해주세요."
             value={productPrice}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
