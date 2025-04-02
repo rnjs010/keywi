@@ -23,9 +23,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/api/product/**");  // API 요청 인증 제외
-    }
 }
