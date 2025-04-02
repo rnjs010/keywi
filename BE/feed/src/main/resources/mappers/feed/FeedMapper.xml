@@ -69,6 +69,12 @@
         SELECT EXISTS(SELECT 1 FROM feed_bookmarks WHERE feed_id = #{feedId} AND user_id = #{userId})
     </select>
 
+    <select id="findAllByUserId" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE user_id = #{userId} AND is_delete = false
+        ORDER BY created_at DESC
+    </select>
+
     <insert id="addLike">
         INSERT INTO feed_likes (feed_id, user_id, created_at) VALUES (#{feedId}, #{userId}, NOW())
     </insert>

@@ -66,6 +66,13 @@ public class FeedController {
         return ResponseEntity.ok(feed);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<FeedDTO>> getFeedsByUserId(@PathVariable Long userId) {
+        List<FeedDTO> feeds = feedService.getAllFeedsByUserId(userId);
+
+        return ResponseEntity.ok(feeds);
+    }
+
     /**
      * 피드 작성
      */

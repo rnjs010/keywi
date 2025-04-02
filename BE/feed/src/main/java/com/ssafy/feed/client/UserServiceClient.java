@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@FeignClient(name = "user-service", fallbackFactory = UserServiceClientFallbackFactory.class)
+@FeignClient(name = "auth", fallbackFactory = UserServiceClientFallbackFactory.class)
 public interface UserServiceClient {
 
     /**

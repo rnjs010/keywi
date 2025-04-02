@@ -23,7 +23,7 @@ public interface FeedMapper {
 
     List<Feed> findPopularFeeds();
 
-    List<Feed> findFeedsByCategories(@Param("categories") List<String> categories);
+    List<Feed> findAllByUserId(Long userId);
 
     boolean isLikedByUser(@Param("feedId") Long feedId, @Param("userId") Long userId);
 

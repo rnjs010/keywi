@@ -766,6 +766,25 @@ public class FeedService {
     }
 
     /**
+     * 특정 유저가 작성한 모든 피드 조회 (페이지네이션 없음)
+     */
+    @Transactional(readOnly = true)
+    public List<FeedDTO> getAllFeedsByUserId(Long userId) {
+        // 사용자가 작성한 모든 피드 목록 조회
+        List<Feed> userFeeds = feedMapper.findAllByUserId(userId);
+
+        // FeedDTO로 변환
+        List<FeedDTO> feedDTOs = userFeeds.stream()
+                .map(this::convertToFeedDTO)
+                .collect(Collectors.toList());
+
+        // 피드 정보 보강 (사용자, 이미지, 상품, 해시태그 등)
+        enrichFeedInformation(feedDTOs, userId);
+
+        return feedDTOs;
+    }
+
+    /**
      * Feed 엔티티를 FeedDTO로 변환
      */
     private FeedDTO convertToFeedDTO(Feed feed) {
