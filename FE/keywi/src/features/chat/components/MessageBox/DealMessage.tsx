@@ -2,6 +2,7 @@ import MainButton from '@/components/MainButton'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { DealMessageProps } from '@/interfaces/ChatInterfaces'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -20,11 +21,15 @@ export default function DealMessage({
   content,
   isMine,
 }: DealMessageProps) {
+  const navigate = useNavigate()
+  const { roomId } = useParams()
+
   let title = ''
   let imageSrc = ''
   let contentText = ''
   let buttonText = ''
   let showButton = false
+  let onClickHandler: (() => void) | undefined = undefined
 
   switch (messageType) {
     case 'DEALREQUEST':
@@ -35,6 +40,7 @@ export default function DealMessage({
         : `조립자님이 ${content}원을 송금 요청했어요.`
       buttonText = '거래 진행하기'
       showButton = !isMine // 내가 보낸 요청이 아닐 때만 버튼 표시
+      onClickHandler = () => navigate(`/chat/${roomId}/dealaccept`)
       break
     case 'DEALPROGRESS':
       title = '거래 진행중'
@@ -83,7 +89,13 @@ export default function DealMessage({
         >
           {contentText}
         </Text>
-        {showButton && <MainButton text={buttonText} className="mt-3" />}
+        {showButton && (
+          <MainButton
+            text={buttonText}
+            className="mt-3"
+            onClick={onClickHandler}
+          />
+        )}
       </BottomBox>
     </Container>
   )

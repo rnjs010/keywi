@@ -1,7 +1,8 @@
 import { BoardItem } from '@/interfaces/BoardInterface'
 import { create } from 'zustand'
 
-interface DealProductStore {
+// 거래 요청
+interface DealRequestStore {
   step: number
   selectedProducts: Record<string, BoardItem>
   etcCategoryCount: number
@@ -13,7 +14,7 @@ interface DealProductStore {
   resetState: () => void
 }
 
-export const useDealProductStore = create<DealProductStore>((set) => ({
+export const useDealRequestStore = create<DealRequestStore>((set) => ({
   step: 1,
   selectedProducts: {},
   etcCategoryCount: 1,
@@ -25,4 +26,21 @@ export const useDealProductStore = create<DealProductStore>((set) => ({
   setTotalPrice: (total) => set({ totalPrice: total }),
   resetState: () =>
     set({ step: 1, selectedProducts: {}, etcCategoryCount: 1, totalPrice: 0 }),
+}))
+
+// 거래 수락
+interface DealAcceptStore {
+  step: number
+  totalPrice: number
+  setStep: (step: number) => void
+  setTotalPrice: (total: number) => void
+  resetState: () => void
+}
+
+export const useDealAcceptStore = create<DealAcceptStore>((set) => ({
+  step: 1,
+  totalPrice: 0,
+  setStep: (step) => set({ step }),
+  setTotalPrice: (total) => set({ totalPrice: total }),
+  resetState: () => set({ step: 1, totalPrice: 0 }),
 }))

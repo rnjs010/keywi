@@ -2,9 +2,9 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDealProductStore } from '@/stores/ChatStore'
-import DealRequestForm from '@/features/chat/components/DealRequestForm'
-import DealRequestConfirm from '@/features/chat/components/DealRequestConfirm'
+import { useDealRequestStore } from '@/stores/ChatStore'
+import DealReqFormScreen from '@/features/chat/components/DealRequest/DealReqFormScreen'
+import DealReqConfirmScreen from '@/features/chat/components/DealRequest/DealReqConfirmScreen'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4
@@ -17,8 +17,8 @@ const HeaderContainer = tw.div`
 export default function DealRequestPage() {
   const navigate = useNavigate()
   const { roomId } = useParams()
-  const step = useDealProductStore((state) => state.step)
-  const resetState = useDealProductStore((state) => state.resetState)
+  const step = useDealRequestStore((state) => state.step)
+  const resetState = useDealRequestStore((state) => state.resetState)
 
   const handleClose = () => {
     resetState()
@@ -36,7 +36,7 @@ export default function DealRequestPage() {
         </Text>
       </HeaderContainer>
 
-      {step === 1 ? <DealRequestForm /> : <DealRequestConfirm />}
+      {step === 1 ? <DealReqFormScreen /> : <DealReqConfirmScreen />}
     </Container>
   )
 }

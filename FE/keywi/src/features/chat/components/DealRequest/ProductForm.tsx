@@ -3,7 +3,7 @@ import tw from 'twin.macro'
 import ProductSelector from './ProductSelector'
 import { BoardItem } from '@/interfaces/BoardInterface'
 import ProductSearchModal from './ProductSearchModal'
-import { useDealProductStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/ChatStore'
 import ProductDirectModal from './ProductDirectModal'
 import AddMethodModal from './AddMethodModal'
 import { PlusCircleSolid } from 'iconoir-react'
@@ -25,21 +25,21 @@ export default function ProductForm() {
   ]
 
   // 선택된 상품들을 카테고리별로 저장하는 객체
-  const setSelectedProducts = useDealProductStore(
+  const setSelectedProducts = useDealRequestStore(
     (state) => state.setSelectedProducts,
   )
-  const selectedProducts = useDealProductStore(
+  const selectedProducts = useDealRequestStore(
     (state) => state.selectedProducts,
   )
   // const [selectedProductsLocal, setSelectedProductsLocal] =
   //   useState<Record<string, BoardItem>>(selectedProducts)
 
   // 추가한 기타 카테고리
-  const increaseCategory = useDealProductStore(
+  const increaseCategory = useDealRequestStore(
     (state) => state.increaseCategory,
   )
 
-  const etcCategoryCount = useDealProductStore(
+  const etcCategoryCount = useDealRequestStore(
     (state) => state.etcCategoryCount,
   )
 

@@ -3,7 +3,7 @@ import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
 import ProductForm from '@/features/chat/components/DealRequest/ProductForm'
 import { useEffect, useState } from 'react'
-import { useDealProductStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/ChatStore'
 
 const CostInput = tw.input`
   w-full border px-4 py-3 rounded mb-2 text-base my-2
@@ -11,13 +11,13 @@ const CostInput = tw.input`
   [caret-color: #70C400]
 `
 
-export default function DealRequestForm() {
-  const setStep = useDealProductStore((state) => state.setStep)
-  const selectedProducts = useDealProductStore(
+export default function DealReqFormScreen() {
+  const setStep = useDealRequestStore((state) => state.setStep)
+  const selectedProducts = useDealRequestStore(
     (state) => state.selectedProducts,
   )
-  const totalPrice = useDealProductStore((state) => state.totalPrice)
-  const setTotalPrice = useDealProductStore((state) => state.setTotalPrice)
+  const totalPrice = useDealRequestStore((state) => state.totalPrice)
+  const setTotalPrice = useDealRequestStore((state) => state.setTotalPrice)
   const [assemblyCost, setAssemblyCost] = useState('')
 
   // 총 금액 계산 및 저장

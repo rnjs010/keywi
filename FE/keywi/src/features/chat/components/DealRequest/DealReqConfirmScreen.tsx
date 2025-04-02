@@ -1,7 +1,7 @@
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
-import { useDealProductStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/ChatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const TextContainer = tw.div`
@@ -20,10 +20,10 @@ const BottomContainer = tw.div`
   mt-auto mb-8 flex flex-col items-center gap-4
 `
 
-export default function DealRequestConfirm() {
+export default function DealReqConfirmScreen() {
   const navigate = useNavigate()
   const { roomId } = useParams()
-  const totalPrice = useDealProductStore((state) => state.totalPrice)
+  const totalPrice = useDealRequestStore((state) => state.totalPrice)
 
   // 내 계좌 정보 api 호출
   const bankName = '우리'
