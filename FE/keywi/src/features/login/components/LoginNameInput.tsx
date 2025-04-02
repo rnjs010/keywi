@@ -2,7 +2,6 @@ import tw from 'twin.macro'
 import { handleViewPortResize } from '../hooks/handleViewPortResize'
 import { Text } from '@/styles/typography'
 import { useSignupStore } from '@/stores/signupStore'
-import { useState } from 'react'
 
 const NicknameSection = tw.div`
   mt-10
