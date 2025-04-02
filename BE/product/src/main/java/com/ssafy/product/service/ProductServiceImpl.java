@@ -1,7 +1,9 @@
 package com.ssafy.product.service;
 
+import com.ssafy.product.dto.ProductDescriptionDto;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.mapper.ProductMapper;
+import com.ssafy.product.mapper.ProductDescriptionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
+    private final ProductDescriptionMapper productDescriptionMapper;
 
     @Override
     public List<ProductDto> getAllProducts() {
@@ -20,16 +23,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProductsByCategory(int categoryId) {
-        return productMapper.findProductsByCategory(categoryId);
-    }
-
-    @Override
-    public List<ProductDto> getProductsBySubCategory(int parentId, int categoryId) {
-        return productMapper.findProductsBySubCategory(parentId, categoryId);
+        if (categoryId >= 1 && categoryId <= 7) {
+            return productMapper.findProductsByCategoryWithSub(categoryId);
+        } else {
+            return productMapper.findProductsByCategory(categoryId);
+        }
     }
 
     @Override
     public ProductDto getProductDetail(int productId) {
-        return productMapper.findProductById(productId);
+        ProductDto product = productMapper.findProductById(productId);
+        List<ProductDescriptionDto> descriptions = productDescriptionMapper.findDescriptionsByProductId(productId);
+        product.setDescriptions(descriptions);
+        return product;
     }
 }

@@ -15,6 +15,15 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    // 카테고리별 상품 조회 (오름차순/내림차순 정렬 지원)
+    @GetMapping("/")
+    public ApiResponse<List<ProductDto>> getProductsAll(
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
+
+        List<ProductDto> products = productService.getAllProducts();
+        SortUtil.sortProducts(products, sortOrder);
+        return ApiResponse.success("전체 상품 조회 성공", products);
+    }
 
     // 카테고리별 상품 조회 (오름차순/내림차순 정렬 지원)
     @GetMapping("/{categoryId}")
@@ -25,18 +34,6 @@ public class ProductController {
         List<ProductDto> products = productService.getProductsByCategory(categoryId);
         SortUtil.sortProducts(products, sortOrder);
         return ApiResponse.success("카테고리별 상품 조회 성공", products);
-    }
-
-    // 하위 카테고리별 상품 조회
-    @GetMapping("/{parentId}/{categoryId}")
-    public ApiResponse<List<ProductDto>> getProductsBySubCategory(
-            @PathVariable int parentId,
-            @PathVariable int categoryId,
-            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
-
-        List<ProductDto> products = productService.getProductsBySubCategory(parentId, categoryId);
-        SortUtil.sortProducts(products, sortOrder);
-        return ApiResponse.success("하위 카테고리 상품 조회 성공", products);
     }
 
     // 상품 상세 조회

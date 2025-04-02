@@ -19,9 +19,9 @@ public interface ProductMapper {
     List<ProductDto> findProductsByCategory(@Param("categoryId") int categoryId);
 
     // 특정 2차 카테고리의 상품 조회
-    @Select("SELECT * FROM products WHERE category_id = #{categoryId} AND category_id IN " +
-            "(SELECT category_id FROM category WHERE parent_id = #{parentId})")
-    List<ProductDto> findProductsBySubCategory(@Param("parentId") int parentId, @Param("categoryId") int categoryId);
+    @Select("SELECT * FROM products WHERE category_id = #{categoryId} OR category_id IN " +
+            "(SELECT category_id FROM category WHERE parent_id = #{categoryId})")
+    List<ProductDto> findProductsByCategoryWithSub(@Param("categoryId") int categoryId);
 
     // 상품 상세 조회
     @Select("SELECT * FROM products WHERE product_id = #{productId}")

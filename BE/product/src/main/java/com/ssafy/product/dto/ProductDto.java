@@ -3,6 +3,8 @@ package com.ssafy.product.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class ProductDto {
@@ -13,4 +15,5 @@ public class ProductDto {
     private String productUrl;
     private String productImage;
     private String options;
+    private List<ProductDescriptionDto> descriptions;
 }
