@@ -33,6 +33,19 @@ VALUES
     ('이순옥', 'soonOK', '글 쓰는 걸 좋아해요.', 'https://example.com/images/user29.jpg', 92),
     ('김시우', 'siwoo99', '운동하고 공부하고!', 'https://example.com/images/user30.jpg', 98);
 
+
+INSERT INTO follows (follower_id, following_id, created_at, is_active) VALUES
+                                                                           (1, 2, '2024-12-01 10:00:00', TRUE),
+                                                                           (1, 3, '2024-12-02 11:30:00', TRUE),
+                                                                           (2, 1, '2024-12-03 09:20:00', TRUE),
+                                                                           (2, 4, '2024-12-04 15:45:00', TRUE),
+                                                                           (3, 1, '2024-12-05 17:00:00', FALSE), -- 언팔 처리된 경우
+                                                                           (3, 4, '2024-12-06 08:10:00', TRUE),
+                                                                           (4, 1, '2024-12-07 13:50:00', TRUE),
+                                                                           (4, 5, '2024-12-08 14:00:00', TRUE),
+                                                                           (5, 1, '2024-12-09 16:25:00', TRUE),
+                                                                           (5, 2, '2024-12-10 18:40:00', FALSE); -- 언팔 처리된 경우
+
 -- category
 
 INSERT INTO category (category_id, category_name, parent_id)
