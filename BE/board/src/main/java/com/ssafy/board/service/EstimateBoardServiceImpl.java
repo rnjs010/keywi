@@ -1,9 +1,11 @@
 package com.ssafy.board.service;
 
-import com.ssafy.board.model.BoardImage;
-import com.ssafy.board.model.EstimateBoard;
+import com.ssafy.board.dto.BoardImageDTO;
+import com.ssafy.board.dto.EstimateBoardDTO;
 import com.ssafy.board.mapper.BoardImageMapper;
 import com.ssafy.board.mapper.EstimateBoardMapper;
+import com.ssafy.board.model.BoardImage;
+import com.ssafy.board.model.EstimateBoard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * 견적 게시판 서비스 구현체
+ * 견적 게시판 서비스 구현 클래스
  */
 @Slf4j
 @Service
@@ -24,153 +28,198 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
 
     private final EstimateBoardMapper estimateBoardMapper;
     private final BoardImageMapper boardImageMapper;
-
-    // 파일 업로드 서비스는 별도 구현 필요
-    // private final FileUploadService fileUploadService;
+    private final FileUploadService fileUploadService;
+    private final UserServiceClient userServiceClient;
 
     @Override
     public List<EstimateBoard> getEstimateBoards(int page, int size) {
         int offset = page * size;
         List<EstimateBoard> boards = estimateBoardMapper.findAllWithPaging(offset, size);
 
-        // 각 게시글의 이미지 개수 설정
         for (EstimateBoard board : boards) {
-            int imageCount = boardImageMapper.countByBoardId(board.getBoardId());
-            board.setImageCount(imageCount);
-        }
-
-        return boards;
-    }
-
-    @Override
-    @Transactional // 여기를 readOnly=true에서 일반 @Transactional로 변경
-    public Optional<EstimateBoard> getEstimateBoardById(Long boardId) {
-        // 게시글 조회수 증가
-        estimateBoardMapper.incrementViewCount(boardId);
-
-        // 게시글 정보 조회
-        Optional<EstimateBoard> boardOptional = estimateBoardMapper.findById(boardId);
-
-        // 게시글이 존재하면 이미지 정보 함께 조회
-        if (boardOptional.isPresent()) {
-            EstimateBoard board = boardOptional.get();
-            List<BoardImage> images = boardImageMapper.findByBoardId(boardId);
-            board.setImages(images);
-            board.setImageCount(images.size());
-        }
-
-        return boardOptional;
-    }
-
-    @Override
-    @Transactional
-    public EstimateBoard createEstimateBoard(EstimateBoard estimateBoard, List<MultipartFile> images) {
-        // 게시글 정보 저장
-        estimateBoardMapper.insert(estimateBoard);
-        Long boardId = estimateBoard.getBoardId();
-
-        // 이미지 파일이 있으면 처리
-        if (images != null && !images.isEmpty()) {
-            uploadAndSaveImages(boardId, images);
-        }
-
-        // 저장된 게시글 정보 조회하여 반환
-        return getEstimateBoardById(boardId).orElse(estimateBoard);
-    }
-
-    @Override
-    @Transactional
-    public EstimateBoard updateEstimateBoard(Long boardId, EstimateBoard estimateBoard,
-                                             List<MultipartFile> images, List<Long> deleteImageIds) {
-        // 기존 게시글이 존재하는지 확인
-        Optional<EstimateBoard> existingBoard = estimateBoardMapper.findById(boardId);
-        if (existingBoard.isEmpty()) {
-            throw new RuntimeException("게시글을 찾을 수 없습니다: " + boardId);
-        }
-
-        // 게시글 ID 설정 (혹시 누락된 경우)
-        estimateBoard.setBoardId(boardId);
-
-        // 게시글 정보 업데이트
-        estimateBoardMapper.update(estimateBoard);
-
-        // 삭제할 이미지가 있으면 처리
-        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-            for (Long imageId : deleteImageIds) {
-                boardImageMapper.deleteById(imageId);
+            // 사용자 서비스를 통해 작성자 닉네임 설정
+            if (board.getWriterId() != null) {
+                try {
+                    // 사용자 서비스에서 닉네임 조회
+                    String nickname = userServiceClient.getUserNickname(board.getWriterId());
+                    board.setWriterNickname(nickname);
+                } catch (Exception e) {
+                    log.warn("작성자 닉네임 조회 실패. 작성자 ID: {}", board.getWriterId(), e);
+                }
             }
-        }
-
-        // 새로운 이미지가 있으면 업로드 및 저장
-        if (images != null && !images.isEmpty()) {
-            uploadAndSaveImages(boardId, images);
-        }
-
-        // 업데이트된 게시글 정보 조회하여 반환
-        return getEstimateBoardById(boardId).orElse(estimateBoard);
-    }
-
-    @Override
-    @Transactional
-    public boolean deleteEstimateBoard(Long boardId) {
-        // 게시글에 속한 모든 이미지 삭제
-        boardImageMapper.deleteByBoardId(boardId);
-
-        // 게시글 삭제
-        int result = estimateBoardMapper.deleteById(boardId);
-
-        return result > 0;
-    }
-
-    @Override
-    public List<EstimateBoard> getEstimateBoardsByWriterId(Long writerId, int page, int size) {
-        int offset = page * size;
-        List<EstimateBoard> boards = estimateBoardMapper.findByWriterId(writerId, offset, size);
-
-        // 각 게시글의 이미지 개수 설정
-        for (EstimateBoard board : boards) {
-            int imageCount = boardImageMapper.countByBoardId(board.getBoardId());
-            board.setImageCount(imageCount);
         }
 
         return boards;
     }
 
     /**
-     * 이미지 파일 업로드 및 DB 저장
-     * 실제 구현 시 파일 업로드 서비스를 사용할 것
-     * @param boardId 게시글 ID
-     * @param imageFiles 업로드할 이미지 파일 목록
+     * 게시글 상세 조회
      */
-    private void uploadAndSaveImages(Long boardId, List<MultipartFile> imageFiles) {
+    @Override
+    public Optional<EstimateBoard> getEstimateBoardById(Long boardId) {
+        EstimateBoard board = estimateBoardMapper.findById(boardId);
+        if (board == null) {
+            return Optional.empty();
+        }
+
+        // 이미지 개수 설정 (제거됨)
+        // board.setImageCount(boardImageMapper.countByBoardId(boardId));
+
+        return Optional.of(board);
+    }
+
+    /**
+     * 프론트엔드 형식에 맞게 게시글 상세 정보 조회
+     */
+    @Override
+    public EstimateBoardDTO.DetailResponse getBoardDetails(Long boardId, Long userId) {
+        // 게시글 상세 정보 조회
+        EstimateBoardDTO.DetailResponse boardDetails = estimateBoardMapper.findBoardDetails(boardId, userId);
+
+        if (boardDetails == null) {
+            return null;
+        }
+
+        // 이미지 URL 목록 조회
+        List<String> imageUrls = estimateBoardMapper.findBoardImageUrls(boardId);
+
+        // 제품 목록 조회
+        List<EstimateBoardDTO.BoardProduct> products = estimateBoardMapper.findBoardProducts(boardId);
+
+        // 이미지와 제품 정보 설정
+        boardDetails.setImageUrls(imageUrls);
+        boardDetails.setProducts(products);
+
+        return boardDetails;
+    }
+
+    /**
+     * 견적 게시글 등록
+     */
+    @Override
+    @Transactional
+    public EstimateBoard createEstimateBoard(EstimateBoard estimateBoard, List<MultipartFile> images, List<Integer> productIds, List<Integer> categoryIds) {
+        // 게시글 정보 저장
+        estimateBoardMapper.insert(estimateBoard);
+        Long boardId = estimateBoard.getBoardId();
+
+        // 이미지 저장 (있는 경우)
+        if (images != null && !images.isEmpty()) {
+            saveImages(boardId, images);
+        }
+
+        // 제품 연결 정보 저장 (있는 경우)
+        if (productIds != null && categoryIds != null && productIds.size() == categoryIds.size()) {
+            for (int i = 0; i < productIds.size(); i++) {
+                estimateBoardMapper.insertBoardProduct(boardId, productIds.get(i), categoryIds.get(i));
+            }
+        }
+
+        // 저장된 게시글 정보 반환
+        return estimateBoardMapper.findById(boardId);
+    }
+
+    /**
+     * 견적 게시글 수정
+     */
+    @Override
+    @Transactional
+    public EstimateBoard updateEstimateBoard(Long boardId, EstimateBoard updatedBoard, List<MultipartFile> newImages, List<Long> deleteImageIds) {
+        EstimateBoard existingBoard = estimateBoardMapper.findById(boardId);
+        if (existingBoard == null) {
+            return null;
+        }
+
+        // 게시글 정보 업데이트
+        updatedBoard.setBoardId(boardId);
+        estimateBoardMapper.update(updatedBoard);
+
+        // 이미지 삭제 (있는 경우)
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            for (Long imageId : deleteImageIds) {
+                boardImageMapper.deleteById(imageId);
+            }
+        }
+
+        // 새 이미지 추가 (있는 경우)
+        if (newImages != null && !newImages.isEmpty()) {
+            saveImages(boardId, newImages);
+        }
+
+        // 업데이트된 게시글 정보 반환
+        return estimateBoardMapper.findById(boardId);
+    }
+
+    /**
+     * 견적 게시글 삭제
+     */
+    @Override
+    @Transactional
+    public boolean deleteEstimateBoard(Long boardId) {
+        // 게시글과 연관된 이미지 삭제
+        boardImageMapper.deleteByBoardId(boardId);
+
+        // 게시글 삭제
+        int result = estimateBoardMapper.deleteById(boardId);
+        return result > 0;
+    }
+
+    /**
+     * 특정 사용자가 작성한 게시글 목록 조회
+     */
+    @Override
+    public List<EstimateBoard> getEstimateBoardsByWriterId(Long writerId, int page, int size) {
+        int offset = page * size;
+        List<EstimateBoard> boards = estimateBoardMapper.findByWriterId(writerId, offset, size);
+
+        for (EstimateBoard board : boards) {
+            // 이미지 개수 설정 (제거됨)
+            // board.setImageCount(boardImageMapper.countByBoardId(board.getBoardId()));
+        }
+
+        return boards;
+    }
+    @Override
+    public List<EstimateBoardDTO.ListResponse> getBoardListWithDetails(int page, int size, Long userId) {
+        int offset = page * size;
+
+        // 각 게시글의 작성자 정보를 포함한 목록 조회
+        List<EstimateBoardDTO.ListResponse> boardList = estimateBoardMapper.findBoardListWithDetails(offset, size, userId);
+
+        if (boardList == null) {
+            boardList = new ArrayList<>();
+        }
+
+        return boardList;
+    }
+    /**
+     * 이미지 파일을 저장하고 이미지 정보를 DB에 저장하는 헬퍼 메서드
+     * @param boardId 게시글 ID
+     * @param images 이미지 파일 목록
+     */
+    private void saveImages(Long boardId, List<MultipartFile> images) {
         List<BoardImage> boardImages = new ArrayList<>();
         int order = 0;
 
-        for (MultipartFile file : imageFiles) {
-            if (file.isEmpty()) continue;
-
+        for (MultipartFile image : images) {
             try {
-                // 실제 구현 시 파일 업로드 서비스를 사용하여 이미지 저장
-                // String imageUrl = fileUploadService.uploadImage(file);
-
-                // 임시 코드: 실제 구현 필요
-                String imageUrl = "https://example.com/images/" + file.getOriginalFilename();
+                // 이미지 업로드 및 URL 획득
+                String imageUrl = fileUploadService.uploadImage(image);
 
                 // 이미지 정보 생성
                 BoardImage boardImage = BoardImage.builder()
                         .boardId(boardId)
-                        .imageUri(imageUrl)
+                        .imageUrl(imageUrl)  // 변경: imageUri -> imageUrl
                         .displayOrder(order++)
                         .build();
 
                 boardImages.add(boardImage);
             } catch (Exception e) {
-                log.error("이미지 업로드 실패: {}", e.getMessage(), e);
-                // 실패하더라도 다른 이미지는 계속 처리
+                log.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
             }
         }
 
-        // 이미지 정보가 있으면 DB에 저장
+        // 이미지 정보 일괄 저장 (있는 경우)
         if (!boardImages.isEmpty()) {
             boardImageMapper.insertAll(boardImages);
         }

@@ -18,12 +18,12 @@ import java.util.List;
 public class EstimateBoard {
 
     private Long boardId;        // 게시글 ID (PK)
-    private Long writerId;       // 작성자 ID (FK: auth 서비스의 Member 엔티티의 user_id)
+    private Long writerId;       // 작성자 ID (FK: users 테이블의 user_id)
     private String title;        // 제목
-    private String description;  // 내용
+    private String content;      // 내용
     private String thumbnailUrl; // 썸네일 이미지 URL
     private String dealState;    // 거래 상태
-    private int viewCount;       // 조회수
+    private int viewCount;       // 조회수 (view_cnt)
     private LocalDateTime createdAt; // 생성일
     private LocalDateTime updatedAt; // 수정일
 
@@ -31,6 +31,6 @@ public class EstimateBoard {
     private List<BoardImage> images; // 게시글 이미지 목록
     private String writerNickname;   // 작성자 닉네임 (조인 시 사용)
 
-    // 추가 정보
-    private int imageCount;      // 이미지 개수
+    // 추가: 게시글에 포함된 제품 목록
+    private List<BoardProduct> boardProducts; // 게시글에 포함된 제품 목록
 }

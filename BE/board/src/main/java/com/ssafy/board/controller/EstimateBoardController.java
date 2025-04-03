@@ -9,12 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,16 +32,16 @@ public class EstimateBoardController {
 
     /**
      * 현재 인증된 사용자의 ID를 가져오는 헬퍼 메서드
+     * @param request HTTP 요청 객체
      * @return 사용자 ID (Long 타입으로 변환), 인증되지 않은 경우 null 반환
      */
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
+    private Long getCurrentUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-User-ID");
+        if (userIdHeader != null && !userIdHeader.isEmpty()) {
             try {
-                return Long.parseLong(authentication.getName());
+                return Long.parseLong(userIdHeader);
             } catch (NumberFormatException e) {
-                log.warn("사용자 ID 형식이 잘못되었습니다: {}", authentication.getName());
+                log.warn("사용자 ID 형식이 잘못되었습니다: {}", userIdHeader);
                 return null;
             }
         }
@@ -50,17 +50,44 @@ public class EstimateBoardController {
 
     /**
      * 사용자가 게시글의 소유자인지 확인하는 메서드
+     * @param request HTTP 요청 객체
      * @param boardId 확인할 게시글 ID
      * @return 소유자이면 true, 아니면 false
      */
-    private boolean isOwner(Long boardId) {
-        Long currentUserId = getCurrentUserId();
+    private boolean isOwner(HttpServletRequest request, Long boardId) {
+        Long currentUserId = getCurrentUserId(request);
         if (currentUserId == null) {
             return false;
         }
 
         Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(boardId);
         return boardOptional.isPresent() && boardOptional.get().getWriterId().equals(currentUserId);
+    }
+
+    /**
+     * 날짜를 지정된 형식으로 포맷하는 헬퍼 메서드
+     * @param dateTime 포맷할 날짜시간
+     * @return 형식화된 날짜 문자열
+     */
+    private String formatDate(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        // yyyy.MM.dd 형식으로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd'T'HH:mm:ss");
+        return dateTime.format(formatter);
+    }
+
+    /**
+     * 게시글에 대한 채팅 수를 가져오는 헬퍼 메서드
+     * @param boardId 게시글 ID
+     * @return 채팅 수
+     */
+    private int getChatCount(Long boardId) {
+        // 실제 구현에서는 채팅 관련 서비스나 리포지토리를 통해 채팅 수를 조회
+        // 임시 구현: 게시글의 viewCount를 사용 (실제로는 채팅 수를 반환하는 로직으로 교체 필요)
+        Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(boardId);
+        return boardOptional.map(EstimateBoard::getViewCount).orElse(0);
     }
 
     /**
@@ -72,24 +99,14 @@ public class EstimateBoardController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<EstimateBoardDTO.ListResponse>>> getEstimateBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
 
-        List<EstimateBoard> boards = estimateBoardService.getEstimateBoards(page, size);
+        // 현재 인증된 사용자의 ID를 가져옴
+        Long userId = getCurrentUserId(request);
 
-        List<EstimateBoardDTO.ListResponse> responseList = boards.stream()
-                .map(board -> EstimateBoardDTO.ListResponse.builder()
-                        .boardId(board.getBoardId())
-                        .writerId(board.getWriterId())
-                        .writerNickname(board.getWriterNickname())
-                        .title(board.getTitle())
-                        .thumbnailUrl(board.getThumbnailUrl())
-                        .dealState(board.getDealState())
-                        .viewCount(board.getViewCount())
-                        .imageCount(board.getImageCount())
-                        .createdAt(board.getCreatedAt())
-                        .updatedAt(board.getUpdatedAt())
-                        .build())
-                .collect(Collectors.toList());
+        // 게시글 목록 및 각 게시글의 작성자 정보를 한번에 조회
+        List<EstimateBoardDTO.ListResponse> responseList = estimateBoardService.getBoardListWithDetails(page, size, userId);
 
         return ResponseEntity.ok(ApiResponse.success("게시글 목록을 성공적으로 조회했습니다.", responseList));
     }
@@ -97,60 +114,43 @@ public class EstimateBoardController {
     /**
      * 견적 게시글 상세 조회 - 인증 불필요
      * @param boardId 게시글 ID
+     * @param request HTTP 요청 객체
      * @return 견적 게시글 상세 정보
      */
     @GetMapping("/{boardId}")
-    public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> getEstimateBoardById(@PathVariable Long boardId) {
-        Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(boardId);
+    public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> getEstimateBoardById(
+            @PathVariable Long boardId,
+            HttpServletRequest request) {
 
-        if (boardOptional.isEmpty()) {
+        Long userId = getCurrentUserId(request);
+        // 프론트엔드 요구 형식으로 게시글 상세 정보 조회
+        EstimateBoardDTO.DetailResponse boardDetails = estimateBoardService.getBoardDetails(boardId, userId);
+
+        if (boardDetails == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error("해당 게시글을 찾을 수 없습니다."));
         }
 
-        EstimateBoard board = boardOptional.get();
-
-        // 이미지 정보 변환
-        List<BoardImageDTO> imageList = board.getImages() != null
-                ? board.getImages().stream()
-                .map(image -> BoardImageDTO.builder()
-                        .imageId(image.getImageId())
-                        .imageUri(image.getImageUri())
-                        .displayOrder(image.getDisplayOrder())
-                        .build())
-                .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        EstimateBoardDTO.DetailResponse response = EstimateBoardDTO.DetailResponse.builder()
-                .boardId(board.getBoardId())
-                .writerId(board.getWriterId())
-                .writerNickname(board.getWriterNickname())
-                .title(board.getTitle())
-                .description(board.getDescription())
-                .thumbnailUrl(board.getThumbnailUrl())
-                .dealState(board.getDealState())
-                .viewCount(board.getViewCount())
-                .createdAt(board.getCreatedAt())
-                .updatedAt(board.getUpdatedAt())
-                .images(imageList)
-                .build();
-
-        return ResponseEntity.ok(ApiResponse.success("게시글을 성공적으로 조회했습니다.", response));
+        return ResponseEntity.ok(ApiResponse.success("게시글을 성공적으로 조회했습니다.", boardDetails));
     }
 
     /**
      * 견적 게시글 등록 - 인증 필요
      * @param request 등록할 게시글 정보
      * @param images 업로드할 이미지 파일 목록
+     * @param httpRequest HTTP 요청 객체
      * @return 등록된 게시글 정보
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> createEstimateBoard(
-            @ModelAttribute EstimateBoardDTO.Request request,
-            @RequestParam(required = false) List<MultipartFile> images) {
+    public ResponseEntity<ApiResponse<Void>> createEstimateBoard(
+            @ModelAttribute EstimateBoardDTO.CreateRequest request,
+            @RequestParam(required = false) List<MultipartFile> images,
+            @RequestParam(required = false) List<Integer> productIds,
+            @RequestParam(required = false) List<Integer> categoryIds,
+            HttpServletRequest httpRequest) {
 
         // 현재 인증된 사용자의 ID를 가져옴
-        Long currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId(httpRequest);
         if (currentUserId == null) {
             log.warn("인증되지 않은 사용자가 게시글 등록을 시도했습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -161,8 +161,8 @@ public class EstimateBoardController {
         EstimateBoard estimateBoard = EstimateBoard.builder()
                 .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
-                .description(request.getDescription())
-                .dealState(request.getDealState())
+                .content(request.getContent())
+                .dealState(request.getDeal_state())
                 .build();
 
         // 썸네일 URL 설정 (첫 번째 이미지)
@@ -173,45 +173,19 @@ public class EstimateBoardController {
         }
 
         // 게시글 저장
-        EstimateBoard savedBoard = estimateBoardService.createEstimateBoard(estimateBoard, images);
+        EstimateBoard savedBoard = estimateBoardService.createEstimateBoard(estimateBoard, images, productIds, categoryIds);
         log.info("새 게시글이 등록되었습니다. 게시글 ID: {}, 작성자 ID: {}", savedBoard.getBoardId(), currentUserId);
 
-        // 상세 정보 조회
-        Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(savedBoard.getBoardId());
-        if (boardOptional.isEmpty()) {
+        // 프론트엔드 요구 형식으로 상세 정보 조회
+        EstimateBoardDTO.DetailResponse response = estimateBoardService.getBoardDetails(savedBoard.getBoardId(), currentUserId);
+
+        if (response == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("게시글 저장 후 조회 중 오류가 발생했습니다."));
         }
 
-        EstimateBoard board = boardOptional.get();
-
-        // 이미지 정보 변환
-        List<BoardImageDTO> imageList = board.getImages() != null
-                ? board.getImages().stream()
-                .map(image -> BoardImageDTO.builder()
-                        .imageId(image.getImageId())
-                        .imageUri(image.getImageUri())
-                        .displayOrder(image.getDisplayOrder())
-                        .build())
-                .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        EstimateBoardDTO.DetailResponse response = EstimateBoardDTO.DetailResponse.builder()
-                .boardId(board.getBoardId())
-                .writerId(board.getWriterId())
-                .writerNickname(board.getWriterNickname())
-                .title(board.getTitle())
-                .description(board.getDescription())
-                .thumbnailUrl(board.getThumbnailUrl())
-                .dealState(board.getDealState())
-                .viewCount(board.getViewCount())
-                .createdAt(board.getCreatedAt())
-                .updatedAt(board.getUpdatedAt())
-                .images(imageList)
-                .build();
-
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", response));
+                .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", null));
     }
 
     /**
@@ -220,17 +194,19 @@ public class EstimateBoardController {
      * @param request 수정할 게시글 정보
      * @param images 새로 업로드할 이미지 파일 목록
      * @param deleteImageIds 삭제할 이미지 ID 목록
+     * @param httpRequest HTTP 요청 객체
      * @return 수정된 게시글 정보
      */
     @PatchMapping("/{boardId}")
     public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> updateEstimateBoard(
             @PathVariable Long boardId,
-            @ModelAttribute EstimateBoardDTO.Request request,
+            @ModelAttribute EstimateBoardDTO.UpdateRequest request,
             @RequestParam(required = false) List<MultipartFile> images,
-            @RequestParam(required = false) List<Long> deleteImageIds) {
+            @RequestParam(required = false) List<Long> deleteImageIds,
+            HttpServletRequest httpRequest) {
 
         // 현재 인증된 사용자의 ID를 가져옴
-        Long currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId(httpRequest);
         if (currentUserId == null) {
             log.warn("인증되지 않은 사용자가 게시글 수정을 시도했습니다. 게시글 ID: {}", boardId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -262,8 +238,8 @@ public class EstimateBoardController {
                 .writerId(currentUserId)
                 .writerNickname(existingBoard.getWriterNickname())
                 .title(request.getTitle() != null ? request.getTitle() : existingBoard.getTitle())
-                .description(request.getDescription() != null ? request.getDescription() : existingBoard.getDescription())
-                .dealState(request.getDealState() != null ? request.getDealState() : existingBoard.getDealState())
+                .content(request.getContent() != null ? request.getContent() : existingBoard.getContent())
+                .dealState(request.getDeal_state() != null ? request.getDeal_state() : existingBoard.getDealState())
                 .thumbnailUrl(existingBoard.getThumbnailUrl())
                 .viewCount(existingBoard.getViewCount())
                 .build();
@@ -282,39 +258,13 @@ public class EstimateBoardController {
         EstimateBoard resultBoard = estimateBoardService.updateEstimateBoard(boardId, updatedBoard, images, deleteImageIds);
         log.info("게시글이 수정되었습니다. 게시글 ID: {}, 작성자 ID: {}", boardId, currentUserId);
 
-        // 상세 정보 조회
-        Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(resultBoard.getBoardId());
-        if (boardOptional.isEmpty()) {
+        // 프론트엔드 요구 형식으로 상세 정보 조회
+        EstimateBoardDTO.DetailResponse response = estimateBoardService.getBoardDetails(resultBoard.getBoardId(), currentUserId);
+
+        if (response == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("게시글 수정 후 조회 중 오류가 발생했습니다."));
         }
-
-        EstimateBoard board = boardOptional.get();
-
-        // 이미지 정보 변환
-        List<BoardImageDTO> imageList = board.getImages() != null
-                ? board.getImages().stream()
-                .map(image -> BoardImageDTO.builder()
-                        .imageId(image.getImageId())
-                        .imageUri(image.getImageUri())
-                        .displayOrder(image.getDisplayOrder())
-                        .build())
-                .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        EstimateBoardDTO.DetailResponse response = EstimateBoardDTO.DetailResponse.builder()
-                .boardId(board.getBoardId())
-                .writerId(board.getWriterId())
-                .writerNickname(board.getWriterNickname())
-                .title(board.getTitle())
-                .description(board.getDescription())
-                .thumbnailUrl(board.getThumbnailUrl())
-                .dealState(board.getDealState())
-                .viewCount(board.getViewCount())
-                .createdAt(board.getCreatedAt())
-                .updatedAt(board.getUpdatedAt())
-                .images(imageList)
-                .build();
 
         return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 수정되었습니다.", response));
     }
@@ -322,12 +272,16 @@ public class EstimateBoardController {
     /**
      * 견적 게시글 삭제 - 인증 필요 및 작성자 확인
      * @param boardId 삭제할 게시글 ID
+     * @param request HTTP 요청 객체
      * @return 삭제 결과
      */
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<ApiResponse<Void>> deleteEstimateBoard(@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<Void>> deleteEstimateBoard(
+            @PathVariable Long boardId,
+            HttpServletRequest request) {
+
         // 현재 인증된 사용자의 ID를 가져옴
-        Long currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId(request);
         if (currentUserId == null) {
             log.warn("인증되지 않은 사용자가 게시글 삭제를 시도했습니다. 게시글 ID: {}", boardId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -381,16 +335,14 @@ public class EstimateBoardController {
 
         List<EstimateBoardDTO.ListResponse> responseList = boards.stream()
                 .map(board -> EstimateBoardDTO.ListResponse.builder()
-                        .boardId(board.getBoardId())
-                        .writerId(board.getWriterId())
-                        .writerNickname(board.getWriterNickname())
+                        .board_id(board.getBoardId())
                         .title(board.getTitle())
-                        .thumbnailUrl(board.getThumbnailUrl())
-                        .dealState(board.getDealState())
-                        .viewCount(board.getViewCount())
-                        .imageCount(board.getImageCount())
-                        .createdAt(board.getCreatedAt())
-                        .updatedAt(board.getUpdatedAt())
+                        .thumbnail_url(board.getThumbnailUrl())
+                        .authorNickname(board.getWriterNickname())
+                        .deal_state(board.getDealState())
+                        .view_cnt(board.getViewCount())
+                        .created_at(board.getCreatedAt())
+                        .updated_at(board.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList());
 
@@ -401,15 +353,17 @@ public class EstimateBoardController {
      * 내가 작성한 견적 게시글 목록 조회 - 인증 필요
      * @param page 페이지 번호 (0부터 시작)
      * @param size 페이지 크기
+     * @param request HTTP 요청 객체
      * @return 내가 작성한 견적 게시글 목록
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<List<EstimateBoardDTO.ListResponse>>> getMyEstimateBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
 
         // 현재 인증된 사용자의 ID를 가져옴
-        Long currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId(request);
         if (currentUserId == null) {
             log.warn("인증되지 않은 사용자가 마이페이지 게시글 조회를 시도했습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -423,16 +377,14 @@ public class EstimateBoardController {
 
         List<EstimateBoardDTO.ListResponse> responseList = boards.stream()
                 .map(board -> EstimateBoardDTO.ListResponse.builder()
-                        .boardId(board.getBoardId())
-                        .writerId(board.getWriterId())
-                        .writerNickname(board.getWriterNickname())
+                        .board_id(board.getBoardId())
                         .title(board.getTitle())
-                        .thumbnailUrl(board.getThumbnailUrl())
-                        .dealState(board.getDealState())
-                        .viewCount(board.getViewCount())
-                        .imageCount(board.getImageCount())
-                        .createdAt(board.getCreatedAt())
-                        .updatedAt(board.getUpdatedAt())
+                        .thumbnail_url(board.getThumbnailUrl())
+                        .authorNickname(board.getWriterNickname())
+                        .deal_state(board.getDealState())
+                        .view_cnt(board.getViewCount())
+                        .created_at(board.getCreatedAt())
+                        .updated_at(board.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList());
 
@@ -443,15 +395,17 @@ public class EstimateBoardController {
      * 게시글 거래 상태 변경 - 인증 필요 및 작성자 확인
      * @param boardId 게시글 ID
      * @param dealState 변경할 거래 상태
+     * @param request HTTP 요청 객체
      * @return 변경된 게시글 정보
      */
     @PatchMapping("/{boardId}/state")
     public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> updateDealState(
             @PathVariable Long boardId,
-            @RequestParam String dealState) {
+            @RequestParam String dealState,
+            HttpServletRequest request) {
 
         // 현재 인증된 사용자의 ID를 가져옴
-        Long currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId(request);
         if (currentUserId == null) {
             log.warn("인증되지 않은 사용자가 게시글 상태 변경을 시도했습니다. 게시글 ID: {}", boardId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -484,39 +438,13 @@ public class EstimateBoardController {
 
         log.info("게시글 상태가 변경되었습니다. 게시글 ID: {}, 새 상태: {}", boardId, dealState);
 
-        // 상세 정보 조회
-        Optional<EstimateBoard> resultBoardOptional = estimateBoardService.getEstimateBoardById(updatedBoard.getBoardId());
-        if (resultBoardOptional.isEmpty()) {
+        // 프론트엔드 요구 형식으로 상세 정보 조회
+        EstimateBoardDTO.DetailResponse response = estimateBoardService.getBoardDetails(updatedBoard.getBoardId(), currentUserId);
+
+        if (response == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("게시글 상태 변경 후 조회 중 오류가 발생했습니다."));
         }
-
-        EstimateBoard resultBoard = resultBoardOptional.get();
-
-        // 이미지 정보 변환
-        List<BoardImageDTO> imageList = resultBoard.getImages() != null
-                ? resultBoard.getImages().stream()
-                .map(image -> BoardImageDTO.builder()
-                        .imageId(image.getImageId())
-                        .imageUri(image.getImageUri())
-                        .displayOrder(image.getDisplayOrder())
-                        .build())
-                .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        EstimateBoardDTO.DetailResponse response = EstimateBoardDTO.DetailResponse.builder()
-                .boardId(resultBoard.getBoardId())
-                .writerId(resultBoard.getWriterId())
-                .writerNickname(resultBoard.getWriterNickname())
-                .title(resultBoard.getTitle())
-                .description(resultBoard.getDescription())
-                .thumbnailUrl(resultBoard.getThumbnailUrl())
-                .dealState(resultBoard.getDealState())
-                .viewCount(resultBoard.getViewCount())
-                .createdAt(resultBoard.getCreatedAt())
-                .updatedAt(resultBoard.getUpdatedAt())
-                .images(imageList)
-                .build();
 
         return ResponseEntity.ok(ApiResponse.success("게시글 상태가 성공적으로 변경되었습니다.", response));
     }

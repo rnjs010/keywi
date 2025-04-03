@@ -16,6 +16,6 @@ public class BoardImage {
 
     private Long imageId;       // 이미지 ID (PK)
     private Long boardId;       // 게시글 ID (FK)
-    private String imageUri;    // 이미지 URL
+    private String imageUrl;    // 이미지 URL
     private int displayOrder;   // 이미지 표시 순서
 }
