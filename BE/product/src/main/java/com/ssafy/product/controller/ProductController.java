@@ -80,8 +80,10 @@ public class ProductController {
     @GetMapping("/favorites/list")
     public ApiResponse<List<ProductDto>> getUserFavorites(
             @RequestHeader("X-User-ID") Long userId,
-            @RequestParam(required = false) Integer categoryId) {
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false, defaultValue = "name") String sortBy) {
         List<ProductDto> products = wishService.getUserWishes(userId, categoryId);
+        SortUtil.sortProducts(products, sortBy, "asc");
         return ApiResponse.success("찜한 상품 조회 성공", products);
     }
 }
