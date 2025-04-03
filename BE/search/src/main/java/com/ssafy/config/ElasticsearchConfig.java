@@ -24,6 +24,8 @@ public class ElasticsearchConfig {
     @Bean
     public ElasticsearchClient elasticsearchClient() {
         // LocalDateTime, Instant 등을 처리할 수 있도록 모듈 등록
+        System.out.println("Connecting to Elasticsearch at " + host + ":" + port);
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
