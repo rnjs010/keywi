@@ -26,12 +26,16 @@ public interface ProductMapper {
     // 상품 상세 조회
     @Select("SELECT * FROM products WHERE product_id = #{productId}")
     ProductDto findProductById(@Param("productId") int productId);
-
+    
+    // 상품 리스트 조회
     @Select("<script>" +
-            "SELECT * FROM products WHERE product_id IN " +
+            "SELECT * FROM products " +
+            "<if test='productIds != null and productIds.size() > 0'>" +
+            "WHERE product_id IN " +
             "<foreach item='id' collection='productIds' open='(' separator=',' close=')'>" +
             "#{id}" +
             "</foreach>" +
+            "</if>" +
             "</script>")
     List<ProductDto> findProductsByIds(@Param("productIds") List<Integer> productIds);
 
