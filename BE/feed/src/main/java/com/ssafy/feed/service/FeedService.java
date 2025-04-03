@@ -300,6 +300,9 @@ public class FeedService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
+        // 해당 피드의 해시태그 리스트 조회
+        List<HashtagDTO> hashtags = hashtagService.getHashtagsByFeedId(feedId);
+
         // 최근 댓글 3개 조회
         List<Comment> recentComments = commentMapper.findTop3ByFeedId(feedId);
         List<CommentDTO> recentCommentDTOs = convertToCommentDTOs(recentComments);
@@ -321,6 +324,7 @@ public class FeedService {
                 .content(feed.getContent())
                 .images(feedImageDTOs)
                 .products(products)
+                .hashtags(hashtags)
                 .createdAt(feed.getCreatedAt())
                 .updatedAt(feed.getUpdatedAt())
                 .likeCount(feed.getLikeCount())
