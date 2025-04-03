@@ -1,6 +1,7 @@
 package com.ssafy.product.controller;
 
 import com.ssafy.product.common.ApiResponse;
+import com.ssafy.product.common.WishResponse;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.dto.request.ProductIdRequest;
 import com.ssafy.product.dto.request.WishRequest;
@@ -59,20 +60,20 @@ public class ProductController {
 
     // 상품 찜하기
     @PostMapping("/favorites")
-    public ApiResponse<Boolean> addFavorite(
+    public WishResponse<Boolean> addFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
         boolean isFavorite = wishService.addWish(userId, request.getProductId(), request.getCategoryId());
-        return ApiResponse.success("찜 상태 변경 성공", isFavorite);
+        return WishResponse.success("찜 상태 변경 성공", isFavorite);
     }
 
     // 찜한 상품 삭제
     @DeleteMapping("/favorites")
-    public ApiResponse<Boolean> removeFavorite(
+    public WishResponse<Boolean> removeFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
         boolean isFavorite = wishService.removeWish(userId, request.getProductId());
-        return ApiResponse.success("찜 해제 성공", isFavorite);
+        return WishResponse.success("찜 해제 성공", isFavorite);
     }
 
     // 유저의 찜한 상품 목록 조회
