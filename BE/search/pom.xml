@@ -185,6 +185,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+<<<<<<< HEAD
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -195,6 +196,8 @@
             <scope>test</scope>
         </dependency>
 
+=======
+>>>>>>> 9572b597bf10903bcaaeb5ac2ffe0434a4fe7cb9
     </dependencies>
 
     <dependencyManagement>
