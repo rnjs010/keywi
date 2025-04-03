@@ -1,4 +1,4 @@
-package com.ssafy.product.dto;
+package com.ssafy.product.dto.request;
 
 import lombok.Data;
 import java.util.List;
