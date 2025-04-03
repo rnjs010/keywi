@@ -5,8 +5,8 @@ import BoardDetailMain from '@/features/board/components/BoardDetailMain'
 import MainButton from '@/components/MainButton'
 import tw from 'twin.macro'
 import { NavArrowLeft } from 'iconoir-react'
-import { BoardData } from '@/interfaces/BoardInterface'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useBoardDetail } from '@/features/board/hooks/useBoardDetail'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -22,6 +22,12 @@ const ScrollArea = tw.div`
 
 export default function BoardDetailPage() {
   const navigate = useNavigate()
+  const { boardId } = useParams<{ boardId: string }>()
+  const { data, loading, error } = useBoardDetail(Number(boardId))
+
+  if (loading) return <p>로딩 중...</p>
+  if (error) return <p>{error}</p>
+  if (!data) return <p>게시글을 찾을 수 없습니다.</p>
 
   return (
     <Container>
@@ -36,57 +42,16 @@ export default function BoardDetailPage() {
       </HeaderContainer>
       {/* SECTION - 게시글 상세 영역 */}
       <ScrollArea>
-        <BoardDetailTop data={dummyData} />
-        <BoardDetailMain data={dummyData} />
+        <BoardDetailTop data={data} />
+        <BoardDetailMain data={data} />
       </ScrollArea>
       <NavBar />
       {/* SECTION - 채팅 버튼 */}
-      <div className="w-full px-4 fixed bottom-24">
-        <MainButton text="1:1 채팅 하러 가기" />
-      </div>
+      {!data.isAuthor && (
+        <div className="w-full px-4 fixed bottom-24">
+          <MainButton text="1:1 채팅 하러 가기" />
+        </div>
+      )}
     </Container>
   )
-}
-
-//NOTE - 게시글 데이터 예시
-const dummyData: BoardData = {
-  id: 123,
-  title: '게이밍 키보드 견적 요청합니다',
-  content:
-    '메인 키보드로 하나 맞추려고 하는데 견적 이정도면 괜찮을까요? 그리고 집에 첨부된 사진과 같은 스테빌라이저가 있는데 아래 견적과 호환 가능할까요??채팅 요청 부탁드립니다 ^.^',
-  authorNickname: '키보드러버',
-  createdAt: '2025.03.13 | 15:43',
-  status: 'REQUEST',
-  chatCount: 5,
-  bookmarkCount: 12,
-  viewCount: 156,
-  isBookmarked: true,
-  isAuthor: false,
-  items: [
-    {
-      categoryId: 1,
-      categoryName: '하우징',
-      itemId: 101,
-      itemName: 'Qwertykeys QK80MK2 WK PINK',
-      price: 241000,
-      imageUrl: 'https://picsum.photos/200',
-    },
-    {
-      categoryId: 2,
-      categoryName: '키캡',
-      itemId: 102,
-      itemName: '오스메 사쿠라 키캡',
-      price: 149000,
-      imageUrl: 'https://picsum.photos/200',
-    },
-    {
-      categoryId: 3,
-      categoryName: '스위치',
-      itemId: 103,
-      itemName: 'SWK 체다 리니어 스위치',
-      price: 38000,
-      imageUrl: 'https://picsum.photos/200',
-    },
-  ],
-  images: ['https://picsum.photos/200'],
 }

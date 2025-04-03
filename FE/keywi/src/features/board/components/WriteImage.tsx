@@ -3,6 +3,7 @@ import { Text } from '@/styles/typography'
 import { Camera, XmarkCircleSolid } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import { useRef, useState } from 'react'
+import { useBoardProductStore } from '@/stores/boardStore'
 
 const ImagesContainer = tw.div`
   flex flex-row items-center gap-2 pt-3
@@ -29,7 +30,7 @@ const FileInput = tw.input`
 `
 
 export default function WriteImage() {
-  const [images, setImages] = useState<string[]>([])
+  const { images, setImages } = useBoardProductStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showLimitText, setShowLimitText] = useState(false)
 
@@ -63,7 +64,7 @@ export default function WriteImage() {
 
           // 모든 이미지 로드 완료 시 상태 업데이트
           if (newImages.length === files.length) {
-            setImages((prev) => [...prev, ...newImages])
+            setImages([...images, ...newImages])
           }
         }
 
@@ -74,7 +75,8 @@ export default function WriteImage() {
 
   // 이미지 제거 핸들러
   const handleRemoveImage = (indexToRemove: number) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove))
+    const updatedImages = images.filter((_, index) => index !== indexToRemove)
+    setImages(updatedImages)
   }
 
   return (

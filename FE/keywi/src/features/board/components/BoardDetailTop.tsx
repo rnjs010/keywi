@@ -5,7 +5,7 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { ChatBubbleSolid, Bookmark } from 'iconoir-react'
 import { IoEyeOutline } from 'react-icons/io5'
-import { BoardData } from '@/interfaces/BoardInterface'
+import { BoardDetailData } from '@/interfaces/BoardInterface'
 
 const InfoContent = tw.div`
   pt-2 pb-4 border-b border-b-[#EEEEEE]
@@ -23,7 +23,7 @@ const SingleInfoBox = tw.span`
   flex flex-row gap-0.5 items-center
 `
 
-export default function BoardDetailTop({ data }: { data: BoardData }) {
+export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
   const badgeData = getBadgeData(data.status)
 
   return (

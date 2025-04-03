@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import ProductSelector from './ProductSelector'
 import { BoardItem } from '@/interfaces/BoardInterface'
@@ -125,6 +126,9 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
   return (
     <Container>
       <Form>
+        <Text variant="body2" weight="bold">
+          상품 선택
+        </Text>
         <div>
           {renderSelectedProducts()}
           {renderUnselectedCategories()}

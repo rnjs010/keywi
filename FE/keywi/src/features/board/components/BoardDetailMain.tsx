@@ -1,8 +1,8 @@
 import BoardProductCard from './BoardProductCard'
 import { Text } from '@/styles/typography'
-import { BoardData } from '@/interfaces/BoardInterface'
+import { BoardDetailData } from '@/interfaces/BoardInterface'
 
-export default function BoardDetailMain({ data }: { data: BoardData }) {
+export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
   return (
     <div className="py-4">
       {/* 상품 리스트 */}
