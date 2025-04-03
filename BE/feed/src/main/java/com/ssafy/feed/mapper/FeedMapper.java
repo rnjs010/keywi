@@ -17,7 +17,7 @@ public interface FeedMapper {
 
     int update(Feed feed);
 
-    int deleteById(Long id);
+    int deleteById(Long userId, Long feedId);
 
     List<Feed> findUnreadFeedsByFollowings(Long userId);
 

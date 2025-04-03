@@ -14,7 +14,7 @@
     </resultMap>
 
     <select id="findById" resultMap="FeedResultMap">
-        SELECT * FROM feeds WHERE feed_id = #{feedId}
+        SELECT * FROM feeds WHERE feed_id = #{feedId} AND is_delete = false
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="feedId">
@@ -27,15 +27,16 @@
         WHERE feed_id = #{feedId}
     </update>
 
-    <delete id="deleteById">
-        DELETE FROM feeds WHERE feed_id = #{id}
-    </delete>
+    <update id="deleteById">
+        UPDATE feeds SET is_delete = true
+        WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </update>
 
     <select id="findUnreadFeedsByFollowings" resultMap="FeedResultMap">
         SELECT f.* FROM feeds f
             JOIN follow_user fu ON f.user_id = fu.following_id AND fu.is_active = true
             LEFT JOIN feed_reads fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
-        WHERE fu.follower_id = #{userId} AND fr.read_id IS NULL
+        WHERE fu.follower_id = #{userId} AND fr.read_id IS NULL AND f.is_delete = false
         ORDER BY f.created_at DESC LIMIT 50
     </select>
 
@@ -44,7 +45,7 @@
                             LEFT JOIN feed_likes fl ON f.feed_id = fl.feed_id
                             LEFT JOIN feed_bookmarks fb ON f.feed_id = fb.feed_id
                             LEFT JOIN comments c ON f.feed_id = c.feed_id
-        WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND f.is_delete = false
         GROUP BY f.feed_id
         ORDER BY (COUNT(DISTINCT fl.like_id) * 1.5 + COUNT(DISTINCT fb.bookmark_id) * 2 + COUNT(DISTINCT c.id)) DESC
             LIMIT 50
@@ -57,6 +58,7 @@
         <foreach item="category" collection="categories" open="(" separator="," close=")">
             #{category}
         </foreach>
+        AND f.is_delete = false
         GROUP BY f.feed_id
         ORDER BY f.created_at DESC LIMIT 50
     </select>

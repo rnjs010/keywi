@@ -238,7 +238,7 @@ public class FeedService {
         // 작성자 정보 조회
         UserDTO author = userServiceAdapter.getUserById(feed.getUserId());
         if (author != null) {
-            author.setFollowed(userServiceAdapter.isFollowing(userId, author.getId()));
+            author.setFollowed(followUserMapper.isFollowing(userId, author.getId()));
         }
 
         // 상품 ID 목록 추출 (임시 상품 제외)
@@ -385,7 +385,7 @@ public class FeedService {
      * 피드 댓글 조회
      */
     @Transactional(readOnly = true)
-    public List<CommentDTO> getComments(Long feedId, Long userId) {
+    public List<CommentDTO> getComments(Long feedId) {
         List<Comment> comments = commentMapper.findByFeedId(feedId);
         return convertToCommentDTOs(comments);
     }
@@ -456,63 +456,7 @@ public class FeedService {
                 .build();
     }
 
-    /**
-     * 상품 즐겨찾기 추가/취소
-     * (Product 서비스에 위임하고 결과만 반환)
-     */
-//    @Transactional
-//    public ProductFavoriteResponse toggleProductFavorite(Long userId, Long productId) {
-//        // Product 서비스 API 호출 (Feign 클라이언트)
-//        boolean isFavorited = productServiceAdapter.toggleProductFavorite(userId, productId);
-//
-//        return ProductFavoriteResponse.builder()
-//                .productId(productId)
-//                .isFavorited(isFavorited)
-//                .build();
-//    }
 
-    /**
-     * 즐겨찾기한 상품 조회
-     */
-//    @Transactional(readOnly = true)
-//    public List<ProductDTO> getFavoriteProducts(Long userId) {
-//        // 즐겨찾기한 상품 ID 목록 조회
-//        List<Long> favoriteProductIds = productServiceAdapter.getFavoriteProductIds(userId);
-//
-//        if (favoriteProductIds.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        // 상품 정보 조회
-//        Map<Long, ProductDTO> productDTOMap = productServiceAdapter.getProductsByIds(
-//                new HashSet<>(favoriteProductIds));
-//
-//        // ID 순서대로 정렬하여 반환
-//        return favoriteProductIds.stream()
-//                .map(productDTOMap::get)
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//    }
-
-    /**
-     * 피드 내 태그된 상품 즐겨찾기 상태 조회
-     */
-//    @Transactional(readOnly = true)
-//    public Map<Long, Boolean> getProductFavoriteStatus(Long userId, Long feedId) {
-//        // 피드 내 상품 ID 목록 조회
-//        List<FeedProduct> feedProducts = feedProductMapper.findByFeedId(feedId);
-//        Set<Long> productIds = feedProducts.stream()
-//                .filter(fp -> !fp.isTemporary())
-//                .map(FeedProduct::getProductId)
-//                .collect(Collectors.toSet());
-//
-//        if (productIds.isEmpty()) {
-//            return Collections.emptyMap();
-//        }
-//
-//        // 즐겨찾기 상태 조회
-//        return productServiceAdapter.getFavoriteStatus(userId, productIds);
-//    }
 
     /**
      * 피드에 없는 상품 정보 추가 (피드 상품 태그용)
@@ -630,6 +574,22 @@ public class FeedService {
     }
 
     /**
+     * 피드 삭제 (soft delete)
+     */
+    @Transactional
+    public boolean deleteFeed(Long userId, Long feedId) {
+        // 해당 피드가 존재하고 요청자가 작성자인지 확인
+        Feed feed = feedMapper.findById(feedId);
+        if (feed == null || !feed.getUserId().equals(userId)) {
+            return false;
+        }
+
+        // soft delete 수행
+        int result = feedMapper.deleteById(userId, feedId);
+        return result > 0;
+    }
+
+    /**
      * 피드 세부 정보 보강
      */
     private void enrichFeedInformation(List<FeedDTO> feeds, Long userId) {
@@ -679,7 +639,7 @@ public class FeedService {
             UserDTO author = userMap.get(feed.getAuthorId());
             if (author != null) {
                 feed.setAuthor(author);
-                feed.getAuthor().setFollowed(userServiceAdapter.isFollowing(userId, author.getId()));
+                feed.getAuthor().setFollowed(followUserMapper.isFollowing(userId, author.getId()));
             }
 
             // 이미지 정보 설정

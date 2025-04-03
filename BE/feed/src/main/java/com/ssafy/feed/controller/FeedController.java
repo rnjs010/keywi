@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -32,9 +33,11 @@ public class FeedController {
     @GetMapping("/recommended")
     public ResponseEntity<FeedPageResponse> getRecommendedFeeds(
             @RequestHeader("userId") Long userId,
+//            @AuthenticationPrincipal String userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
+//        FeedPageResponse response = feedService.getRecommendedFeeds(Long.parseLong(userId), pageable);
         FeedPageResponse response = feedService.getRecommendedFeeds(userId, pageable);
 
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -51,10 +54,10 @@ public class FeedController {
      */
     @GetMapping("/{feedId}")
     public ResponseEntity<FeedDetailDTO> getFeedDetail(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long feedId) {
 
-        FeedDetailDTO feed = feedService.getFeedDetail(feedId, userId);
+        FeedDetailDTO feed = feedService.getFeedDetail(feedId, Long.parseLong(userId));
 
         // 사용자 활동 이벤트 발행 (피드 상세 조회)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -66,6 +69,9 @@ public class FeedController {
         return ResponseEntity.ok(feed);
     }
 
+    /**
+     * 특정 유저가 작성한 피드 리스트 조회
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<FeedDTO>> getFeedsByUserId(@PathVariable Long userId) {
         List<FeedDTO> feeds = feedService.getAllFeedsByUserId(userId);
@@ -78,7 +84,7 @@ public class FeedController {
      */
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<FeedDTO> createFeed(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @RequestParam("feedData") String feedDataJson,
             @RequestParam("images") List<MultipartFile> images) {
 
@@ -91,7 +97,7 @@ public class FeedController {
             return ResponseEntity.badRequest().build();
         }
 
-        FeedDTO createdFeed = feedService.createFeed(userId, request, images);
+        FeedDTO createdFeed = feedService.createFeed(Long.parseLong(userId), request, images);
 
         // 사용자 활동 이벤트 발행 (피드 작성)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -103,15 +109,33 @@ public class FeedController {
         return ResponseEntity.ok(createdFeed);
     }
 
+    @DeleteMapping("/{feedId}")
+    public ResponseEntity<DeleteFeedResponse> deleteFeed(
+            @AuthenticationPrincipal String userId,
+            @PathVariable("feedId") Long feedId) {
+        boolean result = feedService.deleteFeed(Long.parseLong(userId), feedId);
+
+        // 사용자 활동 이벤트 발행 (피드 삭제)
+        if (result) {
+            kafkaTemplate.send("user-activity-events", Map.of(
+                    "userId", userId,
+                    "activityType", "DELETE_FEED",
+                    "activityData", Map.of("feedId", feedId, "timestamp", System.currentTimeMillis())
+            ));
+        }
+
+        return ResponseEntity.ok(new DeleteFeedResponse(feedId, result));
+    }
+
     /**
      * 피드 좋아요 추가/취소
      */
     @PostMapping("/{feedId}/like")
     public ResponseEntity<LikeResponse> toggleLike(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long feedId) {
 
-        LikeResponse response = feedService.toggleLike(feedId, userId);
+        LikeResponse response = feedService.toggleLike(feedId, Long.parseLong(userId));
 
         // 사용자 활동 이벤트 발행 (좋아요 추가/취소)
         String activityType = response.isLiked() ? "LIKE_FEED" : "UNLIKE_FEED";
@@ -129,10 +153,10 @@ public class FeedController {
      */
     @PostMapping("/{feedId}/bookmark")
     public ResponseEntity<BookmarkResponse> toggleBookmark(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long feedId) {
 
-        BookmarkResponse response = feedService.toggleBookmark(feedId, userId);
+        BookmarkResponse response = feedService.toggleBookmark(feedId, Long.parseLong(userId));
 
         // 사용자 활동 이벤트 발행 (북마크 추가/취소)
         String activityType = response.isBookmarked() ? "BOOKMARK_FEED" : "UNBOOKMARK_FEED";
@@ -150,10 +174,10 @@ public class FeedController {
      */
     @GetMapping("/{feedId}/comments")
     public ResponseEntity<List<CommentDTO>> getComments(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long feedId) {
 
-        List<CommentDTO> comments = feedService.getComments(feedId, userId);
+        List<CommentDTO> comments = feedService.getComments(feedId);
 
         // 사용자 활동 이벤트 발행 (댓글 목록 조회)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -170,11 +194,11 @@ public class FeedController {
      */
     @PostMapping("/{feedId}/comments")
     public ResponseEntity<CommentDTO> addComment(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long feedId,
             @RequestBody CommentRequest request) {
 
-        CommentDTO comment = feedService.addComment(feedId, userId, request);
+        CommentDTO comment = feedService.addComment(feedId, Long.parseLong(userId), request);
 
         // 사용자 활동 이벤트 발행 (댓글 작성)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -211,10 +235,10 @@ public class FeedController {
      */
     @PostMapping("/follow/{targetUserId}")
     public ResponseEntity<FollowResponse> toggleFollow(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @PathVariable Long targetUserId) {
 
-        FollowResponse response = feedService.toggleFollow(userId, targetUserId);
+        FollowResponse response = feedService.toggleFollow(Long.parseLong(userId), targetUserId);
 
         // 사용자 활동 이벤트 발행 (팔로우/언팔로우)
         String activityType = response.isFollowed() ? "FOLLOW_USER" : "UNFOLLOW_USER";
@@ -242,10 +266,10 @@ public class FeedController {
      */
     @PostMapping("/product/temporary")
     public ResponseEntity<ProductDTO> addTemporaryProduct(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal String userId,
             @RequestBody ProductCreateRequest request) {
 
-        ProductDTO product = feedService.addTemporaryProduct(userId, request);
+        ProductDTO product = feedService.addTemporaryProduct(Long.parseLong(userId), request);
 
         return ResponseEntity.ok(product);
     }

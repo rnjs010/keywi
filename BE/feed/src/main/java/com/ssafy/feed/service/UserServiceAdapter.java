@@ -19,82 +19,32 @@ import java.util.Set;
 public class UserServiceAdapter {
 
     private final UserServiceClient userServiceClient;
-    private final CircuitBreakerFactory circuitBreakerFactory;
 
     /**
-     * ID로 사용자 정보 조회
+     * 사용자 ID로 사용자 정보 조회
      */
     public UserDTO getUserById(Long userId) {
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getUserById");
-        return circuitBreaker.run(
-                () -> userServiceClient.getUserById(userId),
-                throwable -> {
-                    log.error("Error while calling user-service: {}", throwable.getMessage());
-                    return UserDTO.builder()
-                            .id(userId)
-                            .nickname("Unknown User")
-                            .build();
-                }
-        );
+        try {
+            return userServiceClient.getUserById(userId);
+        } catch (Exception e) {
+            log.error("사용자 정보 조회 실패: userId={}", userId, e);
+            return UserDTO.builder()
+                    .id(userId)
+                    .nickname("Unknown User")
+                    .profileImageUrl("/default-profile.png")
+                    .build();
+        }
     }
 
     /**
-     * 여러 ID로 사용자 정보 일괄 조회
+     * 여러 사용자 ID로 사용자 정보 일괄 조회
      */
     public Map<Long, UserDTO> getUsersByIds(Set<Long> userIds) {
-        if (userIds == null || userIds.isEmpty()) {
-            return Collections.emptyMap();
+        try {
+            return userServiceClient.getUsersByIds(userIds);
+        } catch (Exception e) {
+            log.error("사용자 정보 일괄 조회 실패: userIds={}", userIds, e);
+            return Map.of();
         }
-
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getUsersByIds");
-        return circuitBreaker.run(
-                () -> userServiceClient.getUsersByIds(userIds),
-                throwable -> {
-                    log.error("Error while calling user-service: {}", throwable.getMessage());
-                    return Collections.emptyMap();
-                }
-        );
-    }
-
-    /**
-     * 팔로우 여부 확인
-     */
-    public boolean isFollowing(Long userId, Long targetUserId) {
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("isFollowing");
-        return circuitBreaker.run(
-                () -> userServiceClient.isFollowing(userId, targetUserId),
-                throwable -> {
-                    log.error("Error while calling user-service: {}", throwable.getMessage());
-                    return false;
-                }
-        );
-    }
-
-    /**
-     * 팔로잉 목록 조회
-     */
-    public List<Long> getFollowingIds(Long userId) {
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getFollowingIds");
-        return circuitBreaker.run(
-                () -> userServiceClient.getFollowingIds(userId),
-                throwable -> {
-                    log.error("Error while calling user-service: {}", throwable.getMessage());
-                    return Collections.emptyList();
-                }
-        );
-    }
-
-    /**
-     * 팔로우/언팔로우 토글
-     */
-    public boolean toggleFollow(Long userId, Long targetUserId) {
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("toggleFollow");
-        return circuitBreaker.run(
-                () -> userServiceClient.toggleFollow(userId, targetUserId),
-                throwable -> {
-                    log.error("Error while calling user-service: {}", throwable.getMessage());
-                    return false;
-                }
-        );
     }
 }
