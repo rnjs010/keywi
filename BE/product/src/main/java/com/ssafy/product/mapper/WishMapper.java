@@ -21,7 +21,13 @@ public interface WishMapper {
             "SELECT p.* FROM products p " +
             "JOIN wishes w ON p.product_id = w.product_id " +
             "WHERE w.user_id = #{userId} " +
-            "<if test='categoryId != null'> AND w.category_id = #{categoryId} </if>" +
+            "<if test='categoryId != null'>" +
+            "  AND w.category_id IN (" +
+            "    SELECT category_id FROM category " +
+            "    WHERE parent_id = #{categoryId} OR category_id = #{categoryId}" +
+            "  )" +
+            "</if>" +
             "</script>")
     List<ProductDto> findUserWishes(@Param("userId") Long userId, @Param("categoryId") Integer categoryId);
+
 }
