@@ -15,7 +15,11 @@ import java.util.List;
 public class FeedDetailDTO {
     private Long feedId;
     private Long authorId;
+    private String nickName;
+    private String profileImageUrl;
+    private String bio;
     private String content;
+    private boolean isFollow;
     private List<FeedImageDTO> images;
     private List<ProductDTO> products;
     private List<HashtagDTO> hashtags;

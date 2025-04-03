@@ -241,6 +241,9 @@ public class FeedService {
             author.setFollowed(followUserMapper.isFollowing(userId, author.getId()));
         }
 
+        // 팔로우 여부 조회
+        boolean isFollow = followUserMapper.isFollowing(userId, feed.getUserId());
+
         // 상품 ID 목록 추출 (임시 상품 제외)
         Set<Long> productIds = feedProducts.stream()
                 .filter(fp -> !fp.isTemporary())
@@ -311,6 +314,10 @@ public class FeedService {
         return FeedDetailDTO.builder()
                 .feedId(feed.getFeedId())
                 .authorId(feed.getUserId())
+                .nickName(author.getNickname())
+                .profileImageUrl(author.getProfileImageUrl())
+                .bio(author.getBio())
+                .isFollow(isFollow)
                 .content(feed.getContent())
                 .images(feedImageDTOs)
                 .products(products)
