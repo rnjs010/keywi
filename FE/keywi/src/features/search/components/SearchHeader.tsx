@@ -1,6 +1,6 @@
 import tw from 'twin.macro'
 import { ArrowLeft, Search, XmarkCircleSolid } from 'iconoir-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { HeaderSearchProps } from '@/interfaces/SearchInterface'
 import { useRef } from 'react'
 import styled from '@emotion/styled'
@@ -55,7 +55,14 @@ export function SearchHeader({
   onChange,
 }: HeaderSearchProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // 현재 검색 결과 페이지인지 확인 (URL이 /search/쿼리 형태인지)
+  const isSearchResultPage = location.pathname.match(/^\/search\/(.+)$/)
+
+  // 현재 검색 메인 페이지인지 확인 (URL이 /search 인지)
+  const isSearchMainPage = location.pathname === '/search'
 
   // 뒤로가기
   const handleBack = () => navigate(-1)
@@ -86,8 +93,24 @@ export function SearchHeader({
 
   // 검색어 지우기
   const clearSearch = () => {
-    if (onChange) onChange('')
-    inputRef.current?.focus()
+    // 검색 결과 페이지에서는 메인 검색 페이지로 이동
+    if (isSearchResultPage) {
+      navigate('/search')
+    }
+    // 검색 메인 페이지에서는 검색어만 지우기
+    else if (isSearchMainPage) {
+      if (onChange) {
+        onChange('')
+        inputRef.current?.focus()
+      }
+    }
+    // 다른 페이지에서는 상황에 맞게 처리
+    else {
+      if (onChange) {
+        onChange('')
+        inputRef.current?.focus()
+      }
+    }
   }
 
   return (

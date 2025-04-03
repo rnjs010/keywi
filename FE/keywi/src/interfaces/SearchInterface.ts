@@ -9,7 +9,7 @@ export interface KeywordRank {
 // 피드 검색 결과
 export interface FeedSearchResult {
   feedId: number
-  thumnailUrl: string
+  thumbnailUrl: string
 }
 
 // 유저 검색 결과
@@ -29,6 +29,7 @@ export interface ProductSearchResult {
   categoryName?: string
   price?: number
   thumbnailUrl?: string
+  manufacturer?: string
 }
 
 // 헤더 검색 상태

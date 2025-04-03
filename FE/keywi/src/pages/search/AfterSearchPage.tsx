@@ -1,11 +1,16 @@
+import InfiniteScroll from '@/components/InfiniteScroll'
 import StyledTabs, { TabItem } from '@/components/StyledTabs'
 import SearchFeed from '@/features/search/components/SearchFeed'
 import { SearchHeader } from '@/features/search/components/SearchHeader'
-import SearchProduct, {
-  Product,
-} from '@/features/search/components/SearchProduct'
-import SearchUser, { User } from '@/features/search/components/SearchUser'
-import { useState } from 'react'
+import SearchProduct from '@/features/search/components/SearchProduct'
+import SearchUser from '@/features/search/components/SearchUser'
+import {
+  useFeedSearchResults,
+  useProductSearchResults,
+  useUserSearchResults,
+} from '@/features/search/hooks/useSearchResults'
+import { useSearchStore } from '@/stores/searchStore'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import tw from 'twin.macro'
 
@@ -20,165 +25,146 @@ const Container = tw.div`
   overflow-x-hidden
   relative
 `
-
 // 상단 고정 컨테이너
 const FixedTopSection = tw.div`
   w-full
 `
+// 로딩 상태 컴포넌트
+const LoadingIndicator = tw.div`
+  flex
+  justify-center 
+  items-center 
+  py-4
+  text-darkGray
+`
+// 결과 없음 컴포넌트
+const NoResults = tw.div`
+  w-full 
+  py-12 
+  text-center 
+  text-darkGray
+`
 
 export function AfterSearchPage() {
-  // // 더미데이터
-  // const [feeds] = useState([
-  //   { feedId: 1, thumbnailUrl: 'https://picsum.photos/300?random=1' },
-  //   { feedId: 2, thumbnailUrl: 'https://picsum.photos/300?random=2' },
-  //   { feedId: 3, thumbnailUrl: 'https://picsum.photos/300?random=3' },
-  //   { feedId: 4, thumbnailUrl: 'https://picsum.photos/300?random=4' },
-  //   { feedId: 5, thumbnailUrl: 'https://picsum.photos/300?random=5' },
-  //   { feedId: 6, thumbnailUrl: 'https://picsum.photos/300?random=6' },
-  //   { feedId: 7, thumbnailUrl: 'https://picsum.photos/300?random=7' },
-  //   { feedId: 8, thumbnailUrl: 'https://picsum.photos/300?random=8' },
-  //   { feedId: 9, thumbnailUrl: 'https://picsum.photos/300?random=9' },
-  //   { feedId: 10, thumbnailUrl: 'https://picsum.photos/300?random=10' },
-  //   { feedId: 11, thumbnailUrl: 'https://picsum.photos/300?random=11' },
-  //   { feedId: 12, thumbnailUrl: 'https://picsum.photos/300?random=12' },
-  //   { feedId: 13, thumbnailUrl: 'https://picsum.photos/300?random=13' },
-  //   { feedId: 14, thumbnailUrl: 'https://picsum.photos/300?random=14' },
-  //   { feedId: 15, thumbnailUrl: 'https://picsum.photos/300?random=15' },
-  //   { feedId: 16, thumbnailUrl: 'https://picsum.photos/300?random=10' },
-  //   { feedId: 17, thumbnailUrl: 'https://picsum.photos/300?random=11' },
-  //   { feedId: 18, thumbnailUrl: 'https://picsum.photos/300?random=12' },
-  //   { feedId: 19, thumbnailUrl: 'https://picsum.photos/300?random=13' },
-  //   { feedId: 20, thumbnailUrl: 'https://picsum.photos/300?random=14' },
-  //   { feedId: 21, thumbnailUrl: 'https://picsum.photos/300?random=15' },
-  // ])
-
-  // // 상품 더미 데이터
-  // const [products] = useState<Product[]>([
-  //   {
-  //     productId: 1,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=1',
-  //     manufacturer: 'Qwertykeys',
-  //     productName: 'QK80MK2 WK PINK',
-  //     price: 241000,
-  //   },
-  //   {
-  //     productId: 2,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=2',
-  //     manufacturer: 'OSUME',
-  //     productName: 'sakura keycaps',
-  //     price: 140000,
-  //   },
-  //   {
-  //     productId: 3,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=3',
-  //     manufacturer: 'SWK',
-  //     productName: '체리 리니어 스위치',
-  //     price: 38000,
-  //   },
-  //   {
-  //     productId: 4,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
-  //     manufacturer: 'Cerulean',
-  //     productName: '세라키 V2 Blue Crazed',
-  //     price: 217000,
-  //   },
-  //   {
-  //     productId: 5,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
-  //     manufacturer: 'Cerulean',
-  //     productName: '세라키 V2 Blue Crazed',
-  //     price: 217000,
-  //   },
-  //   {
-  //     productId: 6,
-  //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
-  //     manufacturer: 'Cerulean',
-  //     productName: '세라키 V2 Blue Crazed',
-  //     price: 217000,
-  //   },
-  // ])
-
-  // // 사용자 더미 데이터
-  // const [users] = useState<User[]>([
-  //   {
-  //     userId: 1,
-  //     nickname: '규리몽땅',
-  //     profileImageUrl: '',
-  //     profileContent: '감성 몽땅',
-  //     brix: 16,
-  //   },
-  //   {
-  //     userId: 1,
-  //     nickname: '규리콩땅',
-  //     profileImageUrl: '',
-  //     profileContent: '키보드가 너무 좋아요.',
-  //     brix: 23,
-  //   },
-  //   {
-  //     userId: 1,
-  //     nickname: '규리콩땅',
-  //     profileImageUrl: '',
-  //     profileContent: '키보드 전문 수집가 야야야',
-  //     brix: 20,
-  //   },
-  //   {
-  //     userId: 1,
-  //     nickname: '규리콩땅',
-  //     profileImageUrl: '',
-  //     profileContent: '감성있는 키보드를 제작해요',
-  //     brix: 45,
-  //   },
-  //   {
-  //     userId: 1,
-  //     nickname: '규리콩땅',
-  //     profileImageUrl: '',
-  //     profileContent: '감성한방',
-  //     brix: 35,
-  //   },
-  // ])
-
   const { query = '' } = useParams<{ query: string }>()
-  const [currentTab, setCurrentTab] = useState<'feeds' | 'products' | 'users'>(
-    'feeds',
-  )
+  const { currentTab, setCurrentTab, setQuery } = useSearchStore()
 
-  // 무한 스크롤을 위한 IntersectionObserver 설정
-  const { ref, inView } = useInView() 
+  // URL 쿼리 파라미터를 스토어에 동기화
+  useEffect(() => {
+    if (query) {
+      setQuery(query)
+    }
+  }, [query, setQuery])
+
+  // 탭별 데이터 쿼리
+  const {
+    data: feedData,
+    fetchNextPage: fetchNextFeedPage,
+    hasNextPage: hasNextFeedPage,
+    isFetchingNextPage: isFetchingNextFeedPage,
+    isLoading: isLoadingFeeds,
+  } = useFeedSearchResults(query, currentTab === 'feeds')
+
+  const {
+    data: productData,
+    fetchNextPage: fetchNextProductPage,
+    hasNextPage: hasNextProductPage,
+    isFetchingNextPage: isFetchingNextProductPage,
+    isLoading: isLoadingProducts,
+  } = useProductSearchResults(query, currentTab === 'products')
+
+  const {
+    data: userData,
+    fetchNextPage: fetchNextUserPage,
+    hasNextPage: hasNextUserPage,
+    isFetchingNextPage: isFetchingNextUserPage,
+    isLoading: isLoadingUsers,
+  } = useUserSearchResults(query, currentTab === 'users')
+
+  // 데이터 변환
+  const feeds = feedData?.pages.flatMap((page) => page) || []
+  const products = productData?.pages.flatMap((page) => page) || []
+  const users = userData?.pages.flatMap((page) => page) || []
+
+  // 탭 변경 핸들러
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setCurrentTab(value as 'feeds' | 'products' | 'users')
+    },
+    [setCurrentTab],
+  )
 
   // 탭 아이템 정의
   const tabItems: TabItem[] = [
     {
       value: 'feeds',
       label: '피드',
-      content: <SearchFeed feeds={feeds} />,
+      content: (
+        <InfiniteScroll
+          onLoadMore={fetchNextFeedPage}
+          hasNextPage={hasNextFeedPage}
+          isLoading={isFetchingNextFeedPage}
+        >
+          {isLoadingFeeds && feeds.length === 0 ? (
+            <LoadingIndicator>피드 검색 중...</LoadingIndicator>
+          ) : feeds.length === 0 ? (
+            <NoResults>검색 결과가 없습니다.</NoResults>
+          ) : (
+            <SearchFeed feeds={feeds} />
+          )}
+        </InfiniteScroll>
+      ),
     },
     {
       value: 'products',
       label: '상품',
-      content: <SearchProduct products={products} />,
+      content: (
+        <InfiniteScroll
+          onLoadMore={fetchNextProductPage}
+          hasNextPage={hasNextProductPage}
+          isLoading={isFetchingNextProductPage}
+        >
+          {isLoadingProducts && products.length === 0 ? (
+            <LoadingIndicator>상품 검색 중...</LoadingIndicator>
+          ) : products.length === 0 ? (
+            <NoResults>검색 결과가 없습니다.</NoResults>
+          ) : (
+            <SearchProduct products={products} />
+          )}
+        </InfiniteScroll>
+      ),
     },
     {
       value: 'users',
       label: '계정',
-      content: <SearchUser users={users} />,
+      content: (
+        <InfiniteScroll
+          onLoadMore={fetchNextUserPage}
+          hasNextPage={hasNextUserPage}
+          isLoading={isFetchingNextUserPage}
+        >
+          {isLoadingUsers && users.length === 0 ? (
+            <LoadingIndicator>계정 검색 중...</LoadingIndicator>
+          ) : users.length === 0 ? (
+            <NoResults>검색 결과가 없습니다.</NoResults>
+          ) : (
+            <SearchUser users={users} />
+          )}
+        </InfiniteScroll>
+      ),
     },
   ]
-
-  // 탭 변경 핸들러 (추후 api 호출시 사용)
-  const handleTabChange = (value: string) => {
-    console.log('Current tab:', value)
-    // 필요한 로직 추가
-  }
 
   return (
     <Container>
       {/* 상단 고정 영역 */}
       <FixedTopSection>
-        <SearchHeader />
+        <SearchHeader height="2.5rem" value={query} onChange={setQuery} />
       </FixedTopSection>
+
       <StyledTabs
         tabs={tabItems}
-        defaultValue="feed"
+        defaultValue="feeds"
         onChange={handleTabChange}
       />
     </Container>

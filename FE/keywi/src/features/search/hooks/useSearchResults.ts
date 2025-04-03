@@ -1,26 +1,96 @@
-// features/search/hooks/useSearchResults.ts
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { fetchSearchResults } from '../services/searchService'
+import {
+  fetchFeedResults,
+  fetchProductResults,
+  fetchUserResults,
+} from '../services/searchService'
+import { useSearchStore } from '@/stores/searchStore'
 
-export const useSearchResults = (
-  tab: 'feeds' | 'products' | 'users',
-  query: string,
-) => {
+// 기본 페이지 크기
+const DEFAULT_PAGE_SIZE = 30
+
+// 피드 검색 결과 훅
+export const useFeedSearchResults = (query: string, enabled = true) => {
   return useInfiniteQuery({
-    queryKey: ['search', tab, query],
+    queryKey: ['search', 'feeds', query],
     queryFn: ({ pageParam = 1 }) =>
-      fetchSearchResults({
-        tab,
+      fetchFeedResults({
         query,
         page: pageParam,
-        size: 30, // 한 번에 가져올 결과 수
+        size: DEFAULT_PAGE_SIZE,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      // 더 불러올 데이터가 있는지 확인
-      // API가 다음 페이지 여부를 반환하지 않는다면 결과 길이로 판단
-      return lastPage.length === 0 ? undefined : allPages.length + 1
+      return lastPage.length < DEFAULT_PAGE_SIZE
+        ? undefined
+        : allPages.length + 1
     },
     initialPageParam: 1,
-    staleTime: 5 * 60 * 1000, // 5분 동안 캐시 유지
+    enabled: !!query && enabled,
+    staleTime: 5 * 60 * 1000, // 5분 캐싱
   })
+}
+
+// 상품 검색 결과 훅
+export const useProductSearchResults = (query: string, enabled = true) => {
+  return useInfiniteQuery({
+    queryKey: ['search', 'products', query],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchProductResults({
+        query,
+        page: pageParam,
+        size: DEFAULT_PAGE_SIZE,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length < DEFAULT_PAGE_SIZE
+        ? undefined
+        : allPages.length + 1
+    },
+    initialPageParam: 1,
+    enabled: !!query && enabled,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+// 사용자 검색 결과 훅
+export const useUserSearchResults = (query: string, enabled = true) => {
+  return useInfiniteQuery({
+    queryKey: ['search', 'users', query],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchUserResults({
+        query,
+        page: pageParam,
+        size: DEFAULT_PAGE_SIZE,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length < DEFAULT_PAGE_SIZE
+        ? undefined
+        : allPages.length + 1
+    },
+    initialPageParam: 1,
+    enabled: !!query && enabled,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+// 현재 탭에 따른 검색 결과 가져오기
+export const useActiveTabResults = () => {
+  const { query, currentTab } = useSearchStore()
+
+  const feedResults = useFeedSearchResults(query, currentTab === 'feeds')
+  const productResults = useProductSearchResults(
+    query,
+    currentTab === 'products',
+  )
+  const userResults = useUserSearchResults(query, currentTab === 'users')
+
+  switch (currentTab) {
+    case 'feeds':
+      return feedResults
+    case 'products':
+      return productResults
+    case 'users':
+      return userResults
+    default:
+      return feedResults
+  }
 }

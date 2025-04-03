@@ -2,11 +2,15 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import { Link } from 'react-router-dom'
+import { ProductSearchResult } from '@/interfaces/SearchInterface'
 
 const GridContainer = tw.div`
-  grid grid-cols-2 gap-2 px-2 py-2
+  grid 
+  grid-cols-2 
+  gap-2 
+  px-2 
+  py-2
 `
-
 const ProductItem = styled(Link)`
   ${tw`
     flex
@@ -37,16 +41,8 @@ const EmptyContainer = tw.div`
 `
 
 // 제품 타입 정의
-export interface Product {
-  productId: number
-  thumbnailUrl: string
-  manufacturer: string
-  productName: string
-  price: number
-}
-
 interface SearchProductProps {
-  products: Product[]
+  products: ProductSearchResult[]
 }
 
 export default function SearchProduct({ products }: SearchProductProps) {
@@ -60,7 +56,7 @@ export default function SearchProduct({ products }: SearchProductProps) {
 
   // 가격 포맷팅 함수
   const formatPrice = (price: number) => {
-    return price.toLocaleString('ko-KR') + '원'
+    return price ? price.toLocaleString('ko-KR') + '원' : '-'
   }
 
   return (
@@ -73,13 +69,13 @@ export default function SearchProduct({ products }: SearchProductProps) {
           <ProductImage src={product.thumbnailUrl} alt={product.productName} />
           <ProductInfo>
             <Text variant="caption1" color="gray">
-              {product.manufacturer}
+              {product.manufacturer || '-'}
             </Text>
             <ProductName>
               <Text variant="body1">{product.productName}</Text>
             </ProductName>
             <Text variant="body2" weight="bold">
-              {formatPrice(product.price)}
+              {product.price ? formatPrice(product.price) : '-'}
             </Text>
           </ProductInfo>
         </ProductItem>

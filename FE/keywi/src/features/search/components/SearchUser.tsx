@@ -4,6 +4,7 @@ import { Text } from '@/styles/typography'
 import { Link } from 'react-router-dom'
 import Badge from '@/components/Badge'
 import getDangdoBadgeData from '@/utils/getDandoBadgeData'
+import { UserSearchResult } from '@/interfaces/SearchInterface'
 
 const Container = tw.div`
   flex
@@ -39,16 +40,8 @@ const EmptyContainer = tw.div`
 `
 
 // 사용자 타입 정의
-export interface User {
-  userId: number
-  nickname: string
-  profileImageUrl?: string
-  profileContent: string
-  brix: number
-}
-
 interface SearchUserProps {
-  users: User[]
+  users: UserSearchResult[]
 }
 
 export default function SearchUser({ users }: SearchUserProps) {
@@ -70,7 +63,7 @@ export default function SearchUser({ users }: SearchUserProps) {
               <Text variant="body1">{user.nickname}</Text>
               <Badge
                 title={`당도 ${user.brix}`}
-                color={getDangdoBadgeData(user.brix) || 'gray'}
+                color={getDangdoBadgeData(user.brix || 16) || 'gray'}
                 size="small"
               />
             </div>

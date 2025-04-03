@@ -1,9 +1,12 @@
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
+import { FeedSearchResult } from '@/interfaces/SearchInterface'
 
 const GridContainer = tw.div`
-  grid grid-cols-3 gap-0.5
+  grid 
+  grid-cols-3 
+  gap-0.5
 `
 const FeedItem = styled(Link)`
   ${tw`
@@ -25,13 +28,8 @@ const EmptyContainer = tw.div`
   items-center
 `
 
-interface Feed {
-  feedId: number
-  thumbnailUrl: string
-}
-
 interface SearchFeedProps {
-  feeds: Feed[]
+  feeds: FeedSearchResult[]
 }
 
 export default function SearchFeed({ feeds }: SearchFeedProps) {

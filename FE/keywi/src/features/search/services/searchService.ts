@@ -1,4 +1,3 @@
-// features/search/services/searchService.ts
 import apiRequester from '@/services/api'
 import {
   FeedSearchResult,
@@ -7,22 +6,40 @@ import {
   SearchParams,
 } from '@/interfaces/SearchInterface'
 
-// 응답 타입 (tab에 따라 다름)
-type SearchResultType<T extends SearchParams['tab']> = T extends 'feeds'
-  ? FeedSearchResult[]
-  : T extends 'products'
-    ? ProductSearchResult[]
-    : T extends 'users'
-      ? UserSearchResult[]
-      : never
-
-export const fetchSearchResults = async (
-  params: SearchParams,
+// 피드 검색 API
+export const fetchFeedResults = async (
+  params: Omit<SearchParams, 'tab'>,
 ): Promise<FeedSearchResult[]> => {
-  const { tab, query, page, size } = params
+  const { query, page, size } = params
 
-  const response = await apiRequester.get(`/api/search`, {
-    params: { tab, query, page, size },
+  const response = await apiRequester.get('/api/search', {
+    params: { tab: 'feeds', query, page, size },
+  })
+
+  return response.data
+}
+
+// 상품 검색 API
+export const fetchProductResults = async (
+  params: Omit<SearchParams, 'tab'>,
+): Promise<ProductSearchResult[]> => {
+  const { query, page, size } = params
+
+  const response = await apiRequester.get('/api/search', {
+    params: { tab: 'products', query, page, size },
+  })
+
+  return response.data
+}
+
+// 사용자 검색 API
+export const fetchUserResults = async (
+  params: Omit<SearchParams, 'tab'>,
+): Promise<UserSearchResult[]> => {
+  const { query, page, size } = params
+
+  const response = await apiRequester.get('/api/search', {
+    params: { tab: 'users', query, page, size },
   })
 
   return response.data
