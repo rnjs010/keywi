@@ -22,7 +22,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Product */}
-      <NavLink to="/" style={navActiveStyle}>
+      <NavLink to="/pay" style={navActiveStyle}>
         <ShopFourTilesWindow width="1.7rem" height="1.7rem" />
       </NavLink>
 
@@ -32,7 +32,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Chat */}
-      <NavLink to="/pay" style={navActiveStyle}>
+      <NavLink to="/chat" style={navActiveStyle}>
         <ChatBubble width="1.7rem" height="1.7rem" />
       </NavLink>
 

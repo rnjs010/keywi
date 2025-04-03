@@ -20,6 +20,10 @@ import KakaoHandler from './features/login/hooks/KakaoHandler'
 import MyPage from './pages/mypage/MyPage'
 import { SettingPage } from './pages/mypage/SettingPage'
 import { SettingAccountPage } from './pages/mypage/SettingAccountPage'
+import ChatListPage from './pages/chat/ChatListPage'
+import ChatRoomPage from './pages/chat/ChatRoomPage'
+import DealRequestPage from './pages/chat/DealRequestPage'
+import DealAcceptPage from './pages/chat/DealAcceptPage'
 
 function App() {
   return (
@@ -63,6 +67,10 @@ function App() {
 
         {/* 404 페이지나 기타 예외 처리 */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/chat" element={<ChatListPage />} />
+        <Route path="/chat/:roomId" element={<ChatRoomPage />} />
+        <Route path="/chat/:roomId/dealrequest" element={<DealRequestPage />} />
+        <Route path="/chat/:roomId/dealaccept" element={<DealAcceptPage />} />
       </Routes>
     </>
   )
