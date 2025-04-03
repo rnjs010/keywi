@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/board/**").permitAll()
                         .pathMatchers("/api/autocomplete/**").permitAll()
                         //피드
-                        .pathMatchers("/api/feeds/**").permitAll()
+                        .pathMatchers("/api/feed/**").permitAll()
                         .pathMatchers("/api/users/**").permitAll()
                         //제품
                         .pathMatchers("/api/product/**").permitAll()
