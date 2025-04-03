@@ -1,6 +1,7 @@
 package com.ssafy.feed.client;
 
 import com.ssafy.feed.dto.ProductDTO;
+import com.ssafy.feed.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
@@ -18,35 +19,56 @@ public class ProductServiceClientFallbackFactory implements FallbackFactory<Prod
     public ProductServiceClient create(Throwable cause) {
         return new ProductServiceClient() {
             @Override
-            public ProductDTO getProductById(Long productId) {
+            public ApiResponse<ProductDTO> getProductById(Long productId) {
                 log.error("상품 서비스 호출 실패 (getProductById). productId: {}", productId, cause);
-                return ProductDTO.builder()
+                ApiResponse<ProductDTO> response = new ApiResponse<>();
+                response.setSuccess(false);
+                response.setMessage("상품 서비스 호출 실패");
+                response.setData(ProductDTO.builder()
                         .productId(productId)
                         .name("Unknown Product")
-                        .build();
+                        .build());
+                return response;
             }
+
             @Override
-            public Map<Long, ProductDTO> getProductsByIds(Set<Long> productIds) {
+            public ApiResponse<Map<Long, ProductDTO>> getProductsByIds(Set<Long> productIds) {
                 log.error("상품 서비스 호출 실패 (getProductsByIds). productIds: {}", productIds, cause);
-                return Collections.emptyMap();
+                ApiResponse<Map<Long, ProductDTO>> response = new ApiResponse<>();
+                response.setSuccess(false);
+                response.setMessage("상품 서비스 호출 실패");
+                response.setData(Collections.emptyMap());
+                return response;
             }
 
             @Override
-            public List<Long> getFavoriteProductIds(Long userId) {
+            public ApiResponse<List<Long>> getFavoriteProductIds(Long userId) {
                 log.error("상품 서비스 호출 실패 (getFavoriteProductIds). userId: {}", userId, cause);
-                return Collections.emptyList();
+                ApiResponse<List<Long>> response = new ApiResponse<>();
+                response.setSuccess(false);
+                response.setMessage("상품 서비스 호출 실패");
+                response.setData(Collections.emptyList());
+                return response;
             }
 
             @Override
-            public Map<Long, Boolean> getFavoriteStatus(Long userId, Set<Long> productIds) {
+            public ApiResponse<Map<Long, Boolean>> getFavoriteStatus(Long userId, Set<Long> productIds) {
                 log.error("상품 서비스 호출 실패 (getFavoriteStatus). userId: {}, productIds: {}", userId, productIds, cause);
-                return Collections.emptyMap();
+                ApiResponse<Map<Long, Boolean>> response = new ApiResponse<>();
+                response.setSuccess(false);
+                response.setMessage("상품 서비스 호출 실패");
+                response.setData(Collections.emptyMap());
+                return response;
             }
 
             @Override
-            public boolean toggleProductFavorite(Long userId, Long productId) {
+            public ApiResponse<Boolean> toggleProductFavorite(Long userId, Long productId) {
                 log.error("상품 서비스 호출 실패 (toggleProductFavorite). userId: {}, productId: {}", userId, productId, cause);
-                return false;
+                ApiResponse<Boolean> response = new ApiResponse<>();
+                response.setSuccess(false);
+                response.setMessage("상품 서비스 호출 실패");
+                response.setData(false);
+                return response;
             }
         };
     }

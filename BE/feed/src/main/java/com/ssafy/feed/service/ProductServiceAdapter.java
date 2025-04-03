@@ -27,7 +27,14 @@ public class ProductServiceAdapter {
     public ProductDTO getProductById(Long productId) {
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getProductById");
         return circuitBreaker.run(
-                () -> productServiceClient.getProductById(productId),
+                () -> {
+                    var response = productServiceClient.getProductById(productId);
+                    return response.isSuccess() ? response.getData() :
+                            ProductDTO.builder()
+                                    .productId(productId)
+                                    .name("Unknown Product")
+                                    .build();
+                },
                 throwable -> {
                     log.error("Error while calling product-service: {}", throwable.getMessage());
                     return ProductDTO.builder()
@@ -48,7 +55,10 @@ public class ProductServiceAdapter {
 
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getProductsByIds");
         return circuitBreaker.run(
-                () -> productServiceClient.getProductsByIds(productIds),
+                () -> {
+                    var response = productServiceClient.getProductsByIds(productIds);
+                    return response.isSuccess() ? response.getData() : Collections.emptyMap();
+                },
                 throwable -> {
                     log.error("Error while calling product-service: {}", throwable.getMessage());
                     return Collections.emptyMap();
@@ -62,7 +72,10 @@ public class ProductServiceAdapter {
     public List<Long> getFavoriteProductIds(Long userId) {
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getFavoriteProductIds");
         return circuitBreaker.run(
-                () -> productServiceClient.getFavoriteProductIds(userId),
+                () -> {
+                    var response = productServiceClient.getFavoriteProductIds(userId);
+                    return response.isSuccess() ? response.getData() : Collections.emptyList();
+                },
                 throwable -> {
                     log.error("Error while calling product-service: {}", throwable.getMessage());
                     return Collections.emptyList();
@@ -80,7 +93,10 @@ public class ProductServiceAdapter {
 
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getFavoriteStatus");
         return circuitBreaker.run(
-                () -> productServiceClient.getFavoriteStatus(userId, productIds),
+                () -> {
+                    var response = productServiceClient.getFavoriteStatus(userId, productIds);
+                    return response.isSuccess() ? response.getData() : Collections.emptyMap();
+                },
                 throwable -> {
                     log.error("Error while calling product-service: {}", throwable.getMessage());
                     return Collections.emptyMap();
@@ -94,7 +110,10 @@ public class ProductServiceAdapter {
     public boolean toggleProductFavorite(Long userId, Long productId) {
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("toggleProductFavorite");
         return circuitBreaker.run(
-                () -> productServiceClient.toggleProductFavorite(userId, productId),
+                () -> {
+                    var response = productServiceClient.toggleProductFavorite(userId, productId);
+                    return response.isSuccess() ? response.getData() : false;
+                },
                 throwable -> {
                     log.error("Error while calling product-service: {}", throwable.getMessage());
                     return false;
