@@ -1,5 +1,7 @@
 import { Text } from '@/styles/typography'
+import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
+import { useRecent } from '../hooks/useRecent'
 
 const Container = tw.div`
   w-full
@@ -18,27 +20,32 @@ const WordItem = tw.div`
   border border-littleGray rounded-full px-3 py-1
 `
 
-// 최근 검색어 더미 데이터
-const recentSearches = ['키보드', '몽글몽글', '저소음축']
-
 export default function SearchRecent() {
+  const navigate = useNavigate()
+  const { recentKeywords, deleteAllRecentKeywords } = useRecent()
+
+  // 검색어 클릭 핸들러
+  const handleKeywordClick = (keyword: string) => {
+    navigate(`/search/${keyword}`)
+  }
+
   return (
     <Container>
       <TitleWrapper>
         <Text variant="body1" weight="bold">
           최근 검색어
         </Text>
-        <ClearBtn>
+        <ClearBtn onClick={deleteAllRecentKeywords}>
           <Text variant="caption1" color="kiwi">
             모두 지우기
           </Text>
         </ClearBtn>
       </TitleWrapper>
       <WordWrapper>
-        {recentSearches.map((word) => (
-          <WordItem>
+        {recentKeywords.map((item) => (
+          <WordItem onClick={() => handleKeywordClick(item)}>
             <Text variant="caption1" color="darkGray">
-              {word}
+              {item}
             </Text>
           </WordItem>
         ))}

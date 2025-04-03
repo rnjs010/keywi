@@ -4,7 +4,6 @@ import { Text } from '@/styles/typography'
 import kakaoLogo from '@/assets/logo_kakao.svg'
 import { KAKAO_AUTH_URL } from '@/config'
 import { useNavigate } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
 
 const Button = styled.button`
   ${tw`
@@ -28,10 +27,10 @@ const Img = tw.img`
   `
 
 export default function MainLoginBtn() {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL
-    // navigate('/home')
+    // window.location.href = KAKAO_AUTH_URL
+    navigate('/home')
   }
 
   return (

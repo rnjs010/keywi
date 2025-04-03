@@ -32,7 +32,7 @@ export default function SearchPopular() {
   const currentHour = getCurrentKoreanHour()
   const navigate = useNavigate()
 
-  const { data: keywordRanks, isLoading, error } = useRank()
+  const { data: keywordRanks, isLoading } = useRank()
 
   // 검색어 클릭 핸들러
   const handleKeywordClick = (keyword: string) => {
