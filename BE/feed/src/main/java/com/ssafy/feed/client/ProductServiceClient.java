@@ -1,6 +1,7 @@
 package com.ssafy.feed.client;
 
 import com.ssafy.feed.dto.ProductResponseDto;
+import com.ssafy.feed.dto.request.ProductIdRequest;
 import com.ssafy.feed.dto.response.ProductApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public interface ProductServiceClient {
     ProductApiResponse<ProductResponseDto> getProductById(@PathVariable("productId") Integer productId);
 
     @PostMapping("/api/product/list")
-    ProductApiResponse<List<ProductResponseDto>> getProductsByIds(@RequestBody List<Integer> productIds);
+    ProductApiResponse<List<ProductResponseDto>> getProductsByIds(@RequestBody ProductIdRequest request);
 
     @GetMapping("/api/products/favorite/{userId}")
     ProductApiResponse<List<Integer>> getFavoriteProductIds(@PathVariable("userId") Long userId);

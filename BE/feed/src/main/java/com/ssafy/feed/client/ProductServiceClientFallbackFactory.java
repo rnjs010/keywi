@@ -1,6 +1,7 @@
 package com.ssafy.feed.client;
 
 import com.ssafy.feed.dto.ProductResponseDto;
+import com.ssafy.feed.dto.request.ProductIdRequest;
 import com.ssafy.feed.dto.response.ProductApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -28,8 +29,9 @@ public class ProductServiceClientFallbackFactory implements FallbackFactory<Prod
             }
 
             @Override
-            public ProductApiResponse<List<ProductResponseDto>> getProductsByIds(List<Integer> productIds) {
-                log.error("상품 서비스 호출 실패 (getProductsByIds). productIds: {}", productIds, cause);
+            public ProductApiResponse<List<ProductResponseDto>> getProductsByIds(ProductIdRequest request) {
+                log.error("상품 서비스 호출 실패 (getProductsByIds). productIds: {}",
+                        request != null ? request.getProductIds() : null, cause);
                 return new ProductApiResponse<>(false, "상품 서비스 호출 실패", Collections.emptyList());
             }
 

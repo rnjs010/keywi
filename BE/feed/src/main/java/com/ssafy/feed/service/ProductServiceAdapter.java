@@ -3,6 +3,7 @@ package com.ssafy.feed.service;
 import com.ssafy.feed.client.ProductServiceClient;
 import com.ssafy.feed.dto.ProductDTO;
 import com.ssafy.feed.dto.ProductResponseDto;
+import com.ssafy.feed.dto.request.ProductIdRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,9 @@ public class ProductServiceAdapter {
                     .map(Long::intValue)
                     .collect(Collectors.toList());
 
-            List<ProductResponseDto> productList = productServiceClient.getProductsByIds(intProductIds).getData();
+            ProductIdRequest request = new ProductIdRequest(intProductIds);
+            List<ProductResponseDto> productList = productServiceClient.getProductsByIds(request).getData();
+
 
             if (productList != null && !productList.isEmpty()) {
                 Map<Long, ProductDTO> resultMap = new HashMap<>();
