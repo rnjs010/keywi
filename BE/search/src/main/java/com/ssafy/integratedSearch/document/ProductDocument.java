@@ -1,6 +1,7 @@
 package com.ssafy.integratedSearch.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,5 +41,5 @@ public class ProductDocument {
     private String thumbnailUrl;
 
     @Field(type = FieldType.Date)
-    private String createdAt;
+    private Instant createdAt;
 }

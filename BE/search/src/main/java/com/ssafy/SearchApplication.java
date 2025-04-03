@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.util.TimeZone;
 
 @SpringBootApplication
-//@EnableFeignClients(basePackages = "com.ssafy.integratedSearch.client")
 @EnableScheduling
 public class SearchApplication {
 

@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-#spring:
-#  application:
-#    name: search
-#  # Config Server 설정
-#  config:
-#    import: configserver:https://j12e202.p.ssafy.io/config
-#
-#  # Spring Cloud Bus 설정
-#  cloud:
-#    bus:
-#      enabled: true
-#      refresh:
-#        enabled: true
-#
-## Actuator 엔드포인트 설정
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health,info,refresh,busrefresh
-#  endpoint:
-#    health:
-#      show-details: never
-=======
 spring:
   application:
     name: search
@@ -46,4 +21,3 @@ management:
   endpoint:
     health:
       show-details: never
->>>>>>> 9572b597bf10903bcaaeb5ac2ffe0434a4fe7cb9
