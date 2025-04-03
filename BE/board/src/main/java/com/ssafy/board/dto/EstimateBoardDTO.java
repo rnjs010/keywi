@@ -1,62 +1,89 @@
 package com.ssafy.board.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class EstimateBoardDTO {
 
-    /**
-     * 견적 게시글 등록/수정 요청 DTO
-     */
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @NoArgsConstructor
-    public static class Request {
-        private Long writerId;
+    @AllArgsConstructor
+    public static class CreateRequest {
         private String title;
-        private String description;
-        private String dealState;
+        private String content;
+        private String thumbnail_url;
+        private String deal_state;
+        private List<Integer> productIds;
+        private List<Integer> categoryIds;
+        private List<String> imageUrls;
     }
 
-    /**
-     * 견적 게시글 목록 응답 DTO
-     */
-    @Getter
+    @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateRequest {
+        private String title;
+        private String content;
+        private String thumbnail_url;
+        private String deal_state;
+        private List<Integer> productIds;
+        private List<Integer> categoryIds;
+        private List<String> imageUrls;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ListResponse {
-        private Long boardId;
+        private Long board_id;
         private Long writerId;
-        private String writerNickname;
+        private String authorNickname;
         private String title;
-        private String thumbnailUrl;
-        private String dealState;
-        private int viewCount;
-        private int imageCount;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
+        private String thumbnail_url;
+        private String deal_state;
+        private int view_cnt;
+        private int chatCount;
+        private LocalDateTime created_at;
+        private LocalDateTime updated_at;
     }
 
-    /**
-     * 견적 게시글 상세 응답 DTO
-     */
-    @Getter
+    @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class DetailResponse {
-        private Long boardId;
-        private Long writerId;
-        private String writerNickname;
+        private Long board_id;
         private String title;
-        private String description;
-        private String thumbnailUrl;
-        private String dealState;
-        private int viewCount;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-        private List<BoardImageDTO> images;
+        private String content;
+        private String authorNickname;
+        private String deal_state;
+        private int chatCount;
+        private int bookmarkCount;
+        private int view_cnt;
+        private LocalDateTime created_at;
+        private boolean isBookmarked;
+        private boolean isAuthor;
+        private List<String> imageUrls;
+        private List<BoardProduct> products;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BoardProduct {
+        private Integer category_id;
+        private String categoryName;
+        private Integer product_id;
+        private String productName;
+        private Integer price;
+        private String image_url;
+        private String manufacturer;
+        private LocalDateTime created_at;
     }
 }
