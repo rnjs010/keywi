@@ -63,14 +63,16 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/setting" element={<SettingPage />} />
         <Route path="/setting/account" element={<SettingAccountPage />} />
-        {/* </Route> */}
 
-        {/* 404 페이지나 기타 예외 처리 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 채팅페이지 라우트 */}
         <Route path="/chat" element={<ChatListPage />} />
         <Route path="/chat/:roomId" element={<ChatRoomPage />} />
         <Route path="/chat/:roomId/dealrequest" element={<DealRequestPage />} />
         <Route path="/chat/:roomId/dealaccept" element={<DealAcceptPage />} />
+        {/* </Route> */}
+
+        {/* 404 페이지나 기타 예외 처리 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )
