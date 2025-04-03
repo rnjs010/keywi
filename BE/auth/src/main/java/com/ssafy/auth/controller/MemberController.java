@@ -1,10 +1,13 @@
 package com.ssafy.auth.controller;
 
 import com.ssafy.auth.common.ApiResponse;
+import com.ssafy.auth.dto.response.MemberResponseDto;
 import com.ssafy.auth.dto.response.NicknameCheckResponse;
+import com.ssafy.auth.entity.Member;
 import com.ssafy.auth.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +25,70 @@ public class MemberController {
     private final MemberService memberService;
 
     /**
+     * 회원 ID로 회원 정보 조회
+     *
+     * @param userId 회원 ID
+     * @return 회원 정보
+     */
+    @GetMapping("/members/id/{userId}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> getMemberById(@PathVariable Long userId) {
+        log.info("회원 정보 조회 요청: ID = {}", userId);
+        try {
+            Member member = memberService.getMemberById(userId);
+            MemberResponseDto responseDto = MemberResponseDto.from(member);
+            return ResponseEntity.ok(ApiResponse.success(responseDto));
+        } catch (IllegalArgumentException e) {
+            log.error("회원 정보 조회 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * 닉네임으로 회원 정보 조회
+     *
+     * @param nickname 회원 닉네임
+     * @return 회원 정보
+     */
+    @GetMapping("/members/nickname/{nickname}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> getMemberByNickname(@PathVariable String nickname) {
+        log.info("회원 정보 조회 요청: 닉네임 = {}", nickname);
+        try {
+            Member member = memberService.getMemberByNickname(nickname);
+            MemberResponseDto responseDto = MemberResponseDto.from(member);
+            return ResponseEntity.ok(ApiResponse.success(responseDto));
+        } catch (IllegalArgumentException e) {
+            log.error("회원 정보 조회 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * 현재 로그인한 회원의 정보 조회
+     *
+     * @param userId JWT 토큰에서 추출한 회원 ID
+     * @return 회원 정보
+     */
+    @GetMapping("/members/me")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> getMyInfo(@AuthenticationPrincipal String userId) {
+        log.info("내 정보 조회 요청: ID = {}", userId);
+        try {
+            Member member = memberService.getMemberById(Long.parseLong(userId));
+            MemberResponseDto responseDto = MemberResponseDto.from(member);
+            return ResponseEntity.ok(ApiResponse.success(responseDto));
+        } catch (IllegalArgumentException e) {
+            log.error("내 정보 조회 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
      * 회원가입 처리
      * 닉네임과 프로필 이미지를 받아서 처리
      * 카카오 로그인 정보는 인증 토큰에서 가져옴
      */
     @PostMapping(value = "/signup", consumes = {"multipart/form-data"})
     public ApiResponse<String> signUp(
-            @AuthenticationPrincipal String memberId,  // 소셜 로그인 후 발급된 토큰으로부터 정보 가져옴
+            @AuthenticationPrincipal String userId,  // 소셜 로그인 후 발급된 토큰으로부터 정보 가져옴
             @RequestPart(value = "userNickname") String userNickname,
             @RequestPart(value = "email", required = false) String email,
             @RequestPart(value = "userName", required = false) String userName,
@@ -56,7 +116,7 @@ public class MemberController {
                 return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
             } else {
                 // 기존 간소화된 회원가입 처리 (토큰에서 ID 추출)
-                memberService.signUpSimplified(Long.parseLong(memberId), userNickname, profileImage);
+                memberService.signUpSimplified(Long.parseLong(userId), userNickname, profileImage);
                 return ApiResponse.success("회원가입에 성공했습니다", "회원가입이 완료되었습니다!");
             }
         } catch (IllegalArgumentException e) {
@@ -92,12 +152,12 @@ public class MemberController {
     }
 
     /**
-     * 회원 프로필 정보 수정 (간소화 버전)
+     * 회원 프로필 정보 수정
      * 닉네임, 프로필 이미지만 업데이트
      */
     @PutMapping(value = "/profile", consumes = {"multipart/form-data"})
     public ApiResponse<String> updateMemberProfile(
-            @AuthenticationPrincipal String memberId,
+            @AuthenticationPrincipal String userId,
             @RequestPart(value = "userNickname", required = false) String userNickname,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
@@ -112,7 +172,7 @@ public class MemberController {
                 return ApiResponse.error("수정할 정보가 없습니다.");
             }
 
-            memberService.updateMemberProfileSimplified(Long.parseLong(memberId), userNickname, profileImage);
+            memberService.updateMemberProfileSimplified(Long.parseLong(userId), userNickname, profileImage);
             return ApiResponse.success("회원 프로필 정보 수정에 성공했습니다", "프로필이 정상적으로 수정되었습니다!");
         } catch (IllegalArgumentException e) {
             // 중복 닉네임 등의 검증 오류
@@ -130,10 +190,10 @@ public class MemberController {
      */
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteMember(
-            @AuthenticationPrincipal String memberId
+            @AuthenticationPrincipal String userId
     ) {
         try {
-            memberService.deleteMember(Long.parseLong(memberId));
+            memberService.deleteMember(Long.parseLong(userId));
             return ApiResponse.success("회원탈퇴에 성공했습니다", null);
         } catch (Exception e) {
             log.error("회원 탈퇴 실패: {}", e.getMessage());
@@ -147,10 +207,10 @@ public class MemberController {
      */
     @PostMapping("/logout")
     public ApiResponse<Void> logout(
-            @AuthenticationPrincipal String memberId
+            @AuthenticationPrincipal String userId
     ) {
         try {
-            memberService.logout(Long.parseLong(memberId));
+            memberService.logout(Long.parseLong(userId));
             return ApiResponse.success("로그아웃에 성공했습니다", null);
         } catch (Exception e) {
             log.error("로그아웃 실패: {}", e.getMessage());

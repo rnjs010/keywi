@@ -364,4 +364,30 @@ public class MemberService {
             throw new InvalidFileException("이미지 파일만 업로드 가능합니다.");
         }
     }
+
+    /**
+     * 회원 ID로 회원 정보 조회
+     *
+     * @param userId 회원 ID
+     * @return 회원 정보
+     * @throws IllegalArgumentException 회원 정보 없음
+     */
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 닉네임으로 회원 정보 조회
+     *
+     * @param nickname 회원 닉네임
+     * @return 회원 정보
+     * @throws IllegalArgumentException 회원 정보 없음
+     */
+    @Transactional(readOnly = true)
+    public Member getMemberByNickname(String nickname) {
+        return memberRepository.findByUserNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    }
 }
