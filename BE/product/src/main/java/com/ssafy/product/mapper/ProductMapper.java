@@ -28,7 +28,7 @@ public interface ProductMapper {
     ProductDto findProductById(@Param("productId") int productId);
 
     @Select("<script>" +
-            "SELECT * FROM product WHERE product_id IN " +
+            "SELECT * FROM products WHERE product_id IN " +
             "<foreach item='id' collection='productIds' open='(' separator=',' close=')'>" +
             "#{id}" +
             "</foreach>" +
