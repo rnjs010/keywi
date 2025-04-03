@@ -73,48 +73,48 @@ public class ProductServiceAdapter {
         }
     }
 
-    /**
-     * 즐겨찾기 상품 상태 조회
-     */
-    public Map<Long, Boolean> getFavoriteStatus(Long userId, Set<Long> productIds) {
-        if (userId == null || productIds == null || productIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
+//    /**
+//     * 즐겨찾기 상품 상태 조회
+//     */
+//    public Map<Long, Boolean> getFavoriteStatus(Long userId, Set<Long> productIds) {
+//        if (userId == null || productIds == null || productIds.isEmpty()) {
+//            return Collections.emptyMap();
+//        }
+//
+//        try {
+//            // Long -> Integer 변환
+//            Set<Integer> intProductIds = productIds.stream()
+//                    .map(Long::intValue)
+//                    .collect(Collectors.toSet());
+//
+//            Map<Integer, Boolean> favoriteStatus = productServiceClient.getFavoriteStatus(userId, intProductIds).getData();
+//
+//            if (favoriteStatus != null && !favoriteStatus.isEmpty()) {
+//                Map<Long, Boolean> resultMap = new HashMap<>();
+//                for (Map.Entry<Integer, Boolean> entry : favoriteStatus.entrySet()) {
+//                    resultMap.put(Long.valueOf(entry.getKey()), entry.getValue());
+//                }
+//                return resultMap;
+//            } else {
+//                return Collections.emptyMap();
+//            }
+//        } catch (Exception e) {
+//            log.error("즐겨찾기 상태 조회 실패: userId={}, productIds={}", userId, productIds, e);
+//            return Collections.emptyMap();
+//        }
+//    }
 
-        try {
-            // Long -> Integer 변환
-            Set<Integer> intProductIds = productIds.stream()
-                    .map(Long::intValue)
-                    .collect(Collectors.toSet());
-
-            Map<Integer, Boolean> favoriteStatus = productServiceClient.getFavoriteStatus(userId, intProductIds).getData();
-
-            if (favoriteStatus != null && !favoriteStatus.isEmpty()) {
-                Map<Long, Boolean> resultMap = new HashMap<>();
-                for (Map.Entry<Integer, Boolean> entry : favoriteStatus.entrySet()) {
-                    resultMap.put(Long.valueOf(entry.getKey()), entry.getValue());
-                }
-                return resultMap;
-            } else {
-                return Collections.emptyMap();
-            }
-        } catch (Exception e) {
-            log.error("즐겨찾기 상태 조회 실패: userId={}, productIds={}", userId, productIds, e);
-            return Collections.emptyMap();
-        }
-    }
-
-    /**
-     * 즐겨찾기 토글
-     */
-    public boolean toggleProductFavorite(Long userId, Long productId) {
-        try {
-            return productServiceClient.toggleProductFavorite(userId, productId.intValue()).getData();
-        } catch (Exception e) {
-            log.error("즐겨찾기 토글 실패: userId={}, productId={}", userId, productId, e);
-            return false;
-        }
-    }
+//    /**
+//     * 즐겨찾기 토글
+//     */
+//    public boolean toggleProductFavorite(Long userId, Long productId) {
+//        try {
+//            return productServiceClient.toggleProductFavorite(userId, productId.intValue()).getData();
+//        } catch (Exception e) {
+//            log.error("즐겨찾기 토글 실패: userId={}, productId={}", userId, productId, e);
+//            return false;
+//        }
+//    }
 
     /**
      * ProductResponseDto를 ProductDTO로 변환

@@ -251,12 +251,18 @@ public class FeedService {
         final Map<Long, ProductDTO> productDTOMap;
         if (!productIds.isEmpty()) {
             productDTOMap = productServiceAdapter.getProductsByIds(productIds);
-            final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
+
+            /*
+            상품 쪽 즐겨찾기 api 부재로 인한 대체
+             */
+//            final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
 
             // 즐겨찾기 상태 설정
+//            productDTOMap.forEach((productId, productDTO) ->
+//                    productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
+//            );
             productDTOMap.forEach((productId, productDTO) ->
-                    productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
-            );
+                    productDTO.setFavorited(false));
         } else {
             productDTOMap = Collections.emptyMap();
         }
@@ -662,11 +668,15 @@ public class FeedService {
             final Map<Long, ProductDTO> productDTOMap;
             if (!productIds.isEmpty()) {
                 productDTOMap = productServiceAdapter.getProductsByIds(productIds);
-                final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
+
+//                final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
 
                 // 즐겨찾기 상태 설정
+//                productDTOMap.forEach((productId, productDTO) ->
+//                        productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
+//                );
                 productDTOMap.forEach((productId, productDTO) ->
-                        productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
+                        productDTO.setFavorited(false)
                 );
             } else {
                 productDTOMap = Collections.emptyMap();
