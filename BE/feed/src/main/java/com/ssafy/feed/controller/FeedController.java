@@ -39,7 +39,6 @@ public class FeedController {
         Pageable pageable = PageRequest.of(page, size);
 //        FeedPageResponse response = feedService.getRecommendedFeeds(Long.parseLong(userId), pageable);
         FeedPageResponse response = feedService.getRecommendedFeeds(userId, pageable);
-
         kafkaTemplate.send("user-activity-events", Map.of(
                 "userId", userId,
                 "activityType", "VIEW_FEED_LIST",
