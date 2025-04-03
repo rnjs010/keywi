@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -32,8 +31,7 @@ public class FeedController {
 
     @GetMapping("/recommended")
     public ResponseEntity<FeedPageResponse> getRecommendedFeeds(
-            @RequestHeader("userId") Long userId,
-//            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -53,10 +51,10 @@ public class FeedController {
      */
     @GetMapping("/{feedId}")
     public ResponseEntity<FeedDetailDTO> getFeedDetail(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long feedId) {
 
-        FeedDetailDTO feed = feedService.getFeedDetail(feedId, Long.parseLong(userId));
+        FeedDetailDTO feed = feedService.getFeedDetail(feedId, userId);
 
         // 사용자 활동 이벤트 발행 (피드 상세 조회)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -83,7 +81,7 @@ public class FeedController {
      */
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<FeedDTO> createFeed(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @RequestParam("feedData") String feedDataJson,
             @RequestParam("images") List<MultipartFile> images) {
 
@@ -96,7 +94,8 @@ public class FeedController {
             return ResponseEntity.badRequest().build();
         }
 
-        FeedDTO createdFeed = feedService.createFeed(Long.parseLong(userId), request, images);
+        log.info("요청을 보낸 유저 ID: {}",userId);
+        FeedDTO createdFeed = feedService.createFeed(userId, request, images);
 
         // 사용자 활동 이벤트 발행 (피드 작성)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -110,9 +109,9 @@ public class FeedController {
 
     @DeleteMapping("/{feedId}")
     public ResponseEntity<DeleteFeedResponse> deleteFeed(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable("feedId") Long feedId) {
-        boolean result = feedService.deleteFeed(Long.parseLong(userId), feedId);
+        boolean result = feedService.deleteFeed(userId, feedId);
 
         // 사용자 활동 이벤트 발행 (피드 삭제)
         if (result) {
@@ -131,10 +130,10 @@ public class FeedController {
      */
     @PostMapping("/{feedId}/like")
     public ResponseEntity<LikeResponse> toggleLike(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long feedId) {
 
-        LikeResponse response = feedService.toggleLike(feedId, Long.parseLong(userId));
+        LikeResponse response = feedService.toggleLike(feedId, userId);
 
         // 사용자 활동 이벤트 발행 (좋아요 추가/취소)
         String activityType = response.isLiked() ? "LIKE_FEED" : "UNLIKE_FEED";
@@ -152,10 +151,10 @@ public class FeedController {
      */
     @PostMapping("/{feedId}/bookmark")
     public ResponseEntity<BookmarkResponse> toggleBookmark(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long feedId) {
 
-        BookmarkResponse response = feedService.toggleBookmark(feedId, Long.parseLong(userId));
+        BookmarkResponse response = feedService.toggleBookmark(feedId, userId);
 
         // 사용자 활동 이벤트 발행 (북마크 추가/취소)
         String activityType = response.isBookmarked() ? "BOOKMARK_FEED" : "UNBOOKMARK_FEED";
@@ -173,7 +172,7 @@ public class FeedController {
      */
     @GetMapping("/{feedId}/comments")
     public ResponseEntity<List<CommentDTO>> getComments(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long feedId) {
 
         List<CommentDTO> comments = feedService.getComments(feedId);
@@ -193,11 +192,11 @@ public class FeedController {
      */
     @PostMapping("/{feedId}/comments")
     public ResponseEntity<CommentDTO> addComment(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long feedId,
             @RequestBody CommentRequest request) {
 
-        CommentDTO comment = feedService.addComment(feedId, Long.parseLong(userId), request);
+        CommentDTO comment = feedService.addComment(feedId, userId, request);
 
         // 사용자 활동 이벤트 발행 (댓글 작성)
         kafkaTemplate.send("user-activity-events", Map.of(
@@ -234,10 +233,10 @@ public class FeedController {
      */
     @PostMapping("/follow/{targetUserId}")
     public ResponseEntity<FollowResponse> toggleFollow(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @PathVariable Long targetUserId) {
 
-        FollowResponse response = feedService.toggleFollow(Long.parseLong(userId), targetUserId);
+        FollowResponse response = feedService.toggleFollow(userId, targetUserId);
 
         // 사용자 활동 이벤트 발행 (팔로우/언팔로우)
         String activityType = response.isFollowed() ? "FOLLOW_USER" : "UNFOLLOW_USER";
@@ -265,10 +264,10 @@ public class FeedController {
      */
     @PostMapping("/product/temporary")
     public ResponseEntity<ProductDTO> addTemporaryProduct(
-            @AuthenticationPrincipal String userId,
+            @RequestHeader("X-User-ID") Long userId,
             @RequestBody ProductCreateRequest request) {
 
-        ProductDTO product = feedService.addTemporaryProduct(Long.parseLong(userId), request);
+        ProductDTO product = feedService.addTemporaryProduct(userId, request);
 
         return ResponseEntity.ok(product);
     }
