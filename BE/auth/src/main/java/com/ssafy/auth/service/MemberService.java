@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * 회원 관련 비즈니스 로직을 처리하는 서비스
  */
@@ -389,5 +393,37 @@ public class MemberService {
     public Member getMemberByNickname(String nickname) {
         return memberRepository.findByUserNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 여러 회원 ID로 회원 정보 조회
+     *
+     * @param userIds 조회할 회원 ID 목록
+     * @return 회원 정보 목록
+     */
+    @Transactional(readOnly = true)
+    public List<Member> getMembersByIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            throw new IllegalArgumentException("조회할 회원 ID 목록이 비어있습니다.");
+        }
+
+        List<Member> members = memberRepository.findAllById(userIds);
+
+        // 요청한 ID가 없는 경우 처리 (선택적, 상황에 따라 필요 여부 결정)
+        if (members.size() != userIds.size()) {
+            Set<Long> foundIds = members.stream()
+                    .map(Member::getId)
+                    .collect(Collectors.toSet());
+
+            List<Long> notFoundIds = userIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .collect(Collectors.toList());
+
+            if (!notFoundIds.isEmpty()) {
+                log.warn("존재하지 않는 회원 ID: {}", notFoundIds);
+            }
+        }
+
+        return members;
     }
 }

@@ -1,19 +1,19 @@
-spring:
-  application:
-    name: auth
-  config:
-    import: configserver:https://j12e202.p.ssafy.io/config
-  cloud:
-    bus:
-      enabled: true
-      refresh:
-        enabled: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,busrefresh,refresh
-  endpoint:
-    health:
-      show-details: never
+#spring:
+#  application:
+#    name: auth
+#  config:
+#    import: configserver:https://j12e202.p.ssafy.io/config
+#  cloud:
+#    bus:
+#      enabled: true
+#      refresh:
+#        enabled: true
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info,busrefresh,refresh
+#  endpoint:
+#    health:
+#      show-details: never

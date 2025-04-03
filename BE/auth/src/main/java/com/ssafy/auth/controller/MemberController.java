@@ -12,6 +12,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 회원 정보 관리를 처리하는 컨트롤러
  * 회원 정보 조회, 수정, 탈퇴, 로그아웃 등의 기능 처리
@@ -39,6 +42,27 @@ public class MemberController {
             return ResponseEntity.ok(ApiResponse.success(responseDto));
         } catch (IllegalArgumentException e) {
             log.error("회원 정보 조회 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    /**
+     * 여러 회원 ID로 회원 정보 조회
+     *
+     * @param userIds 조회할 회원 ID 목록
+     * @return 회원 정보 목록
+     */
+    @GetMapping("/members/ids")
+    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> getMembersByIds(@RequestParam List<Long> userIds) {
+        log.info("다중 회원 정보 조회 요청: IDs = {}", userIds);
+        try {
+            List<MemberResponseDto> memberList = memberService.getMembersByIds(userIds)
+                    .stream()
+                    .map(MemberResponseDto::from)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success(memberList));
+        } catch (IllegalArgumentException e) {
+            log.error("다중 회원 정보 조회 실패: {}", e.getMessage());
             return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
     }
