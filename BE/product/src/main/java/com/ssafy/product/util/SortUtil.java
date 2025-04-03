@@ -6,11 +6,21 @@ import java.util.List;
 
 public class SortUtil {
 
-    public static void sortProducts(List<ProductDto> products, String order) {
-        if (order.equalsIgnoreCase("desc")) {
-            products.sort(Comparator.comparing(ProductDto::getProductName).reversed());
+    public static void sortProducts(List<ProductDto> products, String sortBy, String order) {
+        Comparator<ProductDto> comparator;
+
+        // 정렬 기준 설정
+        if ("price".equalsIgnoreCase(sortBy)) {
+            comparator = Comparator.comparing(ProductDto::getPrice);
         } else {
-            products.sort(Comparator.comparing(ProductDto::getProductName));
+            comparator = Comparator.comparing(ProductDto::getProductName);
         }
+
+        // 내림차순 정렬 적용
+        if ("desc".equalsIgnoreCase(order)) {
+            comparator = comparator.reversed();
+        }
+
+        products.sort(comparator);
     }
 }

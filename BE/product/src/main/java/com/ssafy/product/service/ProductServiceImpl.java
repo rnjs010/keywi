@@ -37,4 +37,10 @@ public class ProductServiceImpl implements ProductService {
         product.setDescriptions(descriptions);
         return product;
     }
+
+    @Override
+    public List<ProductDto> getProductsByIds(List<Integer> productIds) {
+        return productMapper.findProductsByIds(productIds);
+    }
+
 }
