@@ -27,7 +27,7 @@ public class ElasticsearchConfig {
         objectMapper.registerModule(new JavaTimeModule());
 
         RestClient restClient = RestClient.builder(
-                new HttpHost(host, port, "http")
+                new HttpHost(host, port, "https")
         ).build();
 
         RestClientTransport transport = new RestClientTransport(
