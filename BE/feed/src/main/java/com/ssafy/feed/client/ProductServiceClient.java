@@ -1,12 +1,9 @@
 package com.ssafy.feed.client;
 
-import com.ssafy.feed.dto.ProductDTO;
-import com.ssafy.feed.dto.response.ApiResponse;
+import com.ssafy.feed.dto.ProductResponseDto;
+import com.ssafy.feed.dto.response.ProductApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -16,17 +13,21 @@ import java.util.Set;
 public interface ProductServiceClient {
 
     @GetMapping("/api/product/detail/{productId}")
-    ApiResponse<ProductDTO> getProductById(@PathVariable("productId") Long productId);
+    ProductApiResponse<ProductResponseDto> getProductById(@PathVariable("productId") Integer productId);
 
-    @GetMapping("/api/products/ids")
-    ApiResponse<Map<Long, ProductDTO>> getProductsByIds(@RequestParam("ids") Set<Long> productIds);
+    @PostMapping("/api/product/list")
+    ProductApiResponse<List<ProductResponseDto>> getProductsByIds(@RequestBody List<Integer> productIds);
 
     @GetMapping("/api/products/favorite/{userId}")
-    ApiResponse<List<Long>> getFavoriteProductIds(@PathVariable("userId") Long userId);
+    ProductApiResponse<List<Integer>> getFavoriteProductIds(@PathVariable("userId") Long userId);
 
     @GetMapping("/api/products/favorite/status/{userId}")
-    ApiResponse<Map<Long, Boolean>> getFavoriteStatus(@PathVariable("userId") Long userId, @RequestParam("productIds") Set<Long> productIds);
+    ProductApiResponse<Map<Integer, Boolean>> getFavoriteStatus(
+            @PathVariable("userId") Long userId,
+            @RequestParam("productIds") Set<Integer> productIds);
 
     @PostMapping("/api/products/favorite/toggle/{userId}/{productId}")
-    ApiResponse<Boolean> toggleProductFavorite(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId);
+    ProductApiResponse<Boolean> toggleProductFavorite(
+            @PathVariable("userId") Long userId,
+            @PathVariable("productId") Integer productId);
 }
