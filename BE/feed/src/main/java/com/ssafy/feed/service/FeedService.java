@@ -218,7 +218,7 @@ public class FeedService {
     /**
      * 단일 피드 상세 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public FeedDetailDTO getFeedDetail(Long feedId, Long userId) {
         // 피드 기본 정보 조회
         Feed feed = feedMapper.findById(feedId);
