@@ -74,16 +74,39 @@ public class UserActivityService {
             return;
         }
 
-        // 활동별 가중치 부여
-        Double weight = ACTIVITY_WEIGHTS.getOrDefault(activityType, 1.0);
+        // 긍정적 활동인지 부정적 활동인지 판단
+        boolean isPositiveAction = isPositiveAction(activityType);
 
-        // 각 해시태그 점수 갱신
+        // 활동 유형에 따른 기본 가중치 가져오기
+        Double baseWeight = ACTIVITY_WEIGHTS.getOrDefault(activityType, 1.0);
+
+        // 좋아요 취소/북마크 취소 동작에는 음수 가중치 적용
+        Double weight = isPositiveAction ? baseWeight : -baseWeight;
+
+        // 각 해시태그에 대한 점수 업데이트
         for (Long hashtagId : hashtagIds) {
             userHashtagPreferenceMapper.incrementScore(userId, hashtagId, weight);
         }
 
         log.info("사용자 {} 해시태그 선호도 업데이트: 활동={}, 피드={}, 해시태그={}, 가중치={}",
                 userId, activityType, feedId, hashtagIds, weight);
+    }
+
+    // 활동이 긍정적(추가)인지 부정적(제거)인지 판단하는 헬퍼 메소드
+    private boolean isPositiveAction(String activityType) {
+        switch (activityType) {
+            case "LIKE_FEED":
+            case "BOOKMARK_FEED":
+            case "ADD_COMMENT":
+            case "SHARE_FEED":
+            case "VIEW_FEED_DETAIL":
+                return true;
+            case "UNLIKE_FEED":
+            case "UNBOOKMARK_FEED":
+                return false;
+            default:
+                return true;
+        }
     }
 
     /**
