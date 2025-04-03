@@ -2,6 +2,7 @@ package com.ssafy.product.controller;
 
 import com.ssafy.product.common.ApiResponse;
 import com.ssafy.product.dto.ProductDto;
+import com.ssafy.product.dto.ProductIdRequest;
 import com.ssafy.product.service.ProductService;
 import com.ssafy.product.util.SortUtil;
 import lombok.RequiredArgsConstructor;
@@ -42,18 +43,6 @@ public class ProductController {
     @GetMapping("/detail/{productId}")
     public ApiResponse<ProductDto> getProductDetail(@PathVariable int productId) {
         return ApiResponse.success("상품 상세 조회 성공", productService.getProductDetail(productId));
-    }
-
-    public class ProductIdRequest {
-        private List<Integer> productIds;
-
-        public List<Integer> getProductIds() {
-            return productIds;
-        }
-
-        public void setProductIds(List<Integer> productIds) {
-            this.productIds = productIds;
-        }
     }
 
     // 상품 리스트 조회
