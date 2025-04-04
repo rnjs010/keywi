@@ -1,7 +1,6 @@
 package com.ssafy.product.controller;
 
 import com.ssafy.product.common.ApiResponse;
-import com.ssafy.product.common.WishResponse;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.dto.request.ProductIdRequest;
 import com.ssafy.product.dto.request.WishRequest;

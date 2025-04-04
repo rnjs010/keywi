@@ -15,7 +15,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화 (API 서버이므로)
-                .cors(cors -> {})  // 게이트웨이에서 처리하므로 기본 활성화
+                .cors(cors -> cors.disable())  // 게이트웨이에서 처리하므로 기본 활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/product/**").permitAll()  // 모든 상품 API 요청 허용
                         .anyRequest().authenticated()
