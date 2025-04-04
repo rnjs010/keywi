@@ -205,7 +205,7 @@ public class FeedController {
                 "activityData", Map.of(
                         "feedId", feedId,
                         "commentId", comment.getId(),
-                        "timestamp", System.currentTimeMillis()
+                        "mentionTime", comment.getCreatedAt()
                 )
         ));
 
@@ -219,7 +219,8 @@ public class FeedController {
                         "data", Map.of(
                                 "feedId", feedId,
                                 "commentId", comment.getId(),
-                                "text", comment.getContent()
+                                "text", comment.getContent(),
+                                "mentionTime", comment.getCreatedAt()
                         )
                 ));
             });

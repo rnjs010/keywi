@@ -10,6 +10,7 @@ import com.ssafy.feed.mapper.*;
 import com.ssafy.feed.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -417,6 +419,7 @@ public class FeedService {
                 .feedId(feedId)
                 .userId(userId)
                 .content(request.getContent())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         commentMapper.insert(comment);
