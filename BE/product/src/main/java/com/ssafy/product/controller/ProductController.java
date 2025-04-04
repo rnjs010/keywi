@@ -60,20 +60,20 @@ public class ProductController {
 
     // 상품 찜하기
     @PostMapping("/favorites")
-    public WishResponse<Boolean> addFavorite(
+    public ApiResponse<Boolean> addFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
         boolean isFavorite = wishService.addWish(userId, request.getProductId(), request.getCategoryId());
-        return WishResponse.success("찜 상태 변경 성공", isFavorite);
+        return ApiResponse.success("찜 상태 변경 성공", isFavorite);
     }
 
     // 찜한 상품 삭제
     @DeleteMapping("/favorites")
-    public WishResponse<Boolean> removeFavorite(
+    public ApiResponse<Boolean> removeFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
         boolean isFavorite = wishService.removeWish(userId, request.getProductId());
-        return WishResponse.success("찜 해제 성공", isFavorite);
+        return ApiResponse.success("찜 해제 성공", isFavorite);
     }
 
     // 유저의 찜한 상품 목록 조회
