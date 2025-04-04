@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * 유레카 클라이언트 관련 설정을 담당하는 설정 클래스
+ * 유레카 클라이언트 관련 설정을 담당하는 설정 클래 스
  */
 @Configuration
 public class EurekaClientConfig {
