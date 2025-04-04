@@ -18,7 +18,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")  // 모든 출처 허용 (실제 운영환경에서는 구체적인 도메인으로 제한하는 것이 좋음)
+                .allowedOrigins(
+                        "http://localhost:3000",
+                        "http://localhost:8080",
+                        "http://localhost:5173", // 프론트엔드 개발 서버
+                        "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
+                        "https://key-wi.netlify.app",
+                        "http://j12e202.p.ssafy.io"
+                )  // 모든 출처 허용 (실제 운영환경에서는 구체적인 도메인으로 제한하는 것이 좋음)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .maxAge(3600);
