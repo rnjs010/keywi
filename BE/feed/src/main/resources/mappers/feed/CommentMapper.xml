@@ -18,7 +18,7 @@
     <select id="findByFeedId" parameterType="long" resultMap="commentResultMap">
         SELECT * FROM comments
         WHERE feed_id = #{feedId}
-        ORDER BY created_at ASC
+        ORDER BY created_at DESC
     </select>
 
     <select id="findTop3ByFeedId" parameterType="long" resultMap="commentResultMap">
