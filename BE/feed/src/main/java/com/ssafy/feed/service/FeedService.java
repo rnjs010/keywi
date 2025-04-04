@@ -48,9 +48,9 @@ public class FeedService {
 
     /**
      * 사용자별 맞춤 피드 추천 목록을 생성하고 Redis에 캐싱
-     * 30분마다 실행
+     * 1시간 마다 실행
      */
-    @Scheduled(fixedRate = 30 * 60 * 1000) // 30분마다 실행
+    @Scheduled(fixedRate = 60 * 60 * 1000) // 30분마다 실행
     public void generateRecommendedFeeds() {
         log.info("사용자 맞춤 피드 추천 목록 생성 작업 시작");
 
@@ -58,17 +58,24 @@ public class FeedService {
         List<Long> activeUserIds = userActivityService.getActiveUserIds();
 
         activeUserIds.forEach(userId -> {
-            // 1. 팔로우 기반 추천 피드
+            List<FeedDTO> recommendedFeeds = new ArrayList<>();
+
+            // 1. 팔로우하고 있는 유저의 읽지 않은 최신 피드
             List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
             List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
+            recommendedFeeds.addAll(followingFeedDTOs);
 
             // 2. 해시태그 기반 맞춤 피드
-            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+            List<FeedDTO> activityBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+            addWithoutDuplicates(recommendedFeeds, activityBasedFeeds);
 
-            // 추천 목록 합치기 (중복 제거, 우선순위: 팔로우 > 해시태그)
-            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
+            // 3. 좋아요 및 북마크 수가 높은 피드 (기존의 인기 피드)
+            List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
+            if (popularFeeds != null && !popularFeeds.isEmpty()) {
+                addWithoutDuplicates(recommendedFeeds, popularFeeds);
+            }
 
             // Redis에 저장 (24시간 유효)
             redisTemplate.opsForValue().set(
@@ -89,9 +96,9 @@ public class FeedService {
     }
 
     /**
-     * 인기 피드 목록 갱신 (1시간마다 실행)
+     * 인기 피드 목록 갱신 (6시간마다 실행)
      */
-    @Scheduled(fixedRate = 60 * 60 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000 * 6)
     public void updatePopularFeeds() {
         log.info("인기 피드 목록 갱신 작업 시작");
 
@@ -122,31 +129,54 @@ public class FeedService {
 
         // 캐시가 없으면 실시간 생성
         if (cachedRecommendedFeeds == null || cachedRecommendedFeeds.isEmpty()) {
-            // 1. 팔로우 기반 추천 피드
+            List<FeedDTO> recommendedFeeds = new ArrayList<>();
+
+            // 1. 팔로우 기반 추천 피드(그 중 읽지 않은 최신 피드)
             List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
             List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
+            recommendedFeeds.addAll(followingFeedDTOs);
 
-            // 2. 해시태그 기반 맞춤 피드
-            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+            // 2. 사용자 활동 기반(좋아요/북마크/댓글 단 피드와 관련된 해시태그 피드)
+            List<FeedDTO> activityBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+            addWithoutDuplicates(recommendedFeeds, activityBasedFeeds);
 
-            cachedRecommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
-        }
-
-        // 캐시된 추천 피드가 부족하면 인기 피드로 보충
-        if (cachedRecommendedFeeds.size() < pageable.getPageSize() * 2) {
+            // 3. 좋아요 및 북마크 수가 높은 피드 (기존의 인기 피드)
             List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
             if (popularFeeds != null && !popularFeeds.isEmpty()) {
-                cachedRecommendedFeeds = mergeFeeds(cachedRecommendedFeeds, popularFeeds);
+                addWithoutDuplicates(recommendedFeeds, popularFeeds);
             }
+
+            // 4. 인기 해시태그 기반 피드
+            List<HashtagDTO> popularHashtags = hashtagService.getPopularHashtags(15);
+            Set<Long> popularHashtagIds = popularHashtags.stream()
+                    .map(HashtagDTO::getId)
+                    .collect(Collectors.toSet());
+            List<Long> feedIds = hashtagService.findFeedsByHashtagIds(popularHashtagIds, 50);
+            List<FeedDTO> popularHashtagFeeds = getFeedDTOsByIds(feedIds);
+            addWithoutDuplicates(recommendedFeeds, popularHashtagFeeds);
+
+            // Redis에 캐싱
+            cachedRecommendedFeeds = recommendedFeeds;
+            redisTemplate.opsForValue().set(
+                    RECOMMENDED_FEEDS_PREFIX + userId,
+                    cachedRecommendedFeeds,
+                    24, TimeUnit.HOURS
+            );
         }
+
 
         // 페이지네이션 적용
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), cachedRecommendedFeeds.size());
 
-        List<FeedDTO> pageContent = cachedRecommendedFeeds.subList(start, end);
+        List<FeedDTO> pageContent;
+        if (start < cachedRecommendedFeeds.size()) {
+            pageContent = cachedRecommendedFeeds.subList(start, end);
+        } else {
+            pageContent = Collections.emptyList(); // 반환한 피드 리스트보다 페이지를 더 높게 부를 경우 빈 리스트로 반환
+        }
 
         // 피드 정보 보강 (작성자, 좋아요/북마크 상태 등)
         enrichFeedInformation(pageContent, userId);
@@ -486,12 +516,12 @@ public class FeedService {
         // 임시 상품 ID 생성 (음수값 사용)
         long tempProductId = -System.currentTimeMillis();
 
-        // 임시 상품 정보 반환
+        // 임시 상품 정보 반환 (가격이 없으면 0, 카테고리가 없으면 "없음"으로 설정)
         return ProductDTO.builder()
                 .productId(tempProductId)
                 .name(request.getName())
-                .price(request.getPrice())
-                .category(request.getCategory())
+                .price(request.getPrice() != 0 ? request.getPrice() : 0)
+                .category(request.getCategory() != null ? request.getCategory() : "없음")
                 .imageUrl(request.getImageUrl())
                 .isTemporary(true)
                 .build();
@@ -550,8 +580,12 @@ public class FeedService {
                 // 임시 상품인 경우 추가 정보 설정
                 if (feedProduct.isTemporary()) {
                     feedProduct.setProductName(productRequest.getProductName());
-                    feedProduct.setPrice(productRequest.getPrice());
-                    feedProduct.setCategory(productRequest.getCategory());
+
+                    // 가격이 없으면 0으로 설정
+                    feedProduct.setPrice(productRequest.getPrice() != null ? productRequest.getPrice() : 0);
+
+                    // 카테고리가 없으면 "없음"으로 설정
+                    feedProduct.setCategory(productRequest.getCategory() != null ? productRequest.getCategory() : "없음");
                 }
 
                 feedProductMapper.insert(feedProduct);
@@ -747,6 +781,8 @@ public class FeedService {
                 .userId(userId)
                 .build();
         feedReadMapper.insert(feedRead);
+
+        // userActivityService.decreaseHashtagScoresForReadFeed(userId, feedId);
     }
 
     /**
@@ -894,6 +930,15 @@ public class FeedService {
         feedList2.forEach(feed -> mergedMap.putIfAbsent(feed.getId(), feed));
 
         return new ArrayList<>(mergedMap.values());
+    }
+
+    // 중복 제거하면서 리스트에 추가하는 헬퍼 메소드
+    private void addWithoutDuplicates(List<FeedDTO> target, List<FeedDTO> source) {
+        for (FeedDTO feed : source) {
+            if (target.stream().noneMatch(f -> f.getId().equals(feed.getId()))) {
+                target.add(feed);
+            }
+        }
     }
 
     /**

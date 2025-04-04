@@ -33,9 +33,8 @@ public class FeedController {
     public ResponseEntity<FeedPageResponse> getRecommendedFeeds(
             @RequestHeader("X-User-ID") Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-//        FeedPageResponse response = feedService.getRecommendedFeeds(Long.parseLong(userId), pageable);
         FeedPageResponse response = feedService.getRecommendedFeeds(userId, pageable);
         kafkaTemplate.send("user-activity-events", Map.of(
                 "userId", userId,

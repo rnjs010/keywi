@@ -309,6 +309,29 @@ public class UserActivityService {
     }
 
     /**
+     * 피드 읽음 처리 시 호출되는 메서드 - 해당 피드의 해시태그 선호도 점수를 약간 감소시킵니다
+     */
+    @Transactional
+    public void decreaseHashtagScoresForReadFeed(Long userId, Long feedId) {
+        // 해시태그 ID 목록 조회
+        List<Long> hashtagIds = feedHashtagMapper.findHashtagIdsByFeedId(feedId);
+        if (hashtagIds.isEmpty()) {
+            return;
+        }
+
+        // 읽음 동작에 대한 가중치 설정 (음수 값으로 설정하여 점수 감소)
+        Double readWeight = -0.5;  // 좋아요나 북마크보다 영향이 적게 설정
+
+        // 각 해시태그에 대한 점수 감소
+        for (Long hashtagId : hashtagIds) {
+            userHashtagPreferenceMapper.incrementScore(userId, hashtagId, readWeight);
+        }
+
+        log.info("사용자 {} 피드 읽음에 따른 해시태그 선호도 업데이트: 피드={}, 해시태그={}, 가중치={}",
+                userId, feedId, hashtagIds, readWeight);
+    }
+
+    /**
      * Hashtag 엔티티를 HashtagDTO로 변환
      */
     private HashtagDTO convertToHashtagDTO(Hashtag hashtag) {
