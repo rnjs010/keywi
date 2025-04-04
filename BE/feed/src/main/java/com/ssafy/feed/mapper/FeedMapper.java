@@ -25,6 +25,10 @@ public interface FeedMapper {
 
     List<Feed> findAllByUserId(Long userId);
 
+    List<Feed> findRandomFeeds(int limit);
+
+    List<Feed> findRandomFeedsExcluding(@Param("limit") int limit, @Param("excludeFeedIds") List<Long> excludeFeedIds);
+
     boolean isLikedByUser(@Param("feedId") Long feedId, @Param("userId") Long userId);
 
     boolean isBookmarkedByUser(@Param("feedId") Long feedId, @Param("userId") Long userId);

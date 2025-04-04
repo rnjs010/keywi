@@ -148,14 +148,17 @@ public class FeedService {
                 addWithoutDuplicates(recommendedFeeds, popularFeeds);
             }
 
-            // 4. 인기 해시태그 기반 피드
-            List<HashtagDTO> popularHashtags = hashtagService.getPopularHashtags(15);
-            Set<Long> popularHashtagIds = popularHashtags.stream()
-                    .map(HashtagDTO::getId)
-                    .collect(Collectors.toSet());
-            List<Long> feedIds = hashtagService.findFeedsByHashtagIds(popularHashtagIds, 50);
-            List<FeedDTO> popularHashtagFeeds = getFeedDTOsByIds(feedIds);
-            addWithoutDuplicates(recommendedFeeds, popularHashtagFeeds);
+            // 피드가 여전히 부족하면 랜덤 피드로 보충
+            if (recommendedFeeds.isEmpty() || recommendedFeeds.size() < pageable.getPageSize() * 2) {
+                int neededFeedsCount = Math.max(pageable.getPageSize() * 3 - recommendedFeeds.size(), 0);
+                if (neededFeedsCount > 0) {
+                    List<Feed> randomFeeds = feedMapper.findRandomFeeds(neededFeedsCount);
+                    List<FeedDTO> randomFeedDTOs = randomFeeds.stream()
+                            .map(this::convertToFeedDTO)
+                            .collect(Collectors.toList());
+                    addWithoutDuplicates(recommendedFeeds, randomFeedDTOs);
+                }
+            }
 
             // Redis에 캐싱
             cachedRecommendedFeeds = recommendedFeeds;

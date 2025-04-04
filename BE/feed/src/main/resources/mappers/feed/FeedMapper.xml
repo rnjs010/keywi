@@ -63,6 +63,26 @@
         ORDER BY f.created_at DESC LIMIT 50
     </select>
 
+    <select id="findRandomFeeds" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE is_delete = false
+        ORDER BY RAND()
+            LIMIT #{limit}
+    </select>
+
+    <select id="findRandomFeedsExcluding" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE is_delete = false
+        <if test="excludeFeedIds != null and excludeFeedIds.size() > 0">
+            AND feed_id NOT IN
+            <foreach item="feedId" collection="excludeFeedIds" open="(" separator="," close=")">
+                #{feedId}
+            </foreach>
+        </if>
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
     <select id="isLikedByUser" resultType="boolean">
         SELECT EXISTS(SELECT 1 FROM feed_likes WHERE feed_id = #{feedId} AND user_id = #{userId})
     </select>
