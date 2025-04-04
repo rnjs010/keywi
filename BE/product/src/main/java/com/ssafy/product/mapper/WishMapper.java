@@ -18,7 +18,12 @@ public interface WishMapper {
     void deleteWish(@Param("userId") Long userId, @Param("productId") Integer productId);
 
     @Select("<script>" +
-            "SELECT p.* FROM products p " +
+            "SELECT p.*, " +
+            "(SELECT CASE " +
+            "WHEN c.parent_id IS NOT NULL THEN (SELECT category_name FROM category WHERE category_id = c.parent_id) " +
+            "ELSE c.category_name END " +
+            "FROM category c WHERE c.category_id = w.category_id) AS category_name " +
+            "FROM products p " +
             "JOIN wishes w ON p.product_id = w.product_id " +
             "WHERE w.user_id = #{userId} " +
             "<if test='categoryId != null'>" +
@@ -29,5 +34,4 @@ public interface WishMapper {
             "</if>" +
             "</script>")
     List<ProductDto> findUserWishes(@Param("userId") Long userId, @Param("categoryId") Integer categoryId);
-
 }
