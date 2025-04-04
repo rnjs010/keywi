@@ -6,6 +6,7 @@ import tw from 'twin.macro'
 import { ChatBubbleSolid } from 'iconoir-react'
 import { Link } from 'react-router-dom'
 import { BoardCardData } from '@/interfaces/BoardInterface'
+import truncateText from '@/utils/truncateText'
 
 const CardContainer = tw.div`
   flex flex-col justify-between items-start py-4 border-b border-[#EEEEEE]
@@ -25,13 +26,14 @@ const ThumbnailImage = tw.img`
 
 export default function BoardCard({
   boardId,
-  writerNickname,
+  authorNickname,
   title,
   thumbnailUrl,
+  dealState,
   chatCount,
   createdAt,
 }: BoardCardData) {
-  const badgeData = getBadgeData(status)
+  const badgeData = getBadgeData(dealState)
 
   return (
     <Link to={`/board/${boardId}`}>
@@ -42,7 +44,7 @@ export default function BoardCard({
             {/* 제목, 채팅 수 */}
             <TitleContainer>
               <Text variant="body1" weight="regular">
-                {title}
+                {truncateText(title, 25)}
               </Text>
               {chatCount !== 0 && (
                 <span className="flex flex-row gap-1 items-center">
@@ -60,7 +62,7 @@ export default function BoardCard({
             {/* 닉네임, 날짜 */}
             <div className="mt-1">
               <Text variant="caption2" weight="regular" color="gray">
-                {writerNickname} · {createdAt}
+                {authorNickname} · {createdAt}
               </Text>
             </div>
           </div>

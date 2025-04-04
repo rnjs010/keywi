@@ -3,6 +3,7 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { NavArrowRight, Xmark } from 'iconoir-react'
 import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
+import truncateText from '@/utils/truncateText'
 
 const CardContainer = tw.div`
   flex items-center content-center justify-between bg-pay pl-4 py-3 pr-1 rounded-lg my-0.5
@@ -29,7 +30,7 @@ export default function BoardProductCard({
           {data.categoryName}
         </Text>
         <Text variant="caption1" weight="regular">
-          {data.productName}
+          {truncateText(data.productName, 20)}
         </Text>
         <Text variant="caption1" weight="bold">
           {data.price.toLocaleString()}원

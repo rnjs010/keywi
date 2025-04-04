@@ -18,7 +18,7 @@ export function useBoardWrite() {
     // selectedProducts에서 categoryId, itemId만 추출
     const items = Object.values(selectedProducts).map((product) => ({
       categoryId: product.categoryId,
-      productId: product.itemId,
+      productId: product.productId,
     }))
 
     const requestData = {
@@ -31,6 +31,9 @@ export function useBoardWrite() {
     try {
       setIsLoading(true)
       setError(null)
+
+      console.log('📦 게시글 작성 requestData:', requestData)
+
       await createBoardPost(requestData)
       resetState()
       return true // 성공

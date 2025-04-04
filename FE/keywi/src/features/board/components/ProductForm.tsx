@@ -14,18 +14,18 @@ const Container = tw.div`
 `
 
 const Form = tw.div`
-  overflow-y-auto px-4 py-2 flex-1 
+  overflow-y-auto px-4 py-2 flex-1 flex flex-col gap-3
 `
 
 export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
   const categories = [
-    { id: 1, name: '하우징' },
-    { id: 2, name: '키캡' },
-    { id: 3, name: '스위치' },
-    { id: 4, name: '스테빌라이저' },
-    { id: 5, name: '흡음재' },
-    { id: 6, name: '보강판' },
-    { id: 7, name: '기판' },
+    { id: 1, name: '키보드' },
+    { id: 2, name: '스위치' },
+    { id: 3, name: '키캡' },
+    { id: 4, name: '기판' },
+    { id: 5, name: '보강판' },
+    { id: 6, name: '스테빌라이저' },
+    { id: 7, name: '흡음재' },
   ]
 
   const queryClient = useQueryClient()
@@ -81,6 +81,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
           if (open) setOpenDrawer(category)
           else setOpenDrawer(null)
         }}
+        categoryId={product.categoryId}
         title={category}
         trigger={
           <ProductSelector
@@ -107,6 +108,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
               if (open) setOpenDrawer(category.name)
               else setOpenDrawer(null)
             }}
+            categoryId={category.id}
             title={category.name}
             trigger={
               <ProductSelector

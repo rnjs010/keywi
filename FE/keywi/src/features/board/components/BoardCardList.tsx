@@ -1,8 +1,8 @@
 import BoardCard from '@/features/board/components/BoardCard'
 import { useBoardList } from '../hooks/useBoardList'
-import LoadingMessage from '@/components/LoadingMessage'
-import ErrorMessage from '@/components/ErrorMessage'
-import NoDataMessage from '@/components/NoDataMessage'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import ErrorMessage from '@/components/message/ErrorMessage'
+import NoDataMessage from '@/components/message/NoDataMessage'
 
 export default function BoardCardList() {
   // React Query를 이용해 게시글 목록 조회

@@ -15,13 +15,13 @@ const Form = tw.div`
 
 export default function ProductForm() {
   const categories = [
-    { id: 1, name: '하우징' },
-    { id: 2, name: '키캡' },
-    { id: 3, name: '스위치' },
-    { id: 4, name: '스테빌라이저' },
-    { id: 5, name: '흡음재' },
-    { id: 6, name: '보강판' },
-    { id: 7, name: '기판' },
+    { id: 1, name: '키보드' },
+    { id: 2, name: '스위치' },
+    { id: 3, name: '키캡' },
+    { id: 4, name: '기판' },
+    { id: 5, name: '보강판' },
+    { id: 6, name: '스테빌라이저' },
+    { id: 7, name: '흡음재' },
   ]
 
   // 선택된 상품들을 카테고리별로 저장하는 객체

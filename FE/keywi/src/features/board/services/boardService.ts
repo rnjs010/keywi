@@ -33,6 +33,7 @@ export const getBoardDetail = async (
   const response = await apiRequester.get<BoardDetailResponse>(
     `/api/estimate-boards/${boardId}`,
   )
+  console.log('게시글 상세 조회', response.data.data)
   return response.data.data
 }
 
@@ -70,15 +71,53 @@ export const getFavoriteProducts = async (
   categoryId: number,
 ): Promise<BoardItemUsingInfo[]> => {
   const response = await apiRequester.get<FavoriteProductResponse>(
-    `/api/product/favorites?categoryId=${categoryId}`,
+    `/api/product/favorites/list?categoryId=${categoryId}`,
   )
 
   return response.data.data.map((item) => ({
+    categoryId: item.categoryId,
+    categoryName: '',
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    imageUrl: item.productImage,
+  }))
+}
+
+// 카테고리별 검색 상품 조회 함수
+interface ProductSearchResponse {
+  productId: number
+  productName: string
+  categoryId: number
+  categoryName: string
+  price: number
+  imageUrl: string | null
+  createdAt: string
+  searchCount: number | null
+}
+
+export const searchProducts = async (
+  categoryId: number,
+  query: string,
+): Promise<BoardItemUsingInfo[]> => {
+  const response = await apiRequester.get<ProductSearchResponse[]>(
+    '/api/board/products/search',
+    {
+      params: {
+        categoryId,
+        query,
+        page: 0,
+        size: 10,
+      },
+    },
+  )
+
+  return response.data.map((item) => ({
     categoryId: item.categoryId,
     categoryName: item.categoryName,
     productId: item.productId,
     productName: item.productName,
     price: item.price,
-    imageUrl: item.productImage,
+    imageUrl: item.imageUrl ?? '',
   }))
 }

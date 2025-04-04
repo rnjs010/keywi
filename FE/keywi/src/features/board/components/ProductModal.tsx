@@ -10,6 +10,9 @@ import {
 } from '@/components/ui/drawer'
 import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import React, { useEffect, useState } from 'react'
+import { useProductSearch } from '../hooks/useProductSearch'
+import truncateText from '@/utils/truncateText'
+import highlightSearchTerm from '@/utils/highlightSearchTerm'
 
 const CardContainer = tw.div`
   flex items-center gap-3 cursor-pointer my-2 pb-2
@@ -40,6 +43,7 @@ const Tooltip = tw.div`
 interface ProductDrawerProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  categoryId: number
   title: string
   children?: React.ReactNode
   trigger: React.ReactNode
@@ -50,6 +54,7 @@ interface ProductDrawerProps {
 export default function ProductModal({
   isOpen,
   onOpenChange,
+  categoryId,
   title,
   children,
   trigger,
@@ -58,8 +63,20 @@ export default function ProductModal({
 }: ProductDrawerProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
+  const { data: searchResults } = useProductSearch(
+    categoryId,
+    searchTerm,
+    isOpen, // 모달 열려있을 때만 요청
+  )
   const [suggestions, setSuggestions] = useState<BoardItemUsingInfo[]>([])
   const displayedProducts = searchTerm ? suggestions : products
+
+  // 검색 결과 업데이트
+  useEffect(() => {
+    if (searchResults) {
+      setSuggestions(searchResults)
+    }
+  }, [searchResults])
 
   // 조립자 추천 요청 (특별한 BoardItem 객체 생성)
   const handleRecommendClick = (e: React.MouseEvent) => {
@@ -175,7 +192,10 @@ export default function ProductModal({
                   )}
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
-                      {product.productName}
+                      {highlightSearchTerm(
+                        truncateText(product.productName, 30),
+                        searchTerm,
+                      )}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원
