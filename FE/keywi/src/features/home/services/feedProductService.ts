@@ -28,7 +28,12 @@ export const getSearchProducts = async (
   query: string,
 ): Promise<FeedSearchProduct[]> => {
   const response = await apiRequester.get<FeedSearchProductResponse>(
-    `/api/feed/products/autocomplete?query=${query}`,
+    '/api/feed/products/search',
+    {
+      params: {
+        query,
+      },
+    },
   )
   return response.data.data
 }

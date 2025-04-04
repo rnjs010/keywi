@@ -9,7 +9,6 @@ const Container = tw.div`
   w-full
   mb-6
 `
-
 const ProfileWrapper = tw.div`
   px-4
 `
