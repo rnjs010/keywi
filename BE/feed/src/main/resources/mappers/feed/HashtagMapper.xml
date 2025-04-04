@@ -9,6 +9,10 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <select id="selectAll" resultMap="HashtagResultMap">
+        SELECT * FROM hashtags ORDER BY usage_count DESC
+    </select>
+
     <select id="findById" resultMap="HashtagResultMap">
         SELECT * FROM hashtags WHERE hashtag_id = #{hashtagId}
     </select>

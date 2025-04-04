@@ -160,6 +160,15 @@ public class HashtagService {
         return feedIds;
     }
 
+    @Transactional(readOnly = true)
+    public List<HashtagDTO> getHashTagList(){
+        List<Hashtag> hashtags = hashtagMapper.selectAll();
+
+        return hashtags.stream()
+                .map(this::convertToHashtagDTO)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Hashtag 엔티티를 HashtagDTO로 변환
      */

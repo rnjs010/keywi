@@ -10,6 +10,8 @@ import java.util.Set;
 @Mapper
 @Repository
 public interface HashtagMapper {
+
+    List<Hashtag> selectAll();
     Hashtag findById(Long id);
 
     Hashtag findByName(String name);

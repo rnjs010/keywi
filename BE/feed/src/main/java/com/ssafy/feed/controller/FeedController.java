@@ -1,15 +1,13 @@
 package com.ssafy.feed.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.feed.dto.CommentDTO;
-import com.ssafy.feed.dto.FeedDTO;
-import com.ssafy.feed.dto.FeedDetailDTO;
-import com.ssafy.feed.dto.ProductDTO;
+import com.ssafy.feed.dto.*;
 import com.ssafy.feed.dto.request.CommentRequest;
 import com.ssafy.feed.dto.request.FeedCreateRequest;
 import com.ssafy.feed.dto.request.ProductCreateRequest;
 import com.ssafy.feed.dto.response.*;
 import com.ssafy.feed.service.FeedService;
+import com.ssafy.feed.service.HashtagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +25,7 @@ import java.util.Map;
 @Slf4j
 public class FeedController {
     private final FeedService feedService;
+    private final HashtagService hashtagService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @GetMapping("/recommended")
@@ -270,6 +269,16 @@ public class FeedController {
         ProductDTO product = feedService.addTemporaryProduct(userId, request);
 
         return ResponseEntity.ok(product);
+    }
+
+    /**
+     * 해시태그 목록 조회
+     */
+    @GetMapping("/hashtags")
+    public ResponseEntity<List<HashtagDTO>> getHashtags(){
+        List<HashtagDTO> hashTagList = hashtagService.getHashTagList();
+
+        return ResponseEntity.ok(hashTagList);
     }
 }
 
