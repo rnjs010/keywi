@@ -9,7 +9,6 @@ import java.util.TimeZone;
 
 @SpringBootApplication(exclude = ElasticsearchClientAutoConfiguration.class)
 @EnableScheduling
-@EnableDiscoveryClient
 public class SearchApplication {
 
     public static void main(String[] args) {
