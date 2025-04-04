@@ -14,7 +14,7 @@ import org.springframework.data.elasticsearch.annotations.*;
 @Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProductDocument {
+public class BoardProductDocument {
 
     @Id
     private Integer productId;

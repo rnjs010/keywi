@@ -10,7 +10,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import com.ssafy.search.board.document.ProductDocument;
+import com.ssafy.search.board.document.BoardProductDocument;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCustom {
+public class BoardProductSearchRepositoryImpl implements BoardProductSearchRepositoryCustom {
 
     private final ElasticsearchClient esClient;
     private final String INDEX = "products";
 
     @Override
-    public List<ProductDocument> searchByCategoryAndQuery(String categoryId, String query, int page, int size) {
+    public List<BoardProductDocument> searchByCategoryAndQuery(String categoryId, String query, int page, int size) {
         try {
             Query keywordQuery = MatchAllQuery.of(m -> m)._toQuery(); // 기본 쿼리
 
@@ -56,7 +56,7 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
                     .sort(s -> s.field(f -> f.field("createdAt").order(SortOrder.Desc)))
                     .build();
 
-            SearchResponse<ProductDocument> response = esClient.search(request, ProductDocument.class);
+            SearchResponse<BoardProductDocument> response = esClient.search(request, BoardProductDocument.class);
 
             return response.hits().hits().stream()
                     .map(Hit::source)
@@ -68,7 +68,7 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
     }
 
     @Override
-    public List<ProductDocument> searchByProductName(String keyword, String categoryId, int size) {
+    public List<BoardProductDocument> searchByProductName(String keyword, String categoryId, int size) {
         try {
             // 키워드 쿼리
             Query keywordQuery = MultiMatchQuery.of(m -> m
@@ -93,7 +93,7 @@ public class ProductSearchRepositoryImpl implements ProductSearchRepositoryCusto
                     .size(size)
                     .build();
 
-            SearchResponse<ProductDocument> response = esClient.search(request, ProductDocument.class);
+            SearchResponse<BoardProductDocument> response = esClient.search(request, BoardProductDocument.class);
 
             return response.hits().hits().stream()
                     .map(Hit::source)
