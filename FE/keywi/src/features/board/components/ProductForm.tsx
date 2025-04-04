@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import ProductSelector from './ProductSelector'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import ProductModal from './ProductModal'
 import MainButton from '@/components/MainButton'
 import { useBoardProductStore } from '@/stores/boardStore'
+import { getFavoriteProducts } from '../services/boardService'
+import { useQueryClient } from '@tanstack/react-query'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -26,33 +28,37 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
     { id: 7, name: '기판' },
   ]
 
-  // 선택된 상품들을 카테고리별로 저장하는 객체
+  const queryClient = useQueryClient()
+  const { setFavoriteProducts, favoriteProducts } = useBoardProductStore()
+  const [openDrawer, setOpenDrawer] = useState<string | null>(null)
   const setSelectedProducts = useBoardProductStore(
     (state) => state.setSelectedProducts,
   )
   const selectedProducts = useBoardProductStore(
     (state) => state.selectedProducts,
   )
-  const [selectedProductsLocal, setSelectedProductsLocal] =
-    useState<Record<string, BoardItem>>(selectedProducts)
-
-  // 현재 선택된 카테고리
-  const [currentCategory, setCurrentCategory] = useState<string>('')
-
-  // 현재 열려있는 Drawer를 추적
-  const [openDrawer, setOpenDrawer] = useState<string | null>(null)
 
   // 카테고리 선택 시 Drawer를 열어 상품 선택 UI 표시
-  const handleAddProduct = (category: string) => {
-    setCurrentCategory(category)
-    console.log(currentCategory)
+  const handleAddProduct = (category: string, categoryId: number) => {
+    if (!favoriteProducts[category]) {
+      queryClient.fetchQuery({
+        queryKey: ['favorite-products', categoryId],
+        queryFn: async () => {
+          const data = await getFavoriteProducts(categoryId)
+          const formatted = data.map((p) => ({ ...p, categoryName: category }))
+          setFavoriteProducts(category, formatted)
+          return formatted
+        },
+      })
+    }
+
     setOpenDrawer(category)
   }
 
   // 상품 선택 시 해당 카테고리에 상품 저장 및 Drawer 닫기
-  const handleSelectProduct = (product: BoardItem) => {
-    setSelectedProductsLocal({
-      ...selectedProductsLocal,
+  const handleSelectProduct = (product: BoardItemUsingInfo) => {
+    setSelectedProducts({
+      ...selectedProducts,
       [product.categoryName]: product,
     })
     setOpenDrawer(null)
@@ -60,14 +66,14 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
 
   // 선택된 상품 삭제
   const handleDeleteProduct = (category: string) => {
-    const newSelectedProducts = { ...selectedProductsLocal }
+    const newSelectedProducts = { ...selectedProducts }
     delete newSelectedProducts[category]
-    setSelectedProductsLocal(newSelectedProducts)
+    setSelectedProducts(newSelectedProducts)
   }
 
   // 선택된 상품 렌더링
   const renderSelectedProducts = () => {
-    return Object.entries(selectedProductsLocal).map(([category, product]) => (
+    return Object.entries(selectedProducts).map(([category, product]) => (
       <ProductModal
         key={category}
         isOpen={openDrawer === category}
@@ -83,7 +89,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
             onDelete={() => handleDeleteProduct(category)}
           />
         }
-        products={initialProducts.filter((p) => p.categoryName === category)}
+        products={favoriteProducts[category] || []}
         onSelectProduct={handleSelectProduct}
       />
     ))
@@ -93,7 +99,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
   const renderUnselectedCategories = () => {
     return categories.map(
       (category) =>
-        !selectedProductsLocal[category.name] && (
+        !selectedProducts[category.name] && (
           <ProductModal
             key={category.id}
             isOpen={openDrawer === category.name}
@@ -105,12 +111,11 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
             trigger={
               <ProductSelector
                 label={category.name}
-                onAdd={() => handleAddProduct(category.name)}
+                onAdd={() => handleAddProduct(category.name, category.id)}
               />
             }
-            products={initialProducts.filter(
-              (p) => p.categoryName === category.name,
-            )}
+            // api로 get한 찜한 상품 목록 우선 보이기
+            products={favoriteProducts[category.name] || []}
             onSelectProduct={handleSelectProduct}
           />
         ),
@@ -119,7 +124,7 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
 
   // Zustand store에 선택된 상품 저장 후 두 번째 화면으로 이동
   const handleConfirm = () => {
-    setSelectedProducts(selectedProductsLocal)
+    setSelectedProducts(selectedProducts)
     onConfirm()
   }
 
@@ -140,119 +145,3 @@ export default function ProductForm({ onConfirm }: { onConfirm: () => void }) {
     </Container>
   )
 }
-
-// 더미 데이터
-const initialProducts: BoardItem[] = [
-  {
-    categoryId: 1,
-    categoryName: '하우징',
-    itemId: 1,
-    itemName: 'Qwertykeys QK80MK2 WK PINK',
-    price: 241000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 1,
-    categoryName: '하우징',
-    itemId: 2,
-    itemName: '하우징2',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    itemId: 3,
-    itemName: '오스메 사쿠라 키캡',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    itemId: 4,
-    itemName: '세라키 세라믹 V2 키캡 Blue Crazed',
-    price: 217000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    itemId: 5,
-    itemName: '스웨그키 측각 그라데이션 키캡 Purple',
-    price: 149000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 3,
-    categoryName: '스위치',
-    itemId: 6,
-    itemName: '오스틴 샤지 키드',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 4,
-    categoryName: '스테빌라이저',
-    itemId: 7,
-    itemName: 'Durock V2 스테빌라이저',
-    price: 25000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 4,
-    categoryName: '스테빌라이저',
-    itemId: 8,
-    itemName: 'TX AP 스테빌라이저',
-    price: 28000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 5,
-    categoryName: '흡음재',
-    itemId: 9,
-    itemName: 'PORON PCB 흡음재',
-    price: 18000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 5,
-    categoryName: '흡음재',
-    itemId: 10,
-    itemName: 'PE Foam 흡음재',
-    price: 15000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 6,
-    categoryName: '보강판',
-    itemId: 11,
-    itemName: 'FR4 보강판',
-    price: 30000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 6,
-    categoryName: '보강판',
-    itemId: 12,
-    itemName: 'PC 보강판',
-    price: 32000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 7,
-    categoryName: '기판',
-    itemId: 13,
-    itemName: 'Hotswap 기판',
-    price: 95000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-  {
-    categoryId: 7,
-    categoryName: '기판',
-    itemId: 14,
-    itemName: 'Solder 기판',
-    price: 85000,
-    imageUrl: 'https://picsum.photos/200',
-  },
-]

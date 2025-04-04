@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { NavArrowRight, Xmark } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 
 const CardContainer = tw.div`
   flex items-center content-center justify-between bg-pay pl-4 py-3 pr-1 rounded-lg my-0.5
@@ -17,7 +17,7 @@ export default function BoardProductCard({
   mode,
   onDelete,
 }: {
-  data: BoardItem
+  data: BoardItemUsingInfo
   mode: 'edit' | 'view' | 'move'
   onDelete?: () => void
 }) {
@@ -29,7 +29,7 @@ export default function BoardProductCard({
           {data.categoryName}
         </Text>
         <Text variant="caption1" weight="regular">
-          {data.itemName}
+          {data.productName}
         </Text>
         <Text variant="caption1" weight="bold">
           {data.price.toLocaleString()}원

@@ -42,7 +42,7 @@ export default function ProductCard({
 
       <FlexBox>
         <Text variant="caption1" weight="regular">
-          {data.itemName}
+          {data.productName}
         </Text>
         <Text variant="caption1" weight="bold">
           {data.price.toLocaleString()}원

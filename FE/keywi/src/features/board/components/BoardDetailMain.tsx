@@ -9,12 +9,12 @@ export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
       <Text variant="body2" weight="bold" color="darkKiwi">
         견적 상품 내역
       </Text>
-      {data.items.map((item) => (
-        <BoardProductCard key={item.itemId} data={item} mode="move" />
+      {data.products.map((item) => (
+        <BoardProductCard key={item.productId} data={item} mode="move" />
       ))}
       {/* 게시글 내용 및 사진 */}
       <p className="my-4">{data.content}</p>
-      {data.images.map((item) => (
+      {data.imageUrls.map((item) => (
         <img src={item} />
       ))}
     </div>

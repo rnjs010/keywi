@@ -8,7 +8,7 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import React, { useEffect, useState } from 'react'
 
 const CardContainer = tw.div`
@@ -43,8 +43,8 @@ interface ProductDrawerProps {
   title: string
   children?: React.ReactNode
   trigger: React.ReactNode
-  products?: BoardItem[]
-  onSelectProduct?: (product: BoardItem) => void
+  products?: BoardItemUsingInfo[]
+  onSelectProduct?: (product: BoardItemUsingInfo) => void
 }
 
 export default function ProductModal({
@@ -58,17 +58,19 @@ export default function ProductModal({
 }: ProductDrawerProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
+  const [suggestions, setSuggestions] = useState<BoardItemUsingInfo[]>([])
+  const displayedProducts = searchTerm ? suggestions : products
 
   // 조립자 추천 요청 (특별한 BoardItem 객체 생성)
   const handleRecommendClick = (e: React.MouseEvent) => {
     e.stopPropagation() // 이벤트 버블링 방지
 
     if (onSelectProduct) {
-      const recommendItem: BoardItem = {
+      const recommendItem: BoardItemUsingInfo = {
         categoryId: 0,
         categoryName: title,
-        itemId: -1,
-        itemName: '조립자 추천 요청',
+        productId: 0,
+        productName: '조립자 추천 요청',
         price: 0,
         imageUrl: '',
       }
@@ -130,7 +132,7 @@ export default function ProductModal({
         {/* SECTION - 목록 title, 조립자 추천 버튼 */}
         <div className="flex flex-row justify-between items-center mx-4 py-2 border-b border-[#EEEEEE]">
           <Text variant="caption1" weight="regular" color="darkGray">
-            찜한 목록
+            {searchTerm ? '검색 목록' : '찜한 목록'}
           </Text>
           <div className="flex flex-row items-center gap-1">
             <HelpCircle
@@ -162,10 +164,10 @@ export default function ProductModal({
         </div>
         {/* SECTION - 상품 리스트 */}
         <div className="px-4 py-2 mb-4">
-          {products
-            ? products.map((product) => (
+          {displayedProducts
+            ? displayedProducts.map((product) => (
                 <CardContainer
-                  key={product.itemId}
+                  key={product.productId}
                   onClick={() => onSelectProduct && onSelectProduct(product)}
                 >
                   {product.imageUrl && (
@@ -173,7 +175,7 @@ export default function ProductModal({
                   )}
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
-                      {product.itemName}
+                      {product.productName}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원

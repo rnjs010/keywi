@@ -1,5 +1,9 @@
 import apiRequester from '@/services/api'
-import { BoardCardData, BoardDetailData } from '@/interfaces/BoardInterface'
+import {
+  BoardCardData,
+  BoardDetailData,
+  BoardItemUsingInfo,
+} from '@/interfaces/BoardInterface'
 import { AxiosResponse } from 'axios'
 
 // 게시글 목록 조회 함수
@@ -43,4 +47,38 @@ export interface CreateBoardRequest {
 export const createBoardPost = async (data: CreateBoardRequest) => {
   const response = await apiRequester.post('/api/estimate-boards', data)
   return response.data
+}
+
+// 카테고리별 찜한 상품 조회 함수
+interface FavoriteProductResponse {
+  status: string
+  message: string
+  data: {
+    productId: number
+    categoryId: number
+    categoryName: string
+    productName: string
+    price: number
+    productUrl: string
+    productImage: string
+    manufacturer: string
+    descriptions: string | null
+  }[]
+}
+
+export const getFavoriteProducts = async (
+  categoryId: number,
+): Promise<BoardItemUsingInfo[]> => {
+  const response = await apiRequester.get<FavoriteProductResponse>(
+    `/api/product/favorites?categoryId=${categoryId}`,
+  )
+
+  return response.data.data.map((item) => ({
+    categoryId: item.categoryId,
+    categoryName: item.categoryName,
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    imageUrl: item.productImage,
+  }))
 }

@@ -47,7 +47,7 @@ export default function BoardDetailPage() {
       </ScrollArea>
       <NavBar />
       {/* SECTION - 채팅 버튼 */}
-      {!data.isAuthor && (
+      {!data.author && (
         <div className="w-full px-4 fixed bottom-24">
           <MainButton text="1:1 채팅 하러 가기" />
         </div>

@@ -24,7 +24,7 @@ const SingleInfoBox = tw.span`
 `
 
 export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
-  const badgeData = getBadgeData(data.status)
+  const badgeData = getBadgeData(data.dealState)
 
   return (
     <InfoContent>
@@ -60,7 +60,7 @@ export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
           <SingleInfoBox>
             <IoEyeOutline color={colors.gray} size="1rem" />
             <Text variant="caption1" weight="regular" color="darkGray">
-              {data.viewCount}
+              {data.viewCnt}
             </Text>
           </SingleInfoBox>
         </CurrentInfoBox>
