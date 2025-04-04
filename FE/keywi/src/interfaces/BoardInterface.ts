@@ -6,7 +6,7 @@ export interface BoardCardData {
   title: string
   thumbnailUrl: string
   dealState: string
-  viewCnt: number
+  viewCount: number
   chatCount: number
   createdAt: string
   updatedAt: string
@@ -21,7 +21,7 @@ export interface BoardDetailData {
   dealState: string
   chatCount: number
   bookmarkCount: number
-  viewCnt: number
+  viewCount: number
   createdAt: string
   imageUrls: string[]
   products: BoardItem[]

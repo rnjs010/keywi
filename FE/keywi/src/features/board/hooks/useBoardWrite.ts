@@ -15,17 +15,22 @@ export function useBoardWrite() {
       return
     }
 
-    // selectedProducts에서 categoryId, itemId만 추출
-    const items = Object.values(selectedProducts).map((product) => ({
-      categoryId: product.categoryId,
-      productId: product.productId,
-    }))
+    // 카테고리 ID와 상품 ID 추출
+    const categoryIds: number[] = []
+    const productIds: number[] = []
+
+    Object.values(selectedProducts).forEach((product) => {
+      categoryIds.push(product.categoryId)
+      productIds.push(product.productId)
+    })
 
     const requestData = {
       title,
       content,
+      dealState: 'REQUEST',
+      productIds,
+      categoryIds,
       images,
-      items,
     }
 
     try {

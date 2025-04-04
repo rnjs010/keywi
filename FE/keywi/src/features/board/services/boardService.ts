@@ -41,8 +41,10 @@ export const getBoardDetail = async (
 export interface CreateBoardRequest {
   title: string
   content: string
+  dealState: string
+  productIds: number[]
+  categoryIds: number[]
   images: string[]
-  items: { categoryId: number; productId: number }[]
 }
 
 export const createBoardPost = async (data: CreateBoardRequest) => {

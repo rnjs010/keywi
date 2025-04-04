@@ -60,7 +60,7 @@ export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
           <SingleInfoBox>
             <IoEyeOutline color={colors.gray} size="1rem" />
             <Text variant="caption1" weight="regular" color="darkGray">
-              {data.viewCnt}
+              {data.viewCount}
             </Text>
           </SingleInfoBox>
         </CurrentInfoBox>
