@@ -28,6 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
                 )  // 모든 출처 허용 (실제 운영환경에서는 구체적인 도메인으로 제한하는 것이 좋음)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .allowCredentials(true)
                 .maxAge(3600);
     }
 
