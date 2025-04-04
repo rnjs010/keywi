@@ -14,8 +14,8 @@ public class EstimateBoardDTO {
     public static class CreateRequest {
         private String title;
         private String content;
-        private String thumbnail_url;
-        private String deal_state;
+        private String thumbnailUrl;
+        private String dealState;
         private List<Integer> productIds;
         private List<Integer> categoryIds;
         private List<String> imageUrls;
@@ -28,8 +28,8 @@ public class EstimateBoardDTO {
     public static class UpdateRequest {
         private String title;
         private String content;
-        private String thumbnail_url;
-        private String deal_state;
+        private String thumbnailUrl;
+        private String dealState;
         private List<Integer> productIds;
         private List<Integer> categoryIds;
         private List<String> imageUrls;
@@ -40,16 +40,16 @@ public class EstimateBoardDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ListResponse {
-        private Long board_id;
+        private Long boardId;
         private Long writerId;
         private String authorNickname;
         private String title;
-        private String thumbnail_url;
-        private String deal_state;
-        private int view_cnt;
+        private String thumbnailUrl;
+        private String dealState;
+        private int viewCount;
         private int chatCount;
-        private LocalDateTime created_at;
-        private LocalDateTime updated_at;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Data
@@ -57,15 +57,15 @@ public class EstimateBoardDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DetailResponse {
-        private Long board_id;
+        private Long boardId;           
         private String title;
         private String content;
         private String authorNickname;
-        private String deal_state;
+        private String dealState;       
         private int chatCount;
         private int bookmarkCount;
-        private int view_cnt;
-        private LocalDateTime created_at;
+        private int viewCount;          
+        private LocalDateTime createdAt; 
         private boolean isBookmarked;
         private boolean isAuthor;
         private List<String> imageUrls;
@@ -77,13 +77,13 @@ public class EstimateBoardDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BoardProduct {
-        private Integer category_id;
+        private Integer categoryId;     
         private String categoryName;
-        private Integer product_id;
+        private Integer productId;      
         private String productName;
         private Integer price;
-        private String image_url;
+        private String imageUrl;        
         private String manufacturer;
-        private LocalDateTime created_at;
+        private LocalDateTime createdAt; 
     }
 }

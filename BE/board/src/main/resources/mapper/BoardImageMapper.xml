@@ -5,7 +5,7 @@
 
     <!-- 이미지 기본 컬럼 -->
     <sql id="imageColumns">
-        image_id, board_id, image_url, display_order
+        image_id as imageId, board_id as boardId, image_url as imageUrl, display_order as displayOrder
     </sql>
 
     <!-- 게시글 ID로 이미지 목록 조회 -->
