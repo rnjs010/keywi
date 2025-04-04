@@ -1,20 +1,12 @@
 package com.ssafy.product.common;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * API 응답 메시지를 위한 공통 DTO
  * @param <T> 응답 데이터 타입
  */
 public class WishResponse<T> {
 
-    // Getter 및 Setter 메서드
-    @Setter
-    @Getter
     private String status;    // 상태 (success, error)
-    @Setter
-    @Getter
     private String message;   // 메시지
     private T isFavorite;           // 응답 데이터
 
@@ -29,11 +21,28 @@ public class WishResponse<T> {
         this.isFavorite = isFavorite;
     }
 
-    public T getData() {
+    // Getter 및 Setter 메서드
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getIsFavorite() {
         return isFavorite;
     }
 
-    public void setData(T isFavorite) {
+    public void setIsFavorite(T isFavorite) {
         this.isFavorite = isFavorite;
     }
 

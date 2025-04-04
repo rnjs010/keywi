@@ -10,6 +10,7 @@ import java.util.List;
 public class ProductDto {
     private int productId;
     private int categoryId;
+    private String categoryName;
     private String productName;
     private int price;
     private String productUrl;
