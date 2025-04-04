@@ -32,13 +32,20 @@ public class SearchController {
 
     /**
      * 통합 검색 API
-     * @param requestDto 검색 요청 정보
+     *
      * @return 검색 결과 목록
      */
     @GetMapping
     public ResponseEntity<?> search(
             @RequestParam(defaultValue = "feeds") String tab,
-            @ModelAttribute @Valid SearchRequestDto requestDto) {
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        SearchRequestDto requestDto = new SearchRequestDto();
+        requestDto.setQuery(query);
+        requestDto.setPage(page);
+        requestDto.setSize(size);
 
         Integer userId = 1;
 
