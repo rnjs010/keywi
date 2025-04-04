@@ -19,12 +19,13 @@ public interface WishMapper {
 
     @Select("<script>" +
             "SELECT p.*, " +
-            "(SELECT CASE " +
-            "WHEN c.parent_id IS NOT NULL THEN (SELECT category_name FROM category WHERE category_id = c.parent_id) " +
-            "ELSE c.category_name END " +
-            "FROM category c WHERE c.category_id = w.category_id) AS category_name " +
+            "CASE " +
+            "  WHEN c.parent_id IS NOT NULL THEN (SELECT category_name FROM category WHERE category_id = c.parent_id) " +
+            "  ELSE c.category_name " +
+            "END AS category_name " +
             "FROM products p " +
             "JOIN wishes w ON p.product_id = w.product_id " +
+            "JOIN category c ON w.category_id = c.category_id " +  // 카테고리 테이블 조인 추가
             "WHERE w.user_id = #{userId} " +
             "<if test='categoryId != null'>" +
             "  AND w.category_id IN (" +
@@ -34,4 +35,5 @@ public interface WishMapper {
             "</if>" +
             "</script>")
     List<ProductDto> findUserWishes(@Param("userId") Long userId, @Param("categoryId") Integer categoryId);
+
 }
