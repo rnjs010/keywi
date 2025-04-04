@@ -162,7 +162,7 @@ public class EstimateBoardController {
                 .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
                 .content(request.getContent())
-                .dealState(request.getDeal_state())
+                .dealState(request.getDealState())
                 .build();
 
         // 썸네일 URL 설정 (첫 번째 이미지)
@@ -239,7 +239,7 @@ public class EstimateBoardController {
                 .writerNickname(existingBoard.getWriterNickname())
                 .title(request.getTitle() != null ? request.getTitle() : existingBoard.getTitle())
                 .content(request.getContent() != null ? request.getContent() : existingBoard.getContent())
-                .dealState(request.getDeal_state() != null ? request.getDeal_state() : existingBoard.getDealState())
+                .dealState(request.getDealState() != null ? request.getDealState() : existingBoard.getDealState())
                 .thumbnailUrl(existingBoard.getThumbnailUrl())
                 .viewCount(existingBoard.getViewCount())
                 .build();
@@ -335,14 +335,14 @@ public class EstimateBoardController {
 
         List<EstimateBoardDTO.ListResponse> responseList = boards.stream()
                 .map(board -> EstimateBoardDTO.ListResponse.builder()
-                        .board_id(board.getBoardId())
+                        .boardId(board.getBoardId())
                         .title(board.getTitle())
-                        .thumbnail_url(board.getThumbnailUrl())
+                        .thumbnailUrl(board.getThumbnailUrl())
                         .authorNickname(board.getWriterNickname())
-                        .deal_state(board.getDealState())
-                        .view_cnt(board.getViewCount())
-                        .created_at(board.getCreatedAt())
-                        .updated_at(board.getUpdatedAt())
+                        .dealState(board.getDealState())
+                        .viewCount(board.getViewCount())
+                        .createdAt(board.getCreatedAt())
+                        .updatedAt(board.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList());
 
@@ -377,14 +377,14 @@ public class EstimateBoardController {
 
         List<EstimateBoardDTO.ListResponse> responseList = boards.stream()
                 .map(board -> EstimateBoardDTO.ListResponse.builder()
-                        .board_id(board.getBoardId())
+                        .boardId(board.getBoardId())
                         .title(board.getTitle())
-                        .thumbnail_url(board.getThumbnailUrl())
+                        .thumbnailUrl(board.getThumbnailUrl())
                         .authorNickname(board.getWriterNickname())
-                        .deal_state(board.getDealState())
-                        .view_cnt(board.getViewCount())
-                        .created_at(board.getCreatedAt())
-                        .updated_at(board.getUpdatedAt())
+                        .dealState(board.getDealState())
+                        .viewCount(board.getViewCount())
+                        .createdAt(board.getCreatedAt())
+                        .updatedAt(board.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList());
 
