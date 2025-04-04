@@ -1,4 +1,4 @@
-package com.ssafy.search.products.repository;
+package com.ssafy.search.feed.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -6,7 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.ssafy.search.products.document.ProductDocument;
+import com.ssafy.search.feed.document.FeedProductDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -25,7 +25,7 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
     private static final String INDEX = "products";
 
     @Override
-    public List<ProductDocument> searchByProductName(String keyword, int size) {
+    public List<FeedProductDocument> searchByProductName(String keyword) {
         try {
             Query query = Query.of(q -> q
                     .multiMatch(m -> m
@@ -35,11 +35,10 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
                     )
             );
 
-            SearchResponse<ProductDocument> response = esClient.search(s -> s
+            SearchResponse<FeedProductDocument> response = esClient.search(s -> s
                             .index(INDEX)
-                            .query(query)
-                            .size(size),
-                    ProductDocument.class
+                            .query(query),
+                    FeedProductDocument.class
             );
 
             return response.hits().hits().stream()
@@ -56,7 +55,7 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
 
 
     @Override
-    public List<ProductDocument> search(String keyword, int size, String sort) {
+    public List<FeedProductDocument> search(String keyword, String sort) {
         try {
             Query query = Query.of(q -> q
                     .multiMatch(m -> m
@@ -68,8 +67,8 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
                     )
             );
 
-            SearchResponse<ProductDocument> response = esClient.search(s -> {
-                var builder = s.index(INDEX).query(query).size(size);
+            SearchResponse<FeedProductDocument> response = esClient.search(s -> {
+                var builder = s.index(INDEX).query(query);
 
                 return switch (sort) {
                     case "popular" -> builder.sort(sortBuilder ->
@@ -81,7 +80,7 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
                     default -> builder.sort(sortBuilder ->
                             sortBuilder.field(f -> f.field("_score").order(SortOrder.Desc)));
                 };
-            }, ProductDocument.class);
+            }, FeedProductDocument.class);
 
             return response.hits().hits().stream()
                     .map(Hit::source)
@@ -107,7 +106,7 @@ public class FeedProductSearchRepositoryImpl implements FeedProductSearchReposit
                                             .source("ctx._source.searchCount = (ctx._source.searchCount ?: 0) + 1")
                                     )
                             ),
-                    ProductDocument.class);
+                    FeedProductDocument.class);
         } catch (IOException e) {
             log.error("searchCount 증가 실패: productId = {}, error = {}", productId, e.getMessage(), e);
         }

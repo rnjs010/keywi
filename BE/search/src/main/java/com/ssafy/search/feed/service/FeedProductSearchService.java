@@ -1,11 +1,11 @@
-package com.ssafy.search.products.service;
+package com.ssafy.search.feed.service;
 
-import com.ssafy.search.products.dto.FeedProductSearchResponse;
+import com.ssafy.search.feed.dto.FeedProductSearchResponse;
 
 import java.util.List;
 
 public interface FeedProductSearchService {
-    List<FeedProductSearchResponse> autocomplete(String keyword, int size);
+    List<FeedProductSearchResponse> autocomplete(String keyword);
 
-    List<FeedProductSearchResponse> search(String keyword, int size, String sort);
+    List<FeedProductSearchResponse> search(String keyword, String sort);
 }

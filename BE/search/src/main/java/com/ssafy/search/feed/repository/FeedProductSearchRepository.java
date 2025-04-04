@@ -1,12 +1,12 @@
-package com.ssafy.search.products.repository;
+package com.ssafy.search.feed.repository;
 
-import com.ssafy.search.products.document.ProductDocument;
+import com.ssafy.search.feed.document.FeedProductDocument;
 
 import java.util.List;
 
 public interface FeedProductSearchRepository {
-    List<ProductDocument> searchByProductName(String keyword, int size);
-    List<ProductDocument> search(String keyword, int size, String sort);
+    List<FeedProductDocument> searchByProductName(String keyword);
+    List<FeedProductDocument> search(String keyword, String sort);
     void increaseSearchCount(Integer productId);
 
 }

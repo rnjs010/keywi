@@ -1,4 +1,4 @@
-package com.ssafy.search.products.dto;
+package com.ssafy.search.feed.dto;
 
 import lombok.*;
 

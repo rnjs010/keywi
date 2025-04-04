@@ -18,7 +18,7 @@ import java.time.Instant;
 @Document(indexName = "products")
 @Setting(settingPath = "elasticsearch-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProductDocument {
+public class FeedProductDocument {
 
     @Id
     private Integer productId;

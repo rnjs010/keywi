@@ -1,8 +1,8 @@
-package com.ssafy.search.products.service;
+package com.ssafy.search.feed.service;
 
-import com.ssafy.search.products.document.ProductDocument;
-import com.ssafy.search.products.dto.FeedProductSearchResponse;
-import com.ssafy.search.products.repository.FeedProductSearchRepository;
+import com.ssafy.search.feed.document.FeedProductDocument;
+import com.ssafy.search.feed.dto.FeedProductSearchResponse;
+import com.ssafy.search.feed.repository.FeedProductSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,15 @@ public class FeedProductSearchServiceImpl implements FeedProductSearchService {
     private final FeedProductSearchRepository searchRepository;
 
     @Override
-    public List<FeedProductSearchResponse> autocomplete(String keyword, int size) {
-        return searchRepository.searchByProductName(keyword, size).stream()
+    public List<FeedProductSearchResponse> autocomplete(String keyword) {
+        return searchRepository.searchByProductName(keyword).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<FeedProductSearchResponse> search(String keyword, int size, String sort) {
-        List<ProductDocument> results = searchRepository.search(keyword, size, sort);
+    public List<FeedProductSearchResponse> search(String keyword, String sort) {
+        List<FeedProductDocument> results = searchRepository.search(keyword, sort);
 
         // 인기순 정렬일 때는 증가시키지 않음
         if (!"popular".equals(sort)) {
@@ -39,7 +39,7 @@ public class FeedProductSearchServiceImpl implements FeedProductSearchService {
     }
 
 
-    private FeedProductSearchResponse convertToDto(ProductDocument doc) {
+    private FeedProductSearchResponse convertToDto(FeedProductDocument doc) {
         return FeedProductSearchResponse.builder()
                 .productId(doc.getProductId())
                 .productName(doc.getProductName())
