@@ -7,6 +7,7 @@ import { ChatBubbleSolid } from 'iconoir-react'
 import { Link } from 'react-router-dom'
 import { BoardCardData } from '@/interfaces/BoardInterface'
 import truncateText from '@/utils/truncateText'
+import { formatDateTime } from '@/utils/formatDateTime'
 
 const CardContainer = tw.div`
   flex flex-col justify-between items-start py-4 border-b border-[#EEEEEE]
@@ -62,7 +63,7 @@ export default function BoardCard({
             {/* 닉네임, 날짜 */}
             <div className="mt-1">
               <Text variant="caption2" weight="regular" color="gray">
-                {authorNickname} · {createdAt}
+                {authorNickname} · {formatDateTime(createdAt)}
               </Text>
             </div>
           </div>

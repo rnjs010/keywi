@@ -6,6 +6,7 @@ import tw from 'twin.macro'
 import { ChatBubbleSolid, Bookmark } from 'iconoir-react'
 import { IoEyeOutline } from 'react-icons/io5'
 import { BoardDetailData } from '@/interfaces/BoardInterface'
+import { formatDateTime } from '@/utils/formatDateTime'
 
 const InfoContent = tw.div`
   pt-2 pb-4 border-b border-b-[#EEEEEE]
@@ -34,7 +35,7 @@ export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
       </Text>
       <div>
         <Text variant="caption1" weight="regular" color="gray">
-          {data.authorNickname} · {data.createdAt}
+          {data.authorNickname} · {formatDateTime(data.createdAt)}
         </Text>
       </div>
       {/* 상태, 채팅, 북마크, 조회수 */}
