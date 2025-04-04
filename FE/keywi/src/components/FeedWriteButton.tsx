@@ -1,4 +1,5 @@
 //SECTION - 피드 작성 버튼 : 피드 작성 페이지로 이동
+import useImageStore from '@/stores/homeStore'
 import { Plus } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
@@ -24,8 +25,10 @@ const RoundBtn = tw.button`
 
 export default function FeedWriteButton() {
   const navigate = useNavigate()
+  const { reset } = useImageStore()
 
   const handleButtonClick = () => {
+    reset() // 이미지 스토어 리셋
     navigate('/home/imgselect')
   }
 

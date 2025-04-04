@@ -144,3 +144,39 @@ export interface TagPointAndInfoProps {
   onDragStart: (e: React.MouseEvent<HTMLDivElement>, tag: ProductTag) => void
   onTouchStart: (e: React.TouchEvent<HTMLDivElement>, tag: ProductTag) => void
 }
+
+// 피드 작성
+export interface CreateFeedDTO {
+  content: string
+  products: ProductPosition[]
+  hashtags: string[]
+}
+
+// 상품 태그 위치
+export interface ProductPosition {
+  productId: number
+  imageOrder: number
+  positionX: number
+  positionY: number
+  productName?: string
+}
+
+// 상품 찜 목록
+export interface FavoriteProduct {
+  productId: number
+  categoryId: number
+  productName: string
+  price: number
+  productUrl: string
+  productImage: string
+  manufacturer: string
+  descriptions: string | null
+}
+
+// 검색 상품 목록
+export interface FeedSearchProduct {
+  productId: number
+  productName: string
+  imageUrl: string
+  price: number
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
+import useImageStore from '@/stores/homeStore'
 
 const Container = tw.div`
   w-full
@@ -52,11 +53,11 @@ interface WriteTextProps {
 }
 
 export default function WriteText({ onTextChange }: WriteTextProps) {
-  const [text, setText] = useState('')
+  const { content, setContent, hashtags, setHashtags } = useImageStore()
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   // 샘플 해시태그 목록 - 실제 구현 시 API로 받아오기
-  const hashTags = [
+  const recommendedTags = [
     '데스크테리어',
     '소음윤활',
     '오피스',
@@ -68,32 +69,36 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
     '화이트테리어',
   ]
 
+  useEffect(() => {
+    setSelectedTags(hashtags)
+  }, [hashtags])
+
   // 해시태그 클릭 핸들러
   const handleTagClick = (tag: string) => {
+    let newTags: string[]
     if (selectedTags.includes(tag)) {
       // 이미 선택된 태그면 제거
-      setSelectedTags(selectedTags.filter((t) => t !== tag))
+      newTags = selectedTags.filter((t) => t !== tag)
     } else {
       // 선택되지 않은 태그면 추가
-      setSelectedTags([...selectedTags, tag])
+      newTags = [...selectedTags, tag]
     }
+    setSelectedTags(newTags)
+    setHashtags(newTags)
   }
 
   // 텍스트 변경 핸들러
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value)
+    const newContent = e.target.value
+    setContent(newContent)
+    onTextChange(newContent)
   }
-
-  // 텍스트 변경 시 부모 컴포넌트에 알림
-  useEffect(() => {
-    onTextChange(text)
-  }, [text, onTextChange])
 
   return (
     <Container>
       <TextArea
         placeholder="나만의 키보드와 스타일을 자랑해보세요..."
-        value={text}
+        value={content}
         onChange={handleTextChange}
       />
 
@@ -118,7 +123,7 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
 
       {/* 해시태그 버튼 */}
       <HashTagContainer>
-        {hashTags.map((tag) => (
+        {recommendedTags.map((tag) => (
           <HashTagButton
             key={tag}
             onClick={() => handleTagClick(tag)}

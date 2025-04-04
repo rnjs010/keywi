@@ -8,8 +8,8 @@ import {
   dummyComments,
   dummyFeeds,
 } from '@/features/home/services/homeDummyData'
-import CommentInput from '@/features/home/components/CommentInput'
-import CommentList from '@/features/home/components/CommentList'
+import CommentInput from '@/features/home/components/comment/CommentInput'
+import CommentList from '@/features/home/components/comment/CommentList'
 
 const Container = tw.div`
   w-full 

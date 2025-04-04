@@ -16,7 +16,7 @@ export default function useProductTag() {
   const handleSelectProduct = (product: ProductItem) => {
     // 중앙에 새 태그 추가
     const newTag: ProductTag = {
-      id: Date.now(),
+      id: product.itemId,
       name: product.itemName,
       price: `${product.price.toLocaleString()}원`,
       x: 50, // 중앙에 위치
@@ -32,7 +32,7 @@ export default function useProductTag() {
   const handleWriteProduct = (productName: string) => {
     // 중앙에 새 태그 추가
     const newTag: ProductTag = {
-      id: Date.now(),
+      id: -1,
       name: productName,
       price: '-원', // 가격 없이 "-원"으로 표시
       x: 50, // 중앙에 위치

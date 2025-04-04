@@ -3,7 +3,7 @@ import useImageStore from '@/stores/homeStore'
 import { useState, useRef, useEffect } from 'react'
 
 export default function useImageDragDrop(maxImages: number = 5) {
-  const { images, setImages } = useImageStore()
+  const { images, imageFiles, setImages, setImageFiles } = useImageStore()
   const [showLimitWarning, setShowLimitWarning] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -45,6 +45,7 @@ export default function useImageDragDrop(maxImages: number = 5) {
     if (!files) return
 
     const newImages: string[] = []
+    const newFiles: File[] = []
 
     // 최대 이미지까지 제한
     const filesToProcess = Math.min(files.length, maxImages - images.length)
@@ -57,6 +58,8 @@ export default function useImageDragDrop(maxImages: number = 5) {
     // 최대 이미지까지 제한
     for (let i = 0; i < filesToProcess; i++) {
       const file = files[i]
+      newFiles.push(file)
+
       const reader = new FileReader()
 
       reader.onloadend = () => {
@@ -66,7 +69,9 @@ export default function useImageDragDrop(maxImages: number = 5) {
         // 모든 이미지 로드 완료시 상태 업데이트 (zustand 스토어)
         if (processedCount === filesToProcess) {
           const updatedImages = [...images, ...newImages]
+          const updatedFiles = [...imageFiles, ...newFiles]
           setImages(updatedImages) // Zustand 스토어 업데이트
+          setImageFiles(updatedFiles)
         }
       }
 
@@ -82,24 +87,36 @@ export default function useImageDragDrop(maxImages: number = 5) {
   // 이미지 제거 핸들러
   const removeImage = (indexToRemove: number) => {
     const updatedImages = images.filter((_, index) => index !== indexToRemove)
+    const updatedFiles = imageFiles.filter(
+      (_, index) => index !== indexToRemove,
+    )
     setImages(updatedImages) // Zustand 스토어 업데이트
+    setImageFiles(updatedFiles)
     setShowLimitWarning(false)
   }
 
   // 이미지 순서 변경 핸들러
   const moveImage = (dragIndex: number, hoverIndex: number) => {
+    // 이미지 미리보기 URL 순서 변경
     const newImages = [...images]
     const draggedImage = newImages[dragIndex]
-
     newImages.splice(dragIndex, 1)
     newImages.splice(hoverIndex, 0, draggedImage)
 
+    // 이미지 파일 순서도 동일하게 변경
+    const newFiles = [...imageFiles]
+    const draggedFile = newFiles[dragIndex]
+    newFiles.splice(dragIndex, 1)
+    newFiles.splice(hoverIndex, 0, draggedFile)
+
     setImages(newImages) // Zustand 스토어 업데이트
+    setImageFiles(newFiles)
   }
 
   return {
     images,
     setImages,
+    imageFiles,
     showLimitWarning,
     fileInputRef,
     isMobile,
