@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.keywordRanking.mapper.KeywordRankMapper">
+<mapper namespace="com.ssafy.search.keywordRanking.mapper.KeywordRankMapper">
 
     <!-- 배치 결과 저장 -->
     <insert id="insertKeywordRanks">
@@ -15,7 +15,7 @@
     </insert>
 
     <!-- 이전 랭킹 조회 -->
-    <select id="selectRanksByTime" resultType="com.ssafy.keywordRanking.dto.KeywordRankDto">
+    <select id="selectRanksByTime" resultType="com.ssafy.search.keywordRanking.dto.KeywordRankDto">
         SELECT time_block, keyword, ranking, change_status
         FROM keyword_rank
         WHERE time_block = #{timeBlock}
