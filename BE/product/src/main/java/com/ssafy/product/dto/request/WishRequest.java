@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class WishRequest {
     private Integer productId;
-    private Integer categoryId;
 }

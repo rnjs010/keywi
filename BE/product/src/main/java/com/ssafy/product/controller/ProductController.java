@@ -95,7 +95,7 @@ public class ProductController {
     public ApiResponse<Boolean> addFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
-        boolean isFavorite = wishService.addWish(userId, request.getProductId(), request.getCategoryId());
+        boolean isFavorite = wishService.addWish(userId, request.getProductId());
         return ApiResponse.success("찜 상태 변경 성공", isFavorite);
     }
 

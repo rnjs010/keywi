@@ -39,4 +39,6 @@ public interface ProductMapper {
             "</script>")
     List<ProductDto> findProductsByIds(@Param("productIds") List<Integer> productIds);
 
+    @Select("SELECT category_id FROM products WHERE product_id = #{productId}")
+    Integer findCategoryIdByProductId(@Param("productId") Integer productId);
 }
