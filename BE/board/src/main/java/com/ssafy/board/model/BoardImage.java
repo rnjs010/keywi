@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardImage {
 
-    private Long imageId;       // 이미지 ID (PK)
-    private Long boardId;       // 게시글 ID (FK)
+    private Long imageId;       // 이미지 ID
+    private Long boardId;       // 게시글 ID
     private String imageUrl;    // 이미지 URL
     private int displayOrder;   // 이미지 표시 순서
 }

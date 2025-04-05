@@ -1,10 +1,10 @@
 package com.ssafy.board.controller;
 
 import com.ssafy.board.common.ApiResponse;
-import com.ssafy.board.dto.BoardImageDTO;
 import com.ssafy.board.dto.EstimateBoardDTO;
 import com.ssafy.board.model.EstimateBoard;
 import com.ssafy.board.service.EstimateBoardService;
+import com.ssafy.board.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * 견적 게시판 컨트롤러
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/estimate-boards")
@@ -29,6 +27,7 @@ import java.util.stream.Collectors;
 public class EstimateBoardController {
 
     private final EstimateBoardService estimateBoardService;
+    private final FileUploadService fileUploadService;
 
     /**
      * 현재 인증된 사용자의 ID를 가져오는 헬퍼 메서드
@@ -62,20 +61,6 @@ public class EstimateBoardController {
 
         Optional<EstimateBoard> boardOptional = estimateBoardService.getEstimateBoardById(boardId);
         return boardOptional.isPresent() && boardOptional.get().getWriterId().equals(currentUserId);
-    }
-
-    /**
-     * 날짜를 지정된 형식으로 포맷하는 헬퍼 메서드
-     * @param dateTime 포맷할 날짜시간
-     * @return 형식화된 날짜 문자열
-     */
-    private String formatDate(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        // yyyy.MM.dd 형식으로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd'T'HH:mm:ss");
-        return dateTime.format(formatter);
     }
 
     /**
@@ -123,7 +108,6 @@ public class EstimateBoardController {
             HttpServletRequest request) {
 
         Long userId = getCurrentUserId(request);
-        // 프론트엔드 요구 형식으로 게시글 상세 정보 조회
         EstimateBoardDTO.DetailResponse boardDetails = estimateBoardService.getBoardDetails(boardId, userId);
 
         if (boardDetails == null) {
@@ -162,27 +146,12 @@ public class EstimateBoardController {
                 .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
                 .content(request.getContent())
-                .dealState(request.getDealState())
+                .dealState("REQUEST")
                 .build();
-
-        // 썸네일 URL 설정 (첫 번째 이미지)
-        if (images != null && !images.isEmpty()) {
-            // 임시 코드: 실제 구현 필요
-            String thumbnailUrl = "https://example.com/images/" + images.get(0).getOriginalFilename();
-            estimateBoard.setThumbnailUrl(thumbnailUrl);
-        }
 
         // 게시글 저장
         EstimateBoard savedBoard = estimateBoardService.createEstimateBoard(estimateBoard, images, productIds, categoryIds);
         log.info("새 게시글이 등록되었습니다. 게시글 ID: {}, 작성자 ID: {}", savedBoard.getBoardId(), currentUserId);
-
-        // 프론트엔드 요구 형식으로 상세 정보 조회
-        EstimateBoardDTO.DetailResponse response = estimateBoardService.getBoardDetails(savedBoard.getBoardId(), currentUserId);
-
-        if (response == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("게시글 저장 후 조회 중 오류가 발생했습니다."));
-        }
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("게시글이 성공적으로 등록되었습니다.", null));
@@ -399,7 +368,7 @@ public class EstimateBoardController {
      * @return 변경된 게시글 정보
      */
     @PatchMapping("/{boardId}/state")
-    public ResponseEntity<ApiResponse<EstimateBoardDTO.DetailResponse>> updateDealState(
+    public ResponseEntity<ApiResponse<Object>> updateDealState(
             @PathVariable Long boardId,
             @RequestParam String dealState,
             HttpServletRequest request) {
@@ -438,14 +407,9 @@ public class EstimateBoardController {
 
         log.info("게시글 상태가 변경되었습니다. 게시글 ID: {}, 새 상태: {}", boardId, dealState);
 
-        // 프론트엔드 요구 형식으로 상세 정보 조회
-        EstimateBoardDTO.DetailResponse response = estimateBoardService.getBoardDetails(updatedBoard.getBoardId(), currentUserId);
-
-        if (response == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("게시글 상태 변경 후 조회 중 오류가 발생했습니다."));
-        }
-
-        return ResponseEntity.ok(ApiResponse.success("게시글 상태가 성공적으로 변경되었습니다.", response));
+        return ResponseEntity.ok(ApiResponse.success(
+                "게시글 상태가 성공적으로 변경되었습니다.",
+                Collections.singletonMap("dealState", dealState)
+        ));
     }
 }
