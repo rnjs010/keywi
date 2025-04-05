@@ -6,6 +6,7 @@ import { Xmark } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useBoardProductStore } from '@/stores/boardStore'
+import { useBoardWrite } from '@/features/board/hooks/useBoardWrite'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -19,8 +20,7 @@ export default function BoardWritePage() {
   const title = useBoardProductStore((state) => state.title)
   const content = useBoardProductStore((state) => state.content)
   const resetState = useBoardProductStore((state) => state.resetState)
-
-  // 화면 상태 관리
+  const { submitBoard, isLoading, error } = useBoardWrite()
   const [currentScreen, setCurrentScreen] = useState<'first' | 'second'>(
     'first',
   )
@@ -34,10 +34,11 @@ export default function BoardWritePage() {
   // 글 작성 완료
   const isCompleteEnabled = title.trim().length > 0 && content.trim().length > 0
 
-  const handleCompleteForm = () => {
-    console.log('Title:', title)
-    console.log('Content:', content)
-    handleClose()
+  const handleCompleteForm = async () => {
+    const success = await submitBoard()
+    if (success) {
+      navigate('/board')
+    }
   }
 
   return (
@@ -58,11 +59,13 @@ export default function BoardWritePage() {
               onClick={isCompleteEnabled ? handleCompleteForm : undefined}
               className={`cursor-${isCompleteEnabled ? 'pointer' : 'not-allowed'}`}
             >
-              완료
+              {isLoading ? '등록 중...' : '완료'}
             </Text>
           </div>
         )}
       </HeaderContainer>
+
+      {error && <p className="px-4 text-red-500">{error}</p>}
 
       {/* 화면 상태에 따라 컴포넌트 렌더링 */}
       {currentScreen === 'first' && (

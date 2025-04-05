@@ -74,7 +74,7 @@ export default function ProductSearchModal({
           {products
             ? products.map((product) => (
                 <CardContainer
-                  key={product.itemId}
+                  key={product.productId}
                   onClick={() => onSelectProduct && onSelectProduct(product)}
                 >
                   {product.imageUrl && (
@@ -82,7 +82,7 @@ export default function ProductSearchModal({
                   )}
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
-                      {product.itemName}
+                      {product.productName}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원

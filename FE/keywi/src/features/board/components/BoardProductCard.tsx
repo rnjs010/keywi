@@ -2,7 +2,8 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { NavArrowRight, Xmark } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
+import truncateText from '@/utils/truncateText'
 
 const CardContainer = tw.div`
   flex items-center content-center justify-between bg-pay pl-4 py-3 pr-1 rounded-lg my-0.5
@@ -17,7 +18,7 @@ export default function BoardProductCard({
   mode,
   onDelete,
 }: {
-  data: BoardItem
+  data: BoardItemUsingInfo
   mode: 'edit' | 'view' | 'move'
   onDelete?: () => void
 }) {
@@ -29,10 +30,10 @@ export default function BoardProductCard({
           {data.categoryName}
         </Text>
         <Text variant="caption1" weight="regular">
-          {data.itemName}
+          {truncateText(data.productName, 25)}
         </Text>
         <Text variant="caption1" weight="bold">
-          {data.price.toLocaleString()}원
+          {data.price === 0 ? '-원' : `${data.price.toLocaleString()}원`}
         </Text>
       </div>
 
@@ -41,7 +42,9 @@ export default function BoardProductCard({
         {data.imageUrl && (
           <ThumbnailImage src={data.imageUrl} alt="thumbnail" />
         )}
-        {mode === 'move' && <NavArrowRight color={colors.darkKiwi} />}
+        {mode === 'move' && data.productId !== 0 && (
+          <NavArrowRight color={colors.darkKiwi} />
+        )}
         {mode === 'edit' && (
           <div
             onClick={(e) => {

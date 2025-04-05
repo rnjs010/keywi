@@ -8,8 +8,11 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import React, { useEffect, useState } from 'react'
+import { useProductSearch } from '../hooks/useProductSearch'
+import truncateText from '@/utils/truncateText'
+import highlightSearchTerm from '@/utils/highlightSearchTerm'
 
 const CardContainer = tw.div`
   flex items-center gap-3 cursor-pointer my-2 pb-2
@@ -40,16 +43,18 @@ const Tooltip = tw.div`
 interface ProductDrawerProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  categoryId: number
   title: string
   children?: React.ReactNode
   trigger: React.ReactNode
-  products?: BoardItem[]
-  onSelectProduct?: (product: BoardItem) => void
+  products?: BoardItemUsingInfo[]
+  onSelectProduct?: (product: BoardItemUsingInfo) => void
 }
 
 export default function ProductModal({
   isOpen,
   onOpenChange,
+  categoryId,
   title,
   children,
   trigger,
@@ -58,17 +63,31 @@ export default function ProductModal({
 }: ProductDrawerProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
+  const { data: searchResults } = useProductSearch(
+    categoryId,
+    searchTerm,
+    isOpen, // 모달 열려있을 때만 요청
+  )
+  const [suggestions, setSuggestions] = useState<BoardItemUsingInfo[]>([])
+  const displayedProducts = searchTerm ? suggestions : products
+
+  // 검색 결과 업데이트
+  useEffect(() => {
+    if (searchResults) {
+      setSuggestions(searchResults)
+    }
+  }, [searchResults])
 
   // 조립자 추천 요청 (특별한 BoardItem 객체 생성)
   const handleRecommendClick = (e: React.MouseEvent) => {
     e.stopPropagation() // 이벤트 버블링 방지
 
     if (onSelectProduct) {
-      const recommendItem: BoardItem = {
-        categoryId: 0,
+      const recommendItem: BoardItemUsingInfo = {
+        categoryId: categoryId,
         categoryName: title,
-        itemId: -1,
-        itemName: '조립자 추천 요청',
+        productId: 0,
+        productName: '조립자 추천 요청',
         price: 0,
         imageUrl: '',
       }
@@ -130,7 +149,7 @@ export default function ProductModal({
         {/* SECTION - 목록 title, 조립자 추천 버튼 */}
         <div className="flex flex-row justify-between items-center mx-4 py-2 border-b border-[#EEEEEE]">
           <Text variant="caption1" weight="regular" color="darkGray">
-            찜한 목록
+            {searchTerm ? '검색 목록' : '찜한 목록'}
           </Text>
           <div className="flex flex-row items-center gap-1">
             <HelpCircle
@@ -162,10 +181,10 @@ export default function ProductModal({
         </div>
         {/* SECTION - 상품 리스트 */}
         <div className="px-4 py-2 mb-4">
-          {products
-            ? products.map((product) => (
+          {displayedProducts
+            ? displayedProducts.map((product) => (
                 <CardContainer
-                  key={product.itemId}
+                  key={product.productId}
                   onClick={() => onSelectProduct && onSelectProduct(product)}
                 >
                   {product.imageUrl && (
@@ -173,7 +192,10 @@ export default function ProductModal({
                   )}
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
-                      {product.itemName}
+                      {highlightSearchTerm(
+                        truncateText(product.productName, 30),
+                        searchTerm,
+                      )}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원
