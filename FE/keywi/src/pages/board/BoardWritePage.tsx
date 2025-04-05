@@ -65,7 +65,7 @@ export default function BoardWritePage() {
         )}
       </HeaderContainer>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="px-4 text-red-500">{error}</p>}
 
       {/* 화면 상태에 따라 컴포넌트 렌더링 */}
       {currentScreen === 'first' && (

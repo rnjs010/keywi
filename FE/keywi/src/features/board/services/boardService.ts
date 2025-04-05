@@ -38,16 +38,7 @@ export const getBoardDetail = async (
 }
 
 // 게시글 생성 함수
-export interface CreateBoardRequest {
-  title: string
-  content: string
-  dealState: string
-  productIds: number[]
-  categoryIds: number[]
-  images: string[]
-}
-
-export const createBoardPost = async (data: CreateBoardRequest) => {
+export const createBoardPost = async (data: FormData) => {
   const response = await apiRequester.post('/api/estimate-boards', data)
   return response.data
 }
@@ -103,13 +94,11 @@ export const searchProducts = async (
   query: string,
 ): Promise<BoardItemUsingInfo[]> => {
   const response = await apiRequester.get<ProductSearchResponse[]>(
-    '/api/board/products/search',
+    '/api/search/board/products/search',
     {
       params: {
         categoryId,
         query,
-        page: 0,
-        size: 10,
       },
     },
   )

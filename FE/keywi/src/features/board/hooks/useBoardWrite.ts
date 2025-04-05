@@ -24,27 +24,24 @@ export function useBoardWrite() {
       productIds.push(product.productId)
     })
 
-    const requestData = {
-      title,
-      content,
-      dealState: 'REQUEST',
-      productIds,
-      categoryIds,
-      images,
-    }
+    // formData 생성 (multipart/form-data 형식으로 데이터를 전송할 때 사용)
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('content', content)
+    categoryIds.forEach((id) => formData.append('categoryIds', id.toString()))
+    productIds.forEach((id) => formData.append('productIds', id.toString()))
+    images.forEach((file) => formData.append('images', file)) // File[]
 
     try {
       setIsLoading(true)
       setError(null)
 
-      console.log('📦 게시글 작성 requestData:', requestData)
-
-      await createBoardPost(requestData)
+      await createBoardPost(formData)
       resetState()
-      return true // 성공
+      return true
     } catch (err) {
       setError('게시글 등록에 실패했습니다.')
-      return false // 실패
+      return false
     } finally {
       setIsLoading(false)
     }

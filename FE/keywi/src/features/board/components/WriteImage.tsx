@@ -52,24 +52,8 @@ export default function WriteImage() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (files) {
-      const newImages: string[] = []
-
-      // 최대 5개 이미지까지 제한
-      for (let i = 0; i < Math.min(files.length, 5 - images.length); i++) {
-        const file = files[i]
-        const reader = new FileReader()
-
-        reader.onloadend = () => {
-          newImages.push(reader.result as string)
-
-          // 모든 이미지 로드 완료 시 상태 업데이트
-          if (newImages.length === files.length) {
-            setImages([...images, ...newImages])
-          }
-        }
-
-        reader.readAsDataURL(file)
-      }
+      const selectedFiles = Array.from(files).slice(0, 5 - images.length)
+      setImages([...images, ...selectedFiles])
     }
   }
 
@@ -100,7 +84,7 @@ export default function WriteImage() {
           {images.map((image, index) => (
             <ImagePreviewContainer key={index}>
               <img
-                src={image}
+                src={URL.createObjectURL(image)}
                 alt={`uploaded-${index}`}
                 className="w-full h-full object-cover rounded-md"
               />

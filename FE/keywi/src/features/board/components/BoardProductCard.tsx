@@ -30,7 +30,7 @@ export default function BoardProductCard({
           {data.categoryName}
         </Text>
         <Text variant="caption1" weight="regular">
-          {truncateText(data.productName, 20)}
+          {truncateText(data.productName, 25)}
         </Text>
         <Text variant="caption1" weight="bold">
           {data.price.toLocaleString()}원

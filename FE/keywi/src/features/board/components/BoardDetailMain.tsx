@@ -15,7 +15,7 @@ export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
       {/* 게시글 내용 및 사진 */}
       <p className="my-4">{data.content}</p>
       {data.imageUrls.map((item) => (
-        <img src={item} />
+        <img src={item} className="my-2" />
       ))}
     </div>
   )

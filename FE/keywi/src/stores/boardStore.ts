@@ -6,7 +6,7 @@ interface BoardProductStore {
   selectedProducts: Record<string, BoardItemUsingInfo> // key가 카테고리 이름, value가 BoardItem(상품 정보)
   title: string
   content: string
-  images: string[]
+  images: File[]
   setFavoriteProducts: (
     categoryName: string,
     products: BoardItemUsingInfo[],
@@ -14,7 +14,7 @@ interface BoardProductStore {
   setSelectedProducts: (products: Record<string, BoardItemUsingInfo>) => void
   setTitle: (title: string) => void
   setContent: (content: string) => void
-  setImages: (images: string[]) => void
+  setImages: (images: File[]) => void
   resetState: () => void
 }
 
