@@ -4,6 +4,8 @@ import com.ssafy.product.common.ApiResponse;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.dto.request.ProductIdRequest;
 import com.ssafy.product.dto.request.WishRequest;
+import com.ssafy.product.mapper.CategoryMapper;
+import com.ssafy.product.mapper.ProductMapper;
 import com.ssafy.product.service.ProductService;
 import com.ssafy.product.service.WishService;
 import com.ssafy.product.util.SortUtil;
@@ -39,6 +41,37 @@ public class ProductController {
         List<ProductDto> products = productService.getProductsByCategory(categoryId);
         SortUtil.sortProducts(products, sortBy, sortOrder);
         return ApiResponse.success("카테고리별 상품 조회 성공", products);
+    }
+
+    private final CategoryMapper categoryMapper;
+    private final ProductMapper productMapper;
+    // 단일 조회
+    @GetMapping("/item")
+    public ApiResponse<ProductDto> getProduct(
+            @RequestParam int productId,
+            @RequestParam int categoryId) {
+
+        String categoryName = categoryMapper.findCategoryName(categoryId);
+
+        if (productId == 0) {
+            // 조립자 추천 요청
+            ProductDto recommended = new ProductDto();
+            recommended.setProductId(0);
+            recommended.setProductName("조립자 추천 요청");
+            recommended.setCategoryId(categoryId);
+            recommended.setPrice(0);
+            recommended.setProductUrl(null);
+            recommended.setProductImage(null);
+            recommended.setManufacturer(null);
+            recommended.setDescriptions(null);
+            recommended.setCategoryName(categoryName);
+
+            return ApiResponse.success("추천 요청", recommended);
+        } else {
+            ProductDto product = productMapper.findProductById(productId);
+            product.setCategoryName(categoryName);
+            return ApiResponse.success("단일 상품 조회 성공", product);
+        }
     }
 
     // 상품 상세 조회
