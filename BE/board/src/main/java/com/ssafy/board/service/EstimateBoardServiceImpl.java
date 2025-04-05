@@ -89,8 +89,8 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         for (EstimateBoardDTO.BoardProduct product : products) {
             Integer productId = product.getProductId();
             if (productId == null || productId == 0) {
-                product.setProductName("사용자 추천 요청");
-                product.setImageUrl("https://key-wi.s3.ap-northeast-2.amazonaws.com/profiles/default_product.png");
+                product.setProductName("조립자 추천 요청");
+                product.setImageUrl(null);
                 product.setPrice(0);
                 product.setProductId(0);
             }
@@ -99,6 +99,8 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         // 이미지와 제품 정보 설정
         boardDetails.setImageUrls(imageUrls);
         boardDetails.setProducts(products);
+
+        estimateBoardMapper.incrementViewCount(boardId);
 
         return boardDetails;
     }
