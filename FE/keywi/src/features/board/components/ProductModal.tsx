@@ -84,7 +84,7 @@ export default function ProductModal({
 
     if (onSelectProduct) {
       const recommendItem: BoardItemUsingInfo = {
-        categoryId: 0,
+        categoryId: categoryId,
         categoryName: title,
         productId: 0,
         productName: '조립자 추천 요청',

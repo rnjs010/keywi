@@ -25,7 +25,9 @@ export default function ProductSelector({
   return (
     <>
       {product ? (
-        <BoardProductCard data={product} mode="edit" onDelete={onDelete} />
+        <div className="mb-2">
+          <BoardProductCard data={product} mode="edit" onDelete={onDelete} />
+        </div>
       ) : (
         <CategoryRow>
           <Text variant="body1" weight="bold" color="darkKiwi">

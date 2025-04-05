@@ -33,7 +33,7 @@ export default function BoardProductCard({
           {truncateText(data.productName, 25)}
         </Text>
         <Text variant="caption1" weight="bold">
-          {data.price.toLocaleString()}원
+          {data.price === 0 ? '-원' : `${data.price.toLocaleString()}원`}
         </Text>
       </div>
 
@@ -42,7 +42,9 @@ export default function BoardProductCard({
         {data.imageUrl && (
           <ThumbnailImage src={data.imageUrl} alt="thumbnail" />
         )}
-        {mode === 'move' && <NavArrowRight color={colors.darkKiwi} />}
+        {mode === 'move' && data.productId !== 0 && (
+          <NavArrowRight color={colors.darkKiwi} />
+        )}
         {mode === 'edit' && (
           <div
             onClick={(e) => {
