@@ -111,22 +111,28 @@
     <!-- 게시글 관련 제품 조회 -->
     <select id="findBoardProducts" resultType="com.ssafy.board.dto.EstimateBoardDTO$BoardProduct">
         SELECT
-        c.category_id as categoryId,
-        c.category_name as categoryName,
-        p.product_id as productId,
-        p.product_name as productName,
+        c.category_id AS categoryId,
+        CASE
+        WHEN c.parent_id IS NOT NULL THEN (
+        SELECT category_name FROM keywi.category WHERE category_id = c.parent_id
+        )
+        ELSE c.category_name
+        END AS categoryName,
+        p.product_id AS productId,
+        p.product_name AS productName,
         p.price,
-        p.product_image as imageUrl,
-        bp.created_at as createdAt
+        p.product_image AS imageUrl,
+        bp.created_at AS createdAt
         FROM
         keywi.board_products bp
-        JOIN
+        LEFT JOIN
         keywi.products p ON bp.product_id = p.product_id
         JOIN
         keywi.category c ON bp.category_id = c.category_id
         WHERE
         bp.board_id = #{boardId}
     </select>
+
 
     <!-- 게시글 이미지 URL 목록 조회 -->
     <select id="findBoardImageUrls" resultType="string">

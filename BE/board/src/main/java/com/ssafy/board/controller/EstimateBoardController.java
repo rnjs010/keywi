@@ -146,7 +146,7 @@ public class EstimateBoardController {
                 .writerId(currentUserId)  // 인증된 사용자 ID 사용
                 .title(request.getTitle())
                 .content(request.getContent())
-                .dealState("REQUEST")
+                .dealState("거래 요청")
                 .build();
 
         // 게시글 저장
