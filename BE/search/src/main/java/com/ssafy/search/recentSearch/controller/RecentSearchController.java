@@ -15,12 +15,12 @@ public class RecentSearchController {
     private final RecentSearchService recentSearchService;
 
     @GetMapping("/keywords")
-    public ResponseEntity<List<String>> getKeywords(@RequestParam Integer userId) {
+    public ResponseEntity<List<String>> getKeywords(@RequestHeader("X-User-ID") Integer userId) {
         return ResponseEntity.ok(recentSearchService.getRecentKeywords(userId));
     }
 
     @DeleteMapping("/keywords")
-    public ResponseEntity<Void> deleteKeywords(@RequestParam Integer userId) {
+    public ResponseEntity<Void> deleteKeywords(@RequestHeader("X-User-ID") Integer userId) {
         recentSearchService.deleteAll(userId);
         return ResponseEntity.ok().build();
     }

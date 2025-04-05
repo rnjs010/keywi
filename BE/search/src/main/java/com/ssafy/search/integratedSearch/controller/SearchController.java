@@ -41,6 +41,7 @@ public class SearchController {
      */
     @GetMapping
     public ResponseEntity<?> search(
+            @RequestHeader("X-User-ID") Integer userId,
             @RequestParam(defaultValue = "feeds") String tab,
             @RequestParam String query,
             @RequestParam(defaultValue = "0") int page
@@ -48,8 +49,6 @@ public class SearchController {
         SearchRequestDto requestDto = new SearchRequestDto();
         requestDto.setQuery(query);
         requestDto.setPage(page);
-
-        Integer userId = 1; // 실제 구현에서는 인증된 사용자 ID를 사용해야 함
 
         // 검색 키워드 저장 및 카운트 증가 (공통 로직)
         searchService.saveOrIncrementKeyword(query);
