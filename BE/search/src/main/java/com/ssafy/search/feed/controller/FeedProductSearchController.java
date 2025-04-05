@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/feed/products")
+@RequestMapping("/api/search/feed/products")
 @RequiredArgsConstructor
 public class FeedProductSearchController {
 
