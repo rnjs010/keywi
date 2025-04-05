@@ -42,12 +42,6 @@
 			<optional>true</optional>
 		</dependency>
 
-<!--		&lt;!&ndash; Spring Security &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-security</artifactId>-->
-<!--		</dependency>-->
-
 		<!-- JWT 라이브러리 -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -128,9 +122,12 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-bootstrap</artifactId>
 		</dependency>
+
+		<!-- AWS S3 의존성 - 변경된 부분 -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.689</version>
 		</dependency>
 	</dependencies>
 

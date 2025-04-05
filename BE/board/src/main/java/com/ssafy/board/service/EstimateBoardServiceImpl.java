@@ -200,22 +200,36 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
     private void saveImages(Long boardId, List<MultipartFile> images) {
         List<BoardImage> boardImages = new ArrayList<>();
         int order = 0;
+        String thumbnailUrl = null;
 
         for (MultipartFile image : images) {
-            try {
-                // 이미지 업로드 및 URL 획득
-                String imageUrl = fileUploadService.uploadImage(image);
+            if (!image.isEmpty()) {
+                try {
+                    // 이미지 업로드 및 URL 획득
+                    String imageUrl = fileUploadService.uploadImage(image);
 
-                // 이미지 정보 생성
-                BoardImage boardImage = BoardImage.builder()
-                        .boardId(boardId)
-                        .imageUrl(imageUrl)  // 변경: imageUri -> imageUrl
-                        .displayOrder(order++)
-                        .build();
+                    // 첫 번째 이미지를 썸네일로 설정
+                    if (order == 0) {
+                        thumbnailUrl = imageUrl;
+                        // 게시글 엔티티 업데이트
+                        EstimateBoard board = estimateBoardMapper.findById(boardId);
+                        if (board != null) {
+                            board.setThumbnailUrl(thumbnailUrl);
+                            estimateBoardMapper.update(board);
+                        }
+                    }
 
-                boardImages.add(boardImage);
-            } catch (Exception e) {
-                log.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
+                    // 이미지 정보 생성
+                    BoardImage boardImage = BoardImage.builder()
+                            .boardId(boardId)
+                            .imageUrl(imageUrl)
+                            .displayOrder(order++)
+                            .build();
+
+                    boardImages.add(boardImage);
+                } catch (Exception e) {
+                    log.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
+                }
             }
         }
 
