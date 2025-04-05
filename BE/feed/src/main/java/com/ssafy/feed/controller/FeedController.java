@@ -77,7 +77,7 @@ public class FeedController {
     /**
      * 본인이 작성한 피드 리스트 조회
      */
-    @GetMapping("/user/me")
+    @GetMapping("/me")
     public ResponseEntity<List<FeedDTO>> getFeedsByMe(@RequestHeader("X-User-ID") Long userId){
         List<FeedDTO> feeds = feedService.getAllFeedsByUserId(userId);
 
