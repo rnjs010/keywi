@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface BoardProductSearchService {
     List<BoardProductSearchResponse> autocomplete(String keyword, String categoryId, int size);
-    List<BoardProductDocument> search(String categoryId, String query, int page, int size);
+    List<BoardProductDocument> search(String categoryId, String query);
 }

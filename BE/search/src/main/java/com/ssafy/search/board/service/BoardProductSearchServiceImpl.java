@@ -21,8 +21,8 @@ public class BoardProductSearchServiceImpl implements BoardProductSearchService 
                 .collect(Collectors.toList());
     }
 
-    public List<BoardProductDocument> search(String categoryId, String query, int page, int size) {
-        return productSearchRepositoryCustom.searchByCategoryAndQuery(categoryId, query, page, size);
+    public List<BoardProductDocument> search(String categoryId, String query) {
+        return productSearchRepositoryCustom.searchByCategoryAndQuery(categoryId, query);
     }
 
     private BoardProductSearchResponse convertToDto(BoardProductDocument doc) {

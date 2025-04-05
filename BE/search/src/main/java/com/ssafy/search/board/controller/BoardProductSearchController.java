@@ -31,11 +31,9 @@ public class BoardProductSearchController {
     @GetMapping("/search")
     public ResponseEntity<List<BoardProductDocument>> search(
             @RequestParam String categoryId,
-            @RequestParam(required = false) String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(required = false) String query) {
 
-        List<BoardProductDocument> result = boardProductSearchService.search(categoryId, query, page, size);
+        List<BoardProductDocument> result = boardProductSearchService.search(categoryId, query);
         return ResponseEntity.ok(result);
     }
 }

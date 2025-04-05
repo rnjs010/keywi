@@ -25,7 +25,7 @@ public class BoardProductSearchRepositoryImpl implements BoardProductSearchRepos
     private final String INDEX = "products";
 
     @Override
-    public List<BoardProductDocument> searchByCategoryAndQuery(String categoryId, String query, int page, int size) {
+    public List<BoardProductDocument> searchByCategoryAndQuery(String categoryId, String query) {
         try {
             Query keywordQuery = MatchAllQuery.of(m -> m)._toQuery(); // 기본 쿼리
 
@@ -50,8 +50,6 @@ public class BoardProductSearchRepositoryImpl implements BoardProductSearchRepos
 
             SearchRequest request = new SearchRequest.Builder()
                     .index(INDEX)
-                    .from(page * size)
-                    .size(size)
                     .query(boolQuery.build()._toQuery())
                     .sort(s -> s.field(f -> f.field("createdAt").order(SortOrder.Desc)))
                     .build();
