@@ -11,13 +11,14 @@ const TitleWrapper = tw.div`
 `
 const ClearBtn = tw.button`
 `
-
 const WordWrapper = tw.div`
   flex flex-wrap gap-2
 `
-
 const WordItem = tw.div`
   border border-littleGray rounded-full px-3 py-1
+`
+const EmptyState = tw.div`
+  text-center py-2
 `
 
 export default function SearchRecent() {
@@ -41,15 +42,26 @@ export default function SearchRecent() {
           </Text>
         </ClearBtn>
       </TitleWrapper>
-      <WordWrapper>
-        {recentKeywords.map((item) => (
-          <WordItem onClick={() => handleKeywordClick(item)}>
-            <Text variant="caption1" color="darkGray">
-              {item}
-            </Text>
-          </WordItem>
-        ))}
-      </WordWrapper>
+      {recentKeywords.length > 0 ? (
+        <WordWrapper>
+          {recentKeywords.map((item, index) => (
+            <WordItem
+              key={`${item}-${index}`}
+              onClick={() => handleKeywordClick(item)}
+            >
+              <Text variant="caption1" color="darkGray">
+                {item}
+              </Text>
+            </WordItem>
+          ))}
+        </WordWrapper>
+      ) : (
+        <EmptyState>
+          <Text variant="caption1" color="littleGray">
+            최근 검색어가 없습니다
+          </Text>
+        </EmptyState>
+      )}
     </Container>
   )
 }

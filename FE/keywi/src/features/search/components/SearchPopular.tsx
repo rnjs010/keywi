@@ -27,16 +27,58 @@ const Rank = tw.span`
 const Status = tw.div`
   flex items-center w-[1.5rem] justify-center
 `
+const LoadingWrapper = tw.div`
+  w-full flex justify-center items-center py-4
+`
 
 export default function SearchPopular() {
   const currentHour = getCurrentKoreanHour()
   const navigate = useNavigate()
 
-  const { data: keywordRanks, isLoading } = useRank()
+  const { data: keywordRanks, isLoading, isError } = useRank()
 
   // 검색어 클릭 핸들러
   const handleKeywordClick = (keyword: string) => {
     navigate(`/search/${keyword}`)
+  }
+
+  // 로딩 중 표시
+  if (isLoading) {
+    return (
+      <Container>
+        <TitleWrapper>
+          <Text variant="body1" weight="bold">
+            인기 검색어
+          </Text>
+          <Text variant="caption1" color="littleGray">
+            {currentHour}시 기준
+          </Text>
+        </TitleWrapper>
+        <LoadingWrapper>
+          <Text variant="caption1" color="littleGray">
+            검색어 불러오는 중...
+          </Text>
+        </LoadingWrapper>
+      </Container>
+    )
+  }
+
+  // 에러 처리
+  if (isError || !keywordRanks) {
+    return (
+      <Container>
+        <TitleWrapper>
+          <Text variant="body1" weight="bold">
+            인기 검색어
+          </Text>
+        </TitleWrapper>
+        <ContentWrapper>
+          <Text variant="caption1" color="littleGray">
+            인기 검색어를 불러올 수 없습니다.
+          </Text>
+        </ContentWrapper>
+      </Container>
+    )
   }
 
   return (

@@ -1,38 +1,38 @@
-import apiRequester from '@/services/api'
-import { useEffect, useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  fetchRecentKeywords,
+  deleteAllRecentKeywords,
+  searchKeys,
+} from '../services/searchService'
 
-// 최근 검색어 관련 훅
-export const useRecent = () => {
-  const [recentKeywords, setRecentKeywords] = useState<string[]>([])
+// 최근 검색어
+export const useRecent = (userId: number = 1) => {
+  // 임시로 유저아이디 1로 지정
+  const queryClient = useQueryClient()
 
-  // 임시로 유저아이디 1로 둠
-  const USER_ID = 1
+  // 최근 검색어 가져오기
+  const { data: recentKeywords = [] } = useQuery({
+    queryKey: searchKeys.recentKeywords(userId),
+    queryFn: () => fetchRecentKeywords(userId),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
-  const fetchRecentKeywords = async () => {
-    try {
-      const res = await apiRequester.get<string[]>('/api/search/keywords', {
-        params: { userId: USER_ID },
+  // 모든 최근 검색어 삭제 뮤테이션
+  const deleteAllMutation = useMutation({
+    mutationFn: () => deleteAllRecentKeywords(userId),
+    onSuccess: () => {
+      // 성공 시 캐시 무효화하고 다시 불러오기
+      queryClient.invalidateQueries({
+        queryKey: searchKeys.recentKeywords(userId),
       })
-      setRecentKeywords(res.data)
-    } catch (err) {
-      console.error('api error - 최신 검색:', err)
-    }
+      // 또는 직접 데이터를 업데이트할 수도 있음
+      queryClient.setQueryData(searchKeys.recentKeywords(userId), [])
+    },
+  })
+
+  return {
+    recentKeywords,
+    deleteAllRecentKeywords: () => deleteAllMutation.mutate(),
+    isDeleting: deleteAllMutation.isPending,
   }
-
-  const deleteAllRecentKeywords = async () => {
-    try {
-      await apiRequester.delete('/api/search/keywords', {
-        params: { userId: USER_ID },
-      })
-      setRecentKeywords([])
-    } catch (err) {
-      console.error('api error - 최신 검색 삭제:', err)
-    }
-  }
-
-  useEffect(() => {
-    fetchRecentKeywords()
-  }, [])
-
-  return { recentKeywords, deleteAllRecentKeywords }
 }
