@@ -87,7 +87,8 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         List<EstimateBoardDTO.BoardProduct> products = estimateBoardMapper.findBoardProducts(boardId);
 
         for (EstimateBoardDTO.BoardProduct product : products) {
-            if (product.getProductId() == 0) {
+            Integer productId = product.getProductId();
+            if (productId == null || productId == 0) {
                 product.setProductName("사용자 추천 요청");
                 product.setImageUrl("https://key-wi.s3.ap-northeast-2.amazonaws.com/profiles/default_product.png");
                 product.setPrice(0);
