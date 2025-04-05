@@ -99,6 +99,7 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         // 이미지와 제품 정보 설정
         boardDetails.setImageUrls(imageUrls);
         boardDetails.setProducts(products);
+        boardDetails.setViewCount(boardDetails.getViewCount()+1);
 
         estimateBoardMapper.incrementViewCount(boardId);
 
