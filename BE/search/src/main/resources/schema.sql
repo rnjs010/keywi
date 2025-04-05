@@ -40,48 +40,44 @@ CREATE TABLE users (
 );
 
 -- 팔로우 테이블
-CREATE TABLE follows (
-                         follower_id INT NOT NULL,     -- 팔로우하는 회원 ID
-                         following_id INT NOT NULL,    -- 팔로잉 당하는 회원 ID
-                         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 팔로우 시작 일자
-                         is_active BOOLEAN NOT NULL DEFAULT TRUE, -- 팔로우 상태
-
-                         PRIMARY KEY (follower_id, following_id),
-                         FOREIGN KEY (follower_id) REFERENCES users(user_id),
-                         FOREIGN KEY (following_id) REFERENCES users(user_id)
+CREATE TABLE follow_user (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  follower_id BIGINT NOT NULL,
+  following_id BIGINT NOT NULL,
+  is_active TINYINT(1) DEFAULT '1',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_follow_user (follower_id, following_id)
 );
 
 -- 카테고리 테이블
 CREATE TABLE category (
-                          category_id INT NOT NULL AUTO_INCREMENT,
-                          category_name VARCHAR(255) NOT NULL,
-                          parent_id INT DEFAULT NULL,
-                          PRIMARY KEY (category_id),
-                          FOREIGN KEY (parent_id) REFERENCES category(category_id)
+    category_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL,
+    parent_id INT NULL
 );
 
 -- 상품 테이블
 CREATE TABLE products (
-                          product_id INT NOT NULL AUTO_INCREMENT,
-                          category_id INT NOT NULL,
-                          product_name VARCHAR(255) NOT NULL,
-                          price INT NOT NULL,
-                          product_url VARCHAR(500) NOT NULL ,
-                          manufacturer VARCHAR(500),
-                          PRIMARY KEY (product_id),
-                          FOREIGN KEY (category_id) REFERENCES category(category_id)
+    product_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    price INT NOT NULL,
+    product_url VARCHAR(500) NOT NULL,
+    product_image VARCHAR(255),
+    manufacturer VARCHAR(500),
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
 -- 상품 상세 설명 테이블
 CREATE TABLE products_descriptions (
-                                       product_description_id BIGINT AUTO_INCREMENT ,
-                                       product_id INT NOT NULL,
-                                       description TEXT NOT NULL,
-                                       description_order INT NOT NULL,
-                                       content_type ENUM('text', 'image', 'hr', 'embed', 'gif') NOT NULL,
-                                       hyperlink VARCHAR(500),
-                                       PRIMARY KEY (product_description_id) ,
-                                       CONSTRAINT fk_product_description_product FOREIGN KEY (product_id) REFERENCES products(product_id)
+    product_description_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    description text NOT NULL,
+    description_order INT NOT NULL,
+    content_type ENUM('text', 'image', 'hr', 'embed', 'gif') NOT NULL,
+    hyperlink VARCHAR(500),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 -- 상품 이미지 테이블
@@ -141,24 +137,27 @@ CREATE TABLE feed_products (
 
 -- 해시태그
 CREATE TABLE hashtags (
-                          hashtag_id BIGINT AUTO_INCREMENT ,
-                          hashtag_name VARCHAR(255) NOT NULL,
-                          slug VARCHAR(255) NOT NULL,
-                          category VARCHAR(255) NOT NULL,
-                          usage_count BIGINT NOT NULL,
-                          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                          PRIMARY KEY (hashtag_id)
+  hashtag_id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  category VARCHAR(50) DEFAULT NULL,
+  usage_count INT NOT NULL DEFAULT '0',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (hashtag_id),
+  UNIQUE KEY `uk_name` (name)
 );
 
 -- 피드-해시태그 연결 테이블
 CREATE TABLE feed_hashtags (
-                               feed_tag_id BIGINT AUTO_INCREMENT,
-                               feed_id BIGINT NOT NULL,
-                               hashtag_id BIGINT NOT NULL,
-                               PRIMARY KEY (feed_tag_id),
-                               CONSTRAINT fk_hashtag_feed FOREIGN KEY (feed_id) REFERENCES feeds(feed_id),
-                               FOREIGN KEY (hashtag_id) REFERENCES hashtags(hashtag_id)
+  feed_tag_id BIGINT NOT NULL AUTO_INCREMENT,
+  feed_id BIGINT NOT NULL,
+  hashtag_id BIGINT NOT NULL,
+  PRIMARY KEY (feed_tag_id),
+  UNIQUE KEY uk_feed_hashtag (feed_id, hashtag_id),
+  KEY hashtag_id (hashtag_id),
+  CONSTRAINT feed_hashtags_ibfk_1 FOREIGN KEY (feed_id) REFERENCES feeds (feed_id) ON DELETE CASCADE,
+  CONSTRAINT feed_hashtags_ibfk_2 FOREIGN KEY (hashtag_id) REFERENCES hashtags (hashtag_id) ON DELETE CASCADE
 );
+
 
 -- 피드 좋아요 테이블 (유니크 제약 추가)
 CREATE TABLE feed_likes (
@@ -240,31 +239,32 @@ CREATE TABLE board_products (
 
 -- 평가 테이블
 CREATE TABLE ratings (
-                         rating_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         board_id BIGINT NOT NULL,
-                         rater_id INT NOT NULL,         -- 별점 준 사람
-                         target_id INT NOT NULL,        -- 별점 받은 사람
-                         rating DECIMAL(2,1) NOT NULL,     -- 별점 (0.0 ~ 5.0) 0.5점 단위
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rating_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id BIGINT NOT NULL,
+    rater_id INT NOT NULL,         -- 별점 준 사람
+    target_id INT NOT NULL,        -- 별점 받은 사람
+    rating DECIMAL(2,1) NOT NULL,     -- 별점 (0.0 ~ 5.0) 0.5점 단위
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-                         FOREIGN KEY (board_id) REFERENCES boards(board_id),
-                         FOREIGN KEY (rater_id) REFERENCES users(user_id),
-                         FOREIGN KEY (target_id) REFERENCES users(user_id)
+    FOREIGN KEY (board_id) REFERENCES boards(board_id),
+    FOREIGN KEY (rater_id) REFERENCES users(user_id),
+    FOREIGN KEY (target_id) REFERENCES users(user_id)
 );
 
--- 찜 목록 테이블 (유니크 제약 추가)
-CREATE TABLE wishes (
-                        wish_id BIGINT NOT NULL AUTO_INCREMENT,
-                        user_id INT NOT NULL,
-                        product_id INT NOT NULL,
-                        category_id INT NOT NULL,
-                        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                        PRIMARY KEY (wish_id),
-                        FOREIGN KEY (user_id) REFERENCES users(user_id),
-                        FOREIGN KEY (product_id) REFERENCES products(product_id),
-                        UNIQUE (user_id, product_id)
+-- 찜 목록 테이블
+CREATE TABLE IF NOT EXISTS wishes (
+    wish_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    updated_at DATETIME NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (wish_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    UNIQUE (user_id, product_id)
 );
 
+-- 이전 시간대 인기 검색어 랭킹 테이블
 CREATE TABLE keyword_rank (
                               keyword_rank_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                               time_block DATETIME,
@@ -272,50 +272,3 @@ CREATE TABLE keyword_rank (
                               ranking INT,
                               change_status ENUM('UP', 'DOWN', 'SAME', 'NEW')
 );
-
--- feeds
-CREATE INDEX idx_feeds_user_id ON feeds(user_id);
-CREATE INDEX idx_feeds_created_at ON feeds(created_at);
-
--- feed_images
-CREATE INDEX idx_feed_images_feed_id ON feed_images(feed_id);
-CREATE INDEX idx_feed_images_is_main_image ON feed_images(is_main_image);
-
--- feed_products
-CREATE INDEX idx_feed_products_feed_id ON feed_products(feed_id);
-CREATE INDEX idx_feed_products_product_id ON feed_products(product_id);
-
--- feed_hashtags
-CREATE INDEX idx_feed_hashtags_feed_id ON feed_hashtags(feed_id);
-CREATE INDEX idx_feed_hashtags_hashtag_id ON feed_hashtags(hashtag_id);
-
--- feed_likes
-CREATE INDEX idx_feed_likes_feed_id ON feed_likes(feed_id);
-CREATE INDEX idx_feed_likes_user_id ON feed_likes(user_id);
-
--- feed_bookmarks
-CREATE INDEX idx_feed_bookmarks_user_id ON feed_bookmarks(user_id);
-
--- comments
-CREATE INDEX idx_comments_feed_id ON comments(feed_id);
-CREATE INDEX idx_comments_created_at ON comments(created_at);
-
--- products
-CREATE INDEX idx_products_category_id ON products(category_id);
-CREATE INDEX idx_products_created_at ON products(created_at);
-
--- product_images
-CREATE INDEX idx_product_images_product_id ON product_images(product_id);
-CREATE INDEX idx_product_images_is_main ON product_images(is_main);
-
--- wishes
-CREATE INDEX idx_wishes_user_id ON wishes(user_id);
-
--- boards
-CREATE INDEX idx_boards_writer_id ON boards(writer_id);
-CREATE INDEX idx_boards_created_at ON boards(created_at);
-CREATE INDEX idx_boards_deal_state ON boards(deal_state);
-
--- board_products
-CREATE INDEX idx_board_products_board_id ON board_products(board_id);
-CREATE INDEX idx_board_products_product_id ON board_products(product_id);
