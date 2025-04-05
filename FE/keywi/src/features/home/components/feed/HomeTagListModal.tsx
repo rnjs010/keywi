@@ -8,9 +8,11 @@ import {
 import { ProductTag } from '@/interfaces/HomeInterfaces'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { Bookmark, BookmarkSolid } from 'iconoir-react'
+import { Star, StarSolid } from 'iconoir-react'
 import { useState } from 'react'
 import { colors } from '@/styles/colors'
+import styled from '@emotion/styled'
+import truncateText from '@/utils/truncateText'
 
 const TagItemContainer = tw.div`
   flex
@@ -18,20 +20,22 @@ const TagItemContainer = tw.div`
   px-5
   py-2
 `
-
 const ProductImage = tw.img`
   w-16
   h-16
   object-cover
   rounded
 `
-
 const ProductInfo = tw.div`
   flex-1
   mx-4
 `
-
 const BookmarkButton = tw.button`
+`
+// 줄 간격을 줄인 제품명 컨테이너
+const ProductNameContainer = styled.div`
+  line-height: 1.2; // 줄 간격 줄이기
+  margin-bottom: 2px; // 가격과의 간격
 `
 
 interface HomeTagListModalProps {
@@ -71,13 +75,13 @@ export default function HomeTagListModal({
           {productTags.map((tag) => (
             <TagItemContainer key={tag.id}>
               <ProductImage
-                src={
-                  tag.thumbnail || `https://picsum.photos/100?random=${tag.id}`
-                }
+                src={tag.thumbnail || '/default/default_product.png'}
                 alt={tag.name}
               />
               <ProductInfo>
-                <Text variant="caption1">{tag.name}</Text>
+                <ProductNameContainer>
+                  <Text variant="caption1">{truncateText(tag.name, 45)}</Text>
+                </ProductNameContainer>
                 <div>
                   <Text variant="caption1" weight="bold">
                     {tag.price}
@@ -86,9 +90,9 @@ export default function HomeTagListModal({
               </ProductInfo>
               <BookmarkButton onClick={() => handleBookmark(tag.id)}>
                 {bookmarks[tag.id] ? (
-                  <BookmarkSolid height={22} width={22} color={colors.kiwi} />
+                  <StarSolid height={22} width={22} color={colors.kiwi} />
                 ) : (
-                  <Bookmark height={22} width={22} strokeWidth={1.5} />
+                  <Star height={22} width={22} strokeWidth={1.5} color={colors.gray} />
                 )}
               </BookmarkButton>
             </TagItemContainer>

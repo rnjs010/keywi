@@ -19,10 +19,15 @@ export default function HomeFeedList({
   feeds,
   isLoading = false,
 }: HomeFeedListProps) {
+  // 로딩시 스켈레톤 화면 보여줌
   if (isLoading) {
     return (
       <Container>
-        <HomeFeedSkeleton />
+        {Array(3)
+          .fill(0)
+          .map((_, index) => (
+            <HomeFeedSkeleton key={index} />
+          ))}
       </Container>
     )
   }

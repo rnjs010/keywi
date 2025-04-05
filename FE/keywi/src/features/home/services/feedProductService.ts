@@ -1,6 +1,8 @@
 import { FavoriteProduct, FeedSearchProduct } from '@/interfaces/HomeInterfaces'
 import apiRequester from '@/services/api'
 
+const DEFAULT_IMAGE = '/default/default_product.png'
+
 // 상품 찜 목록 조회
 
 interface FavoriteProductsResponse {
@@ -18,22 +20,29 @@ export const getFavoriteProducts = async (): Promise<FavoriteProduct[]> => {
 
 // 피드 태그용 상품 검색 조회
 
-interface FeedSearchProductResponse {
-  status: string
-  message: string
-  data: FeedSearchProduct[]
-}
-
 export const getSearchProducts = async (
   query: string,
 ): Promise<FeedSearchProduct[]> => {
-  const response = await apiRequester.get<FeedSearchProductResponse>(
-    '/api/feed/products/search',
-    {
-      params: {
-        query,
+  try {
+    const response = await apiRequester.get<FeedSearchProduct[]>(
+      '/api/search/feed/products/search',
+      {
+        params: {
+          query,
+        },
       },
-    },
-  )
-  return response.data.data
+    )
+
+    // 응답이 배열인 경우와 data 속성을 가진 객체인 경우 모두 처리
+    const productData = response.data
+
+    // 응답 데이터를 매핑하면서 null인 imageUrl을 기본 이미지로 대체
+    return productData.map((product: FeedSearchProduct) => ({
+      ...product,
+      imageUrl: product.imageUrl || DEFAULT_IMAGE,
+    }))
+  } catch (error) {
+    console.error('Search products error:', error)
+    return []
+  }
 }

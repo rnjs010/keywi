@@ -22,6 +22,7 @@ export default function HomeFeed({ feed }: HomeFeedProps) {
           profileImage={feed.profileImage}
           description={feed.description}
           isFollowing={feed.isFollowing}
+          authorId={feed.authorId}
         />
       </ProfileWrapper>
       <HomeFeedImg mainImages={feed.images} productTags={feed.productTags} />

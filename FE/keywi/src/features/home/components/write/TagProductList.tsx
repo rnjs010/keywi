@@ -52,9 +52,7 @@ export default function TagProductList({
         <TaggedProductItem key={tag.id}>
           <TaggedProductContent>
             <ProductItemThumbnail
-              src={
-                tag.thumbnail || `https://picsum.photos/100?random=${tag.id}`
-              }
+              src={tag.thumbnail || '/default/default_product.png'}
               alt={tag.name}
             />
             <ProductInfo>

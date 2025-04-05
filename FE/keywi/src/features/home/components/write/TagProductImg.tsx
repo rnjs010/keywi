@@ -2,7 +2,6 @@ import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import useImageStore from '@/stores/homeStore'
 import TagProductModal from './TagProductModal'
-import { dummyProducts } from '../../services/homeDummyData'
 import useProductTag from '../../hooks/useProductTag'
 import useTagDragDrop from '../../hooks/useTagDragDrop'
 import TagPointInfo from './TagPointInfo'
@@ -123,7 +122,6 @@ export default function TagProductImg() {
         onOpenChange={setIsModalOpen}
         title="상품태그 추가"
         trigger={<div></div>}
-        products={dummyProducts}
         onSelectProduct={handleSelectProduct}
         onWriteProduct={handleWriteProduct}
       />

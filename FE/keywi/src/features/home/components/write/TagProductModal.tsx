@@ -20,7 +20,7 @@ import { useFavoriteProducts } from '../../hooks/useFavoriteProducts'
 import truncateText from '@/utils/truncateText'
 import highlightSearchTerm from '@/utils/highlightSearchTerm'
 import { useFeedProductSearch } from '../../hooks/useFeedProductSearch'
-
+import styled from '@emotion/styled'
 const CardContainer = tw.div`
   flex items-center gap-4 cursor-pointer my-3
 `
@@ -40,6 +40,16 @@ const SearchIconWrapper = tw.div`
 `
 const LoadingContainer = tw.div`
   flex justify-center items-center py-8
+`
+const CustomDrawerContent = styled(DrawerContent)`
+  max-height: 66vh; /* 화면 높이의 2/3 */
+`
+const ProductListContainer = tw.div`
+  px-4 
+  py-2 
+  mb-4 
+  overflow-y-auto
+  max-h-[calc(66vh-120px)] /* 헤더와 검색창 높이를 뺀 값 */
 `
 
 interface ProductDrawerProps {
@@ -75,6 +85,14 @@ export default function TagProductModal({
   const displayProducts = showSearchResults ? searchResults : favoriteProducts
   const isLoading = showSearchResults ? isSearchLoading : isFavLoading
 
+  // 모달 상태 변경 핸들러 - 모달을 닫을 때 검색어 리셋
+  const handleOpenChange = (open: boolean) => {
+    onOpenChange(open)
+    if (!open) {
+      setSearchTerm('')
+    }
+  }
+
   // 직접 입력 모달 핸들러
   const handleWriteModalClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -93,7 +111,6 @@ export default function TagProductModal({
   ) => {
     if (!onSelectProduct) return
 
-    // FavoriteProduct 또는 FeedSearchProduct를 ProductItem으로 변환
     const productItem: ProductItem = {
       itemId: product.productId,
       itemName: product.productName,
@@ -108,13 +125,14 @@ export default function TagProductModal({
     }
 
     onSelectProduct(productItem)
+    onOpenChange(false)
   }
 
   return (
     <>
-      <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      <Drawer open={isOpen} onOpenChange={handleOpenChange} modal={true}>
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-        <DrawerContent>
+        <CustomDrawerContent aria-modal="true" role="dialog">
           <DrawerHeader>
             <DrawerTitle>
               <Text variant="body2" weight="bold" color="darkKiwi">
@@ -157,7 +175,7 @@ export default function TagProductModal({
             </div>
           </div>
           {/* SECTION - 상품 리스트 */}
-          <div className="px-4 py-2 mb-4">
+          <ProductListContainer>
             {isLoading ? (
               <LoadingContainer>
                 <Text color="darkGray">상품 목록을 불러오는 중...</Text>
@@ -174,18 +192,14 @@ export default function TagProductModal({
                   key={product.productId}
                   onClick={() => handleSelectProduct(product)}
                 >
-                  {(isFavoriteProduct(product)
-                    ? product.productImage
-                    : product.imageUrl) && (
-                    <ThumbnailImage
-                      src={
-                        isFavoriteProduct(product)
-                          ? product.productImage
-                          : product.imageUrl
-                      }
-                      alt="thumbnail"
-                    />
-                  )}
+                  <ThumbnailImage
+                    src={
+                      isFavoriteProduct(product)
+                        ? product.productImage
+                        : product.imageUrl || '/default/product-image.png'
+                    }
+                    alt={product.productName}
+                  />
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
                       {showSearchResults
@@ -193,7 +207,7 @@ export default function TagProductModal({
                             truncateText(product.productName, 30),
                             searchTerm,
                           )
-                        : truncateText(product.productName, 35)}
+                        : truncateText(product.productName, 30)}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원
@@ -202,8 +216,8 @@ export default function TagProductModal({
                 </CardContainer>
               ))
             )}
-          </div>
-        </DrawerContent>
+          </ProductListContainer>
+        </CustomDrawerContent>
       </Drawer>
 
       {/* 직접 입력 모달 */}

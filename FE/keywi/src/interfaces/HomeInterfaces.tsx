@@ -14,6 +14,16 @@ export interface FeedData {
   timeAgo: string
   isLiked: boolean
   isBookmarked: boolean
+  authorId: number // 작성자 ID -> 프로필로 이동 시 사용
+}
+
+// 피드 응답
+export interface FeedResponse {
+  content: FeedData[]
+  currentPage: number
+  totalPages: number
+  totalElements: number
+  last: boolean
 }
 
 // 피드 상태
@@ -51,6 +61,7 @@ export interface HomeFeedProfileProps {
   profileImage: string
   description: string
   isFollowing: boolean
+  authorId: number
   onFollowToggle?: (newFollowingState: boolean) => void
 }
 
@@ -86,7 +97,7 @@ export interface CommentData {
   profileImage: string
   content: string
   timeAgo: string
-  // mentionedUser?: string // @ 멘션된 사용자 - 추후개발발
+  // mentionedUser?: string // @ 멘션된 사용자 - 추후개발
 }
 
 // 댓글 컴포넌트 Props
