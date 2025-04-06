@@ -1,5 +1,6 @@
 package com.ssafy.feed.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.feed.dto.*;
 import com.ssafy.feed.dto.request.CommentRequest;
 import com.ssafy.feed.dto.request.FeedCreateRequest;
@@ -37,6 +38,7 @@ public class FeedService {
     private final FeedReadMapper feedReadMapper;
     private final UserActivityService userActivityService;
     private final HashtagService hashtagService;
+    private final LikeService likeService;
     private final UserServiceAdapter userServiceAdapter;
     private final ProductServiceAdapter productServiceAdapter;
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -137,6 +139,7 @@ public class FeedService {
                     .map(this::convertToFeedDTO)
                     .collect(Collectors.toList());
             recommendedFeeds.addAll(followingFeedDTOs);
+
 
             // 2. 사용자 활동 기반(좋아요/북마크/댓글 단 피드와 관련된 해시태그 피드)
             List<FeedDTO> activityBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
@@ -342,8 +345,10 @@ public class FeedService {
         List<Comment> recentComments = commentMapper.findTop3ByFeedId(feedId);
         List<CommentDTO> recentCommentDTOs = convertToCommentDTOs(recentComments);
 
-        // 좋아요, 북마크 상태 조회
-        boolean isLiked = feedMapper.isLikedByUser(feedId, userId);
+        // 좋아요, 북마크 상태 조회 (Redis 활용)
+        boolean isLiked = likeService.hasUserLikedFeed(userId, feedId);
+        int likeCount = likeService.getLikeCount(feedId);
+
         boolean isBookmarked = feedMapper.isBookmarkedByUser(feedId, userId);
 
         // 피드 열람 이벤트 기록
@@ -362,10 +367,10 @@ public class FeedService {
                 .hashtags(hashtags)
                 .createdAt(feed.getCreatedAt())
                 .updatedAt(feed.getUpdatedAt())
-                .likeCount(feed.getLikeCount())
+                .likeCount(likeCount) // Redis 값 사용
                 .commentCount(feed.getCommentCount())
                 .bookmarkCount(feed.getBookmarkCount())
-                .isLiked(isLiked)
+                .isLiked(isLiked) // Redis 값 사용
                 .isBookmarked(isBookmarked)
                 .recentComments(recentCommentDTOs)
                 .build();
@@ -375,31 +380,32 @@ public class FeedService {
      * 피드 좋아요 추가/취소
      */
     @Transactional
-    public LikeResponse toggleLike(Long feedId, Long userId) {
-        boolean isLiked = feedMapper.isLikedByUser(feedId, userId);
-        int increment;
-
-        if (isLiked) {
-            // 좋아요 취소
-            feedMapper.removeLike(feedId, userId);
-            increment = -1;
-        } else {
-            // 좋아요 추가
-            feedMapper.addLike(feedId, userId);
-            increment = 1;
-        }
-
-        // 좋아요 수 업데이트
-        feedMapper.updateLikeCount(feedId, increment);
-
-        // 현재 피드 정보 조회
-        Feed feed = feedMapper.findById(feedId);
-
-        return LikeResponse.builder()
-                .feedId(feedId)
-                .isLiked(!isLiked)
-                .likeCount(feed.getLikeCount())
-                .build();
+    public LikeResponse toggleLike(Long feedId, Long userId) throws JsonProcessingException {
+//        boolean isLiked = feedMapper.isLikedByUser(feedId, userId);
+//        int increment;
+//
+//        if (isLiked) {
+//            // 좋아요 취소
+//            feedMapper.removeLike(feedId, userId);
+//            increment = -1;
+//        } else {
+//            // 좋아요 추가
+//            feedMapper.addLike(feedId, userId);
+//            increment = 1;
+//        }
+//
+//        // 좋아요 수 업데이트
+//        feedMapper.updateLikeCount(feedId, increment);
+//
+//        // 현재 피드 정보 조회
+//        Feed feed = feedMapper.findById(feedId);
+//
+//        return LikeResponse.builder()
+//                .feedId(feedId)
+//                .isLiked(!isLiked)
+//                .likeCount(feed.getLikeCount())
+//                .build();
+        return likeService.toggleLike(feedId, userId);
     }
 
     /**
@@ -687,8 +693,13 @@ public class FeedService {
         }
 
         // 좋아요, 북마크 상태 조회
-        List<Long> likedFeedIds = feedMapper.findLikedFeedsByUserAndFeedIds(userId, feedIds);
+//        List<Long> likedFeedIds = feedMapper.findLikedFeedsByUserAndFeedIds(userId, feedIds);
         List<Long> bookmarkedFeedIds = feedMapper.findBookmarkedFeedsByUserAndFeedIds(userId, feedIds);
+
+        // Redis에서 좋아요 상태 및 카운트 일괄 조회
+        Map<Long, Boolean> likeStatusMap = likeService.getBulkLikeStatus(userId, feedIds);
+        Map<Long, Integer> likeCountMap = likeService.getBulkLikeCounts(feedIds);
+
 
         // 피드 정보 보강
         for (FeedDTO feed : feeds) {
@@ -770,7 +781,9 @@ public class FeedService {
             feed.setHashtags(hashtags);
 
             // 좋아요, 북마크 상태 설정
-            feed.setLiked(likedFeedIds.contains(feed.getId()));
+            feed.setLiked(likeStatusMap.getOrDefault(feed.getId(), false));
+            feed.setLikeCount(likeCountMap.getOrDefault(feed.getId(), 0));
+
             feed.setBookmarked(bookmarkedFeedIds.contains(feed.getId()));
         }
     }

@@ -17,6 +17,15 @@
         SELECT * FROM feeds WHERE feed_id = #{feedId} AND is_delete = false
     </select>
 
+    <select id="findByIds" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE feed_id IN
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+        AND is_delete = false
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="feedId">
         INSERT INTO feeds (user_id, content, created_at, like_count, comment_count, bookmark_count)
         VALUES (#{userId}, #{content}, NOW(), 0, 0, 0)
@@ -47,7 +56,7 @@
                             LEFT JOIN comments c ON f.feed_id = c.feed_id
         WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND f.is_delete = false
         GROUP BY f.feed_id
-        ORDER BY (COUNT(DISTINCT fl.like_id) * 1.5 + COUNT(DISTINCT fb.bookmark_id) * 2 + COUNT(DISTINCT c.id)) DESC
+        ORDER BY (COUNT(DISTINCT fl.like_id) * 1.5 + COUNT(DISTINCT fb.bookmark_id) * 2 + COUNT(DISTINCT c.comment_id)) DESC
             LIMIT 50
     </select>
 

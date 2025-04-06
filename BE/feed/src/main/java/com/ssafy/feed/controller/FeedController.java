@@ -1,5 +1,6 @@
 package com.ssafy.feed.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.feed.dto.*;
 import com.ssafy.feed.dto.request.CommentRequest;
@@ -8,6 +9,7 @@ import com.ssafy.feed.dto.request.ProductCreateRequest;
 import com.ssafy.feed.dto.response.*;
 import com.ssafy.feed.service.FeedService;
 import com.ssafy.feed.service.HashtagService;
+import com.ssafy.feed.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import java.util.Map;
 public class FeedController {
     private final FeedService feedService;
     private final HashtagService hashtagService;
+    private final LikeService likeService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @GetMapping("/recommended")
@@ -139,9 +142,10 @@ public class FeedController {
     @PostMapping("/{feedId}/like")
     public ResponseEntity<LikeResponse> toggleLike(
             @RequestHeader("X-User-ID") Long userId,
-            @PathVariable Long feedId) {
+            @PathVariable Long feedId) throws JsonProcessingException {
 
-        LikeResponse response = feedService.toggleLike(feedId, userId);
+//        LikeResponse response = feedService.toggleLike(feedId, userId);
+        LikeResponse response = likeService.toggleLike(feedId, userId);
 
         // 사용자 활동 이벤트 발행 (좋아요 추가/취소)
         String activityType = response.isLiked() ? "LIKE_FEED" : "UNLIKE_FEED";

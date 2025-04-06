@@ -13,6 +13,8 @@ import java.util.Set;
 public interface FeedMapper {
     Feed findById(Long feedId);
 
+    List<Feed> findByIds(Set<Long> feedId);
+
     int insert(Feed feed);
 
     int update(Feed feed);
