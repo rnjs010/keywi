@@ -4,7 +4,7 @@ import AcceptCompleteScreen from '@/features/chat/components/DealAccept/AcceptCo
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
-import { useDealAcceptStore } from '@/stores/ChatStore'
+import { useDealAcceptStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 import SafePaymentScreen from '@/features/chat/components/DealAccept/SafePaymentScreen'
 

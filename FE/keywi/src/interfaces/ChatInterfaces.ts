@@ -1,16 +1,26 @@
-export interface ChatRoomProps {
+export interface ChatRoom {
   roomId: string
-  assembler: {
-    assemblerId: string
-    nickname: string
-    profileImageUrl: string
-  }
+  otherUserId: string
+  otherUserNickname: string
+  otherUserProfileImage: string
   lastMessage: string
   lastMessageTime: string
-  formattedTime: string
-  unreadCount: number
-  postTitle: string
+  notificationEnabled: boolean
 }
+
+// export interface ChatRoomProps {
+//   roomId: string
+//   assembler: {
+//     assemblerId: string
+//     nickname: string
+//     profileImageUrl: string
+//   }
+//   lastMessage: string
+//   lastMessageTime: string
+//   formattedTime: string
+//   unreadCount: number
+//   postTitle: string
+// }
 
 export interface ChatParticipant {
   assemblerId: string // 사용자 ID

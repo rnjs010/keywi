@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDealRequestStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/chatStore'
 import DealReqFormScreen from '@/features/chat/components/DealRequest/DealReqFormScreen'
 import DealReqConfirmScreen from '@/features/chat/components/DealRequest/DealReqConfirmScreen'
 

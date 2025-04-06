@@ -1,7 +1,7 @@
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Link } from 'react-router-dom'
-import { ChatRoomProps } from '@/interfaces/ChatInterfaces'
+import { ChatRoom } from '@/interfaces/ChatInterfaces'
 
 const CardContainer = tw.div`
   flex justify-between items-center py-4 gap-5
@@ -17,25 +17,26 @@ const ProfileImage = tw.img`
 
 export default function ChatCard({
   roomId,
-  assembler,
+  otherUserNickname,
+  otherUserProfileImage,
   lastMessage,
-  formattedTime,
-}: ChatRoomProps) {
+  lastMessageTime,
+}: ChatRoom) {
   return (
     <Link to={`/chat/${roomId}`}>
       <CardContainer>
         {/* 사진 */}
-        {assembler.profileImageUrl && (
-          <ProfileImage src={assembler.profileImageUrl} alt="thumbnail" />
+        {otherUserProfileImage && (
+          <ProfileImage src={otherUserProfileImage} alt="thumbnail" />
         )}
         <div className="flex-1">
           {/* 상대방 이름, 마지막 연락 시간 */}
           <TitleContainer>
             <Text variant="body1" weight="regular">
-              {assembler.nickname}
+              {otherUserNickname}
             </Text>
             <Text variant="caption2" weight="regular" color="gray">
-              · {formattedTime}
+              · {lastMessageTime}
             </Text>
           </TitleContainer>
           {/* 마지막 문자 내용 */}

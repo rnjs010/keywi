@@ -3,7 +3,7 @@ import MainButton from '@/components/MainButton'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { BoardItem } from '@/interfaces/BoardInterface'
-import { useDealAcceptStore } from '@/stores/ChatStore'
+import { useDealAcceptStore } from '@/stores/chatStore'
 import { useMemo } from 'react'
 
 const ListContainer = tw.div`

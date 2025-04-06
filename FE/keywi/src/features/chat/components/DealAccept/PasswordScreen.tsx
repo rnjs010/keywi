@@ -1,7 +1,7 @@
 import RandomKeyPad from '@/features/pay/components/RandomKeyPad'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { useDealAcceptStore } from '@/stores/ChatStore'
+import { useDealAcceptStore } from '@/stores/chatStore'
 import { useState } from 'react'
 
 const Container = tw.div`

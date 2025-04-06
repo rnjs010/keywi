@@ -1,7 +1,7 @@
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { useRef, useState } from 'react'
-import { useChatStore } from '@/stores/ChatStore'
+import { useChatImageStore } from '@/stores/chatStore'
 import { colors } from '@/styles/colors'
 import { Camera, Xmark } from 'iconoir-react'
 import MainButton from '@/components/MainButton'
@@ -35,9 +35,9 @@ const FileInput = tw.input`
 `
 export default function ImageInputScreen() {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const resetState = useChatStore((state) => state.resetState)
-  const selectedImage = useChatStore((state) => state.selectedImage)
-  const setSelectedImage = useChatStore((state) => state.setSelectedImage)
+  const resetState = useChatImageStore((state) => state.resetState)
+  const selectedImage = useChatImageStore((state) => state.selectedImage)
+  const setSelectedImage = useChatImageStore((state) => state.setSelectedImage)
   const [disabled, setDisabled] = useState(true)
 
   // 파일 선택 핸들러 (단일 선택)

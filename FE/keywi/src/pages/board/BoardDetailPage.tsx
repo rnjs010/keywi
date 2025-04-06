@@ -12,6 +12,7 @@ import { colors } from '@/styles/colors'
 import ErrorMessage from '@/components/message/ErrorMessage'
 import LoadingMessage from '@/components/message/LoadingMessage'
 import NoDataMessage from '@/components/message/NoDataMessage'
+import { createChatRoom } from '@/features/chat/sevices/chatService'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -36,6 +37,15 @@ export default function BoardDetailPage() {
 
   const handleBookmarkClick = () => {
     setIsBookmarked((prev) => !prev)
+  }
+
+  const handleStartChat = async () => {
+    try {
+      const roomId = await createChatRoom(boardId)
+      navigate(`/chat/${roomId}`)
+    } catch (err) {
+      console.error('채팅방 생성 실패', err)
+    }
   }
 
   return (
@@ -71,7 +81,7 @@ export default function BoardDetailPage() {
       {/* SECTION - 채팅 버튼 */}
       {data && !data.author && (
         <div className="flex flex-row justify-between items-center gap-2 w-full max-w-screen-sm px-4 fixed bottom-24">
-          <MainButton text="1:1 채팅 하러 가기" />
+          <MainButton text="1:1 채팅 하러 가기" onClick={handleStartChat} />
           <div onClick={handleBookmarkClick} className="cursor-pointer">
             {isBookmarked ? (
               <BookmarkSolid height="2rem" width="2rem" color={colors.kiwi} />

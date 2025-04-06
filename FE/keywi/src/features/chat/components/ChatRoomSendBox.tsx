@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useChatStore } from '@/stores/ChatStore'
+import { useChatImageStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const Container = tw.div`
@@ -31,7 +31,7 @@ const IconCircle = tw.div`
 export default function ChatRoomSendBox() {
   const navigate = useNavigate()
   const { roomId } = useParams()
-  const setShowImage = useChatStore((state) => state.setShowImage)
+  const setShowImage = useChatImageStore((state) => state.setShowImage)
 
   const handleAddImageClick = () => {
     setShowImage(true)

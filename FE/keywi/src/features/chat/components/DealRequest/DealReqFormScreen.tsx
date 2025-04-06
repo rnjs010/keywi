@@ -3,7 +3,7 @@ import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
 import ProductForm from '@/features/chat/components/DealRequest/ProductForm'
 import { useEffect, useState } from 'react'
-import { useDealRequestStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/chatStore'
 
 const CostInput = tw.input`
   w-full border px-4 py-3 rounded mb-2 text-base my-2

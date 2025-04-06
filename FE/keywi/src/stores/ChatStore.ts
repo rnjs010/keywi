@@ -3,6 +3,17 @@ import { create } from 'zustand'
 
 // 채팅
 interface ChatStore {
+  connected: boolean
+  setConnected: (status: boolean) => void
+}
+
+export const useChatStore = create<ChatStore>((set) => ({
+  connected: false,
+  setConnected: (status) => set({ connected: status }),
+}))
+
+// 채팅 이미지 전송
+interface ChatImageStore {
   showImage: boolean
   setShowImage: (showImage: boolean) => void
   selectedImage: string | null
@@ -10,7 +21,7 @@ interface ChatStore {
   resetState: () => void
 }
 
-export const useChatStore = create<ChatStore>((set) => ({
+export const useChatImageStore = create<ChatImageStore>((set) => ({
   showImage: false,
   setShowImage: (showImage) => set({ showImage }),
   selectedImage: null,

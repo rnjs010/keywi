@@ -6,7 +6,7 @@ import ChatRoomSendBox from '@/features/chat/components/ChatRoomSendBox'
 import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
-import { useChatStore } from '@/stores/ChatStore'
+import { useChatImageStore } from '@/stores/chatStore'
 import { useEffect, useRef } from 'react'
 
 const Container = tw.div`
@@ -30,7 +30,7 @@ export default function ChatRoomPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const showImage = useChatStore((state) => state.showImage)
+  const showImage = useChatImageStore((state) => state.showImage)
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {

@@ -1,7 +1,7 @@
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
-import { useDealRequestStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const TextContainer = tw.div`

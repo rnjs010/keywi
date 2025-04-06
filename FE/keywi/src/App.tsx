@@ -24,8 +24,12 @@ import ChatListPage from './pages/chat/ChatListPage'
 import ChatRoomPage from './pages/chat/ChatRoomPage'
 import DealRequestPage from './pages/chat/DealRequestPage'
 import DealAcceptPage from './pages/chat/DealAcceptPage'
+import { StompContext } from './stores/stompContext'
+import { createStompClient } from './features/chat/sevices/socketClient'
 
 function App() {
+  const stompClient = createStompClient()
+
   return (
     <>
       <Fonts />
@@ -65,13 +69,24 @@ function App() {
           <Route path="/setting/account" element={<SettingAccountPage />} />
 
           {/* 채팅페이지 라우트 */}
-          <Route path="/chat" element={<ChatListPage />} />
-          <Route path="/chat/:roomId" element={<ChatRoomPage />} />
           <Route
-            path="/chat/:roomId/dealrequest"
-            element={<DealRequestPage />}
-          />
-          <Route path="/chat/:roomId/dealaccept" element={<DealAcceptPage />} />
+            element={
+              <StompContext.Provider value={stompClient}>
+                <Outlet />
+              </StompContext.Provider>
+            }
+          >
+            <Route path="/chat" element={<ChatListPage />} />
+            <Route path="/chat/:roomId" element={<ChatRoomPage />} />
+            <Route
+              path="/chat/:roomId/dealrequest"
+              element={<DealRequestPage />}
+            />
+            <Route
+              path="/chat/:roomId/dealaccept"
+              element={<DealAcceptPage />}
+            />
+          </Route>
         </Route>
 
         {/* 404 페이지나 기타 예외 처리 */}
