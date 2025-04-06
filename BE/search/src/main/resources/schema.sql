@@ -251,7 +251,7 @@ CREATE TABLE ratings (
     FOREIGN KEY (target_id) REFERENCES users(user_id)
 );
 
--- 찜 목록 테이블
+-- 찜 목록 테이블 (유니크 제약 추가)
 CREATE TABLE IF NOT EXISTS wishes (
     wish_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -271,4 +271,36 @@ CREATE TABLE keyword_rank (
                               keyword VARCHAR(255),
                               ranking INT,
                               change_status ENUM('UP', 'DOWN', 'SAME', 'NEW')
+);
+
+-- 연결된 계좌 테이블
+CREATE TABLE user_account (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    bank_code VARCHAR(50) NOT NULL,
+    account_number VARCHAR(50) NOT NULL,
+    account_holder VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    external_account_id VARCHAR(100), -- 금융망 계좌 ID
+    verified_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- 에스크로 거래 테이블
+CREATE TABLE escrow_transaction (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    from_account_id VARCHAR(100) NOT NULL,
+    amount BIGINT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL,
+    completed_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- 금융망 토큰 저장용
+CREATE TABLE api_token (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(1000) NOT NULL,
+    expires_at DATETIME NOT NULL
 );
