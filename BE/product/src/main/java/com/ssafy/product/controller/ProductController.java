@@ -90,23 +90,51 @@ public class ProductController {
 
     private final WishService wishService;
 
-    // 상품 찜하기
-    @PostMapping("/favorites")
-    public ApiResponse<Boolean> addFavorite(
+    // 찜 여부 조회
+    @GetMapping("/favorites/{productId}")
+    public ApiResponse<Boolean> isFavorite(
             @RequestHeader("X-User-ID") Long userId,
-            @RequestBody WishRequest request) {
-        boolean isFavorite = wishService.addWish(userId, request.getProductId());
-        return ApiResponse.success("찜 상태 변경 성공", isFavorite);
+            @PathVariable Integer productId) {
+        boolean isFavorite = wishService.isWished(userId, productId);
+        return ApiResponse.success("찜 여부 조회 성공", isFavorite);
     }
 
-    // 찜한 상품 삭제
-    @DeleteMapping("/favorites")
-    public ApiResponse<Boolean> removeFavorite(
+
+    @PostMapping("/favorites")
+    public ApiResponse<Boolean> toggleFavorite(
             @RequestHeader("X-User-ID") Long userId,
             @RequestBody WishRequest request) {
-        boolean isFavorite = wishService.removeWish(userId, request.getProductId());
-        return ApiResponse.success("찜 해제 성공", isFavorite);
+
+        boolean isFavorite;
+        if (wishService.isWished(userId, request.getProductId())) {
+            wishService.removeWish(userId, request.getProductId());
+            isFavorite = false;
+        } else {
+            wishService.addWish(userId, request.getProductId());
+            isFavorite = true;
+        }
+
+        return ApiResponse.success("찜 토글 성공", isFavorite);
     }
+
+//
+//    // 상품 찜하기
+//    @PostMapping("/favorites")
+//    public ApiResponse<Boolean> addFavorite(
+//            @RequestHeader("X-User-ID") Long userId,
+//            @RequestBody WishRequest request) {
+//        boolean isFavorite = wishService.addWish(userId, request.getProductId());
+//        return ApiResponse.success("찜 상태 변경 성공", isFavorite);
+//    }
+//
+//    // 찜한 상품 삭제
+//    @DeleteMapping("/favorites")
+//    public ApiResponse<Boolean> removeFavorite(
+//            @RequestHeader("X-User-ID") Long userId,
+//            @RequestBody WishRequest request) {
+//        boolean isFavorite = wishService.removeWish(userId, request.getProductId());
+//        return ApiResponse.success("찜 해제 성공", isFavorite);
+//    }
 
     // 유저의 찜한 상품 목록 조회
     @GetMapping("/favorites/list")

@@ -15,21 +15,19 @@ public class WishService {
     private final WishMapper wishMapper;
     private final ProductMapper productMapper;
 
+    // 찜 여부 조회
+    public boolean isWished(Long userId, Integer productId) {
+        return wishMapper.existsWish(userId, productId);
+    }
+
     // 찜 추가
     public boolean addWish(Long userId, Integer productId) {
-        if (wishMapper.existsWish(userId, productId)) {
-            return true; // 이미 찜한 상태
-        }
-
         Integer categoryId = productMapper.findCategoryIdByProductId(productId);
         wishMapper.insertWish(userId, productId, categoryId);
         return true;
     }
     // 찜 삭제
     public boolean removeWish(Long userId, Integer productId) {
-        if (!wishMapper.existsWish(userId, productId)) {
-            return false;
-        }
         wishMapper.deleteWish(userId, productId);
         return false;
     }
