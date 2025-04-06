@@ -41,8 +41,10 @@ export const Text = styled.span<{
   variant?: keyof typeof typography
   weight?: 'regular' | 'bold'
   color?: ColorName
+  tw?: string
 }>`
   ${({ variant = 'body1', weight = 'regular' }) => typography[variant][weight]}
   ${({ color }) => color && `color: ${colors[color]};`}
   font-family: 'Pretendard';
+  ${({ tw }) => tw && tw}
 `

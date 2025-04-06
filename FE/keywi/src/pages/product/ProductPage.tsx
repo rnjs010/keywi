@@ -1,5 +1,5 @@
 import NavBar from '@/components/NavBar'
-import StyledTabs, { TabItem } from '@/components/StyledTabs'
+import StyledTabs, { TabItem } from '@/components/StyleTab'
 import HomeHeader from '@/features/home/components/HomeHeader'
 import ProductList from '@/features/product/component/ProductList'
 import apiRequester from '@/services/api'
@@ -152,48 +152,12 @@ export default function ProductPage() {
         await apiRequester.get<ApiResponse<ProductProps[]>>(endpoint)
 
       if (response.data.status === 'success') {
-        console.log(response.data.data)
+        // console.log(response.data.data)
         setProducts(response.data.data)
       } else {
         console.error(response.data.message)
         setProducts([])
       }
-
-      // 임시 데이터 (API 연동 전까지 사용)
-      // setProducts([
-      //   {
-      //     productId: 1,
-      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=1',
-      //     manufacturer: 'Qwertykeys',
-      //     productName: 'QK80MK2 WK PINK',
-      //     price: 241000,
-      //     isFavorite: false,
-      //   },
-      //   {
-      //     productId: 2,
-      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=2',
-      //     manufacturer: 'OSUME',
-      //     productName: 'sakura keycaps',
-      //     price: 140000,
-      //     isFavorite: true,
-      //   },
-      //   {
-      //     productId: 3,
-      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=3',
-      //     manufacturer: 'SWK',
-      //     productName: '체리 리니어 스위치',
-      //     price: 38000,
-      //     isFavorite: true,
-      //   },
-      //   {
-      //     productId: 4,
-      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
-      //     manufacturer: 'Cerulean',
-      //     productName: '세라키 V2 Blue Crazed',
-      //     price: 217000,
-      //     isFavorite: false,
-      //   },
-      // ])
     } catch (error) {
       console.error('상품 데이터를 가져오는 중 오류 발생:', error)
       setProducts([])

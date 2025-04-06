@@ -1,8 +1,12 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Text } from '@/styles/typography'
 import { ShareIos, Star } from 'iconoir-react'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
-
+import apiRequester from '@/services/api'
+import { ApiResponse } from '@/interfaces/ApiResponse'
+// useNavigate
 const ContentContainer = styled.div`
   ${tw`
   flex-1
@@ -43,15 +47,21 @@ const ActionButtons = tw.div`
 const IconButton = tw.button`
 
 `
-const ViewStoreButton = tw.button`
-  py-1.5
-  mt-3
-  mx-4
-  rounded-lg
-  border
-  border-littleGray
-  text-center
+
+const ViewStoreButton = styled.a`
+  ${tw`
+    py-1.5
+    mt-3
+    mx-4
+    rounded-lg
+    border
+    border-littleGray
+    text-center
+  `}
+  display: block;
+  text-decoration: none;
 `
+
 const ProductDescSection = tw.div`
   mt-7
   p-4
@@ -61,36 +71,71 @@ const ProductDescSection = tw.div`
 const SectionTitle = tw.div`
   mb-3
 `
-const DescImg = tw.img`
-`
+// const DescImg = tw.img`
+// `
 
 export default function ProductDescription() {
-  // 상품 상세 정보 (실제로는 API로 가져와야 함)
-  const product = {
-    id: 1,
-    name: 'QK80MK2 WK PINK',
-    manufacturer: 'Qwertykeys',
-    price: 241000,
-    image: 'https://picsum.photos/600/600?keyboard=1',
-    description: 'https://picsum.photos/600/1200',
+  const { productId } = useParams<{ productId: string }>()
+  // const navigate = useNavigate()
+  const [productDetails, setProductDetails] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchProductDetails = async () => {
+    setLoading(true)
+    try {
+      const response = await apiRequester.get<ApiResponse<any>>(
+        `/api/product/detail/${productId}`,
+      )
+      if (response.data.status === 'success') {
+        setProductDetails(response.data.data)
+      }
+    } catch (error) {
+      console.error('상품 상세 정보 조회 실패:', error)
+    } finally {
+      setLoading(false)
+    }
   }
+
+  useEffect(() => {
+    if (productId) fetchProductDetails()
+  }, [productId])
+
+  if (loading) {
+    return (
+      <ContentContainer>
+        <Text variant="body1">로딩 중...</Text>
+      </ContentContainer>
+    )
+  }
+
+  if (!productDetails) {
+    return (
+      <ContentContainer>
+        <Text variant="body1">상품 정보를 불러올 수 없습니다.</Text>
+      </ContentContainer>
+    )
+  }
+
   return (
     <ContentContainer>
       {/* 상품 이미지 */}
-      <ProductImage src={product.image} alt={product.name} />
+      <ProductImage
+        src={productDetails.productImage}
+        alt={productDetails.productName}
+      />
 
-      {/* 상품 정보 */}
+      {/* 상품 기본 정보 */}
       <ProductInfoSection>
         <Text variant="caption2" color="gray">
-          {product.manufacturer}
+          {productDetails.manufacturer}
         </Text>
         <Text variant="body2" weight="bold">
-          {product.name}
+          {productDetails.productName}
         </Text>
 
         <PriceRow>
           <Text variant="title3" weight="bold">
-            {product.price.toLocaleString()}원
+            {productDetails.price.toLocaleString()}원
           </Text>
           <ActionButtons>
             <IconButton>
@@ -104,21 +149,115 @@ export default function ProductDescription() {
       </ProductInfoSection>
 
       {/* 상점 보기 버튼 */}
-      <ViewStoreButton>
-        <Text variant="caption1" color="darkGray">
-          상품 사이트로 보러가기
-        </Text>
-      </ViewStoreButton>
+      {productDetails.productUrl && (
+        <ViewStoreButton
+          href={productDetails.productUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Text variant="caption1" color="darkGray">
+            상품 사이트로 보러가기
+          </Text>
+        </ViewStoreButton>
+      )}
 
-      {/* 상품 설명 */}
+      {/* 상품 설명 렌더링 */}
       <ProductDescSection>
         <SectionTitle>
           <Text variant="body1" weight="bold" color="darkKiwi">
-            상품 정보
+            상품 상세 정보
           </Text>
         </SectionTitle>
-        <DescImg src={product.description} />
+        {productDetails.descriptions?.map((desc: any) => (
+          <DescriptionRenderer
+            key={desc.productDescriptionId}
+            description={desc}
+          />
+        ))}
       </ProductDescSection>
     </ContentContainer>
   )
+}
+
+function DescriptionRenderer({ description }: { description: any }) {
+  switch (description.contentType) {
+    case 'text':
+      return (
+        <div className="my-2">
+          {description.description
+            .split('\n')
+            .map((line: string, index: number) =>
+              line.trim() === '' ? (
+                <br key={index} />
+              ) : (
+                <p key={index} className="text-gray-800 text-sm">
+                  {line}
+                </p>
+              ),
+            )}
+        </div>
+      )
+    case 'image':
+      return (
+        <div className="my-4">
+          {description.hyperlink ? (
+            <a
+              href={description.hyperlink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={description.description}
+                alt="상품 이미지"
+                className="w-full rounded-md"
+              />
+            </a>
+          ) : (
+            <img
+              src={description.description}
+              alt="상품 이미지"
+              className="w-full rounded-md"
+            />
+          )}
+        </div>
+      )
+    case 'link':
+      return (
+        <a
+          href={description.description}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline my-2"
+        >
+          {description.description}
+        </a>
+      )
+    case 'hr':
+      return (
+        <hr
+          className={`my-4 ${
+            description.description === 'long' ? 'border-t-2' : 'border-t'
+          }`}
+        />
+      )
+    case 'embed':
+      return (
+        <div className="my-4 aspect-video">
+          <iframe
+            src={description.description}
+            title="임베드 콘텐츠"
+            className="w-full h-full"
+            allowFullScreen
+          />
+        </div>
+      )
+    case 'gif':
+      return (
+        <video className="my-4 w-full" autoPlay loop muted playsInline>
+          <source src={description.description} type="video/mp4" />
+        </video>
+      )
+    default:
+      return null
+  }
 }

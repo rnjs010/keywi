@@ -13,6 +13,7 @@ const GridContainer = tw.div`
   gap-2 
   px-2 
   py-2
+  pb-20
 `
 const ProductItem = styled(Link)`
   ${tw`
@@ -90,7 +91,7 @@ export default function ProductList({ products }: SearchProductProps) {
         >
           <ImageContainer>
             <ProductImage
-              src={product.thumbnailUrl}
+              src={product.productImage}
               alt={product.productName}
             />
             <ZzimBtn
