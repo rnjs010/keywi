@@ -4,6 +4,7 @@ import com.ssafy.chat.dto.chat.ChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MessageReceiver {
 
-    private final MessageSender messageSender;
+    private final SimpMessagingTemplate messagingTemplate;
+    private static final String DESTINATION_PREFIX = "/topic/chat/";
 
     /**
      * 채팅 메시지 토픽 리스너
@@ -24,10 +26,10 @@ public class MessageReceiver {
      */
     @KafkaListener(topics = "chat-messages", groupId = "${spring.kafka.consumer.group-id}")
     public void receiveMessage(ChatMessageDto message) {
-        log.info("Kafka 메시지 수신: roomId={}, senderId={}, type={}",
-                message.getRoomId(), message.getSenderId(), message.getMessageType());
+        // 로깅만 하고 실제로 메시지를 전송하지 않음
+        log.debug("Kafka 메시지 수신 (전송하지 않음): {}", message);
 
-        // WebSocket을 통해 메시지 브로드캐스팅
-        messageSender.sendChatMessage(message);
+        // 중복 전송 방지를 위해 주석 처리
+        // messagingTemplate.convertAndSend(DESTINATION_PREFIX + message.getRoomId(), message);
     }
 }

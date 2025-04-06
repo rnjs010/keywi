@@ -2,16 +2,26 @@ package com.ssafy.chat.common.config;
 
 import com.ssafy.chat.common.config.interceptor.StompHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+import java.security.Principal;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * WebSocket 및 STOMP 설정 클래스
  */
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
@@ -24,14 +34,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 메시지 구독 엔드포인트 접두사 설정 (/topic으로 시작하는 주제에 대한 구독 처리)
+        log.info("WebSocket 메시지 브로커 설정 중...");
         registry.enableSimpleBroker("/topic", "/queue");
-
-        // 메시지 발행 엔드포인트 접두사 설정 (/app으로 시작하는 주소로 들어오는 메시지를 컨트롤러에서 처리)
         registry.setApplicationDestinationPrefixes("/app");
-
-        // 특정 사용자에게 메시지 전송 시 사용하는 접두사 설정
         registry.setUserDestinationPrefix("/user");
+        log.info("WebSocket 메시지 브로커 설정 완료");
     }
 
     /**
@@ -39,14 +46,27 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 기존 엔드포인트 유지
-        registry.addEndpoint("/ws-chat")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
-
-        // 추가로 /ws-endpoint 엔드포인트도 등록
         registry.addEndpoint("/ws-endpoint")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns("*") // 모든 출처 허용
+                .setHandshakeHandler(new DefaultHandshakeHandler() {
+                    @Override
+                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+                        // X-User-ID 헤더에서 사용자 ID 추출
+                        List<String> headers = request.getHeaders().get("X-User-ID");
+                        String userId = headers != null && !headers.isEmpty() ? headers.get(0) : "anonymous";
+                        return () -> userId;
+                    }
+                });
+    }
+
+    /**
+     * WebSocket 전송 설정
+     */
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(64 * 1024)       // 64KB
+                .setSendBufferSizeLimit(512 * 1024)       // 512KB
+                .setSendTimeLimit(20000);                 // 20 seconds
     }
 
     /**

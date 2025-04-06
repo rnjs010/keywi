@@ -19,8 +19,8 @@ public class MessageSender {
     private final SimpMessagingTemplate messagingTemplate;
     private final KafkaUtil kafkaUtil;
 
+    private static final String DESTINATION_PREFIX = "/topic/chat/";
     private static final String CHAT_TOPIC = "chat-messages";
-    private static final String DESTINATION_PREFIX = "/topic/chat/room/";
 
     /**
      * 채팅 메시지 전송
@@ -28,14 +28,14 @@ public class MessageSender {
      * @param message 전송할 메시지
      */
     public void sendChatMessage(ChatMessageDto message) {
-        // WebSocket을 통해 채팅방 구독자에게 메시지 전송
-        messagingTemplate.convertAndSend(DESTINATION_PREFIX + message.getRoomId(), message);
+        String destination = DESTINATION_PREFIX + message.getRoomId();
+        log.debug("WebSocket 메시지 전송: destination={}, message={}", destination, message);
 
-        // Kafka 토픽에 메시지 발행 (다른 서비스에서 사용 가능)
-        kafkaUtil.sendMessage(CHAT_TOPIC, message.getRoomId(), message);
+        // WebSocket으로만 메시지 전송
+        messagingTemplate.convertAndSend(destination, message);
 
-        log.info("메시지 전송 완료: roomId={}, senderId={}, type={}",
-                message.getRoomId(), message.getSenderId(), message.getMessageType());
+        // Kafka는 주석 처리하여 중복 전송 방지
+        // kafkaUtil.sendMessage(CHAT_TOPIC, message.getRoomId(), message);
     }
 
     /**
@@ -45,7 +45,6 @@ public class MessageSender {
      */
     public void sendMessageToUser(String userId, ChatMessageDto message) {
         messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
-
         log.info("사용자 메시지 전송: userId={}, messageId={}", userId, message.getMessageId());
     }
 }

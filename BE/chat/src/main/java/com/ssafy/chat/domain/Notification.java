@@ -35,7 +35,7 @@ public class Notification extends BaseTimeEntity {
     private String targetId;    // 대상 ID (채팅방 ID 등)
 
     @Column(nullable = false)
-    private boolean read;       // 읽음 여부
+    private boolean isRead;       // 읽음 여부 (read → isRead로 변경)
 
     @Column(nullable = false)
     private LocalDateTime sentAt; // 전송 시간
