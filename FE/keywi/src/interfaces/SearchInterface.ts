@@ -46,5 +46,4 @@ export interface SearchParams {
   tab: 'feeds' | 'products' | 'users'
   query: string
   page: number
-  size: number
 }

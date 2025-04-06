@@ -7,14 +7,17 @@ import {
 
 // 최근 검색어
 export const useRecent = (userId: number = 1) => {
-  // 임시로 유저아이디 1로 지정
+  // 유저아이디 꼭 필요한 것인가,,, 토큰으로 유저 검색 가능함,,?
   const queryClient = useQueryClient()
 
   // 최근 검색어 가져오기
   const { data: recentKeywords = [] } = useQuery({
     queryKey: searchKeys.recentKeywords(userId),
     queryFn: () => fetchRecentKeywords(userId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    // 페이지 진입마다 최신 데이터 가져오기
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    retry: 1,
   })
 
   // 모든 최근 검색어 삭제 뮤테이션

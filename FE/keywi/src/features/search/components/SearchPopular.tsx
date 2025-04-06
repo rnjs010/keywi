@@ -4,7 +4,7 @@ import { FaCaretDown, FaCaretUp } from 'react-icons/fa'
 import { TiMinus } from 'react-icons/ti'
 import { getCurrentKoreanHour } from '@/utils/getCurrentKoreanHour'
 import { useNavigate } from 'react-router-dom'
-import { useRank } from '../hooks/useRank'
+import { usePopular } from '../hooks/usePopular'
 
 const Container = tw.div`
   w-full
@@ -35,7 +35,8 @@ export default function SearchPopular() {
   const currentHour = getCurrentKoreanHour()
   const navigate = useNavigate()
 
-  const { data: keywordRanks, isLoading, isError } = useRank()
+  // usePopularKeywords 훅 사용
+  const { data: keywordRanks, isLoading, isError } = usePopular()
 
   // 검색어 클릭 핸들러
   const handleKeywordClick = (keyword: string) => {
@@ -64,7 +65,7 @@ export default function SearchPopular() {
   }
 
   // 에러 처리
-  if (isError || !keywordRanks) {
+  if (isError || !keywordRanks?.length) {
     return (
       <Container>
         <TitleWrapper>

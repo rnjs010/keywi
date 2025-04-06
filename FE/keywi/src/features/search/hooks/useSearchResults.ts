@@ -6,25 +6,20 @@ import {
 } from '../services/searchService'
 import { useSearchStore } from '@/stores/searchStore'
 
-// 기본 페이지 크기
-const DEFAULT_PAGE_SIZE = 30
-
+//NOTE - 일단 최대 10페이지라 생각하고 제한해둠...
 // 피드 검색 결과 훅
 export const useFeedSearchResults = (query: string, enabled = true) => {
   return useInfiniteQuery({
     queryKey: ['search', 'feeds', query],
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam }) =>
       fetchFeedResults({
         query,
         page: pageParam,
-        size: DEFAULT_PAGE_SIZE,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < DEFAULT_PAGE_SIZE
-        ? undefined
-        : allPages.length + 1
+      return lastPage.length < 10 ? undefined : allPages.length + 1
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
     enabled: !!query && enabled,
     staleTime: 5 * 60 * 1000, // 5분 캐싱
   })
@@ -34,18 +29,15 @@ export const useFeedSearchResults = (query: string, enabled = true) => {
 export const useProductSearchResults = (query: string, enabled = true) => {
   return useInfiniteQuery({
     queryKey: ['search', 'products', query],
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam }) =>
       fetchProductResults({
         query,
         page: pageParam,
-        size: DEFAULT_PAGE_SIZE,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < DEFAULT_PAGE_SIZE
-        ? undefined
-        : allPages.length + 1
+      return lastPage.length < 10 ? undefined : allPages.length + 1
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
     enabled: !!query && enabled,
     staleTime: 5 * 60 * 1000,
   })
@@ -55,18 +47,15 @@ export const useProductSearchResults = (query: string, enabled = true) => {
 export const useUserSearchResults = (query: string, enabled = true) => {
   return useInfiniteQuery({
     queryKey: ['search', 'users', query],
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam }) =>
       fetchUserResults({
         query,
         page: pageParam,
-        size: DEFAULT_PAGE_SIZE,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < DEFAULT_PAGE_SIZE
-        ? undefined
-        : allPages.length + 1
+      return lastPage.length < 10 ? undefined : allPages.length + 1
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
     enabled: !!query && enabled,
     staleTime: 5 * 60 * 1000,
   })

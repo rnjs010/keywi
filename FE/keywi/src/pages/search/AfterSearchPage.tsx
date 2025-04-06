@@ -3,14 +3,16 @@ import StyledTabs, { TabItem } from '@/components/StyledTabs'
 import SearchFeed from '@/features/search/components/SearchFeed'
 import { SearchHeader } from '@/features/search/components/SearchHeader'
 import SearchProduct from '@/features/search/components/SearchProduct'
+import SearchSuggestions from '@/features/search/components/SearchSuggestions'
 import SearchUser from '@/features/search/components/SearchUser'
+import { useAutocomplete } from '@/features/search/hooks/useAutocomplete'
 import {
   useFeedSearchResults,
   useProductSearchResults,
   useUserSearchResults,
 } from '@/features/search/hooks/useSearchResults'
 import { useSearchStore } from '@/stores/searchStore'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import tw from 'twin.macro'
 
@@ -46,15 +48,31 @@ const NoResults = tw.div`
 `
 
 export function AfterSearchPage() {
-  const { query = '' } = useParams<{ query: string }>()
+  const { query: urlQuery = '' } = useParams<{ query: string }>()
   const { currentTab, setCurrentTab, setQuery } = useSearchStore()
+  const [isSearchActive, setIsSearchActive] = useState(false)
+  const [inputValue, setInputValue] = useState(urlQuery)
+  const { suggestions, showSuggestions, handleInputChange, selectKeyword } =
+    useAutocomplete()
 
-  // URL 쿼리 파라미터를 스토어에 동기화
   useEffect(() => {
-    if (query) {
-      setQuery(query)
+    if (urlQuery) {
+      setQuery(urlQuery) // 스토어 상태 업데이트
+      setInputValue(urlQuery) // 로컬 입력값 업데이트
     }
-  }, [query, setQuery])
+  }, [urlQuery, setQuery])
+
+  // 검색창 포커스 핸들러
+  const handleSearchFocus = () => {
+    setIsSearchActive(true)
+  }
+
+  // 검색어 입력 처리 핸들러
+  const handleSearchInputChange = (value: string) => {
+    setInputValue(value) // 로컬 상태 업데이트
+    handleInputChange(value) // useAutocomplete의 처리 함수 호출
+    setIsSearchActive(true) // 검색 활성화 상태 설정
+  }
 
   // 탭별 데이터 쿼리
   const {
@@ -63,7 +81,7 @@ export function AfterSearchPage() {
     hasNextPage: hasNextFeedPage,
     isFetchingNextPage: isFetchingNextFeedPage,
     isLoading: isLoadingFeeds,
-  } = useFeedSearchResults(query, currentTab === 'feeds')
+  } = useFeedSearchResults(urlQuery, currentTab === 'feeds')
 
   const {
     data: productData,
@@ -71,7 +89,7 @@ export function AfterSearchPage() {
     hasNextPage: hasNextProductPage,
     isFetchingNextPage: isFetchingNextProductPage,
     isLoading: isLoadingProducts,
-  } = useProductSearchResults(query, currentTab === 'products')
+  } = useProductSearchResults(urlQuery, currentTab === 'products')
 
   const {
     data: userData,
@@ -79,7 +97,7 @@ export function AfterSearchPage() {
     hasNextPage: hasNextUserPage,
     isFetchingNextPage: isFetchingNextUserPage,
     isLoading: isLoadingUsers,
-  } = useUserSearchResults(query, currentTab === 'users')
+  } = useUserSearchResults(urlQuery, currentTab === 'users')
 
   // 데이터 변환
   const feeds = feedData?.pages.flatMap((page) => page) || []
@@ -159,14 +177,25 @@ export function AfterSearchPage() {
     <Container>
       {/* 상단 고정 영역 */}
       <FixedTopSection>
-        <SearchHeader height="2.5rem" value={query} onChange={setQuery} />
+        <SearchHeader
+          height="2.5rem"
+          onFocus={handleSearchFocus}
+          value={inputValue}
+          onChange={(value) => handleSearchInputChange(value)}
+        />
       </FixedTopSection>
-
-      <StyledTabs
-        tabs={tabItems}
-        defaultValue="feeds"
-        onChange={handleTabChange}
-      />
+      {isSearchActive && inputValue && showSuggestions ? (
+        <SearchSuggestions
+          suggestions={suggestions}
+          onSelectKeyword={selectKeyword}
+        />
+      ) : (
+        <StyledTabs
+          tabs={tabItems}
+          defaultValue="feeds"
+          onChange={handleTabChange}
+        />
+      )}
     </Container>
   )
 }

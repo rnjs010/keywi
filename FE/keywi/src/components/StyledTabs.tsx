@@ -87,16 +87,21 @@ export interface TabItem {
 export interface StyledTabsProps {
   tabs: TabItem[]
   defaultValue?: string
+  value?: string
   onChange?: (value: string) => void
 }
 
 export default function StyledTabs({
   tabs,
   defaultValue,
+  value,
   onChange,
 }: StyledTabsProps) {
   // 기본값이 없을 경우 첫 번째 탭의 값을 기본값으로 사용
-  const defaultTab = defaultValue || (tabs.length > 0 ? tabs[0].value : '')
+  const defaultTab =
+    value !== undefined
+      ? value
+      : defaultValue || (tabs.length > 0 ? tabs[0].value : '')
 
   return (
     <TabContainer>
@@ -111,7 +116,13 @@ export default function StyledTabs({
 
         <ContentWrapper>
           {tabs.map((tab) => (
-            <TabsContentWrapper key={tab.value} value={tab.value}>
+            <TabsContentWrapper
+              key={tab.value}
+              value={tab.value}
+              // 커스텀 데이터 속성 추가
+              data-tab-value={tab.value}
+              id={`tab-content-${tab.value}`}
+            >
               {tab.content}
             </TabsContentWrapper>
           ))}

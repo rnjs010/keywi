@@ -56,7 +56,7 @@ export default function SearchUser({ users }: SearchUserProps) {
   return (
     <Container>
       {users.map((user) => (
-        <UserItem key={user.userId} to={`/user/${user.userId}`}>
+        <UserItem key={user.userId} to={`/profile/${user.userId}`}>
           <ProfileImage src={user.profileImageUrl} alt={user.nickname} />
           <UserInfo>
             <div className="flex items-center gap-2">

@@ -44,7 +44,7 @@ export default function SearchFeed({ feeds }: SearchFeedProps) {
   return (
     <GridContainer>
       {feeds.map((feed) => (
-        <FeedItem key={feed.feedId} to={`/home/feed/${feed.feedId}`}>
+        <FeedItem key={feed.feedId} to={`/home/${feed.feedId}`}>
           <FeedImage src={feed.thumbnailUrl} alt={`피드 ${feed.feedId}`} />
         </FeedItem>
       ))}

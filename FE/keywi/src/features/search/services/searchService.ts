@@ -27,45 +27,45 @@ export const searchKeys = {
 export const fetchFeedResults = async (
   params: Omit<SearchParams, 'tab'>,
 ): Promise<FeedSearchResult[]> => {
-  const { query, page, size } = params
+  const { query, page } = params
 
   const response = await apiRequester.get('/api/search', {
-    params: { tab: 'feeds', query, page, size },
+    params: { tab: 'feeds', query, page },
   })
-
-  return response.data.data || []
+  console.log('피드 response', response)
+  return response.data || []
 }
 
 // 상품 검색 API
 export const fetchProductResults = async (
   params: Omit<SearchParams, 'tab'>,
 ): Promise<ProductSearchResult[]> => {
-  const { query, page, size } = params
+  const { query, page } = params
 
   const response = await apiRequester.get('/api/search', {
-    params: { tab: 'products', query, page, size },
+    params: { tab: 'products', query, page },
   })
-
-  return response.data.data || []
+  console.log('상품 response', response)
+  return response.data || []
 }
 
 // 사용자 검색 API
 export const fetchUserResults = async (
   params: Omit<SearchParams, 'tab'>,
 ): Promise<UserSearchResult[]> => {
-  const { query, page, size } = params
+  const { query, page } = params
 
   const response = await apiRequester.get('/api/search', {
-    params: { tab: 'users', query, page, size },
+    params: { tab: 'users', query, page },
   })
-
-  return response.data.data || []
+  console.log('사용자 response', response)
+  return response.data || []
 }
 
 // 인기 검색어 랭킹 API
 export const fetchPopularKeywords = async (): Promise<KeywordRank[]> => {
   const response = await apiRequester.get('/api/search/rankings/latest')
-  return response.data.data || []
+  return response.data || []
 }
 
 // 최근 검색어 목록 가져오기
@@ -75,7 +75,7 @@ export const fetchRecentKeywords = async (
   const response = await apiRequester.get('/api/search/keywords', {
     params: { userId },
   })
-  return response.data.data || []
+  return response.data || []
 }
 
 // 최근 검색어 모두 삭제하기

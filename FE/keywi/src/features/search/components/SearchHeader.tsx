@@ -65,7 +65,14 @@ export function SearchHeader({
   const isSearchMainPage = location.pathname === '/search'
 
   // 뒤로가기
-  const handleBack = () => navigate(-1)
+  const handleBack = () => {
+    // 검색 메인 페이지면
+    if (isSearchMainPage) {
+      navigate('/home')
+    } else {
+      navigate('/search')
+    }
+  }
 
   // 포커스 핸들러
   const handleFocus = () => {
