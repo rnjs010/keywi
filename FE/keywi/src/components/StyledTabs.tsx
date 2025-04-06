@@ -11,6 +11,7 @@ const TabContainer = tw.div`
   flex-col
   flex-1
 `
+
 // 스타일링된 탭 컴포넌트
 const TabsWrapper = styled(Tabs)`
   ${tw`
@@ -20,36 +21,20 @@ const TabsWrapper = styled(Tabs)`
     h-full
   `}
 `
-// 탭 목록 스크롤 컨테이너
-const ScrollContainer = styled.div`
-  ${tw`
-    w-full
-    overflow-x-auto
-    overflow-y-hidden
-    border-b
-    border-white
-  `}
 
-  /* 스크롤바 숨기기 */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* iOS 스크롤 부드럽게 */
-  -webkit-overflow-scrolling: touch;
-`
 // 탭 목록 스타일링
 const TabsListWrapper = styled(TabsList)`
   ${tw`
+    w-full 
     bg-transparent 
+    border-b
+    border-white
+    justify-center
     h-9
     shrink-0
-    flex
-    w-max
-    min-w-full
-    justify-items-start
   `}
 `
+
 // 탭 트리거 버튼 스타일링
 const TabsTriggerWrapper = styled(TabsTrigger)`
   ${tw`
@@ -61,13 +46,16 @@ const TabsTriggerWrapper = styled(TabsTrigger)`
     data-[state=active]:border-black
     data-[state=active]:rounded-none
     data-[state=active]:font-bold
+    py-3
   `}
 `
+
 // 탭 내용 컨테이너
 const ContentWrapper = tw.div`
   flex-1
   relative
 `
+
 // 탭 내용 스타일링
 const TabsContentWrapper = styled(TabsContent)`
   ${tw`
@@ -99,33 +87,42 @@ export interface TabItem {
 export interface StyledTabsProps {
   tabs: TabItem[]
   defaultValue?: string
+  value?: string
   onChange?: (value: string) => void
 }
 
 export default function StyledTabs({
   tabs,
   defaultValue,
+  value,
   onChange,
 }: StyledTabsProps) {
   // 기본값이 없을 경우 첫 번째 탭의 값을 기본값으로 사용
-  const defaultTab = defaultValue || (tabs.length > 0 ? tabs[0].value : '')
+  const defaultTab =
+    value !== undefined
+      ? value
+      : defaultValue || (tabs.length > 0 ? tabs[0].value : '')
 
   return (
     <TabContainer>
       <TabsWrapper defaultValue={defaultTab} onValueChange={onChange}>
-        <ScrollContainer>
-          <TabsListWrapper>
-            {tabs.map((tab) => (
-              <TabsTriggerWrapper key={tab.value} value={tab.value}>
-                {tab.label}
-              </TabsTriggerWrapper>
-            ))}
-          </TabsListWrapper>
-        </ScrollContainer>
+        <TabsListWrapper>
+          {tabs.map((tab) => (
+            <TabsTriggerWrapper key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTriggerWrapper>
+          ))}
+        </TabsListWrapper>
 
         <ContentWrapper>
           {tabs.map((tab) => (
-            <TabsContentWrapper key={tab.value} value={tab.value}>
+            <TabsContentWrapper
+              key={tab.value}
+              value={tab.value}
+              // 커스텀 데이터 속성 추가
+              data-tab-value={tab.value}
+              id={`tab-content-${tab.value}`}
+            >
               {tab.content}
             </TabsContentWrapper>
           ))}

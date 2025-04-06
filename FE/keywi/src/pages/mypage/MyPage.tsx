@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import tw from 'twin.macro'
-import styled from '@emotion/styled'
 import MypageHeader from '@/features/mypage/components/MypageHeader'
 import MypageProfile from '@/features/mypage/components/MypageProfile'
 import MypageFeed from '@/features/mypage/components/MypageFeed'
 import MypageBoard from '@/features/mypage/components/MypageBoard'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import NavBar from '@/components/NavBar'
+import StyledTabs, { TabItem } from '@/components/StyledTabs'
 
 const Container = tw.div`
   w-full 
@@ -23,72 +22,6 @@ const Container = tw.div`
 // 상단 고정 영역 위한 컨테이너
 const FixedTopSection = tw.div`
   w-full
-`
-
-const TabContainer = tw.div`
-  mt-1
-  flex 
-  flex-col
-  flex-1
-`
-
-const StyledTabs = styled(Tabs)`
-  ${tw`
-    w-full
-    flex
-    flex-col
-    h-full
-  `}
-`
-
-const StyledTabsList = styled(TabsList)`
-  ${tw`
-    w-full 
-    bg-transparent 
-    border-b
-    border-white
-    justify-center
-    h-9
-    shrink-0
-  `}
-`
-
-const StyledTabsTrigger = styled(TabsTrigger)`
-  ${tw`
-    flex-1 
-    text-base 
-    data-[state=active]:text-black 
-    data-[state=active]:shadow-none
-    data-[state=active]:border-b-2
-    data-[state=active]:border-black
-    data-[state=active]:rounded-none
-    data-[state=active]:font-bold
-    py-3
-  `}
-`
-
-const ContentWrapper = tw.div`
-  flex-1
-  relative
-`
-
-const StyledTabsContent = styled(TabsContent)`
-  ${tw`
-    hidden
-    data-[state=active]:block
-    absolute
-    inset-0
-    overflow-y-auto 
-    pb-16
-  `}
-
-  /* 스크롤바 숨기기 */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* iOS 스크롤 부드럽게 */
-  -webkit-overflow-scrolling: touch;
 `
 
 const NavBarContainer = tw.div`
@@ -154,6 +87,26 @@ export default function MyPage() {
     },
   ])
 
+  // 탭 아이템 정의
+  const tabItems: TabItem[] = [
+    {
+      value: 'feed',
+      label: '피드',
+      content: <MypageFeed feeds={feeds} />,
+    },
+    {
+      value: 'quote',
+      label: '견적',
+      content: <MypageBoard quotes={quotes} />,
+    },
+  ]
+
+  // 탭 변경 핸들러 (추후 api 호출시 사용)
+  const handleTabChange = (value: string) => {
+    console.log('Current tab:', value)
+    // 필요한 로직 추가
+  }
+
   return (
     <Container>
       {/* 상단 고정 영역 */}
@@ -170,23 +123,11 @@ export default function MyPage() {
         />
       </FixedTopSection>
 
-      <TabContainer>
-        <StyledTabs defaultValue="feed">
-          <StyledTabsList>
-            <StyledTabsTrigger value="feed">피드</StyledTabsTrigger>
-            <StyledTabsTrigger value="quote">견적</StyledTabsTrigger>
-          </StyledTabsList>
-
-          <ContentWrapper>
-            <StyledTabsContent value="feed">
-              <MypageFeed feeds={feeds} />
-            </StyledTabsContent>
-            <StyledTabsContent value="quote">
-              <MypageBoard quotes={quotes} />
-            </StyledTabsContent>
-          </ContentWrapper>
-        </StyledTabs>
-      </TabContainer>
+      <StyledTabs
+        tabs={tabItems}
+        defaultValue="feed"
+        onChange={handleTabChange}
+      />
 
       <NavBarContainer>
         <NavBar />
