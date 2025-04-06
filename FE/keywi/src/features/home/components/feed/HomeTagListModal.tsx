@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { colors } from '@/styles/colors'
 import styled from '@emotion/styled'
 import truncateText from '@/utils/truncateText'
+import { useNavigate } from 'react-router-dom'
 
 const TagItemContainer = tw.div`
   flex
@@ -30,7 +31,7 @@ const ProductInfo = tw.div`
   flex-1
   mx-4
 `
-const BookmarkButton = tw.button`
+const ZzimButton = tw.button`
 `
 // 줄 간격을 줄인 제품명 컨테이너
 const ProductNameContainer = styled.div`
@@ -47,13 +48,21 @@ export default function HomeTagListModal({
   productTags = [],
   triggerComponent,
 }: HomeTagListModalProps) {
-  const [bookmarks, setBookmarks] = useState<Record<number, boolean>>({})
+  const navigate = useNavigate()
+  const [zzims, setZzims] = useState<Record<number, boolean>>({})
 
-  const handleBookmark = (tagId: number) => {
-    setBookmarks((prev) => ({
+  const handleZzim = (tagId: number) => {
+    setZzims((prev) => ({
       ...prev,
       [tagId]: !prev[tagId],
     }))
+  }
+
+  // 상품 페이지로 이동하는 함수
+  const handleProductClick = (e: React.MouseEvent, productId: number) => {
+    e.stopPropagation() // 이벤트 버블링 방지
+    console.log(`상품 ID: ${productId}로 이동합니다.`)
+    navigate(`/product/${productId}`)
   }
 
   return (
@@ -79,8 +88,10 @@ export default function HomeTagListModal({
                 alt={tag.name}
               />
               <ProductInfo>
-                <ProductNameContainer>
-                  <Text variant="caption1">{truncateText(tag.name, 45)}</Text>
+                <ProductNameContainer
+                  onClick={(e) => handleProductClick(e, tag.id)}
+                >
+                  <Text variant="caption1">{truncateText(tag.name, 50)}</Text>
                 </ProductNameContainer>
                 <div>
                   <Text variant="caption1" weight="bold">
@@ -88,13 +99,18 @@ export default function HomeTagListModal({
                   </Text>
                 </div>
               </ProductInfo>
-              <BookmarkButton onClick={() => handleBookmark(tag.id)}>
-                {bookmarks[tag.id] ? (
+              <ZzimButton onClick={() => handleZzim(tag.id)}>
+                {zzims[tag.id] ? (
                   <StarSolid height={22} width={22} color={colors.kiwi} />
                 ) : (
-                  <Star height={22} width={22} strokeWidth={1.5} color={colors.gray} />
+                  <Star
+                    height={22}
+                    width={22}
+                    strokeWidth={1.5}
+                    color={colors.gray}
+                  />
                 )}
-              </BookmarkButton>
+              </ZzimButton>
             </TagItemContainer>
           ))}
         </div>

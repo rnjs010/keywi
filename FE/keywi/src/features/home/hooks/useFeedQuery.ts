@@ -1,3 +1,4 @@
+//NOTE - 피드 무한스크롤 조회
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { FeedResponse } from '@/interfaces/HomeInterfaces'
 import { getRecommendedFeeds } from '../services/feedService'

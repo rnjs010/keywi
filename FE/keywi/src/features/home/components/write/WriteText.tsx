@@ -3,6 +3,7 @@ import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import useImageStore from '@/stores/homeStore'
+import HashtagSelector from './HashtagSelector'
 
 const Container = tw.div`
   w-full
@@ -69,9 +70,10 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
     '화이트테리어',
   ]
 
-  useEffect(() => {
-    setSelectedTags(hashtags)
-  }, [hashtags])
+  // 해시태그 변경 핸들러 - 전체 태그 배열을 받아서 처리
+  const handleTagsChange = (newTags: string[]) => {
+    setHashtags(newTags)
+  }
 
   // 해시태그 클릭 핸들러
   const handleTagClick = (tag: string) => {
@@ -101,8 +103,7 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
         value={content}
         onChange={handleTextChange}
       />
-
-      {/* 선택된 해시태그 표시 */}
+      {/* 선택된 해시태그 표시
       {selectedTags.length > 0 ? (
         <SelectedTagsContainer>
           {selectedTags.map((tag) => (
@@ -119,9 +120,8 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
             다양한 #해시태그도 추가할 수 있어요...
           </Text>
         </HashTagHelp>
-      )}
-
-      {/* 해시태그 버튼 */}
+      )} */}
+      {/* 해시태그 버튼
       <HashTagContainer>
         {recommendedTags.map((tag) => (
           <HashTagButton
@@ -136,7 +136,16 @@ export default function WriteText({ onTextChange }: WriteTextProps) {
             </Text>
           </HashTagButton>
         ))}
-      </HashTagContainer>
+      </HashTagContainer> */}
+      //NOTE - 해시태그 작성 : 테스트 해보기
+      {hashtags.length === 0 && (
+        <HashTagHelp>
+          <Text variant="caption2" color="littleGray">
+            다양한 #해시태그도 추가할 수 있어요...
+          </Text>
+        </HashTagHelp>
+      )}
+      <HashtagSelector selectedTags={hashtags} onChange={handleTagsChange} />
     </Container>
   )
 }

@@ -1,4 +1,3 @@
-// features/home/hooks/useProductQueries.ts
 import { useQuery } from '@tanstack/react-query'
 import { getFavoriteProducts } from '../services/feedProductService'
 import { FavoriteProduct } from '@/interfaces/HomeInterfaces'

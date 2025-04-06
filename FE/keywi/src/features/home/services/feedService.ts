@@ -1,4 +1,8 @@
-import { CreateFeedDTO, FeedResponse } from '@/interfaces/HomeInterfaces'
+import {
+  CreateFeedDTO,
+  FeedResponse,
+  Hashtag,
+} from '@/interfaces/HomeInterfaces'
 import apiRequester from '@/services/api'
 
 // 피드 작성
@@ -34,6 +38,18 @@ export const getRecommendedFeeds = async (
     return response.data
   } catch (error) {
     console.error(`피드 가져오기 실패 - 페이지 ${page}:`, error)
+    throw error
+  }
+}
+
+// 해시태그 목록 조회
+export const getHashtags = async (): Promise<Hashtag[]> => {
+  try {
+    const response = await apiRequester.get('/api/feed/hashtags')
+    console.log('해시태그 조회 성공:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('해시태그 조회 실패:', error)
     throw error
   }
 }

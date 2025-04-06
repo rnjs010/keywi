@@ -1,3 +1,4 @@
+//NOTE - 피드 태그용 상품 검색
 import { useQuery } from '@tanstack/react-query'
 import { getSearchProducts } from '../services/feedProductService'
 import { FeedSearchProduct } from '@/interfaces/HomeInterfaces'

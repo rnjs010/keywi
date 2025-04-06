@@ -191,3 +191,10 @@ export interface FeedSearchProduct {
   imageUrl: string
   price: number
 }
+
+// 해시태그 정보
+export interface Hashtag {
+  id: number
+  name: string
+  category: string
+}

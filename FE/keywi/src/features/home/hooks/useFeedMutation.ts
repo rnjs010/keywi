@@ -1,4 +1,4 @@
-// features/home/hooks/useFeedMutation.ts
+//NOTE - 피드 작성
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFeed } from '../services/feedService'
 import { CreateFeedDTO } from '@/interfaces/HomeInterfaces'
