@@ -5,7 +5,8 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { ChatBubbleSolid, Bookmark } from 'iconoir-react'
 import { IoEyeOutline } from 'react-icons/io5'
-import { BoardData } from '@/interfaces/BoardInterface'
+import { BoardDetailData } from '@/interfaces/BoardInterface'
+import { formatDateTime } from '@/utils/formatDateTime'
 
 const InfoContent = tw.div`
   pt-2 pb-4 border-b border-b-[#EEEEEE]
@@ -23,8 +24,8 @@ const SingleInfoBox = tw.span`
   flex flex-row gap-0.5 items-center
 `
 
-export default function BoardDetailTop({ data }: { data: BoardData }) {
-  const badgeData = getBadgeData(data.status)
+export default function BoardDetailTop({ data }: { data: BoardDetailData }) {
+  const badgeData = getBadgeData(data.dealState)
 
   return (
     <InfoContent>
@@ -34,7 +35,7 @@ export default function BoardDetailTop({ data }: { data: BoardData }) {
       </Text>
       <div>
         <Text variant="caption1" weight="regular" color="gray">
-          {data.authorNickname} · {data.createdAt}
+          {data.authorNickname} · {formatDateTime(data.createdAt)}
         </Text>
       </div>
       {/* 상태, 채팅, 북마크, 조회수 */}

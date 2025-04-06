@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { Text } from '@/styles/typography'
 import kakaoLogo from '@/assets/logo_kakao.svg'
 //NOTE - 로그인 테스트 원할 시 주석 해제
-// import { KAKAO_AUTH_URL } from '@/config'
+import { KAKAO_AUTH_URL } from '@/config'
 import { useNavigate } from 'react-router-dom'
 
 const Button = styled.button`
@@ -31,7 +31,7 @@ export default function MainLoginBtn() {
   const navigate = useNavigate()
   const handleKakaoLogin = () => {
     //NOTE - 로그인 테스트 원할 시 주석 해제
-    // window.location.href = KAKAO_AUTH_URL
+    window.location.href = KAKAO_AUTH_URL
     navigate('/home')
   }
 

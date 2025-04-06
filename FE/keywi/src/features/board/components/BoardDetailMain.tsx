@@ -1,21 +1,35 @@
 import BoardProductCard from './BoardProductCard'
 import { Text } from '@/styles/typography'
-import { BoardData } from '@/interfaces/BoardInterface'
+import { BoardDetailData } from '@/interfaces/BoardInterface'
+import { useNavigate } from 'react-router-dom'
 
-export default function BoardDetailMain({ data }: { data: BoardData }) {
+export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
+  const navigate = useNavigate()
+
   return (
     <div className="py-4">
       {/* 상품 리스트 */}
       <Text variant="body2" weight="bold" color="darkKiwi">
         견적 상품 내역
       </Text>
-      {data.items.map((item) => (
-        <BoardProductCard key={item.itemId} data={item} mode="move" />
+      {data.products.map((item) => (
+        <div
+          key={item.productId}
+          onClick={() => {
+            if (item.categoryId !== 0) {
+              // FIXME: 상품 상세페이지 경로로 변경 필요
+              navigate(`/chat`)
+            }
+          }}
+          className="cursor-pointer"
+        >
+          <BoardProductCard data={item} mode="move" />
+        </div>
       ))}
       {/* 게시글 내용 및 사진 */}
       <p className="my-4">{data.content}</p>
-      {data.images.map((item) => (
-        <img src={item} />
+      {data.imageUrls.map((item) => (
+        <img src={item} className="my-2" />
       ))}
     </div>
   )

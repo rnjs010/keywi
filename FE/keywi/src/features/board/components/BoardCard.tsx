@@ -5,6 +5,9 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { ChatBubbleSolid } from 'iconoir-react'
 import { Link } from 'react-router-dom'
+import { BoardCardData } from '@/interfaces/BoardInterface'
+import truncateText from '@/utils/truncateText'
+import { formatDateTime } from '@/utils/formatDateTime'
 
 const CardContainer = tw.div`
   flex flex-col justify-between items-start py-4 border-b border-[#EEEEEE]
@@ -22,29 +25,19 @@ const ThumbnailImage = tw.img`
     w-[3rem] h-[3rem] rounded-md object-cover self-start
   `
 
-interface BoardCardProps {
-  id: number
-  status: string
-  title: string
-  authorNickname: string
-  date: string
-  chstCount?: number
-  thumbnailUrl: string
-}
-
 export default function BoardCard({
-  id,
-  status,
-  title,
+  boardId,
   authorNickname,
-  date,
-  chstCount,
+  title,
   thumbnailUrl,
-}: BoardCardProps) {
-  const badgeData = getBadgeData(status)
+  dealState,
+  chatCount,
+  createdAt,
+}: BoardCardData) {
+  const badgeData = getBadgeData(dealState)
 
   return (
-    <Link to={`/board/${id}`}>
+    <Link to={`/board/${boardId}`}>
       <CardContainer>
         <Badge title={badgeData.title} color={badgeData.color} />
         <ContentContainer>
@@ -52,9 +45,9 @@ export default function BoardCard({
             {/* 제목, 채팅 수 */}
             <TitleContainer>
               <Text variant="body1" weight="regular">
-                {title}
+                {truncateText(title, 25)}
               </Text>
-              {chstCount !== 0 && (
+              {chatCount !== 0 && (
                 <span className="flex flex-row gap-1 items-center">
                   <ChatBubbleSolid
                     color={colors.gray}
@@ -62,7 +55,7 @@ export default function BoardCard({
                     height="1rem"
                   />
                   <Text variant="caption1" weight="regular" color="gray">
-                    {chstCount}
+                    {chatCount}
                   </Text>
                 </span>
               )}
@@ -70,7 +63,7 @@ export default function BoardCard({
             {/* 닉네임, 날짜 */}
             <div className="mt-1">
               <Text variant="caption2" weight="regular" color="gray">
-                {authorNickname} · {date}
+                {authorNickname} · {formatDateTime(createdAt)}
               </Text>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { Plus } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import BoardProductCard from './BoardProductCard'
 
 const CategoryRow = tw.div`
@@ -11,7 +11,7 @@ const CategoryRow = tw.div`
 
 interface ProductSelectorProps {
   label: string
-  product?: BoardItem
+  product?: BoardItemUsingInfo
   onAdd?: () => void
   onDelete?: () => void
 }
@@ -25,7 +25,9 @@ export default function ProductSelector({
   return (
     <>
       {product ? (
-        <BoardProductCard data={product} mode="edit" onDelete={onDelete} />
+        <div className="mb-2">
+          <BoardProductCard data={product} mode="edit" onDelete={onDelete} />
+        </div>
       ) : (
         <CategoryRow>
           <Text variant="body1" weight="bold" color="darkKiwi">
