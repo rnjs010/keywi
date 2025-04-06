@@ -2,23 +2,30 @@ import NavBar from '@/components/NavBar'
 import StyledTabs, { TabItem } from '@/components/StyledTabs'
 import HomeHeader from '@/features/home/components/HomeHeader'
 import ProductList from '@/features/product/component/ProductList'
+import apiRequester from '@/services/api'
 import { ProductProps } from '@/interfaces/ProductInterface'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
+import { ApiResponse } from '@/interfaces/ApiResponse'
+
+type CategoryKey = '1' | '2' | '3' | '4' | '5' | '6' | '7'
+type SubCategory = { id: string; label: string }
 
 const Container = tw.div`
-  w-full 
-  max-w-screen-sm 
-  mx-auto 
-  flex 
-  flex-col 
-  h-screen 
-  box-border 
+  w-full
+  max-w-screen-sm
+  mx-auto
+  flex
+  flex-col
+  h-screen
+  box-border
   overflow-x-hidden
 `
+
 const HeaderContainer = tw.div`
   z-10
 `
+
 const NavBarContainer = tw.div`
   fixed
   bottom-0
@@ -31,94 +38,224 @@ const NavBarContainer = tw.div`
   w-full
 `
 
+const TabsContainer = tw.div`
+  flex
+  flex-col
+  gap-1
+`
+
 export default function ProductPage() {
-  // 상품 더미 데이터
-  const [products] = useState<ProductProps[]>([
-    {
-      productId: 1,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=1',
-      manufacturer: 'Qwertykeys',
-      productName: 'QK80MK2 WK PINK',
-      price: 241000,
-      isFavorite: false,
-    },
-    {
-      productId: 2,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=2',
-      manufacturer: 'OSUME',
-      productName: 'sakura keycaps',
-      price: 140000,
-      isFavorite: true,
-    },
-    {
-      productId: 3,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=3',
-      manufacturer: 'SWK',
-      productName: '체리 리니어 스위치',
-      price: 38000,
-      isFavorite: true,
-    },
-    {
-      productId: 4,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
-      manufacturer: 'Cerulean',
-      productName: '세라키 V2 Blue Crazed',
-      price: 217000,
-      isFavorite: false,
-    },
-    {
-      productId: 5,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=5',
-      manufacturer: 'Cerulean',
-      productName: '세라키 V2 White',
-      price: 217000,
-      isFavorite: false,
-    },
-    {
-      productId: 6,
-      thumbnailUrl: 'https://picsum.photos/400/400?keyboard=6',
-      manufacturer: 'Cerulean',
-      productName: '세라키 V2 Black',
-      price: 217000,
-      isFavorite: false,
-    },
-  ])
+  // 상품 상태 관리
+  const [products, setProducts] = useState<ProductProps[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // 카테고리 필터링 상태
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>(
+    'all',
+  )
+  const [selectedSubCategory, setSelectedSubCategory] = useState('all')
+  const [showSubCategories, setShowSubCategories] = useState(false)
 
   // 카테고리 데이터 정의
   const categories = [
-    { value: 'all', label: '통합', data: products },
-    { value: 'case', label: '키보드', data: products },
-    { value: 'keycap', label: '키캡', data: products },
-    { value: 'keyswitch', label: '스위치', data: products },
-    { value: 'stabilizer', label: '스테빌라이저', data: products },
-    { value: 'foam', label: '흡음재', data: products },
-    { value: 'plate', label: '보강판', data: products },
-    { value: 'pcb', label: '기판', data: products },
+    { id: 'all', value: 'all', label: '통합' },
+    { id: '1', value: 'keyboard', label: '키보드' },
+    { id: '2', value: 'switch', label: '스위치' },
+    { id: '3', value: 'keycap', label: '키캡' },
+    { id: '4', value: 'pcb', label: '기판' },
+    { id: '5', value: 'plate', label: '보강판' },
+    { id: '6', value: 'stabilizer', label: '스테빌라이저' },
+    { id: '7', value: 'foam', label: '흡음재' },
   ]
 
-  // 탭 아이템 생성
-  const tabItems: TabItem[] = categories.map((category) => ({
-    value: category.value,
+  const hasSubCategories = (category: string): category is CategoryKey => {
+    return (
+      Object.keys(subCategories).includes(category) &&
+      !!subCategories[category as CategoryKey]?.length
+    )
+  }
+
+  type SubCategoryMap = {
+    [key in CategoryKey]?: SubCategory[]
+  }
+
+  // 하위 카테고리 데이터 정의
+  const subCategories: SubCategoryMap = {
+    '1': [
+      { id: 'all', label: '전체' },
+      { id: '8', label: '60%' },
+      { id: '9', label: '65%' },
+      { id: '10', label: '75%' },
+      { id: '11', label: '80%' },
+      { id: '12', label: '100%' },
+      { id: '13', label: '기타 배열' },
+    ],
+    '2': [
+      { id: 'all', label: '전체' },
+      { id: '14', label: '리니어' },
+      { id: '15', label: '텍타일' },
+      { id: '16', label: '저소음' },
+      { id: '17', label: '자석축' },
+    ],
+    '3': [
+      { id: 'all', label: '전체' },
+      { id: '18', label: '이중사출' },
+      { id: '19', label: '염료승화' },
+      { id: '20', label: '아티산' },
+      { id: '21', label: '기타 키캡' },
+    ],
+    '6': [
+      { id: 'all', label: '전체' },
+      { id: '22', label: '무보강용(PCB)' },
+      { id: '23', label: '보강용(Plate)' },
+    ],
+  }
+
+  // 상위 카테고리 탭 아이템 생성
+  const categoryTabItems: TabItem[] = categories.map((category) => ({
+    value: category.id,
     label: category.label,
-    content: <ProductList products={category.data} />,
+    content: <></>,
   }))
 
-  // 탭 변경 핸들러 (추후 api 호출시 사용)
-  const handleTabChange = (value: string) => {
-    console.log('Current tab:', value)
-    // 필요한 로직 추가
+  // 현재 선택된 카테고리에 따른 하위 카테고리 탭 아이템 생성
+  const getSubCategoryTabItems = () => {
+    if (!hasSubCategories(selectedCategory)) return []
+
+    return (
+      subCategories[selectedCategory as CategoryKey]?.map((sub) => ({
+        value: sub.id,
+        label: sub.label,
+        content: <></>,
+      })) || []
+    )
   }
+  // 상품 데이터 가져오기
+  const fetchProducts = async () => {
+    setLoading(true)
+    try {
+      let endpoint = '/api/product'
+
+      if (selectedCategory !== 'all') {
+        if (
+          selectedSubCategory !== 'all' &&
+          hasSubCategories(selectedCategory)
+        ) {
+          endpoint += `/${selectedSubCategory}`
+        } else {
+          endpoint += `/${selectedCategory}`
+        }
+      }
+
+      // API 호출 (실제 구현 시 주석 해제)
+      const response =
+        await apiRequester.get<ApiResponse<ProductProps[]>>(endpoint)
+
+      if (response.data.status === 'success') {
+        console.log(response.data.data)
+        setProducts(response.data.data)
+      } else {
+        console.error(response.data.message)
+        setProducts([])
+      }
+
+      // 임시 데이터 (API 연동 전까지 사용)
+      // setProducts([
+      //   {
+      //     productId: 1,
+      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=1',
+      //     manufacturer: 'Qwertykeys',
+      //     productName: 'QK80MK2 WK PINK',
+      //     price: 241000,
+      //     isFavorite: false,
+      //   },
+      //   {
+      //     productId: 2,
+      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=2',
+      //     manufacturer: 'OSUME',
+      //     productName: 'sakura keycaps',
+      //     price: 140000,
+      //     isFavorite: true,
+      //   },
+      //   {
+      //     productId: 3,
+      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=3',
+      //     manufacturer: 'SWK',
+      //     productName: '체리 리니어 스위치',
+      //     price: 38000,
+      //     isFavorite: true,
+      //   },
+      //   {
+      //     productId: 4,
+      //     thumbnailUrl: 'https://picsum.photos/400/400?keyboard=4',
+      //     manufacturer: 'Cerulean',
+      //     productName: '세라키 V2 Blue Crazed',
+      //     price: 217000,
+      //     isFavorite: false,
+      //   },
+      // ])
+    } catch (error) {
+      console.error('상품 데이터를 가져오는 중 오류 발생:', error)
+      setProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 상위 카테고리 변경 핸들러
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value as CategoryKey | 'all')
+    setSelectedSubCategory('all')
+    setShowSubCategories(hasSubCategories(value))
+  }
+
+  // 하위 카테고리 변경 핸들러
+  const handleSubCategoryChange = (value: string) => {
+    setSelectedSubCategory(value)
+  }
+
+  // 카테고리나 하위 카테고리가 변경될 때마다 상품 데이터 다시 가져오기
+  useEffect(() => {
+    fetchProducts()
+  }, [selectedCategory, selectedSubCategory])
 
   return (
     <Container>
       <HeaderContainer>
         <HomeHeader />
       </HeaderContainer>
-      <StyledTabs
-        tabs={tabItems}
-        defaultValue="all"
-        onChange={handleTabChange}
-      />
+
+      <TabsContainer>
+        {/* 상위 카테고리 탭 */}
+        <StyledTabs
+          defaultValue="all"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+          tabs={categoryTabItems}
+        />
+      </TabsContainer>
+
+      {/* 하위 카테고리 탭 (조건부 렌더링) */}
+      {showSubCategories && hasSubCategories(selectedCategory) && (
+        <TabsContainer>
+          <StyledTabs
+            key={selectedCategory}
+            defaultValue="all"
+            value={selectedSubCategory}
+            onChange={handleSubCategoryChange}
+            tabs={getSubCategoryTabItems()}
+          />
+        </TabsContainer>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center items-center flex-1">
+          로딩 중...
+        </div>
+      ) : (
+        <ProductList products={products} />
+      )}
+
       <NavBarContainer>
         <NavBar />
       </NavBarContainer>
