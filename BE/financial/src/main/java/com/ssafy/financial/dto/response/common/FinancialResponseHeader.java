@@ -1,13 +1,9 @@
 package com.ssafy.financial.dto.response.common;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ResponseHeader {
+public class FinancialResponseHeader {
     private String responseCode;
     private String responseMessage;
     private String apiName;
