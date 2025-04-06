@@ -28,11 +28,11 @@ const Img = tw.img`
   `
 
 export default function MainLoginBtn() {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const handleKakaoLogin = () => {
     //NOTE - 로그인 테스트 원할 시 주석 해제
     window.location.href = KAKAO_AUTH_URL
-    navigate('/home')
+    // navigate('/home')
   }
 
   return (

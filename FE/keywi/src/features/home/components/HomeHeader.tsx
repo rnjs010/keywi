@@ -1,5 +1,6 @@
 import HeaderIcons from '@/components/HeaderIcons'
 import HeaderSearch from '@/components/HeaderSearch'
+import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 
 const Container = tw.div`
@@ -7,23 +8,27 @@ const Container = tw.div`
   justify-between
   items-center
   w-full
-  py-2
+  px-4
+  py-4
 `
-//TODO - 버튼화 시켜서 검색창으로 이동하게 하기
-const SearchContainer = tw.div`
+const SearchContainer = tw.button`
   flex-1
   max-w-[68%]
 `
-
 const IconsContainer = tw.div`
   flex
   items-center
 `
 
 export default function HomeHeader() {
+  const navigate = useNavigate()
   return (
     <Container>
-      <SearchContainer>
+      <SearchContainer
+        onClick={() => {
+          navigate('/search')
+        }}
+      >
         <HeaderSearch />
       </SearchContainer>
       <IconsContainer>

@@ -24,6 +24,8 @@ import ChatListPage from './pages/chat/ChatListPage'
 import ChatRoomPage from './pages/chat/ChatRoomPage'
 import DealRequestPage from './pages/chat/DealRequestPage'
 import DealAcceptPage from './pages/chat/DealAcceptPage'
+import SearchingPage from './pages/search/SearchingPage'
+import { AfterSearchPage } from './pages/search/AfterSearchPage'
 
 function App() {
   return (
@@ -72,6 +74,10 @@ function App() {
             element={<DealRequestPage />}
           />
           <Route path="/chat/:roomId/dealaccept" element={<DealAcceptPage />} />
+
+          {/* 검색 라우트 */}
+          <Route path="/search" element={<SearchingPage />} />
+          <Route path="/search/:query" element={<AfterSearchPage />} />
         </Route>
 
         {/* 404 페이지나 기타 예외 처리 */}
