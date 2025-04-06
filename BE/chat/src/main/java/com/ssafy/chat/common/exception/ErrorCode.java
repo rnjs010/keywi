@@ -28,10 +28,14 @@ public enum ErrorCode {
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CH001", "채팅방을 찾을 수 없습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CH002", "메시지를 찾을 수 없습니다."),
     USER_NOT_IN_CHATROOM(HttpStatus.FORBIDDEN, "CH003", "사용자가 채팅방에 속해있지 않습니다."),
+    CHATROOM_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "CH004", "채팅방 생성에 실패했습니다."),
 
     // 알림 관련 에러
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다."),
-    FCM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "N002", "FCM 알림 전송 오류가 발생했습니다.");
+    FCM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "N002", "FCM 알림 전송 오류가 발생했습니다."),
+
+    // 외부 서비스 관련 에러
+    EXTERNAL_SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E001", "외부 서비스 연동 중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

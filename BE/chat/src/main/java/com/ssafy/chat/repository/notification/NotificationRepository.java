@@ -27,10 +27,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * 특정 사용자의 읽지 않은 알림 조회
      */
-    List<Notification> findByUserIdAndReadFalseOrderBySentAtDesc(Long userId);
+    List<Notification> findByUserIdAndIsReadFalseOrderBySentAtDesc(Long userId);
 
     /**
      * 특정 사용자의 읽지 않은 알림 수 조회
      */
-    long countByUserIdAndReadFalse(Long userId);
+    long countByUserIdAndIsReadFalse(Long userId);
 }

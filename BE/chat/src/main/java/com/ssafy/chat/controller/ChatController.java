@@ -1,8 +1,10 @@
 package com.ssafy.chat.controller;
 
 import com.ssafy.chat.common.exception.handler.ApiResponse;
+import com.ssafy.chat.common.util.IdConverter;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
+import com.ssafy.chat.dto.chat.ChatRoomListDto;
 import com.ssafy.chat.service.chat.ChatMessageService;
 import com.ssafy.chat.service.chat.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -38,22 +40,26 @@ public class ChatController {
             @RequestHeader("X-User-ID") String assemblerId) {
 
         log.info("채팅방 생성 요청: boardId={}, assemblerId={}", boardId, assemblerId);
-        // String -> Long 변환
-        ChatRoomDto chatRoom = chatRoomService.createChatRoom(Long.parseLong(boardId), Long.parseLong(assemblerId));
+
+        ChatRoomDto chatRoom = chatRoomService.createChatRoom(
+                IdConverter.toLong(boardId),
+                IdConverter.toLong(assemblerId));
 
         return ResponseEntity.ok(ApiResponse.success("채팅방이 생성되었습니다.", chatRoom));
     }
 
     /**
-     * 사용자의 채팅방 목록 조회
-     * @return 채팅방 목록
+     * 사용자의 채팅방 목록 조회 (간소화된 버전)
+     * @return 간소화된 채팅방 목록
      */
     @GetMapping("/rooms")
-    public ResponseEntity<ApiResponse<List<ChatRoomDto>>> getChatRooms(
+    public ResponseEntity<ApiResponse<List<ChatRoomListDto>>> getChatRooms(
             @RequestHeader("X-User-ID") String userId) {
 
+        log.info("채팅방 목록 조회: userId={}", userId);
+
         // String -> Long 변환
-        List<ChatRoomDto> rooms = chatRoomService.getChatRoomsByUserId(Long.parseLong(userId));
+        List<ChatRoomListDto> rooms = chatRoomService.getChatRoomListByUserId(Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success(rooms));
     }

@@ -1,10 +1,15 @@
 package com.ssafy.chat.service.chat;
 
+import com.ssafy.chat.client.BoardServiceClient;
 import com.ssafy.chat.client.UserServiceClient;
 import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
+import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.domain.ChatRoom;
+import com.ssafy.chat.dto.board.BoardDetailDto;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
+import com.ssafy.chat.dto.chat.ChatRoomListDto;
+import com.ssafy.chat.dto.user.MemberResponseDto;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
 import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +32,8 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final UserServiceClient userServiceClient;
+    private final BoardServiceClient boardServiceClient;
 
     /**
      * 채팅방 생성 (조립자가 구매자에게 채팅 요청 시)
@@ -37,72 +42,85 @@ public class ChatRoomService {
      * @return 생성된 채팅방 정보
      */
     public ChatRoomDto createChatRoom(Long boardId, Long assemblerId) {
-        // 게시글 정보 조회
-        // 미구현: Feign 클라이언트를 통해 board 서비스에서 정보를 가져오는 부분
+        try {
+            // 게시판 서비스에서 게시글 정보 조회
+            ApiResponse<BoardDetailDto> response = boardServiceClient.getBoardWithWriterInfo(boardId);
 
-        // 임시 해결책: 하드코딩된 값으로 테스트 (실제 존재하는 사용자 ID 사용)
-        // users 테이블에 실제 존재하는 ID를 사용하세요
-        String title = "키보드 조립 요청";
-        String thumbnailUrl = "https://example.com/thumbnail.jpg";
-        String dealState = "대기중";
+            BoardDetailDto boardInfo = response.getData();
 
-        // board_id=1인 게시글의 writer_id를 직접 설정
-        // 실제 데이터베이스에서 확인한 값으로 변경해야 합니다
-        Long buyerId = 8L; // users 테이블에 존재하는 ID로 변경
+            // 게시글 관련 정보
+            String title = boardInfo.getTitle();
+            String thumbnailUrl = boardInfo.getThumbnailUrl();
+            String dealState = boardInfo.getDealState();
+            Long buyerId = boardInfo.getWriterId(); // 게시글 작성자(구매자) ID
+            String buyerNickname = boardInfo.getUserNickname(); // 게시글 작성자 닉네임
 
-        // 사용자 정보 조회 (임시)
-        String buyerNickname = "구매자닉네임";
-        String assemblerNickname = "조립자닉네임";
-
-
-        // 이미 해당 게시글에 대한 채팅방이 있는지 확인
-        Optional<ChatRoom> existingRoom = chatRoomRepository.findByBoardId(boardId);
-        if (existingRoom.isPresent()) {
-            ChatRoom room = existingRoom.get();
-
-            // 이미 동일한 조립자와 구매자 간의 채팅방이 있는 경우
-            if (room.getAssemblerId().equals(assemblerId) && room.getBuyerId().equals(buyerId)) {
-                // 비활성화된 경우 다시 활성화
-                if (!room.isBuyerActive() || !room.isAssemblerActive()) {
-                    room.setBuyerActive(true);
-                    room.setAssemblerActive(true);
-                    chatRoomRepository.save(room);
+            // 조립자(현재 요청한 사용자) 닉네임 조회
+            String assemblerNickname = "알 수 없음"; // 기본값
+            try {
+                // Auth 서비스에서 회원 정보 가져오기
+                MemberResponseDto assemblerProfile = userServiceClient.getUserProfile(assemblerId.toString());
+                if (assemblerProfile != null) {
+                    assemblerNickname = assemblerProfile.getUserNickname(); // 닉네임 필드명은 실제 DTO에 맞게 조정
                 }
-                return convertToDto(room);
+            } catch (Exception e) {
+                log.warn("조립자 정보 조회 실패. 조립자 ID: {}", assemblerId, e);
             }
+
+            // 이미 해당 게시글에 대한 채팅방이 있는지 확인
+            Optional<ChatRoom> existingRoom = chatRoomRepository.findByBoardId(boardId);
+            if (existingRoom.isPresent()) {
+                ChatRoom room = existingRoom.get();
+
+                // 이미 동일한 조립자와 구매자 간의 채팅방이 있는 경우
+                if (room.getAssemblerId().equals(assemblerId) && room.getBuyerId().equals(buyerId)) {
+                    // 비활성화된 경우 다시 활성화
+                    if (!room.isBuyerActive() || !room.isAssemblerActive()) {
+                        room.setBuyerActive(true);
+                        room.setAssemblerActive(true);
+                        chatRoomRepository.save(room);
+                    }
+                    return convertToDto(room);
+                }
+            }
+
+            // 새 채팅방 생성
+            ChatRoom chatRoom = ChatRoom.builder()
+                    .boardId(boardId)
+                    .title(title)
+                    .thumbnailUrl(thumbnailUrl)
+                    .dealState(dealState)
+                    .buyerId(buyerId)
+                    .buyerNickname(buyerNickname)
+                    .assemblerId(assemblerId)
+                    .assemblerNickname(assemblerNickname)
+                    .buyerActive(true)
+                    .assemblerActive(true)
+                    .lastMessage("채팅방이 생성되었습니다.")
+                    .lastMessageTime(LocalDateTime.now())
+                    .hasTransaction(false)
+                    .buyerNotificationEnabled(true)
+                    .assemblerNotificationEnabled(true)
+                    .build();
+
+            chatRoomRepository.save(chatRoom);
+            log.info("채팅방 생성 완료: roomId={}, boardId={}", chatRoom.getId(), boardId);
+
+            return convertToDto(chatRoom);
+
+        } catch (Exception e) {
+            log.error("채팅방 생성 중 오류 발생: {}", e.getMessage(), e);
+            // 기존 ErrorCode 사용
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "채팅방 생성 중 오류가 발생했습니다: " + e.getMessage());
         }
-
-        // 새 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.builder()
-                .boardId(boardId)  // 게시글 ID (board_id)
-                .title(title)
-                .thumbnailUrl(thumbnailUrl)
-                .dealState(dealState)
-                .buyerId(buyerId)  // 구매자 ID (writer_id)
-                .buyerNickname(buyerNickname)
-                .assemblerId(assemblerId)
-                .assemblerNickname(assemblerNickname)
-                .buyerActive(true)
-                .assemblerActive(true)
-                .lastMessage("채팅방이 생성되었습니다.")
-                .lastMessageTime(LocalDateTime.now())
-                .hasTransaction(false)
-                .buyerNotificationEnabled(true)
-                .assemblerNotificationEnabled(true)
-                .build();
-
-        chatRoomRepository.save(chatRoom);
-        log.info("채팅방 생성 완료: roomId={}, boardId={}", chatRoom.getId(), boardId);
-
-        return convertToDto(chatRoom);
     }
 
     /**
-     * 사용자의 모든 채팅방 목록 조회
+     * 사용자의 모든 채팅방 목록을 간소화된 형태로 조회
      * @param userId 사용자 ID
-     * @return 채팅방 목록
+     * @return 간소화된 채팅방 목록
      */
-    public List<ChatRoomDto> getChatRoomsByUserId(Long userId) {
+    public List<ChatRoomListDto> getChatRoomListByUserId(Long userId) {
         // 사용자가 구매자 또는 조립자로 참여 중인 활성화된 채팅방 검색
         List<ChatRoom> buyerRooms = chatRoomRepository.findByBuyerIdAndBuyerActiveTrue(userId);
         List<ChatRoom> assemblerRooms = chatRoomRepository.findByAssemblerIdAndAssemblerActiveTrue(userId);
@@ -111,11 +129,67 @@ public class ChatRoomService {
         List<ChatRoom> allRooms = buyerRooms;
         allRooms.addAll(assemblerRooms);
 
-        // DTO로 변환
+        // 간소화된 DTO로 변환
         return allRooms.stream()
-                .map(this::convertToDto)
+                .map(room -> convertToChatRoomListDto(room, userId))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 채팅방 엔티티를 간소화된 목록용 DTO로 변환
+     */
+    private ChatRoomListDto convertToChatRoomListDto(ChatRoom chatRoom, Long currentUserId) {
+        // 상대방 정보 결정
+        Long otherUserId;
+        String otherUserNickname;
+        String otherUserProfileImage = null; // 기본값
+
+        boolean notificationEnabled;
+
+        // 현재 사용자가 구매자인지 조립자인지 확인
+        if (chatRoom.getBuyerId().equals(currentUserId)) {
+            // 현재 사용자가 구매자인 경우, 상대방은 조립자
+            otherUserId = chatRoom.getAssemblerId();
+            otherUserNickname = chatRoom.getAssemblerNickname();
+            notificationEnabled = chatRoom.isBuyerNotificationEnabled();
+
+            // 조립자의 프로필 이미지 가져오기
+            try {
+                MemberResponseDto memberInfo = userServiceClient.getUserProfile(otherUserId.toString());
+                if (memberInfo != null) {
+                    otherUserProfileImage = memberInfo.getProfileUrl();
+                }
+            } catch (Exception e) {
+                log.warn("조립자 프로필 이미지 조회 실패. 조립자 ID: {}", otherUserId, e);
+            }
+        } else {
+            // 현재 사용자가 조립자인 경우, 상대방은 구매자
+            otherUserId = chatRoom.getBuyerId();
+            otherUserNickname = chatRoom.getBuyerNickname();
+            notificationEnabled = chatRoom.isAssemblerNotificationEnabled();
+
+            // 구매자의 프로필 이미지 가져오기
+            try {
+                MemberResponseDto memberInfo = userServiceClient.getUserProfile(otherUserId.toString());
+                if (memberInfo != null) {
+                    otherUserProfileImage = memberInfo.getProfileUrl();
+                }
+            } catch (Exception e) {
+                log.warn("구매자 프로필 이미지 조회 실패. 구매자 ID: {}", otherUserId, e);
+            }
+        }
+
+        return ChatRoomListDto.builder()
+                .roomId(chatRoom.getId().toString())
+                .otherUserId(otherUserId.toString())
+                .otherUserNickname(otherUserNickname)
+                .otherUserProfileImage(otherUserProfileImage)
+                .lastMessage(chatRoom.getLastMessage())
+                .lastMessageTime(chatRoom.getLastMessageTime())
+                .notificationEnabled(notificationEnabled)
+                .build();
+    }
+
 
     /**
      * 채팅방 정보 조회

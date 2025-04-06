@@ -1,4 +1,4 @@
-package com.ssafy.chat.repository.notification;
+package com.ssafy.chat.service.notification;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;

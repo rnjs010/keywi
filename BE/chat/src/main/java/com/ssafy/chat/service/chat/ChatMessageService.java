@@ -2,6 +2,7 @@ package com.ssafy.chat.service.chat;
 
 import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
+import com.ssafy.chat.common.util.IdConverter;
 import com.ssafy.chat.domain.ChatRoom;
 import com.ssafy.chat.domain.mongo.ChatMessage;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
@@ -86,7 +87,7 @@ public class ChatMessageService {
         messageSender.sendChatMessage(messageDto);
 
         // 알림 생성 및 발송
-        sendNotification(messageDto, chatRoom.getBuyerId(), chatRoom.getAssemblerId());
+//        sendNotification(messageDto, chatRoom.getBuyerId(), chatRoom.getAssemblerId());
 
         return messageDto;
     }
@@ -405,57 +406,57 @@ public class ChatMessageService {
         chatRoomService.updateLastMessage(chatRoom.getId(), lastMessage);
     }
 
-    /**
-     * 알림 전송
-     */
-    private void sendNotification(ChatMessageDto messageDto, Long buyerId, Long assemblerId) {
-        // 발신자와 수신자 구분
-        boolean isSenderBuyer = buyerId.toString().equals(messageDto.getSenderId());
-        String receiverId = isSenderBuyer ? assemblerId.toString() : buyerId.toString();
-
-        // 알림 타입 설정
-        String notificationType;
-        String notificationTitle;
-        String notificationContent;
-
-        switch (messageDto.getMessageType()) {
-            case TRANSACTION_REQUEST:
-                notificationType = "TRANSACTION_REQUEST";
-                notificationTitle = "거래 요청";
-                notificationContent = messageDto.getSenderNickname() + "님이 " + messageDto.getTransactionAmount() + "원에 거래를 요청했습니다.";
-                break;
-            case TRANSACTION_PROGRESS:
-                notificationType = "TRANSACTION_PROGRESS";
-                notificationTitle = "거래 진행";
-                notificationContent = messageDto.getSenderNickname() + "님이 거래를 진행합니다.";
-                break;
-            case TRANSACTION_COMPLETE:
-                notificationType = "TRANSACTION_COMPLETE";
-                notificationTitle = "거래 완료";
-                notificationContent = "거래가 완료되었습니다.";
-                break;
-            case TEXT:
-            case IMAGE:
-            default:
-                notificationType = "CHAT";
-                notificationTitle = "새 메시지";
-                notificationContent = messageDto.getSenderNickname() + ": " +
-                        (messageDto.getMessageType() == ChatMessageType.IMAGE ? "사진" : messageDto.getContent());
-                break;
-        }
-
-        // 알림 DTO 생성
-        NotificationDto notificationDto = NotificationDto.builder()
-                .userId(receiverId)
-                .title(notificationTitle)
-                .content(notificationContent)
-                .notificationType(notificationType)
-                .targetId(messageDto.getRoomId())
-                .build();
-
-        // 알림 서비스를 통해 알림 전송
-        notificationService.sendNotification(notificationDto);
-    }
+//    /**
+//     * 알림 전송
+//     */
+//    private void sendNotification(ChatMessageDto messageDto, Long buyerId, Long assemblerId) {
+//        // 발신자와 수신자 구분
+//        boolean isSenderBuyer = buyerId.toString().equals(messageDto.getSenderId());
+//        String receiverId = isSenderBuyer ? assemblerId.toString() : buyerId.toString();
+//
+//        // 알림 타입 설정
+//        String notificationType;
+//        String notificationTitle;
+//        String notificationContent;
+//
+//        switch (messageDto.getMessageType()) {
+//            case TRANSACTION_REQUEST:
+//                notificationType = "TRANSACTION_REQUEST";
+//                notificationTitle = "거래 요청";
+//                notificationContent = messageDto.getSenderNickname() + "님이 " + messageDto.getTransactionAmount() + "원에 거래를 요청했습니다.";
+//                break;
+//            case TRANSACTION_PROGRESS:
+//                notificationType = "TRANSACTION_PROGRESS";
+//                notificationTitle = "거래 진행";
+//                notificationContent = messageDto.getSenderNickname() + "님이 거래를 진행합니다.";
+//                break;
+//            case TRANSACTION_COMPLETE:
+//                notificationType = "TRANSACTION_COMPLETE";
+//                notificationTitle = "거래 완료";
+//                notificationContent = "거래가 완료되었습니다.";
+//                break;
+//            case TEXT:
+//            case IMAGE:
+//            default:
+//                notificationType = "CHAT";
+//                notificationTitle = "새 메시지";
+//                notificationContent = messageDto.getSenderNickname() + ": " +
+//                        (messageDto.getMessageType() == ChatMessageType.IMAGE ? "사진" : messageDto.getContent());
+//                break;
+//        }
+//
+//        // 알림 DTO 생성
+//        NotificationDto notificationDto = NotificationDto.builder()
+//                .userId(receiverId)
+//                .title(notificationTitle)
+//                .content(notificationContent)
+//                .notificationType(notificationType)
+//                .targetId(messageDto.getRoomId())
+//                .build();
+//
+//        // 알림 서비스를 통해 알림 전송
+//        notificationService.sendNotification(notificationDto);
+//    }
 
     /**
      * 엔티티를 DTO로 변환
@@ -491,12 +492,18 @@ public class ChatMessageService {
      * DTO를 엔티티로 변환
      */
     private ChatMessage convertToEntity(ChatMessageDto messageDto, Long roomIdLong) {
-        boolean isSenderBuyer = false; // 기본값, 실제로는 구매자/조립자 판단 로직 추가 필요
+        // 채팅방 정보 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomIdLong)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다."));
+
+        // senderId가 buyerId와 일치하는지 확인
+        Long senderIdLong = IdConverter.toLong(messageDto.getSenderId());
+        boolean isSenderBuyer = chatRoom.getBuyerId().equals(senderIdLong);
 
         return ChatMessage.builder()
                 .id(messageDto.getMessageId())
                 .roomId(roomIdLong)
-                .senderId(Long.parseLong(messageDto.getSenderId()))
+                .senderId(senderIdLong)
                 .messageType(messageDto.getMessageType().name())
                 .message(messageDto.getContent())
                 .sentAt(messageDto.getSentAt())
