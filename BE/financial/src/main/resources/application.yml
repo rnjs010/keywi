@@ -1,0 +1,5 @@
+financial:
+api:
+url: https://openapi.financial.net
+app-id: KIWI_APP_12345
+client-secret: abcdefghijklmnopqrstuvwxyz
