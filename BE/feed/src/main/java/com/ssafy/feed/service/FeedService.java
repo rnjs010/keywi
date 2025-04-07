@@ -39,6 +39,7 @@ public class FeedService {
     private final UserActivityService userActivityService;
     private final HashtagService hashtagService;
     private final LikeService likeService;
+    private final BookmarkService bookmarkService;
     private final UserServiceAdapter userServiceAdapter;
     private final ProductServiceAdapter productServiceAdapter;
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -338,7 +339,8 @@ public class FeedService {
         boolean isLiked = likeService.hasUserLikedFeed(userId, feedId);
         int likeCount = likeService.getLikeCount(feedId);
 
-        boolean isBookmarked = feedMapper.isBookmarkedByUser(feedId, userId);
+        boolean isBookmarked = bookmarkService.hasUserBookmarkedFeed(userId, feedId);
+        int bookmarkCount = bookmarkService.getBookmarkCount(feedId);
 
         // 피드 열람 이벤트 기록
         markFeedAsRead(feedId, userId);
@@ -358,7 +360,7 @@ public class FeedService {
                 .updatedAt(feed.getUpdatedAt())
                 .likeCount(likeCount) // Redis 값 사용
                 .commentCount(feed.getCommentCount())
-                .bookmarkCount(feed.getBookmarkCount())
+                .bookmarkCount(bookmarkCount)
                 .isLiked(isLiked) // Redis 값 사용
                 .isBookmarked(isBookmarked)
                 .recentComments(recentCommentDTOs)
@@ -402,30 +404,31 @@ public class FeedService {
      */
     @Transactional
     public BookmarkResponse toggleBookmark(Long feedId, Long userId) {
-        boolean isBookmarked = feedMapper.isBookmarkedByUser(feedId, userId);
-        int increment;
-
-        if (isBookmarked) {
-            // 북마크 취소
-            feedMapper.removeBookmark(feedId, userId);
-            increment = -1;
-        } else {
-            // 북마크 추가
-            feedMapper.addBookmark(feedId, userId);
-            increment = 1;
-        }
-
-        // 북마크 수 업데이트
-        feedMapper.updateBookmarkCount(feedId, increment);
-
-        // 현재 피드 정보 조회
-        Feed feed = feedMapper.findById(feedId);
-
-        return BookmarkResponse.builder()
-                .feedId(feedId)
-                .isBookmarked(!isBookmarked)
-                .bookmarkCount(feed.getBookmarkCount())
-                .build();
+//        boolean isBookmarked = feedMapper.isBookmarkedByUser(feedId, userId);
+//        int increment;
+//
+//        if (isBookmarked) {
+//            // 북마크 취소
+//            feedMapper.removeBookmark(feedId, userId);
+//            increment = -1;
+//        } else {
+//            // 북마크 추가
+//            feedMapper.addBookmark(feedId, userId);
+//            increment = 1;
+//        }
+//
+//        // 북마크 수 업데이트
+//        feedMapper.updateBookmarkCount(feedId, increment);
+//
+//        // 현재 피드 정보 조회
+//        Feed feed = feedMapper.findById(feedId);
+//
+//        return BookmarkResponse.builder()
+//                .feedId(feedId)
+//                .isBookmarked(!isBookmarked)
+//                .bookmarkCount(feed.getBookmarkCount())
+//                .build();
+        return bookmarkService.toggleBookmark(feedId, userId);
     }
 
     /**
@@ -683,12 +686,15 @@ public class FeedService {
 
         // 좋아요, 북마크 상태 조회
 //        List<Long> likedFeedIds = feedMapper.findLikedFeedsByUserAndFeedIds(userId, feedIds);
-        List<Long> bookmarkedFeedIds = feedMapper.findBookmarkedFeedsByUserAndFeedIds(userId, feedIds);
+//        List<Long> bookmarkedFeedIds = feedMapper.findBookmarkedFeedsByUserAndFeedIds(userId, feedIds);
 
         // Redis에서 좋아요 상태 및 카운트 일괄 조회
         Map<Long, Boolean> likeStatusMap = likeService.getBulkLikeStatus(userId, feedIds);
         Map<Long, Integer> likeCountMap = likeService.getBulkLikeCounts(feedIds);
 
+
+        Map<Long, Boolean> bookmarkStatusMap = bookmarkService.getBulkBookmarkStatus(userId, feedIds);
+        Map<Long, Integer> bookmarkCountMap = bookmarkService.getBulkBookmarkCounts(feedIds);
 
         // 피드 정보 보강
         for (FeedDTO feed : feeds) {
@@ -773,7 +779,9 @@ public class FeedService {
             feed.setLiked(likeStatusMap.getOrDefault(feed.getId(), false));
             feed.setLikeCount(likeCountMap.getOrDefault(feed.getId(), 0));
 
-            feed.setBookmarked(bookmarkedFeedIds.contains(feed.getId()));
+            feed.setBookmarked(bookmarkStatusMap.getOrDefault(feed.getId(), false));
+            feed.setBookmarkCount(bookmarkCountMap.getOrDefault(feed.getId(), 0));
+
         }
     }
 
