@@ -36,12 +36,12 @@ const CommentWrapper = tw.div`
 `
 const CommentBtn = tw.button`
 `
-
 const LikeWrapper = tw.div`
   flex 
   items-center
   gap-1
 `
+
 // 스크롤 키
 const SCROLL_KEY = 'home-feed'
 
@@ -52,6 +52,8 @@ export default function HomeFeedInteraction({
   isBookmarked: initialIsBookmarked = false,
   feedId,
 }: HomeFeedInteractionProps) {
+  const navigate = useNavigate()
+
   const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [likeCount, setLikeCount] = useState(initialLikeCount)
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked)
@@ -73,18 +75,7 @@ export default function HomeFeedInteraction({
     setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1))
 
     // API 호출
-    likeMutation.mutate(feedId, {
-      onSuccess: (data) => {
-        // API 응답으로 정확한 값으로 업데이트
-        setIsLiked(data.liked)
-        setLikeCount(data.likeCount)
-      },
-      onError: () => {
-        // 실패 시 원상복구
-        setIsLiked(isLiked)
-        setLikeCount((prev) => (isLiked ? prev + 1 : prev - 1))
-      },
-    })
+    likeMutation.mutate(feedId)
   }
 
   const handleBookmark = () => {
@@ -92,18 +83,8 @@ export default function HomeFeedInteraction({
     setIsBookmarked(!isBookmarked)
 
     // API 호출
-    bookmarkMutation.mutate(feedId, {
-      onSuccess: (data) => {
-        setIsBookmarked(data.bookmarked)
-      },
-      onError: () => {
-        // 실패 시 원상복구
-        setIsBookmarked(isBookmarked)
-      },
-    })
+    bookmarkMutation.mutate(feedId)
   }
-
-  const navigate = useNavigate()
 
   const handleCommentClick = () => {
     // 현재 스크롤 위치 저장

@@ -29,6 +29,7 @@ const ScrollArea = styled.div`
   ${tw`
     flex-1 
     overflow-y-auto 
+    overflow-x-hidden
     pb-16
   `}
 
@@ -53,6 +54,7 @@ const LoadingContainer = tw.div`
   justify-center
   items-center
   py-4
+  text-darkKiwi
 `
 
 const ErrorContainer = tw.div`

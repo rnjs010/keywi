@@ -1,8 +1,8 @@
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { HomeFeedProfileProps } from '@/interfaces/HomeInterfaces'
-import { useEffect, useState } from 'react'
 import { useFollowMutation } from '../../hooks/useFeedInteractions'
+import { useNavigate } from 'react-router-dom'
 
 const ProfileContainer = tw.div`
   flex
@@ -16,7 +16,6 @@ const ProfileInfo = tw.div`
   items-center
   gap-3
 `
-
 const ProfileImage = tw.img`
   w-11
   h-11
@@ -37,38 +36,28 @@ export default function HomeFeedProfile({
   username,
   profileImage,
   description,
-  isFollowing: initialIsFollowing,
+  isFollowing,
   authorId,
 }: HomeFeedProfileProps) {
-  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
+  const navigate = useNavigate()
   const followMutation = useFollowMutation()
 
-  // props 값이 변경되면 상태 업데이트
-  useEffect(() => {
-    setIsFollowing(initialIsFollowing)
-  }, [initialIsFollowing])
+  const handleProfileClick = () => {
+    navigate(`/profile/${authorId}`)
+  }
 
   const handleFollowToggle = () => {
-    setIsFollowing(!isFollowing)
-
-    // API 호출
-    followMutation.mutate(authorId, {
-      onSuccess: (data) => {
-        // API 응답으로 정확한 상태로 업데이트
-        setIsFollowing(data.followed)
-      },
-      onError: () => {
-        // 실패 시 원상복구
-        setIsFollowing(isFollowing)
-        console.error('팔로우 처리 중 오류가 발생했습니다.')
-      },
-    })
+    followMutation.mutate(authorId)
   }
 
   return (
     <ProfileContainer>
       <ProfileInfo>
-        <ProfileImage src={profileImage} alt={`${username}의 프로필 이미지`} />
+        <ProfileImage
+          src={profileImage}
+          alt={`${username}의 프로필 이미지`}
+          onClick={handleProfileClick}
+        />
         <UserInfo>
           <Text variant="caption1" weight="bold">
             {username}
@@ -79,6 +68,7 @@ export default function HomeFeedProfile({
         </UserInfo>
       </ProfileInfo>
       <FollowButton
+        $isFollowing={isFollowing}
         onClick={handleFollowToggle}
         disabled={followMutation.isPending}
       >

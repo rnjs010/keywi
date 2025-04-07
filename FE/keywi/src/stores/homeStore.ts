@@ -68,6 +68,7 @@ interface FeedState {
   setFeeds: (feeds: FeedData[]) => void // 여러 피드 추가/업데이트
   toggleLike: (feedId: number) => void // 피드 좋아요 토글
   toggleBookmark: (feedId: number) => void // 피드 북마크 토글
+  toggleFollow: (authorId: number) => void // 피드 작성자 팔로우 토글
 }
 
 export const useFeedStore = create<FeedState>((set) => ({
@@ -109,5 +110,23 @@ export const useFeedStore = create<FeedState>((set) => ({
       return {
         feeds: { ...state.feeds, [feedId]: updatedFeed },
       }
+    }),
+
+  toggleFollow: (authorId) =>
+    set((state) => {
+      // 작성자 ID가 같은 모든 피드 업데이트
+      const updatedFeeds = { ...state.feeds }
+
+      Object.keys(updatedFeeds).forEach((feedId) => {
+        const feed = updatedFeeds[Number(feedId)]
+        if (feed.authorId === authorId) {
+          updatedFeeds[Number(feedId)] = {
+            ...feed,
+            isFollowing: !feed.isFollowing,
+          }
+        }
+      })
+
+      return { feeds: updatedFeeds }
     }),
 }))

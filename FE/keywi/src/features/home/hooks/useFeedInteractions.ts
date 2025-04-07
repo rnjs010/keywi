@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import {
   toggleFeedLike,
   toggleFeedBookmark,
@@ -11,7 +11,6 @@ import { useFeedStore } from '@/stores/homeStore'
 
 // 좋아요 기능 훅
 export const useLikeMutation = () => {
-  const queryClient = useQueryClient()
   const { toggleLike } = useFeedStore()
 
   return useMutation<LikeResponse, Error, number>({
@@ -21,7 +20,7 @@ export const useLikeMutation = () => {
       toggleLike(feedId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feeds'] })
+      console.log('좋아요 성공')
     },
     onError: (error, feedId) => {
       // 실패 시 원상복구
@@ -33,7 +32,6 @@ export const useLikeMutation = () => {
 
 // 북마크 기능 훅
 export const useBookmarkMutation = () => {
-  const queryClient = useQueryClient()
   const { toggleBookmark } = useFeedStore()
 
   return useMutation<BookmarkResponse, Error, number>({
@@ -43,7 +41,7 @@ export const useBookmarkMutation = () => {
       toggleBookmark(feedId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feeds'] })
+      console.log('북마크 성공')
     },
     onError: (error, feedId) => {
       // 실패 시 원상복구
@@ -55,12 +53,19 @@ export const useBookmarkMutation = () => {
 
 // 팔로우 기능 훅
 export const useFollowMutation = () => {
-  const queryClient = useQueryClient()
+  const { toggleFollow } = useFeedStore()
 
   return useMutation<FollowResponse, Error, number>({
     mutationFn: (userId: number) => toggleUserFollow(userId),
+    onMutate: async (userId) => {
+      toggleFollow(userId)
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feeds'] })
+      console.log('팔로우 성공')
+    },
+    onError: (error, userId) => {
+      console.error('팔로우 처리 중 오류:', error)
+      toggleFollow(userId)
     },
   })
 }
