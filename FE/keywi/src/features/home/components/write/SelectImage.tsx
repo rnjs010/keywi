@@ -5,7 +5,7 @@ import { Camera } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import styled from '@emotion/styled'
 import useImageStore from '@/stores/homeStore'
-import useImageDragDrop from '../hooks/useImageDragDrop'
+import useImageDragDrop from '../../hooks/useImageDragDrop'
 import SelectDndWrapper from './SelectDndWrapper'
 import SelectDraggableImage from './SelectDraggableImage'
 

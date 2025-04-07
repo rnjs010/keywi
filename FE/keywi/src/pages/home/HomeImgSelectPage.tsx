@@ -1,5 +1,5 @@
 import NextHeader from '@/components/NextHeader'
-import SelectImage from '@/features/home/components/SelectImage'
+import SelectImage from '@/features/home/components/write/SelectImage'
 import { useNavigate } from 'react-router-dom'
 import useImageStore from '@/stores/homeStore'
 import tw from 'twin.macro'
