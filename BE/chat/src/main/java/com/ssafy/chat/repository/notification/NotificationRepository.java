@@ -1,6 +1,6 @@
 package com.ssafy.chat.repository.notification;
 
-import com.ssafy.chat.domain.Notification;
+import com.ssafy.chat.entity.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

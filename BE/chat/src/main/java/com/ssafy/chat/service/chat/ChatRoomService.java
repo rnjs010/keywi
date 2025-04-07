@@ -5,14 +5,12 @@ import com.ssafy.chat.client.UserServiceClient;
 import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
 import com.ssafy.chat.common.exception.handler.ApiResponse;
-import com.ssafy.chat.domain.ChatRoom;
-import com.ssafy.chat.domain.Member;
+import com.ssafy.chat.entity.ChatRoom;
 import com.ssafy.chat.dto.board.BoardDetailDto;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
 import com.ssafy.chat.dto.chat.ChatRoomListDto;
 import com.ssafy.chat.dto.user.MemberResponseDto;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
-import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -98,7 +96,6 @@ public class ChatRoomService {
                     .assemblerActive(true)
                     .lastMessage("채팅방이 생성되었습니다.")
                     .lastMessageTime(LocalDateTime.now())
-                    .hasTransaction(false)
                     .buyerNotificationEnabled(true)
                     .assemblerNotificationEnabled(true)
                     .build();
@@ -366,16 +363,10 @@ public class ChatRoomService {
     /**
      * 채팅방 업데이트 (거래 정보 등)
      * @param roomId 채팅방 ID
-     * @param transactionAmount 거래 금액
-     * @param transactionStatus 거래 상태
      * @return 업데이트된 채팅방 정보
      */
-    public ChatRoomDto updateChatRoomTransaction(Long roomId, Integer transactionAmount, String transactionStatus) {
+    public ChatRoomDto updateChatRoomTransaction(Long roomId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
-
-        chatRoom.setHasTransaction(true);
-        chatRoom.setTransactionAmount(transactionAmount);
-        chatRoom.setTransactionStatus(transactionStatus);
 
         chatRoomRepository.save(chatRoom);
 
@@ -425,9 +416,6 @@ public class ChatRoomService {
                 .assemblerNickname(chatRoom.getAssemblerNickname())
                 .lastMessage(chatRoom.getLastMessage())
                 .lastMessageTime(chatRoom.getLastMessageTime())
-                .hasTransaction(chatRoom.isHasTransaction())
-                .transactionAmount(chatRoom.getTransactionAmount())
-                .transactionStatus(chatRoom.getTransactionStatus())
                 .notificationEnabled(notificationEnabled)
                 .build();
     }

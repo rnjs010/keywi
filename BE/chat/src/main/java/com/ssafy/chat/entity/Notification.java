@@ -1,4 +1,4 @@
-package com.ssafy.chat.domain;
+package com.ssafy.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
