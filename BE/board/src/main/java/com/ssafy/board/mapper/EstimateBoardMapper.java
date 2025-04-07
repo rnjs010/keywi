@@ -50,4 +50,6 @@ public interface EstimateBoardMapper {
 
     // 게시글 목록 조회 (작성자 정보 포함)
     List<EstimateBoardDTO.ListResponse> findBoardListWithDetails(@Param("offset") int offset, @Param("limit") int limit, @Param("userId") Long userId);
+
+    String findAuthorNicknameByBoardId(@Param("boardId") Long boardId);
 }

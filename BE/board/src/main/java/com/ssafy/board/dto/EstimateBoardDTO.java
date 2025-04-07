@@ -86,4 +86,20 @@ public class EstimateBoardDTO {
         private String manufacturer;
         private LocalDateTime createdAt; 
     }
+
+    /**
+     * 채팅 서비스를 위한 게시글 정보 응답 DTO
+     */
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatServiceResponse {
+        private Long boardId;
+        private Long writerId;
+        private String title;
+        private String thumbnailUrl;
+        private String dealState;
+        private String userNickname; // 작성자 닉네임
+    }
 }

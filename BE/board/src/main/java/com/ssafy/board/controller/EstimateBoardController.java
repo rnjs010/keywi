@@ -2,6 +2,7 @@ package com.ssafy.board.controller;
 
 import com.ssafy.board.common.ApiResponse;
 import com.ssafy.board.dto.EstimateBoardDTO;
+import com.ssafy.board.exception.BoardException;
 import com.ssafy.board.model.EstimateBoard;
 import com.ssafy.board.service.EstimateBoardService;
 import com.ssafy.board.service.FileUploadService;
@@ -411,5 +412,29 @@ public class EstimateBoardController {
                 "게시글 상태가 성공적으로 변경되었습니다.",
                 Collections.singletonMap("dealState", dealState)
         ));
+    }
+
+    /**
+     * 채팅 서비스를 위한 게시글 정보 조회 API
+     * @param boardId 게시글 ID
+     * @return 채팅 서비스에 필요한 게시글 정보
+     */
+    @GetMapping("/{boardId}/chat-info")
+    public ResponseEntity<ApiResponse<EstimateBoardDTO.ChatServiceResponse>> getBoardInfoForChatService(
+            @PathVariable Long boardId) {
+
+        try {
+            // Service 계층에서 가져온 결과 사용
+            EstimateBoardDTO.ChatServiceResponse response = estimateBoardService.getBoardInfoForChatService(boardId);
+            return ResponseEntity.ok(ApiResponse.success("채팅 서비스용 게시글 정보를 성공적으로 조회했습니다.", response));
+        } catch (BoardException e) {
+            log.warn("채팅 서비스: 게시글 정보 조회 실패. 게시글 ID: {}, 오류: {}", boardId, e.getMessage());
+            return ResponseEntity.status(e.getStatus())
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("채팅 서비스: 게시글 정보 조회 중 오류 발생. 게시글 ID: {}", boardId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("게시글 정보 조회 중 오류가 발생했습니다."));
+        }
     }
 }

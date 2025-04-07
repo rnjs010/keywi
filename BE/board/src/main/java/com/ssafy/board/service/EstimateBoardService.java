@@ -18,7 +18,7 @@ public interface EstimateBoardService {
      * @param size 페이지 크기
      * @return 견적 게시글 목록
      */
-    List<EstimateBoard> getEstimateBoards(int page, int size);
+//    List<EstimateBoard> getEstimateBoards(int page, int size);
 
     /**
      * 게시글 목록 조회 (작성자 정보 포함)
@@ -81,4 +81,11 @@ public interface EstimateBoardService {
      * @return 작성자별 견적 게시글 목록
      */
     List<EstimateBoard> getEstimateBoardsByWriterId(Long writerId, int page, int size);
+
+    /**
+     * 채팅 서비스에서 사용할 게시글 정보 조회
+     * @param boardId 게시글 ID
+     * @return 게시글 및 작성자 정보
+     */
+    EstimateBoardDTO.ChatServiceResponse getBoardInfoForChatService(Long boardId);
 }

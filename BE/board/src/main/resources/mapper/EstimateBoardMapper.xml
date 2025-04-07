@@ -194,4 +194,16 @@
         created_at DESC
         LIMIT #{offset}, #{limit}
     </select>
+    <!-- 게시글 작성자 닉네임 조회 -->
+    <select id="findAuthorNicknameByBoardId" resultType="string">
+        SELECT
+        u.user_nickname
+        FROM
+        keywi.boards b
+        LEFT JOIN
+        keywi.users u ON b.writer_id = u.user_id
+        WHERE
+        b.board_id = #{boardId}
+    </select>
+
 </mapper>
