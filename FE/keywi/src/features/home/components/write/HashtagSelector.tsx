@@ -8,7 +8,6 @@ const HashtagContainer = tw.div`
   mt-4
   relative
 `
-
 const InputContainer = tw.div`
   relative
   flex
@@ -16,7 +15,6 @@ const InputContainer = tw.div`
   rounded-lg
   py-2
 `
-
 const HashtagInput = tw.input`
   w-full
   outline-none
@@ -24,14 +22,12 @@ const HashtagInput = tw.input`
   text-base
   placeholder:text-gray
 `
-
 const SuggestionsContainer = tw.div`
   mt-2
   flex
   flex-wrap
   gap-2
 `
-
 const SuggestionTag = tw.button`
   px-1
   border-kiwi
@@ -39,16 +35,13 @@ const SuggestionTag = tw.button`
   whitespace-nowrap
   items-center
   flex
-
 `
-
 const SelectedTagsContainer = tw.div`
   mt-3
   flex
   flex-wrap
   gap-1.5
 `
-
 const SelectedTag = tw.div`
   px-2
   py-0.5
@@ -59,7 +52,6 @@ const SelectedTag = tw.div`
   flex
   gap-1
 `
-
 const RemoveButton = tw.button`
   items-center
   flex

@@ -3,9 +3,10 @@ import { Text } from '@/styles/typography'
 import { HomeFeedProfileProps } from '@/interfaces/HomeInterfaces'
 import { useFollowMutation } from '../../hooks/useFeedInteractions'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useFeedStore } from '@/stores/homeStore'
+import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
+import { useFeedStore } from '@/stores/homeStore'
+import { useUserStore } from '@/stores/userStore'
 
 const ProfileContainer = tw.div`
   flex
@@ -30,7 +31,7 @@ const UserInfo = tw.div`
   flex-col
   gap-0.5
 `
-const FollowButton = styled.button<{ $isFollowing: boolean }>`
+const FollowButton = styled.button`
   ${tw`
   py-1 
   px-1
@@ -46,35 +47,28 @@ export default function HomeFeedProfile({
   authorId,
 }: HomeFeedProfileProps) {
   const navigate = useNavigate()
+  const { toggleFollow } = useFeedStore()
   const followMutation = useFollowMutation()
-  const { toggleFollow, feeds } = useFeedStore()
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
+  const currentUserId = useUserStore((state) => state.userId)
 
-  const currentFollowStatus =
-    Object.values(feeds).find((feed) => feed.authorId === authorId)
-      ?.isFollowing ?? initialIsFollowing
+  // 내 피드인지 확인
+  const isOwnFeed = currentUserId === authorId
 
   const handleProfileClick = () => {
     navigate(`/profile/${authorId}`)
   }
 
-  const handleFollowToggle = () => {
-    toggleFollow(authorId)
-    // 즉시 상태 확인
-    setTimeout(() => {
-      const state = useFeedStore.getState()
-      console.log('팔로우 토글 후:', {
-        authorId,
-        storeFollowStatus: Object.values(state.feeds).find(
-          (f) => f.authorId === authorId,
-        )?.isFollowing,
-      })
-    }, 0)
-    followMutation.mutate(authorId)
-  }
-
+  // 팔로우 토글 관련
   useEffect(() => {
-    console.log('currentFollowStatus 변경됨:', currentFollowStatus)
-  }, [currentFollowStatus])
+    setIsFollowing(initialIsFollowing)
+  }, [initialIsFollowing])
+
+  const handleFollowToggle = () => {
+    setIsFollowing(!isFollowing) // ui 업뎃
+    toggleFollow(authorId) // zustand 상태 변경
+    followMutation.mutate(authorId) // api 호출 및 피드 업데이트
+  }
 
   return (
     <ProfileContainer>
@@ -93,15 +87,16 @@ export default function HomeFeedProfile({
           </Text>
         </UserInfo>
       </ProfileInfo>
-      <FollowButton
-        $isFollowing={currentFollowStatus}
-        onClick={handleFollowToggle}
-        disabled={followMutation.isPending}
-      >
-        <Text color="kiwi" variant="body1" weight="bold">
-          {currentFollowStatus ? '팔로잉' : '팔로우'}
-        </Text>
-      </FollowButton>
+      {!isOwnFeed && (
+        <FollowButton
+          onClick={handleFollowToggle}
+          disabled={followMutation.isPending}
+        >
+          <Text color="kiwi" variant="body1" weight="bold">
+            {isFollowing ? '팔로잉' : '팔로우'}
+          </Text>
+        </FollowButton>
+      )}
     </ProfileContainer>
   )
 }

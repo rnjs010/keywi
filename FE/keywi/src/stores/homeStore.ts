@@ -116,17 +116,35 @@ export const useFeedStore = create<FeedState>((set) => ({
     set((state) => {
       // 작성자 ID가 같은 모든 피드 업데이트
       const updatedFeeds = { ...state.feeds }
+      let targetFollowingStatus = false
 
+      // 먼저 현재 팔로우 상태 확인
+      Object.values(updatedFeeds).forEach((feed) => {
+        if (feed.authorId === authorId && targetFollowingStatus === null) {
+          targetFollowingStatus = !feed.isFollowing
+        }
+      })
+
+      if (targetFollowingStatus === null) {
+        console.log('작성자 ID에 해당하는 피드를 찾을 수 없음:', authorId)
+        return state // 변경하지 않음
+      }
+
+      // 모든 관련 피드 업데이트
       Object.keys(updatedFeeds).forEach((feedId) => {
         const feed = updatedFeeds[Number(feedId)]
         if (feed.authorId === authorId) {
           updatedFeeds[Number(feedId)] = {
             ...feed,
-            isFollowing: !feed.isFollowing,
+            isFollowing: targetFollowingStatus,
           }
+          console.log(
+            `피드 ${feedId} 팔로우 상태 업데이트: ${!targetFollowingStatus} → ${targetFollowingStatus}`,
+          )
         }
       })
 
+      console.log('팔로우 토글 완료')
       return { feeds: updatedFeeds }
     }),
 }))

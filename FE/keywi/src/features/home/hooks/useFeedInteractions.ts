@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   toggleFeedLike,
   toggleFeedBookmark,
@@ -54,11 +54,16 @@ export const useBookmarkMutation = () => {
 // 팔로우 기능 훅
 export const useFollowMutation = () => {
   const { toggleFollow } = useFeedStore()
+  const queryClient = useQueryClient()
 
   return useMutation<FollowResponse, Error, number>({
     mutationFn: (userId: number) => toggleUserFollow(userId),
     onMutate: async (userId) => {
-      toggleFollow(userId)
+      // 쿼리 무효화 방지
+      await queryClient.cancelQueries({ queryKey: ['feeds'] })
+
+      // 스토어는 컴포넌트에서 직접 업데이트하므로 여기서는 생략
+      return { userId }
     },
     onSuccess: () => {
       console.log('팔로우 성공')

@@ -88,9 +88,28 @@ const ThumbnailsContainer = styled.div`
   scroll-behavior: smooth;
 `
 
+// 로딩 인디케이터
+const LoadingOverlay = tw.div`
+  absolute
+  inset-0
+  flex
+  items-center
+  justify-center
+  bg-black
+  bg-opacity-50
+  z-10
+`
+const LoadingText = tw.div`
+  text-white
+  p-3
+  bg-darkKiwi
+  rounded-lg
+`
+
 export default function SelectImage() {
   const { images } = useImageStore()
   const {
+    isCompressing,
     showLimitWarning,
     fileInputRef,
     isMobile,
@@ -117,6 +136,11 @@ export default function SelectImage() {
         {images.length > 0 ? (
           <MainImgContainer>
             <MainImg src={images[0]} alt="main-image" />
+            {isCompressing && (
+              <LoadingOverlay>
+                <LoadingText>이미지 최적화 중...</LoadingText>
+              </LoadingOverlay>
+            )}
           </MainImgContainer>
         ) : (
           <NoImgPlaceholder>
@@ -169,6 +193,11 @@ export default function SelectImage() {
           {showLimitWarning && images.length >= 5 && (
             <Text variant="body1" color="darkKiwi">
               최대 5개 사진까지 선택할 수 있습니다.
+            </Text>
+          )}
+          {isCompressing && (
+            <Text variant="body1" color="darkKiwi">
+              이미지를 최적화하는 중입니다. 잠시만 기다려주세요...
             </Text>
           )}
         </ContentContainer>
