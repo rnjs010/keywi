@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class ChatController {
      * @return 생성된 채팅방 정보
      */
     @PostMapping("/rooms")
-    public ResponseEntity<ApiResponse<ChatRoomDto>> createChatRoom(
+    public ResponseEntity<ApiResponse<Map<String, String>>> createChatRoom(
             @RequestParam String boardId,
             @RequestHeader("X-User-ID") String assemblerId) {
 
@@ -45,11 +46,14 @@ public class ChatController {
                 IdConverter.toLong(boardId),
                 IdConverter.toLong(assemblerId));
 
-        return ResponseEntity.ok(ApiResponse.success("채팅방이 생성되었습니다.", chatRoom));
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("roomId", chatRoom.getRoomId());
+
+        return ResponseEntity.ok(ApiResponse.success("채팅방이 생성되었습니다.", responseData));
     }
 
     /**
-     * 사용자의 채팅방 목록 조회 (간소화된 버전)
+     * 사용자의 채팅방 목록 조회
      * @return 간소화된 채팅방 목록
      */
     @GetMapping("/rooms")
@@ -58,7 +62,6 @@ public class ChatController {
 
         log.info("채팅방 목록 조회: userId={}", userId);
 
-        // String -> Long 변환
         List<ChatRoomListDto> rooms = chatRoomService.getChatRoomListByUserId(Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success(rooms));
@@ -74,7 +77,6 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestHeader("X-User-ID") String userId) {
 
-        // String -> Long 변환
         ChatRoomDto room = chatRoomService.getChatRoom(Long.parseLong(roomId));
 
         // 채팅 메시지 읽음 처리
@@ -201,7 +203,6 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestHeader("X-User-ID") String userId) {
 
-        // String -> Long 변환
         Object partnerInfo = chatRoomService.getChatPartner(Long.parseLong(roomId), Long.parseLong(userId));
 
         return ResponseEntity.ok(ApiResponse.success(partnerInfo));

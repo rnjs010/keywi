@@ -6,6 +6,7 @@ import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
 import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.domain.ChatRoom;
+import com.ssafy.chat.domain.Member;
 import com.ssafy.chat.dto.board.BoardDetailDto;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
 import com.ssafy.chat.dto.chat.ChatRoomListDto;
@@ -59,7 +60,9 @@ public class ChatRoomService {
             String assemblerNickname = "알 수 없음"; // 기본값
             try {
                 // Auth 서비스에서 회원 정보 가져오기
-                MemberResponseDto assemblerProfile = userServiceClient.getUserProfile(assemblerId.toString());
+                ApiResponse<MemberResponseDto> userResponse = userServiceClient.getUserProfile(assemblerId);
+
+                MemberResponseDto assemblerProfile = userResponse.getData();
                 if (assemblerProfile != null) {
                     assemblerNickname = assemblerProfile.getUserNickname(); // 닉네임 필드명은 실제 DTO에 맞게 조정
                 }
@@ -150,44 +153,60 @@ public class ChatRoomService {
         if (chatRoom.getBuyerId().equals(currentUserId)) {
             // 현재 사용자가 구매자인 경우, 상대방은 조립자
             otherUserId = chatRoom.getAssemblerId();
-            otherUserNickname = chatRoom.getAssemblerNickname();
+//            otherUserNickname = chatRoom.getAssemblerNickname();
             notificationEnabled = chatRoom.isBuyerNotificationEnabled();
-
-            // 조립자의 프로필 이미지 가져오기
-            try {
-                MemberResponseDto memberInfo = userServiceClient.getUserProfile(otherUserId.toString());
-                if (memberInfo != null) {
-                    otherUserProfileImage = memberInfo.getProfileUrl();
-                }
-            } catch (Exception e) {
-                log.warn("조립자 프로필 이미지 조회 실패. 조립자 ID: {}", otherUserId, e);
-            }
         } else {
             // 현재 사용자가 조립자인 경우, 상대방은 구매자
             otherUserId = chatRoom.getBuyerId();
-            otherUserNickname = chatRoom.getBuyerNickname();
+//            otherUserNickname = chatRoom.getBuyerNickname();
             notificationEnabled = chatRoom.isAssemblerNotificationEnabled();
+        }
 
-            // 구매자의 프로필 이미지 가져오기
-            try {
-                MemberResponseDto memberInfo = userServiceClient.getUserProfile(otherUserId.toString());
-                if (memberInfo != null) {
-                    otherUserProfileImage = memberInfo.getProfileUrl();
-                }
-            } catch (Exception e) {
-                log.warn("구매자 프로필 이미지 조회 실패. 구매자 ID: {}", otherUserId, e);
-            }
+        // 유저 아이디로 유저 정보 가져오기
+        ApiResponse<MemberResponseDto> response = userServiceClient.getUserProfile(otherUserId);
+        MemberResponseDto memberInfo = response.getData();
+
+        // 상대방의 프로필 이미지 가져오기 - 별도 메소드로 분리
+        otherUserProfileImage = memberInfo.getProfileUrl();
+        if(otherUserProfileImage==null || otherUserProfileImage.length()<1 || otherUserProfileImage.isEmpty()){
+            otherUserProfileImage = "https://key-wi.s3.ap-northeast-2.amazonaws.com/profiles/default_profile.png";
         }
 
         return ChatRoomListDto.builder()
                 .roomId(chatRoom.getId().toString())
                 .otherUserId(otherUserId.toString())
-                .otherUserNickname(otherUserNickname)
+                .otherUserNickname(memberInfo.getUserNickname())
                 .otherUserProfileImage(otherUserProfileImage)
                 .lastMessage(chatRoom.getLastMessage())
                 .lastMessageTime(chatRoom.getLastMessageTime())
                 .notificationEnabled(notificationEnabled)
                 .build();
+    }
+
+    /**
+     * 사용자 ID로 프로필 이미지 URL 조회
+     * @param userId 사용자 ID
+     * @return 프로필 이미지 URL 또는 null
+     */
+    private String getProfileImageUrl(Long userId) {
+        try {
+            log.info("유저 프로필 조회 시도: userId={}", userId);
+            ApiResponse<MemberResponseDto> response = userServiceClient.getUserProfile(userId);
+            MemberResponseDto memberInfo = response.getData();
+
+            log.info("유저 프로필 조회 결과: {}", memberInfo);
+
+            if (memberInfo != null && memberInfo.getProfileUrl() != null && !memberInfo.getProfileUrl().isEmpty()) {
+                log.info("프로필 URL 반환: {}", memberInfo.getProfileUrl());
+                return memberInfo.getProfileUrl();
+            }
+
+            log.debug("사용자 프로필 이미지 없음. 사용자 ID: {}", userId);
+            return "https://key-wi.s3.ap-northeast-2.amazonaws.com/profiles/default_profile.png";
+        } catch (Exception e) {
+            log.error("사용자 프로필 이미지 조회 실패. 사용자 ID: {}, 오류: {}", userId, e.getMessage(), e);
+            return "https://key-wi.s3.ap-northeast-2.amazonaws.com/profiles/default_profile.png";
+        }
     }
 
 
@@ -217,19 +236,28 @@ public class ChatRoomService {
 
         // 상대방 정보 조회
         Long partnerId = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerId() : chatRoom.getBuyerId();
-        String partnerNickname = chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerNickname() : chatRoom.getBuyerNickname();
 
-        // 실제 구현에서는 User 서비스에서 상세 정보를 조회해야 함
-        // UserDto partnerInfo = userServiceClient.getUserInfo(partnerId);
+        try {
+            // User 서비스에서 상세 정보를 조회
+            ApiResponse<MemberResponseDto> response = userServiceClient.getUserProfile(partnerId);
+            MemberResponseDto memberInfo = response.getData();
 
-        // 임시 구현: 간단한 맵으로 상대방 정보 반환
-        Map<String, Object> partnerInfo = new HashMap<>();
-        partnerInfo.put("userId", partnerId.toString()); // Long을 String으로 변환
-        partnerInfo.put("nickname", partnerNickname);
-        partnerInfo.put("profileImage", "https://example.com/profiles/" + partnerId + ".jpg");
-        partnerInfo.put("userType", chatRoom.getBuyerId().equals(userId) ? "조립자" : "구매자");
+            // 원하는 형식으로 데이터 구성
+            Map<String, Object> partnerInfo = new HashMap<>();
+            partnerInfo.put("otherUserId", memberInfo.getUserId().toString()); // id -> userId로 변경
+            partnerInfo.put("otherUserNickname", memberInfo.getUserNickname());
+            partnerInfo.put("brix", memberInfo.getBrix());
 
-        return partnerInfo;
+            return partnerInfo;
+        } catch (Exception e) {
+            log.error("상대방 정보 조회 실패: {}", e.getMessage(), e);
+            // 오류 발생 시 기본 정보 반환
+            Map<String, Object> defaultInfo = new HashMap<>();
+            defaultInfo.put("otherUserId", partnerId.toString());
+            defaultInfo.put("otherUserNickname", chatRoom.getBuyerId().equals(userId) ? chatRoom.getAssemblerNickname() : chatRoom.getBuyerNickname());
+            defaultInfo.put("brix", 0);
+            return defaultInfo;
+        }
     }
 
     /**
