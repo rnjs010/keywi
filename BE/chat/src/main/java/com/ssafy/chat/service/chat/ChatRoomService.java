@@ -18,10 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -121,7 +118,7 @@ public class ChatRoomService {
     /**
      * 사용자의 모든 채팅방 목록을 간소화된 형태로 조회
      * @param userId 사용자 ID
-     * @return 간소화된 채팅방 목록
+     * @return 간소화된 채팅방 목록 (최신 메시지 순으로 정렬)
      */
     public List<ChatRoomListDto> getChatRoomListByUserId(Long userId) {
         // 사용자가 구매자 또는 조립자로 참여 중인 활성화된 채팅방 검색
@@ -129,13 +126,19 @@ public class ChatRoomService {
         List<ChatRoom> assemblerRooms = chatRoomRepository.findByAssemblerIdAndAssemblerActiveTrue(userId);
 
         // 두 목록 병합
-        List<ChatRoom> allRooms = buyerRooms;
+        List<ChatRoom> allRooms = new ArrayList<>(buyerRooms);
         allRooms.addAll(assemblerRooms);
 
         // 간소화된 DTO로 변환
-        return allRooms.stream()
+        List<ChatRoomListDto> chatRoomListDtos = allRooms.stream()
                 .map(room -> convertToChatRoomListDto(room, userId))
                 .collect(Collectors.toList());
+
+        // 마지막 메시지 시간 기준으로 내림차순 정렬 (최신 메시지가 상단에 오도록)
+        chatRoomListDtos.sort((room1, room2) ->
+                room2.getLastMessageTime().compareTo(room1.getLastMessageTime()));
+
+        return chatRoomListDtos;
     }
 
     /**
