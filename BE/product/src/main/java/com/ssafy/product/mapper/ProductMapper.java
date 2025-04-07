@@ -24,8 +24,7 @@ public interface ProductMapper {
     List<ProductDto> findProductsByCategoryWithSub(@Param("categoryId") int categoryId);
 
     @Select("<script>" +
-            "SELECT product_id, name, price, category_id, image_url FROM products " +
-            "WHERE category_id IN " +
+            "SELECT * FROM products WHERE category_id IN " +
             "<foreach item='id' collection='categoryIds' open='(' separator=',' close=')'>" +
             "#{id}" +
             "</foreach>" +
