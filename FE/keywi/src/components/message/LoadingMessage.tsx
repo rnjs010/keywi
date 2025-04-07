@@ -3,7 +3,7 @@ import { Text } from '@/styles/typography'
 export default function LoadingMessage() {
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-full">
+      <div className="flex flex-col justify-center items-center h-full w-full">
         <div>
           <img
             src="/spinner/loading.gif"

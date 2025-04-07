@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/stores/authStore'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
+import LoadingMessage from './message/LoadingMessage'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -18,11 +19,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // 초기화되지 않았거나 로딩 중이면 로딩 표시
   if (!initialized || isLoading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <p>인증 상태 확인 중...</p>
-      </div>
-    )
+    return <LoadingMessage />
   }
 
   // 인증되지 않았으면 홈으로 리다이렉트

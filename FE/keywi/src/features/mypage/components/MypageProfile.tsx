@@ -1,4 +1,6 @@
+import Badge from '@/components/Badge'
 import { Text } from '@/styles/typography'
+import getDangdoBadgeData from '@/utils/getDandoBadgeData'
 import tw from 'twin.macro'
 
 const ProfileContainer = tw.div`
@@ -48,21 +50,23 @@ const ProfileButton = tw.button`
 interface MypageProfileProps {
   nickname: string
   profileImage: string
-  // levelBadgeText: string
+  levelBadgeText: number
   followers: number
   following: number
   posts: number
   description?: string
+  isMyProfile: boolean
 }
 
 export default function MypageProfile({
   nickname,
   profileImage,
-  // levelBadgeText,
+  levelBadgeText,
   followers,
   following,
   posts,
   description,
+  isMyProfile,
 }: MypageProfileProps) {
   return (
     <ProfileContainer>
@@ -79,7 +83,10 @@ export default function MypageProfile({
             <Text variant="body2" weight="bold">
               {nickname}
             </Text>
-            {/* <BadgeContainer>{levelBadgeText}</BadgeContainer> */}
+            <Badge
+              title={`당도 ${levelBadgeText}`}
+              color={getDangdoBadgeData(levelBadgeText) || 'low'}
+            />
           </NicknameContainer>
 
           <StatsContainer>
@@ -116,19 +123,20 @@ export default function MypageProfile({
           <Text variant="caption1">{description}</Text>
         </DescriptionContainer>
       )}
-
-      <ButtonsContainer>
-        <ProfileButton>
-          <Text variant="caption2" color="darkGray">
-            프로필 편집
-          </Text>
-        </ProfileButton>
-        <ProfileButton>
-          <Text variant="caption2" color="darkGray">
-            프로필 공유
-          </Text>
-        </ProfileButton>
-      </ButtonsContainer>
+      {isMyProfile && (
+        <ButtonsContainer>
+          <ProfileButton>
+            <Text variant="caption2" color="darkGray">
+              프로필 편집
+            </Text>
+          </ProfileButton>
+          <ProfileButton>
+            <Text variant="caption2" color="darkGray">
+              프로필 공유
+            </Text>
+          </ProfileButton>
+        </ButtonsContainer>
+      )}
     </ProfileContainer>
   )
 }
