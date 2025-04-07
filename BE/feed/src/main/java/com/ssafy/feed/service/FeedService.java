@@ -125,77 +125,66 @@ public class FeedService {
      */
     @Transactional
     public FeedPageResponse getRecommendedFeeds(Long userId, Pageable pageable) {
-        // Redis에서 추천 피드 조회
-        List<FeedDTO> cachedRecommendedFeeds = (List<FeedDTO>) redisTemplate.opsForValue()
-                .get(RECOMMENDED_FEEDS_PREFIX + userId);
+        // 캐시를 무시하고 매번 새로 생성
+        List<FeedDTO> recommendedFeeds = new ArrayList<>();
 
-        // 캐시가 없으면 실시간 생성
-        if (cachedRecommendedFeeds == null || cachedRecommendedFeeds.isEmpty()) {
-            List<FeedDTO> recommendedFeeds = new ArrayList<>();
+        // 1. 팔로우 기반 추천 피드(그 중 읽지 않은 최신 피드)
+        List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
+        List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
+                .map(this::convertToFeedDTO)
+                .collect(Collectors.toList());
+        recommendedFeeds.addAll(followingFeedDTOs);
 
-            // 1. 팔로우 기반 추천 피드(그 중 읽지 않은 최신 피드)
-            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
-            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
-                    .map(this::convertToFeedDTO)
-                    .collect(Collectors.toList());
-            recommendedFeeds.addAll(followingFeedDTOs);
+        // 2. 사용자 활동 기반(좋아요/북마크/댓글 단 피드와 관련된 해시태그 피드)
+        List<FeedDTO> activityBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+        addWithoutDuplicates(recommendedFeeds, activityBasedFeeds);
 
-
-            // 2. 사용자 활동 기반(좋아요/북마크/댓글 단 피드와 관련된 해시태그 피드)
-            List<FeedDTO> activityBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
-            addWithoutDuplicates(recommendedFeeds, activityBasedFeeds);
-
-            // 3. 좋아요 및 북마크 수가 높은 피드 (기존의 인기 피드)
-            List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
-            if (popularFeeds != null && !popularFeeds.isEmpty()) {
-                addWithoutDuplicates(recommendedFeeds, popularFeeds);
-            }
-
-            // 피드가 여전히 부족하면 랜덤 피드로 보충
-            if (recommendedFeeds.isEmpty() || recommendedFeeds.size() < pageable.getPageSize() * 2) {
-                int neededFeedsCount = Math.max(pageable.getPageSize() * 3 - recommendedFeeds.size(), 0);
-                if (neededFeedsCount > 0) {
-                    List<Feed> randomFeeds = feedMapper.findRandomFeeds(neededFeedsCount);
-                    List<FeedDTO> randomFeedDTOs = randomFeeds.stream()
-                            .map(this::convertToFeedDTO)
-                            .collect(Collectors.toList());
-                    addWithoutDuplicates(recommendedFeeds, randomFeedDTOs);
-                }
-            }
-
-            // Redis에 캐싱
-            cachedRecommendedFeeds = recommendedFeeds;
-            redisTemplate.opsForValue().set(
-                    RECOMMENDED_FEEDS_PREFIX + userId,
-                    cachedRecommendedFeeds,
-                    24, TimeUnit.HOURS
-            );
+        // 3. 좋아요 및 북마크 수가 높은 피드 (기존의 인기 피드)
+        List<FeedDTO> popularFeeds = (List<FeedDTO>) redisTemplate.opsForValue().get(POPULAR_FEEDS_KEY);
+        if (popularFeeds != null && !popularFeeds.isEmpty()) {
+            addWithoutDuplicates(recommendedFeeds, popularFeeds);
         }
 
+        // 피드가 여전히 부족하면 랜덤 피드로 보충
+        if (recommendedFeeds.isEmpty() || recommendedFeeds.size() < pageable.getPageSize() * 2) {
+            int neededFeedsCount = Math.max(pageable.getPageSize() * 3 - recommendedFeeds.size(), 0);
+            if (neededFeedsCount > 0) {
+                List<Feed> randomFeeds = feedMapper.findRandomFeeds(neededFeedsCount);
+                List<FeedDTO> randomFeedDTOs = randomFeeds.stream()
+                        .map(this::convertToFeedDTO)
+                        .collect(Collectors.toList());
+                addWithoutDuplicates(recommendedFeeds, randomFeedDTOs);
+            }
+        }
+
+        // Redis에 캐싱 (짧은 시간만 캐시)
+        redisTemplate.opsForValue().set(
+                RECOMMENDED_FEEDS_PREFIX + userId,
+                recommendedFeeds,
+                1, TimeUnit.MINUTES  // 1분만 캐싱
+        );
 
         // 페이지네이션 적용
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), cachedRecommendedFeeds.size());
+        int end = Math.min((start + pageable.getPageSize()), recommendedFeeds.size());
 
         List<FeedDTO> pageContent;
-        if (start < cachedRecommendedFeeds.size()) {
-            pageContent = cachedRecommendedFeeds.subList(start, end);
+        if (start < recommendedFeeds.size()) {
+            pageContent = recommendedFeeds.subList(start, end);
         } else {
-            pageContent = Collections.emptyList(); // 반환한 피드 리스트보다 페이지를 더 높게 부를 경우 빈 리스트로 반환
+            pageContent = Collections.emptyList();
         }
 
-        // 피드 정보 보강 (작성자, 좋아요/북마크 상태 등)
+        // 피드 정보 보강 및 읽음 처리
         enrichFeedInformation(pageContent, userId);
-
-        // 읽음 처리
         pageContent.forEach(feed -> markFeedAsRead(feed.getId(), userId));
 
         return FeedPageResponse.builder()
                 .content(pageContent)
                 .currentPage(pageable.getPageNumber())
-                .totalElements(cachedRecommendedFeeds.size())
-                .totalPages((int) Math.ceil((double) cachedRecommendedFeeds.size() / pageable.getPageSize()))
-                .last(end >= cachedRecommendedFeeds.size())
+                .totalElements(recommendedFeeds.size())
+                .totalPages((int) Math.ceil((double) recommendedFeeds.size() / pageable.getPageSize()))
+                .last(end >= recommendedFeeds.size())
                 .build();
     }
 
