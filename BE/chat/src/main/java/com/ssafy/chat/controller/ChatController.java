@@ -32,7 +32,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
 
     /**
-     * 채팅방 생성 (조립자가 구매자에게 채팅 요청)
+     * 채팅방 생성 (조립자가 구매자에게 1:1 채팅 요청)
      * @param boardId 게시글 ID (board_id)
      * @return 생성된 채팅방 정보
      */
@@ -54,8 +54,8 @@ public class ChatController {
     }
 
     /**
-     * 사용자의 채팅방 목록 조회
-     * @return 간소화된 채팅방 목록
+     * 채팅방 목록 조회
+     * @return 채팅방 목록
      */
     @GetMapping("/rooms")
     public ResponseEntity<ApiResponse<List<ChatRoomListDto>>> getChatRooms(
@@ -69,44 +69,40 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 정보 조회
+     * 채팅 상대방 정보 조회 (step.1)
      * @param roomId 채팅방 ID
-     * @return 채팅방 정보
+     * @return 상대방 사용자 정보
      */
-    @GetMapping("/rooms/{roomId}")
-    public ResponseEntity<ApiResponse<ChatRoomDto>> getChatRoom(
+    @GetMapping("/rooms/{roomId}/partner")
+    public ResponseEntity<ApiResponse<Object>> getChatPartner(
             @PathVariable String roomId,
             @RequestHeader("X-User-ID") String userId) {
 
-        ChatRoomDto room = chatRoomService.getChatRoom(Long.parseLong(roomId));
+        Object partnerInfo = chatRoomService.getChatPartner(Long.parseLong(roomId), Long.parseLong(userId));
 
-        // 채팅 메시지 읽음 처리
-        chatMessageService.markMessagesAsRead(roomId, userId);
-
-        return ResponseEntity.ok(ApiResponse.success(room));
+        return ResponseEntity.ok(ApiResponse.success(partnerInfo));
     }
 
     /**
-     * 채팅방 나가기
+     * 거래 게시글 정보 조회 (step.2)
      * @param roomId 채팅방 ID
-     * @return 처리 결과
+     * @return 게시글 정보
      */
-    @DeleteMapping("/rooms/{roomId}")
-    public ResponseEntity<ApiResponse<Void>> leaveChatRoom(
+    @GetMapping("/rooms/{roomId}/board")
+    public ResponseEntity<ApiResponse<Object>> getBoardInfo(
             @PathVariable String roomId,
             @RequestHeader("X-User-ID") String userId) {
 
-        // String -> Long 변환
-        chatRoomService.leaveChatRoom(Long.parseLong(roomId), Long.parseLong(userId));
+        Object boardInfo = chatRoomService.getBoardInfo(Long.parseLong(roomId));
 
-        return ResponseEntity.ok(ApiResponse.success("채팅방을 나갔습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success(boardInfo));
     }
 
     /**
-     * 채팅 메시지 조회
+     * 채팅 메시지 조회 (step.3)
      * @param roomId 채팅방 ID
      * @param size 조회할 메시지 수
-     * @return 최근 채팅 메시지 목록 (그룹화)
+     * @return 최근 채팅 메시지 목록
      */
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<ApiResponse<ChatMessageGroupResponse>> getRecentMessages(
@@ -121,11 +117,11 @@ public class ChatController {
     }
 
     /**
-     * 스크롤 시 이전 메시지 로딩
+     * 스크롤 시 이전 메시지 로딩 aka.무한스크롤
      * @param roomId 채팅방 ID
      * @param lastMessageId 마지막으로 로드된 메시지 ID
      * @param size 로드할 메시지 수
-     * @return 이전 채팅 메시지 목록 (그룹화)
+     * @return 이전 채팅 메시지 목록
      */
     @GetMapping("/rooms/{roomId}/messages/history")
     public ResponseEntity<ApiResponse<ChatMessageGroupResponse>> loadPreviousMessages(
@@ -137,6 +133,56 @@ public class ChatController {
         ChatMessageGroupResponse messages = chatMessageService.getPreviousMessagesGrouped(roomId, lastMessageId, size);
 
         return ResponseEntity.ok(ApiResponse.success(messages));
+    }
+
+    /**
+     * 채팅방 나가기
+     * @param roomId 채팅방 ID
+     * @return 처리 결과
+     */
+    @DeleteMapping("/rooms/{roomId}")
+    public ResponseEntity<ApiResponse<Void>> leaveChatRoom(
+            @PathVariable String roomId,
+            @RequestHeader("X-User-ID") String userId) {
+
+        chatRoomService.leaveChatRoom(Long.parseLong(roomId), Long.parseLong(userId));
+
+        return ResponseEntity.ok(ApiResponse.success("채팅방을 나갔습니다.", null));
+    }
+
+    /**
+     * 이미지 업로드
+     * @param roomId 채팅방 ID
+     * @param file 업로드할 이미지 파일
+     * @return 업로드된 이미지 URL
+     */
+    @PostMapping("/rooms/{roomId}/media")
+    public ResponseEntity<ApiResponse<String>> uploadMedia(
+            @PathVariable String roomId,
+            @RequestParam("file") MultipartFile file,
+            @RequestHeader("X-User-ID") String userId) {
+
+        String mediaUrl = chatMessageService.uploadMedia(roomId, userId, file);
+
+        return ResponseEntity.ok(ApiResponse.success("이미지가 업로드되었습니다.", mediaUrl));
+    }
+
+    /**
+     * 채팅방 알림 설정
+     * @param roomId 채팅방 ID
+     * @param notificationEnabled 알림 활성화 여부
+     * @return 처리 결과
+     */
+    @PutMapping("/rooms/{roomId}/notification")
+    public ResponseEntity<ApiResponse<Void>> setRoomNotification(
+            @PathVariable String roomId,
+            @RequestBody Map<String, Boolean> notificationEnabled,
+            @RequestHeader("X-User-ID") String userId) {
+
+        // String -> Long 변환
+        chatRoomService.setRoomNotification(Long.parseLong(roomId), Long.parseLong(userId), notificationEnabled.get("enabled"));
+
+        return ResponseEntity.ok(ApiResponse.success("채팅방 알림 설정이 변경되었습니다.", null));
     }
 
     /**
@@ -177,55 +223,6 @@ public class ChatController {
     }
 
     /**
-     * 채팅 상대방 정보 조회
-     * @param roomId 채팅방 ID
-     * @return 상대방 사용자 정보
-     */
-    @GetMapping("/rooms/{roomId}/partner")
-    public ResponseEntity<ApiResponse<Object>> getChatPartner(
-            @PathVariable String roomId,
-            @RequestHeader("X-User-ID") String userId) {
-
-        Object partnerInfo = chatRoomService.getChatPartner(Long.parseLong(roomId), Long.parseLong(userId));
-
-        return ResponseEntity.ok(ApiResponse.success(partnerInfo));
-    }
-
-    /**
-     * 거래 게시글 정보 조회
-     * @param roomId 채팅방 ID
-     * @return 게시글 정보
-     */
-    @GetMapping("/rooms/{roomId}/board")
-    public ResponseEntity<ApiResponse<Object>> getBoardInfo(
-            @PathVariable String roomId,
-            @RequestHeader("X-User-ID") String userId) {
-
-        // String -> Long 변환
-        Object boardInfo = chatRoomService.getBoardInfo(Long.parseLong(roomId));
-
-        return ResponseEntity.ok(ApiResponse.success(boardInfo));
-    }
-
-    /**
-     * 채팅방 알림 설정
-     * @param roomId 채팅방 ID
-     * @param notificationEnabled 알림 활성화 여부
-     * @return 처리 결과
-     */
-    @PutMapping("/rooms/{roomId}/notification")
-    public ResponseEntity<ApiResponse<Void>> setRoomNotification(
-            @PathVariable String roomId,
-            @RequestBody Map<String, Boolean> notificationEnabled,
-            @RequestHeader("X-User-ID") String userId) {
-
-        // String -> Long 변환
-        chatRoomService.setRoomNotification(Long.parseLong(roomId), Long.parseLong(userId), notificationEnabled.get("enabled"));
-
-        return ResponseEntity.ok(ApiResponse.success("채팅방 알림 설정이 변경되었습니다.", null));
-    }
-
-    /**
      * 채팅방 내 사용자 신고
      * @param roomId 채팅방 ID
      * @param reportData 신고 정보
@@ -240,7 +237,6 @@ public class ChatController {
         String reportedUserId = reportData.get("userId");
         String reason = reportData.get("reason");
 
-        // String -> Long 변환
         chatRoomService.reportUser(
                 Long.parseLong(roomId),
                 Long.parseLong(reporterId),
@@ -252,19 +248,20 @@ public class ChatController {
     }
 
     /**
-     * 이미지 업로드
+     * 채팅방 정보 상세 조회
      * @param roomId 채팅방 ID
-     * @param file 업로드할 이미지 파일
-     * @return 업로드된 이미지 URL
+     * @return 채팅방 정보
      */
-    @PostMapping("/rooms/{roomId}/media")
-    public ResponseEntity<ApiResponse<String>> uploadMedia(
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<ApiResponse<ChatRoomDto>> getChatRoom(
             @PathVariable String roomId,
-            @RequestParam("file") MultipartFile file,
             @RequestHeader("X-User-ID") String userId) {
 
-        String mediaUrl = chatMessageService.uploadMedia(roomId, userId, file);
+        ChatRoomDto room = chatRoomService.getChatRoom(Long.parseLong(roomId));
 
-        return ResponseEntity.ok(ApiResponse.success("이미지가 업로드되었습니다.", mediaUrl));
+        // 채팅 메시지 읽음 처리
+        chatMessageService.markMessagesAsRead(roomId, userId);
+
+        return ResponseEntity.ok(ApiResponse.success(room));
     }
 }

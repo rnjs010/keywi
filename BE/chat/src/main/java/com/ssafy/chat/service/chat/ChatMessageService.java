@@ -5,13 +5,12 @@ import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
 import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.common.util.IdConverter;
-import com.ssafy.chat.domain.ChatRoom;
-import com.ssafy.chat.domain.mongo.ChatMessage;
+import com.ssafy.chat.entity.ChatRoom;
+import com.ssafy.chat.entity.mongo.ChatMessage;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
 import com.ssafy.chat.dto.chat.ChatMessageGroupDto;
 import com.ssafy.chat.dto.chat.ChatMessageGroupResponse;
 import com.ssafy.chat.dto.chat.ChatMessageType;
-import com.ssafy.chat.dto.notification.NotificationDto;
 import com.ssafy.chat.dto.user.MemberResponseDto;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
 import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
@@ -106,9 +105,9 @@ public class ChatMessageService {
      * @return 날짜별로 그룹화된 채팅 메시지 목록
      */
     public ChatMessageGroupResponse getChatHistoryGrouped(String roomId, int page, int size) {
-        // 기존 메소드와 동일하게 메시지 조회
+        // 최신순(내림차순)으로 메시지 조회하도록 변경
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChatMessage> messagesPage = chatMessageRepository.findByRoomIdOrderBySentAt(Long.parseLong(roomId), pageable);
+        Page<ChatMessage> messagesPage = chatMessageRepository.findByRoomIdOrderBySentAtDesc(Long.parseLong(roomId), pageable);
 
         // 메시지를 DTO로 변환
         List<ChatMessageDto> messageDtos = messagesPage.getContent().stream()
@@ -119,6 +118,11 @@ public class ChatMessageService {
         Map<String, List<ChatMessageDto>> groupedMessages = messageDtos.stream()
                 .collect(Collectors.groupingBy(msg -> formatDateToGroup(msg.getSentAt())));
 
+        // 각 그룹 내의 메시지를 시간순(오름차순)으로 정렬
+        groupedMessages.forEach((date, messages) ->
+                messages.sort(Comparator.comparing(ChatMessageDto::getSentAt))
+        );
+
         // 그룹화된 메시지를 날짜 순으로 정렬하여 리스트로 변환
         List<ChatMessageGroupDto> messageGroups = groupedMessages.entrySet().stream()
                 .map(entry -> new ChatMessageGroupDto(entry.getKey(), entry.getValue()))
@@ -127,7 +131,6 @@ public class ChatMessageService {
 
         // 필요한 페이징 정보만 포함하는 Map 생성
         Map<String, Object> pagingInfo = new HashMap<>();
-        pagingInfo.put("currentPage", messagesPage.getNumber());
         pagingInfo.put("pageSize", messagesPage.getSize());
         pagingInfo.put("hasMoreMessages", !messagesPage.isLast());
         pagingInfo.put("totalMessages", messagesPage.getTotalElements());
@@ -182,7 +185,6 @@ public class ChatMessageService {
 
         // 필요한 페이징 정보만 포함하는 Map 생성
         Map<String, Object> pagingInfo = new HashMap<>();
-        pagingInfo.put("currentPage", 0);
         pagingInfo.put("pageSize", size);
         pagingInfo.put("hasMoreMessages", messages.size() >= size);
         pagingInfo.put("totalMessages", messages.size());
@@ -293,88 +295,12 @@ public class ChatMessageService {
                 .transactionStatus("요청")
                 .build();
 
-        // 채팅방 정보 업데이트 - String을 Long으로 변환
-        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), amount, "요청");
+        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId));
 
         // 메시지 전송
         return sendMessage(messageDto, senderId);
     }
 
-    /**
-     * 거래 진행 메시지 전송 (구매자가 수락)
-     * @param roomId 채팅방 ID
-     * @param userId 사용자 ID (구매자)
-     * @return 전송된 메시지 정보
-     */
-    public ChatMessageDto sendTransactionProgress(String roomId, String userId) {
-        // String을 Long으로 변환
-        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
-                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
-
-        // 구매자만 거래 진행 가능 - String을 Long으로 변환
-        Long userIdLong = Long.parseLong(userId);
-        if (!chatRoom.getBuyerId().equals(userIdLong)) {
-            throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 진행은 구매자만 가능합니다.");
-        }
-
-        // 거래 요청 상태 확인
-        if (!chatRoom.isHasTransaction() || !"요청".equals(chatRoom.getTransactionStatus())) {
-            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "유효한 거래 요청이 없습니다.");
-        }
-
-        // 거래 진행 메시지 생성
-        ChatMessageDto messageDto = ChatMessageDto.builder()
-                .roomId(roomId)
-                .messageType(ChatMessageType.TRANSACTION_PROGRESS)
-                .content("거래가 진행 중입니다.")
-                .transactionAmount(chatRoom.getTransactionAmount())
-                .transactionStatus("진행중")
-                .build();
-
-        // 채팅방 정보 업데이트 - String을 Long으로 변환
-        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), chatRoom.getTransactionAmount(), "진행중");
-
-        // 메시지 전송
-        return sendMessage(messageDto, userId);
-    }
-
-    /**
-     * 거래 완료 메시지 전송
-     * @param roomId 채팅방 ID
-     * @param userId 사용자 ID (구매자)
-     * @return 전송된 메시지 정보
-     */
-    public ChatMessageDto sendTransactionComplete(String roomId, String userId) {
-        // String을 Long으로 변환
-        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
-                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
-
-        // 구매자만 거래 완료 가능 - String을 Long으로 변환
-        Long userIdLong = Long.parseLong(userId);
-        if (!chatRoom.getBuyerId().equals(userIdLong)) {
-            throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 완료는 구매자만 가능합니다.");
-        }
-
-        // 거래 진행 상태 확인
-        if (!chatRoom.isHasTransaction() || !"진행중".equals(chatRoom.getTransactionStatus())) {
-            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "진행 중인 거래가 없습니다.");
-        }
-
-        // 거래 완료 메시지 생성
-        ChatMessageDto messageDto = ChatMessageDto.builder()
-                .roomId(roomId)
-                .messageType(ChatMessageType.TRANSACTION_COMPLETE)
-                .content("거래가 완료되었습니다.")
-                .transactionAmount(chatRoom.getTransactionAmount())
-                .transactionStatus("완료")
-                .build();
-
-        // 채팅방 정보 업데이트 - String을 Long으로 변환
-        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId), chatRoom.getTransactionAmount(), "완료");
-
-        // 메시지 전송
-        return sendMessage(messageDto, userId);
-    }
 
     /**
      * 이미지 업로드

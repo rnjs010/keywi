@@ -1,6 +1,6 @@
 package com.ssafy.chat.repository.chat.mongo;
 
-import com.ssafy.chat.domain.mongo.ChatMessage;
+import com.ssafy.chat.entity.mongo.ChatMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -17,10 +17,14 @@ import java.util.List;
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
 
     /**
-     * 특정 채팅방의 메시지 목록 조회 (페이징)
+     * 특정 채팅방의 메시지 목록 조회 (페이징) - 오름차순(과거순)
      */
     Page<ChatMessage> findByRoomIdOrderBySentAt(Long roomId, Pageable pageable);
 
+    /**
+     * 특정 채팅방의 메시지 목록 조회 (페이징) - 내림차순(최신순)
+     */
+    Page<ChatMessage> findByRoomIdOrderBySentAtDesc(Long roomId, Pageable pageable);
     /**
      * 특정 메시지 이전의 채팅 내역 조회
      */

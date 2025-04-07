@@ -1,4 +1,4 @@
-package com.ssafy.chat.domain;
+package com.ssafy.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -63,17 +63,6 @@ public class ChatRoom {
 
     @Column(name = "last_message_time")
     private LocalDateTime lastMessageTime; // 마지막 메시지 시간
-
-    // 거래 정보
-    @Column(name = "has_transaction")
-    @Builder.Default
-    private boolean hasTransaction = false; // 거래 요청 여부
-
-    @Column(name = "transaction_amount")
-    private Integer transactionAmount; // 거래 금액
-
-    @Column(name = "transaction_status")
-    private String transactionStatus; // 거래 상태 (REQUEST, PROGRESS, COMPLETE, CANCELED)
 
     // 알림 설정
     @Column(name = "buyer_notification_enabled")
@@ -153,15 +142,4 @@ public class ChatRoom {
         }
     }
 
-    // 거래 요청 메서드
-    public void requestTransaction(Integer amount) {
-        this.hasTransaction = true;
-        this.transactionAmount = amount;
-        this.transactionStatus = "REQUEST";
-    }
-
-    // 거래 상태 변경 메서드
-    public void updateTransactionStatus(String status) {
-        this.transactionStatus = status;
-    }
 }

@@ -1,4 +1,4 @@
-package com.ssafy.chat.domain.mongo;
+package com.ssafy.chat.entity.mongo;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
