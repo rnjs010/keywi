@@ -1,10 +1,7 @@
 package com.ssafy.financial.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,11 +22,14 @@ public class FinancialUserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "developer_user_id")
     private String userId;
     private String userName;
     private String institutionCode;
     private String userKey;
 
+    @Column(name = "created_at")
     private LocalDateTime created;
+    @Column(name = "updated_at")
     private LocalDateTime modified;
 }

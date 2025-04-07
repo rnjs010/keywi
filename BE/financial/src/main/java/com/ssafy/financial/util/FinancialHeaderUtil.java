@@ -1,20 +1,20 @@
 package com.ssafy.financial.util;
 
 import com.ssafy.financial.config.FinancialApiConfig;
-import com.ssafy.financial.config.FinancialUserInfoConfig;
 import com.ssafy.financial.dto.request.common.FinancialRequestHeader;
 import com.ssafy.financial.dto.request.common.FinancialUserInfo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class FinancialHeaderUtil {
 
     private final FinancialApiConfig apiConfig;
@@ -38,6 +38,8 @@ public class FinancialHeaderUtil {
         if (needUserKey) {
             header.setUserKey(userInfo.getUserKey());
         }
+
+        log.info("[📦 HEADER 생성 완료] apiName={}, needUserKey={}, header={}", apiName, needUserKey, header);
 
         return header;
     }

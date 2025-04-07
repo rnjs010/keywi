@@ -3,7 +3,7 @@ spring:
     name: financial
 
   datasource:
-    url: jdbc:mysql://localhost:3306/keywi?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/financial?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ssafy
     password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
