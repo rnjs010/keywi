@@ -489,7 +489,7 @@ public class ChatMessageService {
                 .content(chatMessage.getMessage())
                 .messageType(messageType)
                 .sentAt(chatMessage.getSentAt())
-                .read(isRead) // 양쪽 모두 읽었으면 true
+                .isRead(isRead) // 양쪽 모두 읽었으면 true
                 .imageUrl(chatMessage.getMediaUrl())
                 .transactionAmount(chatMessage.getTransactionAmount())
                 .transactionStatus(chatMessage.getTransactionStatus())
