@@ -2,7 +2,7 @@ import HeaderIcons from '@/components/HeaderIcons'
 import NavBar from '@/components/NavBar'
 import ProductDescription from '@/features/product/component/ProductDescription'
 import { NavArrowLeft } from 'iconoir-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 
 const Container = tw.div`
@@ -36,14 +36,25 @@ const NavBarContainer = tw.div`
 
 export default function ProductDetailPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // 전달받은 state에서 카테고리 정보 추출
+  const { category, subCategory } = location.state || {}
+  console.log(category, subCategory)
+
+  // 뒤로가기 핸들러
+  const handleBack = () => {
+    if (location.state?.category) {
+      navigate(location.state.category)
+    } else {
+      navigate('/product')
+    }
+  }
+
   return (
     <Container>
       <HeaderContainer>
-        <NavArrowLeft
-          width={30}
-          height={30}
-          onClick={() => navigate('/product')}
-        />
+        <NavArrowLeft width="1.875rem" height="1.875rem" onClick={handleBack} />
         <HeaderIcons />
       </HeaderContainer>
       <ProductDescription />

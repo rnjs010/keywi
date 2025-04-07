@@ -64,8 +64,14 @@ function App() {
           <Route path="/pay" element={<PayPage />} />
 
           {/* 상품 라우트 */}
-          <Route path="/product" element={<ProductPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
+          <Route
+            path="/product/:categoryId?/:subCategoryId?"
+            element={<ProductPage />}
+          />
+          <Route
+            path="/product/detail/:productId"
+            element={<ProductDetailPage />}
+          />
 
           {/* 마이페이지 라우트 */}
           <Route path="/mypage" element={<MyPage />} />

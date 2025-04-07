@@ -6,6 +6,7 @@ import { ProductProps } from '@/interfaces/ProductInterface'
 import { useState } from 'react'
 import { Star, StarSolid } from 'iconoir-react'
 import { colors } from '@/styles/colors'
+import apiRequester from '@/services/api'
 
 const GridContainer = tw.div`
   grid 
@@ -55,7 +56,6 @@ interface SearchProductProps {
 }
 
 export default function ProductList({ products }: SearchProductProps) {
-  // 로컬 상태로 찜 상태 관리 (초기값은 prop에서 받은 isFavorite) - 추후 zustand 활용해도 됨
   const [favoriteProducts, setFavoriteProducts] = useState<{
     [key: number]: boolean
   }>(() => {
@@ -66,20 +66,28 @@ export default function ProductList({ products }: SearchProductProps) {
     return initialFavorites
   })
 
+  const [loadingProducts, setLoadingProducts] = useState<{
+    [key: number]: boolean
+  }>({})
+
   // 가격 포맷팅 함수
   const formatPrice = (price: number) => {
     return price.toLocaleString('ko-KR') + '원'
   }
 
-  // 찜하기/취소 기능
-  const toggleFavorite = (e: React.MouseEvent, productId: number) => {
-    e.preventDefault() // 링크 이동 방지
-    e.stopPropagation() // 이벤트 버블링 방지
+  const toggleFavorite = async (productId: number) => {
+    setLoadingProducts((prev) => ({ ...prev, [productId]: true }))
+    const prevState = favoriteProducts[productId]
 
-    setFavoriteProducts((prev) => ({
-      ...prev,
-      [productId]: !prev[productId],
-    }))
+    try {
+      setFavoriteProducts((prev) => ({ ...prev, [productId]: !prevState }))
+      await apiRequester.post('/api/product/favorites', { productId })
+    } catch (error) {
+      setFavoriteProducts((prev) => ({ ...prev, [productId]: prevState }))
+      console.error('찜 토글 실패:', error)
+    } finally {
+      setLoadingProducts((prev) => ({ ...prev, [productId]: false }))
+    }
   }
 
   return (
@@ -87,7 +95,10 @@ export default function ProductList({ products }: SearchProductProps) {
       {products.map((product) => (
         <ProductItem
           key={product.productId}
-          to={`/product/${product.productId}`}
+          to={`/product/detail/${product.productId}`}
+          state={{
+            category: location.pathname,
+          }}
         >
           <ImageContainer>
             <ProductImage
@@ -95,22 +106,17 @@ export default function ProductList({ products }: SearchProductProps) {
               alt={product.productName}
             />
             <ZzimBtn
-              onClick={(e: React.MouseEvent) =>
-                toggleFavorite(e, product.productId)
-              }
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault()
+                e.stopPropagation()
+                toggleFavorite(product.productId)
+              }}
+              disabled={loadingProducts[product.productId] || false}
             >
               {favoriteProducts[product.productId] ? (
-                <StarSolid
-                  width={'1.5rem'}
-                  height={'1.5rem'}
-                  color={colors.kiwi}
-                />
+                <StarSolid width="1.5rem" height="1.5rem" color={colors.kiwi} />
               ) : (
-                <Star
-                  width={'1.5rem'}
-                  height={'1.5rem'}
-                  color={colors.lightKiwi}
-                />
+                <Star width="1.5rem" height="1.5rem" color={colors.lightKiwi} />
               )}
             </ZzimBtn>
           </ImageContainer>

@@ -1,7 +1,8 @@
 // 상품 리스트
 export interface ProductProps {
   productId: number
-  categoryId: number
+  categoryId: string
+  subCategoryId?: string | null
   categoryName?: string | null
   productName: string
   price: number

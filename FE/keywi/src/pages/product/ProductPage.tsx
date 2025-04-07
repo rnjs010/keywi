@@ -7,6 +7,7 @@ import { ProductProps } from '@/interfaces/ProductInterface'
 import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
 import { ApiResponse } from '@/interfaces/ApiResponse'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 
 type CategoryKey = '1' | '2' | '3' | '4' | '5' | '6' | '7'
 type SubCategory = { id: string; label: string }
@@ -45,16 +46,23 @@ const TabsContainer = tw.div`
 `
 
 export default function ProductPage() {
+  const { categoryId = 'all', subCategoryId = 'all' } = useParams<{
+    categoryId?: string
+    subCategoryId?: string
+  }>()
+
+  const navigate = useNavigate()
+  const location = useLocation()
+
   // 상품 상태 관리
   const [products, setProducts] = useState<ProductProps[]>([])
   const [loading, setLoading] = useState(true)
 
   // 카테고리 필터링 상태
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey | 'all'>(
-    'all',
+    categoryId as CategoryKey | 'all',
   )
-  const [selectedSubCategory, setSelectedSubCategory] = useState('all')
-  const [showSubCategories, setShowSubCategories] = useState(false)
+  const [selectedSubCategory, setSelectedSubCategory] = useState(subCategoryId)
 
   // 카테고리 데이터 정의
   const categories = [
@@ -67,13 +75,6 @@ export default function ProductPage() {
     { id: '6', value: 'stabilizer', label: '스테빌라이저' },
     { id: '7', value: 'foam', label: '흡음재' },
   ]
-
-  const hasSubCategories = (category: string): category is CategoryKey => {
-    return (
-      Object.keys(subCategories).includes(category) &&
-      !!subCategories[category as CategoryKey]?.length
-    )
-  }
 
   type SubCategoryMap = {
     [key in CategoryKey]?: SubCategory[]
@@ -111,6 +112,28 @@ export default function ProductPage() {
     ],
   }
 
+  const hasSubCategories = (category: string): category is CategoryKey => {
+    return (
+      Object.keys(subCategories).includes(category) &&
+      !!subCategories[category as CategoryKey]?.length
+    )
+  }
+
+  const [showSubCategories, setShowSubCategories] = useState(
+    hasSubCategories(categoryId),
+  )
+
+  // URL 매개변수 변경 시 상태 업데이트
+  useEffect(() => {
+    const category = categoryId as CategoryKey | 'all'
+    setSelectedCategory(category)
+    setSelectedSubCategory(subCategoryId)
+    setShowSubCategories(hasSubCategories(categoryId))
+
+    // URL 매개변수 변경 시 직접 fetchProducts 호출
+    fetchProducts(category, subCategoryId)
+  }, [location.pathname])
+
   // 상위 카테고리 탭 아이템 생성
   const categoryTabItems: TabItem[] = categories.map((category) => ({
     value: category.id,
@@ -131,28 +154,28 @@ export default function ProductPage() {
     )
   }
   // 상품 데이터 가져오기
-  const fetchProducts = async () => {
+  const fetchProducts = async (
+    category: CategoryKey | 'all',
+    subCategory: string,
+  ) => {
     setLoading(true)
+    setProducts([])
     try {
       let endpoint = '/api/product'
 
-      if (selectedCategory !== 'all') {
-        if (
-          selectedSubCategory !== 'all' &&
-          hasSubCategories(selectedCategory)
-        ) {
-          endpoint += `/${selectedSubCategory}`
+      if (category !== 'all') {
+        if (subCategory !== 'all' && hasSubCategories(category)) {
+          endpoint += `/${subCategory}`
         } else {
-          endpoint += `/${selectedCategory}`
+          endpoint += `/${category}`
         }
       }
 
-      // API 호출 (실제 구현 시 주석 해제)
       const response =
         await apiRequester.get<ApiResponse<ProductProps[]>>(endpoint)
 
       if (response.data.status === 'success') {
-        // console.log(response.data.data)
+        console.log(response.data.data)
         setProducts(response.data.data)
       } else {
         console.error(response.data.message)
@@ -168,20 +191,15 @@ export default function ProductPage() {
 
   // 상위 카테고리 변경 핸들러
   const handleCategoryChange = (value: string) => {
-    setSelectedCategory(value as CategoryKey | 'all')
-    setSelectedSubCategory('all')
-    setShowSubCategories(hasSubCategories(value))
+    const newCategory = value === 'all' ? '' : value
+    navigate(`/product/${newCategory}`)
   }
 
   // 하위 카테고리 변경 핸들러
   const handleSubCategoryChange = (value: string) => {
-    setSelectedSubCategory(value)
+    const newSubCategory = value === 'all' ? '' : value
+    navigate(`/product/${categoryId}/${newSubCategory}`)
   }
-
-  // 카테고리나 하위 카테고리가 변경될 때마다 상품 데이터 다시 가져오기
-  useEffect(() => {
-    fetchProducts()
-  }, [selectedCategory, selectedSubCategory])
 
   return (
     <Container>
@@ -192,6 +210,7 @@ export default function ProductPage() {
       <TabsContainer>
         {/* 상위 카테고리 탭 */}
         <StyledTabs
+          key={selectedCategory}
           defaultValue="all"
           value={selectedCategory}
           onChange={handleCategoryChange}
@@ -203,7 +222,7 @@ export default function ProductPage() {
       {showSubCategories && hasSubCategories(selectedCategory) && (
         <TabsContainer>
           <StyledTabs
-            key={selectedCategory}
+            key={`${selectedCategory}-${selectedSubCategory}`}
             defaultValue="all"
             value={selectedSubCategory}
             onChange={handleSubCategoryChange}
