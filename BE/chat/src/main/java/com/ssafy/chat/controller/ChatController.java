@@ -3,6 +3,7 @@ package com.ssafy.chat.controller;
 import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.common.util.IdConverter;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
+import com.ssafy.chat.dto.chat.ChatMessageGroupResponse;
 import com.ssafy.chat.dto.chat.ChatRoomDto;
 import com.ssafy.chat.dto.chat.ChatRoomListDto;
 import com.ssafy.chat.service.chat.ChatMessageService;
@@ -102,20 +103,19 @@ public class ChatController {
     }
 
     /**
-     * 채팅 이력 조회
+     * 채팅 메시지 조회
      * @param roomId 채팅방 ID
-     * @param page 페이지 번호
-     * @param size 페이지 크기
-     * @return 채팅 메시지 목록
+     * @param size 조회할 메시지 수
+     * @return 최근 채팅 메시지 목록 (그룹화)
      */
     @GetMapping("/rooms/{roomId}/messages")
-    public ResponseEntity<ApiResponse<Page<ChatMessageDto>>> getChatHistory(
+    public ResponseEntity<ApiResponse<ChatMessageGroupResponse>> getRecentMessages(
             @PathVariable String roomId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestHeader("X-User-ID") Long userId) {
+            @RequestHeader("X-User-ID") String userId) {
 
-        Page<ChatMessageDto> messages = chatMessageService.getChatHistory(roomId, page, size);
+        ChatMessageGroupResponse messages = chatMessageService.getChatHistoryGrouped(roomId, page, size);
 
         return ResponseEntity.ok(ApiResponse.success(messages));
     }
@@ -125,33 +125,16 @@ public class ChatController {
      * @param roomId 채팅방 ID
      * @param lastMessageId 마지막으로 로드된 메시지 ID
      * @param size 로드할 메시지 수
-     * @return 이전 채팅 메시지 목록
+     * @return 이전 채팅 메시지 목록 (그룹화)
      */
     @GetMapping("/rooms/{roomId}/messages/history")
-    public ResponseEntity<ApiResponse<List<ChatMessageDto>>> loadPreviousMessages(
+    public ResponseEntity<ApiResponse<ChatMessageGroupResponse>> loadPreviousMessages(
             @PathVariable String roomId,
             @RequestParam String lastMessageId,
             @RequestParam(defaultValue = "20") int size,
             @RequestHeader("X-User-ID") String userId) {
 
-        List<ChatMessageDto> messages = chatMessageService.getPreviousMessages(roomId, lastMessageId, size);
-
-        return ResponseEntity.ok(ApiResponse.success(messages));
-    }
-
-    /**
-     * 최근 채팅 메시지 조회
-     * @param roomId 채팅방 ID
-     * @param limit 조회할 메시지 수
-     * @return 최근 채팅 메시지 목록
-     */
-    @GetMapping("/rooms/{roomId}/messages/recent")
-    public ResponseEntity<ApiResponse<List<ChatMessageDto>>> getRecentMessages(
-            @PathVariable String roomId,
-            @RequestParam(defaultValue = "20") int limit,
-            @RequestHeader("X-User-ID") String userId) {
-
-        List<ChatMessageDto> messages = chatMessageService.getRecentMessages(roomId, limit);
+        ChatMessageGroupResponse messages = chatMessageService.getPreviousMessagesGrouped(roomId, lastMessageId, size);
 
         return ResponseEntity.ok(ApiResponse.success(messages));
     }
