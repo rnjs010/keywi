@@ -35,10 +35,16 @@
     <!-- 카테고리 정보 조회 -->
     <select id="getCategoryById" resultType="com.ssafy.board.dto.BoardProductDTO">
         SELECT
-        c.category_id as categoryId,
-        c.category_name as categoryName
+        c.category_id AS categoryId,
+        CASE
+        WHEN c.parent_id IS NOT NULL THEN (
+        SELECT category_name FROM keywi.category WHERE category_id = c.parent_id
+        )
+        ELSE c.category_name
+        END AS categoryName
         FROM keywi.category c
         WHERE c.category_id = #{categoryId}
     </select>
+
 
 </mapper>
