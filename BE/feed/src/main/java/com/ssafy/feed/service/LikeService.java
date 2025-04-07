@@ -256,8 +256,6 @@ public class LikeService {
         return result;
     }
 
-
-
     /**
      * 피드의 좋아요 정보를 Redis에 초기 로드 (필요시)
      */
@@ -271,7 +269,7 @@ public class LikeService {
      * Redis -> MySQL 동기화 (주기적 실행)
      * Redis의 좋아요 데이터를 MySQL에 주기적으로 동기화
      */
-    @Scheduled(fixedRate = 15 * 60 * 1000) // 5분마다 실행
+    @Scheduled(fixedRate = 15 * 60 * 1000) // 15분마다 실행
     public void syncLikeDataToDatabase() {
         log.info("Redis -> MySQL 좋아요 데이터 동기화 시작");
 
@@ -428,11 +426,17 @@ public class LikeService {
      * Redis에서 패턴에 맞는 키 스캔
      */
     private Set<String> scanKeys(String pattern) {
+        // 결과를 저장할 HashSet 생성
         Set<String> keys = new HashSet<>();
+
+        // 스캔 옵션 구성(Key 대신 Scan 사용)
         ScanOptions options = ScanOptions.scanOptions().match(pattern).count(1000).build();
 
+        // Redis 스캔 실행 (try-with-resources 구문으로 자동 리소스 관리)
         try (Cursor<String> cursor = redisTemplate.scan(options)) {
+            // 커서가 가리키는 다음 항목이 있는 동안 반복
             while (cursor.hasNext()) {
+                // 다음 키를 결과 집합에 추가
                 keys.add(cursor.next());
             }
         } catch (Exception e) {
@@ -478,7 +482,7 @@ public class LikeService {
                     log.warn("Redis 내부 불일치: feedId={}, likeCount={}, likersCount={}",
                             feedId, redisLikeCount, likersCount);
 
-                    // 실제 좋아요한a 사용자 수로 수정
+                    // 실제 좋아요한 사용자 수로 수정
                     redisTemplate.opsForValue().set(key, likersCount);
                 }
 

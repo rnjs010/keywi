@@ -792,13 +792,16 @@ public class FeedService {
      * 피드를 읽음으로 표시
      */
     private void markFeedAsRead(Long feedId, Long userId) {
-        FeedRead feedRead = FeedRead.builder()
-                .feedId(feedId)
-                .userId(userId)
-                .build();
-        feedReadMapper.insert(feedRead);
-
-        // userActivityService.decreaseHashtagScoresForReadFeed(userId, feedId);
+        // 피드가 실제로 존재하는지 확인
+        if (feedMapper.findById(feedId) != null) {
+            FeedRead feedRead = FeedRead.builder()
+                    .feedId(feedId)
+                    .userId(userId)
+                    .build();
+            feedReadMapper.insert(feedRead);
+        } else {
+            log.warn("읽기 위한 피드가 없습니다: feed_id={}, user_id={}", feedId, userId);
+        }
     }
 
     /**
@@ -906,31 +909,31 @@ public class FeedService {
         userActivityService.saveUserActivity(userId, activityType, activityData);
 
         // 활동 유형에 따라 피드 추천 갱신 여부 결정
-        if (isSignificantActivity(activityType)) {
-            // 중요 활동인 경우 즉시 추천 피드 갱신
-            // 1. 팔로우 기반 추천 피드
-            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
-            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
-                    .map(this::convertToFeedDTO)
-                    .collect(Collectors.toList());
-
-            // 2. 해시태그 기반 맞춤 피드
-            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
-
-            // 추천 목록 합치기
-            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
-
-            // Redis에 저장 (24시간 유효)
-            redisTemplate.opsForValue().set(
-                    RECOMMENDED_FEEDS_PREFIX + userId,
-                    recommendedFeeds,
-                    24, TimeUnit.HOURS
-            );
-
-            // 추천 내용 변경 이벤트 발행
-            kafkaTemplate.send("feed-recommendation-updates",
-                    Map.of("userId", userId, "updatedAt", System.currentTimeMillis()));
-        }
+//        if (isSignificantActivity(activityType)) {
+//            // 중요 활동인 경우 즉시 추천 피드 갱신
+//            // 1. 팔로우 기반 추천 피드
+//            List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
+//            List<FeedDTO> followingFeedDTOs = followingFeeds.stream()
+//                    .map(this::convertToFeedDTO)
+//                    .collect(Collectors.toList());
+//
+//            // 2. 해시태그 기반 맞춤 피드
+//            List<FeedDTO> hashtagBasedFeeds = getHashtagBasedRecommendedFeeds(userId);
+//
+//            // 추천 목록 합치기
+//            List<FeedDTO> recommendedFeeds = mergeFeeds(followingFeedDTOs, hashtagBasedFeeds);
+//
+//            // Redis에 저장 (24시간 유효)
+//            redisTemplate.opsForValue().set(
+//                    RECOMMENDED_FEEDS_PREFIX + userId,
+//                    recommendedFeeds,
+//                    24, TimeUnit.HOURS
+//            );
+//
+//            // 추천 내용 변경 이벤트 발행
+//            kafkaTemplate.send("feed-recommendation-updates",
+//                    Map.of("userId", userId, "updatedAt", System.currentTimeMillis()));
+//        }
     }
 
     /**
