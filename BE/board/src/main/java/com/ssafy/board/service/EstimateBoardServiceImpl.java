@@ -1,22 +1,23 @@
 package com.ssafy.board.service;
 
-import com.ssafy.board.dto.BoardImageDTO;
+import com.ssafy.board.client.UserServiceClient;
 import com.ssafy.board.dto.EstimateBoardDTO;
+import com.ssafy.board.dto.MemberResponseDto;
+import com.ssafy.board.exception.BoardException;
 import com.ssafy.board.mapper.BoardImageMapper;
 import com.ssafy.board.mapper.EstimateBoardMapper;
 import com.ssafy.board.model.BoardImage;
 import com.ssafy.board.model.EstimateBoard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 견적 게시판 서비스 구현 클래스
@@ -31,26 +32,26 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
     private final FileUploadService fileUploadService;
     private final UserServiceClient userServiceClient;
 
-    @Override
-    public List<EstimateBoard> getEstimateBoards(int page, int size) {
-        int offset = page * size;
-        List<EstimateBoard> boards = estimateBoardMapper.findAllWithPaging(offset, size);
-
-        for (EstimateBoard board : boards) {
-            // 사용자 서비스를 통해 작성자 닉네임 설정
-            if (board.getWriterId() != null) {
-                try {
-                    // 사용자 서비스에서 닉네임 조회
-                    String nickname = userServiceClient.getUserNickname(board.getWriterId());
-                    board.setWriterNickname(nickname);
-                } catch (Exception e) {
-                    log.warn("작성자 닉네임 조회 실패. 작성자 ID: {}", board.getWriterId(), e);
-                }
-            }
-        }
-
-        return boards;
-    }
+//    @Override
+//    public List<EstimateBoard> getEstimateBoards(int page, int size) {
+//        int offset = page * size;
+//        List<EstimateBoard> boards = estimateBoardMapper.findAllWithPaging(offset, size);
+//
+//        for (EstimateBoard board : boards) {
+//            // 사용자 서비스를 통해 작성자 닉네임 설정
+//            if (board.getWriterId() != null) {
+//                try {
+//                    // 사용자 서비스에서 닉네임 조회
+//                    String nickname = userServiceClient.getUserProfile();
+//                    board.setWriterNickname(nickname);
+//                } catch (Exception e) {
+//                    log.warn("작성자 닉네임 조회 실패. 작성자 ID: {}", board.getWriterId(), e);
+//                }
+//            }
+//        }
+//
+//        return boards;
+//    }
 
     /**
      * 게시글 상세 조회
@@ -237,5 +238,41 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         if (!boardImages.isEmpty()) {
             boardImageMapper.insertAll(boardImages);
         }
+    }
+    /**
+     * 채팅 서비스에서 사용할 게시글 정보 조회
+     * @param boardId 게시글 ID
+     * @return 게시글 및 작성자 정보
+     */
+    @Override
+    public EstimateBoardDTO.ChatServiceResponse getBoardInfoForChatService(Long boardId) {
+        // 게시글 기본 정보 조회
+        EstimateBoard board = estimateBoardMapper.findById(boardId);
+
+        if (board == null) {
+            throw new BoardException("존재하지 않는 게시글입니다.", HttpStatus.NOT_FOUND);
+        }
+
+        // 작성자 닉네임 조회
+        String authorNickname = null;
+        authorNickname = estimateBoardMapper.findAuthorNicknameByBoardId(boardId);
+//        try {
+//            // 사용자 서비스를 통해 작성자 닉네임 설정
+//            MemberResponseDto memberResponseDto = userServiceClient.getUserProfile(userId);
+//            authorNickname = memberResponseDto.getUserNickname();
+//        } catch (Exception e) {
+//            log.warn("채팅 서비스용 작성자 닉네임 조회 실패. 작성자 ID: {}", board.getWriterId(), e);
+//            authorNickname = "알 수 없음"; // 기본값 설정
+//        }
+
+        // DTO로 변환하여 반환
+        return EstimateBoardDTO.ChatServiceResponse.builder()
+                .boardId(board.getBoardId())
+                .writerId(board.getWriterId())
+                .title(board.getTitle())
+                .thumbnailUrl(board.getThumbnailUrl())
+                .dealState(board.getDealState())
+                .userNickname(authorNickname)
+                .build();
     }
 }
