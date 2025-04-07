@@ -11,6 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useChatImageStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { StompContext } from '@/stores/stompContext'
+import { useUserStore } from '@/stores/userStore'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
@@ -39,6 +42,35 @@ export default function ChatRoomSendBox() {
 
   const handleDealRequestClick = () => {
     navigate(`/chat/${roomId}/dealrequest`)
+  }
+
+  const [message, setMessage] = useState('')
+  const stompClient = useContext(StompContext)
+  const userId = useUserStore((state) => state.userId)
+  const sendMessage = () => {
+    if (!message.trim() || !stompClient || !roomId) return
+
+    stompClient.publish({
+      destination: '/app/chat/message',
+      body: JSON.stringify({
+        roomId,
+        messageType: 'TEXT',
+        content: message.trim(),
+        senderId: userId,
+      }),
+      headers: {
+        'X-User-ID': userId?.toString() || '',
+      },
+    })
+
+    setMessage('')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      sendMessage()
+    }
   }
 
   return (
@@ -70,10 +102,18 @@ export default function ChatRoomSendBox() {
       </DropdownMenu>
 
       <InputBox
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="메시지 보내기"
         className="bg-transparent outline-none text-[#303337]"
       />
-      <Send height="1.6rem" width="1.5rem" color={colors.darkGray} />
+      <Send
+        height="1.6rem"
+        width="1.5rem"
+        color={colors.darkGray}
+        onClick={sendMessage}
+      />
     </Container>
   )
 }

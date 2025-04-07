@@ -2,6 +2,7 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Link } from 'react-router-dom'
 import { ChatRoom } from '@/interfaces/ChatInterfaces'
+import getTimeDiff from '@/utils/getTimeDiff'
 
 const CardContainer = tw.div`
   flex justify-between items-center py-4 gap-5
@@ -26,9 +27,10 @@ export default function ChatCard({
     <Link to={`/chat/${roomId}`}>
       <CardContainer>
         {/* 사진 */}
-        {otherUserProfileImage && (
-          <ProfileImage src={otherUserProfileImage} alt="thumbnail" />
-        )}
+        <ProfileImage
+          src={otherUserProfileImage || '/default/default_product.png'}
+          alt="thumbnail"
+        />
         <div className="flex-1">
           {/* 상대방 이름, 마지막 연락 시간 */}
           <TitleContainer>
@@ -36,7 +38,7 @@ export default function ChatCard({
               {otherUserNickname}
             </Text>
             <Text variant="caption2" weight="regular" color="gray">
-              · {lastMessageTime}
+              · {getTimeDiff(lastMessageTime)}
             </Text>
           </TitleContainer>
           {/* 마지막 문자 내용 */}

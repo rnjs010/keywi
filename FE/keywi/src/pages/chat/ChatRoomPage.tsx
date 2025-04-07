@@ -7,7 +7,20 @@ import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
 import { useChatImageStore } from '@/stores/chatStore'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import {
+  useChatPartner,
+  useChatPost,
+} from '@/features/chat/hooks/useChatRoomInfo'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import ErrorMessage from '@/components/message/ErrorMessage'
+import NoDataMessage from '@/components/message/NoDataMessage'
+import { StompContext } from '@/stores/stompContext'
+import { useUserStore } from '@/stores/userStore'
+import { Client } from '@stomp/stompjs'
+import { useChatSocket } from '@/features/chat/hooks/useChatSocket'
+import { Message } from '@/interfaces/ChatInterfaces'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -26,11 +39,36 @@ const DownBtnBox = tw.button`
 `
 
 export default function ChatRoomPage() {
-  const myId = 'user789'
+  // const myId = 'user789'
+
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
+
+  const { roomId } = useParams<{ roomId: string }>()
+  const {
+    data: partner,
+    isLoading: loadingPartner,
+    isError: errorPartner,
+  } = useChatPartner(roomId!)
+  const {
+    data: post,
+    isLoading: loadingPost,
+    isError: errorPost,
+  } = useChatPost(roomId!)
+
+  const [client, setClient] = useState<Client | null>(null)
+  const myId = useUserStore((state) => state.userId)
+  const [messages, setMessages] = useState<Message[]>([])
+
+  const onMessage = useCallback((msg: Message) => {
+    setMessages((prev) => [...prev, msg])
+    console.log('메시지 수신', msg)
+  }, [])
+
+  // 클라이언트 생성 후 저장
+  useChatSocket(roomId!, onMessage, setClient)
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -86,12 +124,37 @@ export default function ChatRoomPage() {
     }
   }, [[showImage]])
 
+  if (!roomId)
+    return (
+      <Container>
+        <ErrorMessage text="채팅방 ID가 없습니다." />
+      </Container>
+    )
+  if (loadingPartner || loadingPost)
+    return (
+      <Container>
+        <LoadingMessage />
+      </Container>
+    )
+  if (errorPartner || errorPost)
+    return (
+      <Container>
+        <ErrorMessage text="정보를 불러오지 못했습니다." />
+      </Container>
+    )
+  if (!partner || !post)
+    return (
+      <Container>
+        <NoDataMessage text="채팅 기록이 없습니다." />
+      </Container>
+    )
+
   return (
-    <>
+    <StompContext.Provider value={client}>
       {!showImage && (
         <Container ref={containerRef}>
           <div className="sticky top-0">
-            <ChatRoomHeader {...chatParticipant} />
+            <ChatRoomHeader {...partner} />
             <ChatRoomPostInfo {...post} />
           </div>
 
@@ -113,13 +176,17 @@ export default function ChatRoomPage() {
 
                 {/* Chat */}
                 {group.messages.map((message) =>
-                  message.senderId === myId ? (
+                  message.senderId === String(myId) ? (
                     <MyMessage key={message.messageId} {...message} />
                   ) : (
                     <OpponentMessage key={message.messageId} {...message} />
                   ),
                 )}
               </>
+            ))}
+
+            {messages.map((m) => (
+              <p key={m.messageId}>{m.content}</p>
             ))}
           </ChatContainer>
 
@@ -129,27 +196,11 @@ export default function ChatRoomPage() {
       )}
 
       {showImage && <ImageInputScreen />}
-    </>
+    </StompContext.Provider>
   )
 }
 
 // NOTE - 더미데이터
-const chatParticipant = {
-  assemblerId: 'user456',
-  nickname: '컴퓨터달인',
-  profileImageUrl: 'https://picsum.photos/200',
-  reliability: 85,
-}
-
-const post = {
-  postId: 'post789',
-  thumbnailUrl: 'https://picsum.photos/200',
-  title: '고성능 게이밍 키보드 조립 요청',
-  price: 150000,
-  status: 'IN_PROGRESS', // 견적요청, 진행중, 구매완료, 삭제됨 중 하나
-  createdAt: '2025-03-15T10:30:00',
-}
-
 const messageGroup = [
   {
     dateGroup: '2025년 3월 18일',

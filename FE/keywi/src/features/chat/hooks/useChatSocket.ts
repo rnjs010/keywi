@@ -1,47 +1,61 @@
-import { IMessage } from '@stomp/stompjs'
+// features/chat/hooks/useChatSocket.ts
+import { Client, IMessage } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 import { useEffect, useRef } from 'react'
-import { useChatStore } from '@/stores/chatStore'
-import { createStompClient } from '@/features/chat/sevices/socketClient'
+import { useChatConnectStore } from '@/stores/chatStore'
 
 export const useChatSocket = (
   roomId: string,
   onMessage: (msg: any) => void,
+  setClient?: (client: Client) => void,
 ) => {
-  const clientRef = useRef<ReturnType<typeof createStompClient> | null>(null)
-  const setConnected = useChatStore((state) => state.setConnected)
+  const clientRef = useRef<Client | null>(null)
+  const setConnected = useChatConnectStore((state) => state.setConnected)
 
   useEffect(() => {
-    const client = createStompClient()
+    const socket = new SockJS('https://j12e202.p.ssafy.io/chat/ws-endpoint')
+    const client = new Client({
+      webSocketFactory: () => socket,
+      connectHeaders: {
+        // 인증 필요 시 Authorization 헤더 추가
+      },
+      debug: (str) => console.log('[STOMP]', str),
+      onConnect: () => {
+        setConnected(true)
 
-    client.onConnect = () => {
-      console.log('STOMP Connected')
-      setConnected(true)
+        // 채팅방 메시지 구독
+        client.subscribe(`/topic/chat/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          onMessage(body)
+        })
 
-      // 채팅방 메시지 구독
-      client.subscribe(`/topic/chat/room/${roomId}`, (message: IMessage) => {
-        const body = JSON.parse(message.body)
-        onMessage(body)
-      })
+        // 개인 메시지 구독
+        client.subscribe('/user/queue/message', (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          console.log('개인 메시지 수신', body)
+        })
 
-      // 개인별 메시지 수신 구독
-      client.subscribe('/user/queue/messages', (message: IMessage) => {
-        const body = JSON.parse(message.body)
-        console.log('[개인 메시지]', body)
-      })
-
-      // 입장 알림
-      client.publish({
-        destination: '/app/chat.enter',
-        body: JSON.stringify({ roomId }),
-      })
-    }
-
-    client.onDisconnect = () => {
-      setConnected(false)
-    }
+        // 입장 알림
+        client.publish({
+          destination: '/app/chat.enter',
+          body: JSON.stringify({ roomId }),
+        })
+      },
+      onStompError: (frame) => {
+        console.error('[STOMP ERROR]', frame)
+      },
+      onWebSocketError: (err) => {
+        console.error('[WEBSOCKET ERROR]', err)
+      },
+      onDisconnect: () => {
+        setConnected(false)
+      },
+      reconnectDelay: 5000,
+    })
 
     client.activate()
     clientRef.current = client
+    setClient?.(client)
 
     return () => {
       client.deactivate()

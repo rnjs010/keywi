@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { BASE_URL } from '@/config'
 import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/userStore'
+import { fetchUserInfo } from '@/services/userIdService'
 
 const KakaoHandler = () => {
   const navigate = useNavigate()
   const { setLoading, setError, login } = useAuthStore()
+  const { setUserId } = useUserStore()
 
   useEffect(() => {
     // URL에서 인가 코드 추출
@@ -34,15 +37,24 @@ const KakaoHandler = () => {
     // 백엔드 API 호출 - jwt access token, refresh token 발급
     axios
       .get(`${BASE_URL}/api/auth/callback/kakao?code=${code}`)
-      .then((res) => {
+      .then(async (res) => {
         console.log('로그인 응답:', res)
         const { accessToken, refreshToken } = res.data.data.token
         const { newUser } = res.data.data
 
         // 토큰 저장 및 인증 상태 업데이트
         login(accessToken, refreshToken)
-
         console.log('쿠키 저장', accessToken, refreshToken)
+
+        // userId 저장
+        try {
+          const userData = await fetchUserInfo()
+          setUserId(userData.userId)
+          console.log('userId 저장 완료:', userData.userId)
+        } catch (fetchError) {
+          console.error('유저 정보 가져오기 실패:', fetchError)
+          setError('유저 정보를 가져오는 데 실패했어요.')
+        }
 
         // 사용자 상태에 따라 리디렉션
         if (newUser === false) {

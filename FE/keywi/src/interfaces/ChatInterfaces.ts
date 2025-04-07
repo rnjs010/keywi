@@ -8,6 +8,21 @@ export interface ChatRoom {
   notificationEnabled: boolean
 }
 
+export interface ChatPartner {
+  otherUserId: string
+  otherUserNickname: string
+  brix: number
+}
+
+export interface ChatPost {
+  boardId: string
+  title: string
+  thumbnailUrl: string
+  dealState: string
+  buyerId: string
+  assemblerId: string
+}
+
 // export interface ChatRoomProps {
 //   roomId: string
 //   assembler: {
@@ -22,21 +37,21 @@ export interface ChatRoom {
 //   postTitle: string
 // }
 
-export interface ChatParticipant {
-  assemblerId: string // 사용자 ID
-  nickname: string // 사용자 닉네임
-  profileImageUrl: string // 프로필 이미지 URL
-  reliability: number // 신뢰도 점수 (당도)
-}
+// export interface ChatParticipant {
+//   assemblerId: string // 사용자 ID
+//   nickname: string // 사용자 닉네임
+//   profileImageUrl: string // 프로필 이미지 URL
+//   reliability: number // 신뢰도 점수 (당도)
+// }
 
-export interface PostInfo {
-  postId: string
-  thumbnailUrl: string
-  title: string
-  price: number
-  status: string
-  createdAt: string
-}
+// export interface PostInfo {
+//   postId: string
+//   thumbnailUrl: string
+//   title: string
+//   price: number
+//   status: string
+//   createdAt: string
+// }
 
 export interface Message {
   messageId: string

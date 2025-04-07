@@ -9,7 +9,7 @@ import {
   BellOff,
 } from 'iconoir-react'
 import { BsTrash3 } from 'react-icons/bs'
-import { ChatParticipant } from '@/interfaces/ChatInterfaces'
+import { ChatPartner } from '@/interfaces/ChatInterfaces'
 import getDangdoBadgeData from '@/utils/getDandoBadgeData'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -26,11 +26,11 @@ const Container = tw.div`
 `
 
 export default function ChatRoomHeader({
-  nickname,
-  reliability,
-}: ChatParticipant) {
+  otherUserNickname,
+  brix,
+}: ChatPartner) {
   const navigate = useNavigate()
-  const getDangdoColor = getDangdoBadgeData(reliability)
+  const getDangdoColor = getDangdoBadgeData(brix)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -52,10 +52,10 @@ export default function ChatRoomHeader({
       <NavArrowLeft onClick={() => navigate('/chat')} />
       <div className="flex items-center gap-1">
         <Text variant="body1" weight="bold" color="black">
-          {nickname}
+          {otherUserNickname}
         </Text>
         <Badge
-          title={`당도 ${reliability}`}
+          title={`당도 ${brix}`}
           color={getDangdoColor || 'gray'}
           size="small"
         />

@@ -2,12 +2,12 @@ import { BoardItem } from '@/interfaces/BoardInterface'
 import { create } from 'zustand'
 
 // 채팅
-interface ChatStore {
+interface ChatConnectStore {
   connected: boolean
   setConnected: (status: boolean) => void
 }
 
-export const useChatStore = create<ChatStore>((set) => ({
+export const useChatConnectStore = create<ChatConnectStore>((set) => ({
   connected: false,
   setConnected: (status) => set({ connected: status }),
 }))
