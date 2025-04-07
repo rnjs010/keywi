@@ -18,6 +18,7 @@ public class ChatMessageDto {
     private String roomId;        // 채팅방 ID
     private String senderId;      // 발신자 ID
     private String senderNickname; // 발신자 닉네임
+    private String senderProfileUrl; // 발신자 프로필 이미지
     private String receiverId;    // 수신자 ID
 
     private ChatMessageType messageType; // 메시지 타입
@@ -29,5 +30,5 @@ public class ChatMessageDto {
     private String transactionStatus;  // 거래 상태
 
     private LocalDateTime sentAt;  // 전송 시간
-    private boolean read;          // 읽음 여부
+    private boolean isRead;          // 읽음 여부
 }

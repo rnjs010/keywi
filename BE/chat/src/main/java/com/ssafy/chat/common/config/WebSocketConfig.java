@@ -56,7 +56,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         String userId = headers != null && !headers.isEmpty() ? headers.get(0) : "anonymous";
                         return () -> userId;
                     }
-                });
+                })
+                .withSockJS();
     }
 
     /**

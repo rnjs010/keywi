@@ -1,13 +1,16 @@
 package com.ssafy.chat.service.chat;
 
+import com.ssafy.chat.client.UserServiceClient;
 import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
+import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.common.util.IdConverter;
 import com.ssafy.chat.domain.ChatRoom;
 import com.ssafy.chat.domain.mongo.ChatMessage;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
 import com.ssafy.chat.dto.chat.ChatMessageType;
 import com.ssafy.chat.dto.notification.NotificationDto;
+import com.ssafy.chat.dto.user.MemberResponseDto;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
 import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
 import com.ssafy.chat.service.notification.NotificationService;
@@ -36,6 +39,7 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomService chatRoomService;
     private final MessageSender messageSender;
+    private final UserServiceClient userServiceClient;
     private final NotificationService notificationService;
 
     /**
@@ -101,12 +105,10 @@ public class ChatMessageService {
      */
     public Page<ChatMessageDto> getChatHistory(String roomId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        // String을 Long으로 변환
-        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAtDesc(Long.parseLong(roomId), pageable);
+        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAt(Long.parseLong(roomId), pageable);
 
         return messages.map(this::convertToDto);
     }
-
     /**
      * 이전 메시지 로딩 (스크롤 시 이전 메시지 로딩)
      * @param roomId 채팅방 ID
@@ -188,13 +190,13 @@ public class ChatMessageService {
         if (chatRoom.getBuyerId().equals(userId)) {
             // MongoDB에서 구매자가 읽지 않은 메시지 조회 로직 추가 필요
             // 임시 구현: 구매자가 읽지 않은 메시지 조회
-            return chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, PageRequest.of(0, 100))
+            return chatMessageRepository.findByRoomIdOrderBySentAt(roomId, PageRequest.of(0, 100))
                     .getContent().stream()
                     .filter(msg -> !msg.isReadByBuyer())
                     .collect(Collectors.toList());
         } else if (chatRoom.getAssemblerId().equals(userId)) {
             // 조립자인 경우 조립자가 읽지 않은 메시지 조회
-            return chatMessageRepository.findByRoomIdOrderBySentAtDesc(roomId, PageRequest.of(0, 100))
+            return chatMessageRepository.findByRoomIdOrderBySentAt(roomId, PageRequest.of(0, 100))
                     .getContent().stream()
                     .filter(msg -> !msg.isReadByAssembler())
                     .collect(Collectors.toList());
@@ -469,6 +471,10 @@ public class ChatMessageService {
             messageType = ChatMessageType.TEXT;  // 기본값
         }
 
+        // Feign 클라이언트 객채 생성 후 호출
+        ApiResponse<MemberResponseDto> response = userServiceClient.getUserProfile(chatMessage.getSenderId());
+        MemberResponseDto responseDto = response.getData();
+
         // 발신자가 구매자인지 확인하기 위해서는 채팅방 정보가 필요
         // 간단히 발신자와 수신자 모두 기준으로 읽음 상태 결정
         boolean isRead = chatMessage.isReadByBuyer() && chatMessage.isReadByAssembler();
@@ -478,6 +484,8 @@ public class ChatMessageService {
                 .messageId(chatMessage.getId())
                 .roomId(chatMessage.getRoomId().toString())
                 .senderId(chatMessage.getSenderId().toString())
+                .senderNickname(responseDto.getUserNickname())
+                .senderProfileUrl(responseDto.getProfileUrl())
                 .content(chatMessage.getMessage())
                 .messageType(messageType)
                 .sentAt(chatMessage.getSentAt())
