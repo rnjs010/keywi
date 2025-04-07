@@ -7,6 +7,6 @@ import java.util.List;
 public interface ProductService {
     List<ProductDto> getAllProducts(Long userId);
     List<ProductDto> getProductsByCategory(int categoryId, Long userId);
-    ProductDto getProductDetail(int productId);
+    ProductDto getProductDetail(int productId, Long userId);
     List<ProductDto> getProductsByIds(List<Integer> productIds, Long userId);
 }

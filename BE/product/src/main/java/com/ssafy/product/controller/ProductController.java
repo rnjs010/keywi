@@ -78,8 +78,10 @@ public class ProductController {
 
     // 상품 상세 조회
     @GetMapping("/detail/{productId}")
-    public ApiResponse<ProductDto> getProductDetail(@PathVariable int productId) {
-        return ApiResponse.success("상품 상세 조회 성공", productService.getProductDetail(productId));
+    public ApiResponse<ProductDto> getProductDetail(
+            @PathVariable int productId,
+            @RequestHeader(value = "X-User-ID", required = false) Long userId) {
+        return ApiResponse.success("상품 상세 조회 성공", productService.getProductDetail(productId, userId));
     }
 
     // 상품 리스트 조회
