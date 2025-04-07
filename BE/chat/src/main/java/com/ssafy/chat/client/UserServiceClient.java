@@ -1,5 +1,6 @@
 package com.ssafy.chat.client;
 
+import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.dto.user.MemberResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,5 +14,5 @@ public interface UserServiceClient {
      * @return 회원 정보
      */
     @GetMapping("/api/auth/members/id/{userId}")
-    MemberResponseDto getUserProfile(@PathVariable("userId") String userId);
+    ApiResponse<MemberResponseDto> getUserProfile(@PathVariable("userId") Long userId);
 }
