@@ -20,7 +20,7 @@
     <select id="findByIds" resultMap="FeedResultMap">
         SELECT * FROM feeds
         WHERE feed_id IN
-        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+        <foreach item="feedId" collection="collection" open="(" separator="," close=")">
             #{feedId}
         </foreach>
         AND is_delete = false
