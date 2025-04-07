@@ -1,6 +1,6 @@
 import NavBar from '@/components/NavBar'
 import StyledTabs, { TabItem } from '@/components/StyleTab'
-import HomeHeader from '@/features/home/components/HomeHeader'
+import HomeHeader from '@/features/home/components/feed/HomeHeader'
 import ProductList from '@/features/product/component/ProductList'
 import apiRequester from '@/services/api'
 import { ProductProps } from '@/interfaces/ProductInterface'

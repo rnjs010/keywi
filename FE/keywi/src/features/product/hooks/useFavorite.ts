@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import apiRequester from '@/services/apijson'
+import apiRequester from '@/services/api'
 
 export const useFavorite = (productId: number, initialIsFavorite: boolean) => {
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
