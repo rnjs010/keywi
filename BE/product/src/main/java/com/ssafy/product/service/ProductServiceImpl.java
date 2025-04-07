@@ -4,10 +4,12 @@ import com.ssafy.product.dto.ProductDescriptionDto;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.mapper.ProductMapper;
 import com.ssafy.product.mapper.ProductDescriptionMapper;
+import com.ssafy.product.mapper.WishMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +40,20 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
+    private WishMapper wishMapper;
+
     @Override
-    public List<ProductDto> getProductsByIds(List<Integer> productIds) {
-        return productMapper.findProductsByIds(productIds);
+    public List<ProductDto> getProductsByIds(List<Integer> productIds, Long userId) {
+        List<ProductDto> products = productMapper.findProductsByIds(productIds);
+
+        if (userId != null) {
+            Set<Integer> wishedProductIds = wishMapper.findWishedProductIds(userId, productIds);
+            for (ProductDto product : products) {
+                product.setIsFavorite(wishedProductIds.contains(product.getProductId()));
+            }
+        }
+
+        return products;
     }
 
 }

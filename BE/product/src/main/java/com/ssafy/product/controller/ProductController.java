@@ -82,8 +82,11 @@ public class ProductController {
 
     // 상품 리스트 조회
     @PostMapping("/list")
-    public ApiResponse<List<ProductDto>> getProductsByIds(@RequestBody ProductIdRequest request) {
-        List<ProductDto> products = productService.getProductsByIds(request.getProductIds());
+    public ApiResponse<List<ProductDto>> getProductsByIds(
+            @RequestBody ProductIdRequest request,
+            @RequestHeader(value = "X-User-ID", required = false) Long userId) {
+
+        List<ProductDto> products = productService.getProductsByIds(request.getProductIds(), userId);
         return ApiResponse.success("상품 리스트 조회 성공", products);
     }
 
@@ -117,24 +120,6 @@ public class ProductController {
         return ApiResponse.success("찜 토글 성공", isFavorite);
     }
 
-//
-//    // 상품 찜하기
-//    @PostMapping("/favorites")
-//    public ApiResponse<Boolean> addFavorite(
-//            @RequestHeader("X-User-ID") Long userId,
-//            @RequestBody WishRequest request) {
-//        boolean isFavorite = wishService.addWish(userId, request.getProductId());
-//        return ApiResponse.success("찜 상태 변경 성공", isFavorite);
-//    }
-//
-//    // 찜한 상품 삭제
-//    @DeleteMapping("/favorites")
-//    public ApiResponse<Boolean> removeFavorite(
-//            @RequestHeader("X-User-ID") Long userId,
-//            @RequestBody WishRequest request) {
-//        boolean isFavorite = wishService.removeWish(userId, request.getProductId());
-//        return ApiResponse.success("찜 해제 성공", isFavorite);
-//    }
 
     // 유저의 찜한 상품 목록 조회
     @GetMapping("/favorites/list")

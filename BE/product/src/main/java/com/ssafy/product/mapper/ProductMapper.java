@@ -27,7 +27,7 @@ public interface ProductMapper {
     @Select("SELECT * FROM products WHERE product_id = #{productId}")
     ProductDto findProductById(@Param("productId") int productId);
     
-    // 상품 리스트 조회
+    // 상품 리스트 조회 + 찜 여부
     @Select("<script>" +
             "SELECT * FROM products " +
             "<if test='productIds != null and productIds.size() > 0'>" +
@@ -39,6 +39,7 @@ public interface ProductMapper {
             "</script>")
     List<ProductDto> findProductsByIds(@Param("productIds") List<Integer> productIds);
 
+    // 상품 아이디로 카테고리 조회
     @Select("SELECT category_id FROM products WHERE product_id = #{productId}")
     Integer findCategoryIdByProductId(@Param("productId") Integer productId);
 }

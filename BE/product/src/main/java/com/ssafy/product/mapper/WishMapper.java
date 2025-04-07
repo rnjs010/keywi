@@ -4,12 +4,23 @@ import com.ssafy.product.dto.ProductDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface WishMapper {
 
     @Select("SELECT COUNT(*) > 0 FROM wishes WHERE user_id = #{userId} AND product_id = #{productId}")
     boolean existsWish(@Param("userId") Long userId, @Param("productId") Integer productId);
+
+    @Select({
+            "<script>",
+            "SELECT product_id FROM wishes WHERE user_id = #{userId} AND product_id IN",
+            "<foreach item='id' collection='productIds' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    })
+    Set<Integer> findWishedProductIds(@Param("userId") Long userId, @Param("productIds") List<Integer> productIds);
 
     @Insert("INSERT INTO wishes (user_id, product_id, category_id, updated_at) VALUES (#{userId}, #{productId}, #{categoryId}, NOW())")
     void insertWish(@Param("userId") Long userId, @Param("productId") Integer productId, @Param("categoryId") Integer categoryId);

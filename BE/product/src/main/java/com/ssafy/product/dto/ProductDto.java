@@ -12,6 +12,7 @@ public class ProductDto {
     private int categoryId;
     private String categoryName;
     private String productName;
+    private Boolean isFavorite;
     private int price;
     private String productUrl;
     private String productImage;
