@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardProductDTO {
-    private Long boardPostId; // PK
+    private Long boardPostId; //  PK
     private Long boardId;     // 게시글 ID (FK)
     private Integer productId; // 제품 ID (FK)
     private Integer categoryId; // 카테고리 ID (FK)
