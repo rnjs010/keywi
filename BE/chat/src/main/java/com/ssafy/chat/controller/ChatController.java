@@ -113,7 +113,7 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestHeader("X-User-ID") String userId) {
+            @RequestHeader("X-User-ID") Long userId) {
 
         Page<ChatMessageDto> messages = chatMessageService.getChatHistory(roomId, page, size);
 

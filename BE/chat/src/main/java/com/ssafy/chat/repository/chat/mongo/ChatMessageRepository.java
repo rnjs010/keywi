@@ -19,7 +19,7 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
     /**
      * 특정 채팅방의 메시지 목록 조회 (페이징)
      */
-    Page<ChatMessage> findByRoomIdOrderBySentAtDesc(Long roomId, Pageable pageable);
+    Page<ChatMessage> findByRoomIdOrderBySentAt(Long roomId, Pageable pageable);
 
     /**
      * 특정 채팅방의 최근 메시지 목록 조회 (제한 개수)
