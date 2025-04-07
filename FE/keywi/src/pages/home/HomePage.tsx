@@ -11,6 +11,7 @@ import InfiniteScroll from '@/components/InfiniteScroll'
 import { useFeedStore } from '@/stores/homeStore'
 import { transformFeedData } from '@/features/home/utils/FeedDataConverter'
 import { addScrollListener, getScrollPosition } from '@/utils/scrollManager'
+import { useLocation } from 'react-router-dom'
 
 const Container = tw.div`
   w-full 
@@ -76,6 +77,7 @@ const RetryButton = tw.button`
 const SCROLL_KEY = 'home-feed'
 
 export default function HomePage() {
+  const location = useLocation()
   const {
     data,
     fetchNextPage,
@@ -94,6 +96,13 @@ export default function HomePage() {
   // 스크롤 영역에 대한 ref
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
+  // 컴포넌트 마운트 시 항상 최신 데이터 조회 (staleTime이 지난 경우)
+  useEffect(() => {
+    // 페이지 진입 시 항상 최신 데이터 확인
+    console.log('홈 페이지 진입: 최신 데이터 확인')
+    refetch({ cancelRefetch: false })
+  }, [refetch])
+
   // 스크롤 이벤트 리스너 등록
   useEffect(() => {
     const scrollElement = scrollAreaRef.current
@@ -107,7 +116,15 @@ export default function HomePage() {
 
   // 스크롤 위치 복원
   useEffect(() => {
-    if (scrollAreaRef.current && !isLoading && data?.pages) {
+    // 새로고침이 아닌 경우에만 스크롤 위치 복원
+    const shouldRestoreScroll = !location.state?.refreshFeed
+
+    if (
+      scrollAreaRef.current &&
+      !isLoading &&
+      data?.pages &&
+      shouldRestoreScroll
+    ) {
       const position = getScrollPosition(SCROLL_KEY)
       if (position > 0) {
         setTimeout(() => {
@@ -117,7 +134,7 @@ export default function HomePage() {
         }, 200)
       }
     }
-  }, [data, isLoading])
+  }, [data, isLoading, location.state])
 
   // 피드 데이터가 변경되면 Zustand 스토어에 저장
   useEffect(() => {

@@ -44,7 +44,6 @@ const ImageUploadBtn = tw.div`
 const FileInput = tw.input`
   hidden
 `
-
 // 썸네일 이미지들 컨테이너
 const ThumbnailsContainer = styled.div`
   ${tw`

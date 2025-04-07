@@ -11,6 +11,7 @@ export const toggleFeedLike = async (feedId: number): Promise<LikeResponse> => {
   const response = await apiRequester.post<LikeResponse>(
     `/api/feed/${feedId}/like`,
   )
+  console.log('좋아요 토글 성공:', response.data)
   return response.data
 }
 
@@ -27,6 +28,7 @@ export const toggleFeedBookmark = async (
   const response = await apiRequester.post<BookmarkResponse>(
     `/api/feed/${feedId}/bookmark`,
   )
+  console.log('북마크 토글 성공:', response.data)
   return response.data
 }
 
@@ -42,5 +44,6 @@ export const toggleUserFollow = async (
   const response = await apiRequester.post<FollowResponse>(
     `/api/feed/follow/${userId}`,
   )
+  console.log('팔로우 api 성공:', response.data)
   return response.data
 }

@@ -3,6 +3,9 @@ import { Text } from '@/styles/typography'
 import { HomeFeedProfileProps } from '@/interfaces/HomeInterfaces'
 import { useFollowMutation } from '../../hooks/useFeedInteractions'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useFeedStore } from '@/stores/homeStore'
+import styled from '@emotion/styled'
 
 const ProfileContainer = tw.div`
   flex
@@ -27,28 +30,51 @@ const UserInfo = tw.div`
   flex-col
   gap-0.5
 `
-const FollowButton = tw.button`
-  py-1
+const FollowButton = styled.button<{ $isFollowing: boolean }>`
+  ${tw`
+  py-1 
   px-1
+  text-kiwi
+  `}
 `
 
 export default function HomeFeedProfile({
   username,
   profileImage,
   description,
-  isFollowing,
+  isFollowing: initialIsFollowing,
   authorId,
 }: HomeFeedProfileProps) {
   const navigate = useNavigate()
   const followMutation = useFollowMutation()
+  const { toggleFollow, feeds } = useFeedStore()
+
+  const currentFollowStatus =
+    Object.values(feeds).find((feed) => feed.authorId === authorId)
+      ?.isFollowing ?? initialIsFollowing
 
   const handleProfileClick = () => {
     navigate(`/profile/${authorId}`)
   }
 
   const handleFollowToggle = () => {
+    toggleFollow(authorId)
+    // 즉시 상태 확인
+    setTimeout(() => {
+      const state = useFeedStore.getState()
+      console.log('팔로우 토글 후:', {
+        authorId,
+        storeFollowStatus: Object.values(state.feeds).find(
+          (f) => f.authorId === authorId,
+        )?.isFollowing,
+      })
+    }, 0)
     followMutation.mutate(authorId)
   }
+
+  useEffect(() => {
+    console.log('currentFollowStatus 변경됨:', currentFollowStatus)
+  }, [currentFollowStatus])
 
   return (
     <ProfileContainer>
@@ -68,12 +94,12 @@ export default function HomeFeedProfile({
         </UserInfo>
       </ProfileInfo>
       <FollowButton
-        $isFollowing={isFollowing}
+        $isFollowing={currentFollowStatus}
         onClick={handleFollowToggle}
         disabled={followMutation.isPending}
       >
         <Text color="kiwi" variant="body1" weight="bold">
-          {isFollowing ? '팔로잉' : '팔로우'}
+          {currentFollowStatus ? '팔로잉' : '팔로우'}
         </Text>
       </FollowButton>
     </ProfileContainer>
