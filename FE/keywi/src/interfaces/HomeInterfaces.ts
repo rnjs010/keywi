@@ -14,6 +14,16 @@ export interface FeedData {
   timeAgo: string
   isLiked: boolean
   isBookmarked: boolean
+  authorId: number // 작성자 ID -> 프로필로 이동 시 사용
+}
+
+// 피드 응답
+export interface FeedResponse {
+  content: FeedData[]
+  currentPage: number
+  totalPages: number
+  totalElements: number
+  last: boolean
 }
 
 // 피드 상태
@@ -51,6 +61,7 @@ export interface HomeFeedProfileProps {
   profileImage: string
   description: string
   isFollowing: boolean
+  authorId: number
   onFollowToggle?: (newFollowingState: boolean) => void
 }
 
@@ -86,7 +97,8 @@ export interface CommentData {
   profileImage: string
   content: string
   timeAgo: string
-  // mentionedUser?: string // @ 멘션된 사용자 - 추후개발발
+  authorId: number
+  // mentionedUser?: string // @ 멘션된 사용자 - 추후개발
 }
 
 // 댓글 컴포넌트 Props
@@ -143,4 +155,47 @@ export interface TagPointAndInfoProps {
   tagY: number
   onDragStart: (e: React.MouseEvent<HTMLDivElement>, tag: ProductTag) => void
   onTouchStart: (e: React.TouchEvent<HTMLDivElement>, tag: ProductTag) => void
+}
+
+// 피드 작성
+export interface CreateFeedDTO {
+  content: string
+  products: ProductPosition[]
+  hashtags: string[]
+}
+
+// 상품 태그 위치
+export interface ProductPosition {
+  productId: number
+  imageOrder: number
+  positionX: number
+  positionY: number
+  productName?: string
+}
+
+// 상품 찜 목록
+export interface FavoriteProduct {
+  productId: number
+  categoryId: number
+  productName: string
+  price: number
+  productUrl: string
+  productImage: string
+  manufacturer: string
+  descriptions: string | null
+}
+
+// 검색 상품 목록
+export interface FeedSearchProduct {
+  productId: number
+  productName: string
+  imageUrl: string
+  price: number
+}
+
+// 해시태그 정보
+export interface Hashtag {
+  id: number
+  name: string
+  category: string
 }

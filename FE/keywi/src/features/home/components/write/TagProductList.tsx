@@ -2,6 +2,7 @@
 import { ProductTag } from '@/interfaces/HomeInterfaces'
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
+import truncateText from '@/utils/truncateText'
 
 const TaggedProductsContainer = tw.div`
   mt-4
@@ -51,13 +52,11 @@ export default function TagProductList({
         <TaggedProductItem key={tag.id}>
           <TaggedProductContent>
             <ProductItemThumbnail
-              src={
-                tag.thumbnail || `https://picsum.photos/100?random=${tag.id}`
-              }
+              src={tag.thumbnail || '/default/default_product.png'}
               alt={tag.name}
             />
             <ProductInfo>
-              <Text variant="caption1">{tag.name}</Text>
+              <Text variant="caption1">{truncateText(tag.name, 27)}</Text>
               <Text variant="caption1" weight="bold">
                 {tag.price}
               </Text>

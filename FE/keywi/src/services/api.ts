@@ -20,8 +20,10 @@ apiRequester.interceptors.request.use(
       config.headers.Authorization = `Bearer ${accessToken}`
     }
 
-    config.headers['Content-Type'] =
-      'application/x-www-form-urlencoded;charset=utf-8'
+    // 기본적으로는 JSON 유지, 폼 데이터는 명시적으로 설정
+    if (!config.headers['Content-Type'] && !(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json;charset=utf-8'
+    }
     return config
   },
   (error) => {

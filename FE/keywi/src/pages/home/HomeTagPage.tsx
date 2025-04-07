@@ -1,6 +1,6 @@
 import tw from 'twin.macro'
 import NextHeader from '@/components/NextHeader'
-import TagProductImg from '@/features/home/components/TagProductImg'
+import TagProductImg from '@/features/home/components/write/TagProductImg'
 import { useNavigate } from 'react-router-dom'
 
 const Container = tw.div`

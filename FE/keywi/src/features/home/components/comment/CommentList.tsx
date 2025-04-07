@@ -7,31 +7,38 @@ const Container = tw.div`
   flex-col
   flex-1
   overflow-y-auto
+  justify-end
 `
-
 const EmptyCommentContainer = tw.div`
   flex
   justify-center
   items-center
-  py-12
   text-gray
+  py-8
+`
+const CommentsWrapper = tw.div`
+  flex
+  flex-col
 `
 
 export default function CommentList({ comments }: CommentListProps) {
   if (!comments || comments.length === 0) {
     return (
-      <EmptyCommentContainer>
-        아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
-      </EmptyCommentContainer>
+      <Container>
+        <EmptyCommentContainer>
+          아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
+        </EmptyCommentContainer>
+      </Container>
     )
   }
 
   return (
     <Container>
-      {/* 댓글을 최신순으로 정렬하여 표시 (맨 아래 최신) */}
-      {[...comments].reverse().map((comment) => (
-        <CommentItem key={comment.id} comment={comment} />
-      ))}
+      <CommentsWrapper>
+        {comments.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} />
+        ))}
+      </CommentsWrapper>
     </Container>
   )
 }

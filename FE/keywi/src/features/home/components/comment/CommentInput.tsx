@@ -10,33 +10,27 @@ const Container = tw.div`
   right-0
   bg-white
   border-t
-  border-gray
-  p-3
-  pb-4
+  border-littleGray
+  p-4
   max-w-screen-sm
-  mx-auto
   z-10
 `
-
 const InputWrapper = tw.div`
   flex
   items-center
+  justify-between
   bg-white
   border
   rounded-full
-  px-4
   py-2
+  px-4
 `
-
 const Input = tw.input`
-  flex-1
   border-none
   bg-transparent
   outline-none
-  text-lg
   placeholder:text-gray
 `
-
 const SendButton = tw.button`
   ml-2
   flex

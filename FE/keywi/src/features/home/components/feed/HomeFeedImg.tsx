@@ -17,13 +17,11 @@ const Container = tw.div`
   w-full
   relative
 `
-
 const ImgContainer = tw.div`
   w-full
   relative
   pb-[100%]
 `
-
 const MainImg = tw.img`
   absolute
   top-0
@@ -32,7 +30,6 @@ const MainImg = tw.img`
   h-full
   object-cover
 `
-
 const TagBtnWrapper = tw.div`
   flex  
   justify-end
@@ -40,12 +37,10 @@ const TagBtnWrapper = tw.div`
   px-4
   w-full
 `
-
 const TagBtn = tw.button`
   flex
   items-center
 `
-
 const IndicatorContainer = tw.div`
   absolute
   bottom-3
@@ -56,7 +51,6 @@ const IndicatorContainer = tw.div`
   gap-1
   z-10
 `
-
 const Indicator = styled.div<{ $active: boolean }>`
   ${tw`
     h-1
@@ -68,15 +62,6 @@ const Indicator = styled.div<{ $active: boolean }>`
   background-color: ${(props) =>
     props.$active ? 'white' : 'rgba(255, 255, 255, 0.5)'};
 `
-
-// 임시로 picsum 이미지를 사용한 기본 이미지 배열 생성 - 없앨 것임
-const createTempImages = (count: number = 3) => {
-  return Array.from({ length: count }, (_, i) => {
-    // 각 이미지마다 다른 ID 사용하여 캐싱 문제 방지
-    return `https://picsum.photos/500?random=${i}`
-  })
-}
-
 interface HomeFeedImgProps {
   mainImages?: string[]
   productTags?: ProductTag[]
@@ -87,8 +72,7 @@ export default function HomeFeedImg({
   productTags,
 }: HomeFeedImgProps) {
   // 전달된 이미지가 없으면 임시 이미지 사용
-  const images =
-    mainImages && mainImages.length > 0 ? mainImages : createTempImages(3)
+  const images = mainImages || []
 
   const hasMultipleImages = images.length > 1
   const [currentIndex, setCurrentIndex] = useState(0)

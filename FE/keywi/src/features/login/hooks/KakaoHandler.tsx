@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { BASE_URL } from '@/config'
 import { useAuthStore } from '@/stores/authStore'
+import { fetchUserInfo } from '@/services/userIdServices'
+import { useUserStore } from '@/stores/userStore'
 
 const KakaoHandler = () => {
   const navigate = useNavigate()
   const { setLoading, setError, login } = useAuthStore()
+  const { setUserId } = useUserStore()
 
   useEffect(() => {
     const handleKakaoLogin = async () => {
@@ -42,7 +45,15 @@ const KakaoHandler = () => {
         // 토큰 저장 및 인증 상태 업데이트
         login(accessToken, refreshToken)
 
-        console.log('쿠키 저장')
+        // userId 저장
+        try {
+          const userData = await fetchUserInfo()
+          setUserId(userData.userId)
+          console.log('userId 저장 완료:', userData.userId)
+        } catch (fetchError) {
+          console.error('유저 정보 가져오기 실패:', fetchError)
+          setError('유저 정보를 가져오는 데 실패했어요.')
+        }
 
         // 사용자 상태에 따라 리디렉션
         if (newUser === false) {

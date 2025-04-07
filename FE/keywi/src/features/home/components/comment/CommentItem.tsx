@@ -1,6 +1,8 @@
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 import { CommentProps } from '@/interfaces/HomeInterfaces'
+import { useNavigate } from 'react-router-dom'
+import { highlightMentions } from '@/utils/highlightMentions'
 
 const Container = tw.div`
   flex
@@ -8,7 +10,6 @@ const Container = tw.div`
   py-3
   items-center
 `
-
 const ProfileImage = tw.img`
   w-11
   h-11
@@ -17,11 +18,9 @@ const ProfileImage = tw.img`
   mr-3
   flex-shrink-0
 `
-
 const ContentWrapper = tw.div`
   flex-1
 `
-
 const UsernameRow = tw.div`
   flex
   items-center
@@ -29,6 +28,13 @@ const UsernameRow = tw.div`
 `
 
 export default function CommentItem({ comment }: CommentProps) {
+  const navigate = useNavigate()
+  const { username, profileImage, content, timeAgo, authorId } = comment
+
+  const handleProfileClick = () => {
+    navigate(`/profile/${authorId}`)
+  }
+
   //TODO - 추후개발, 댓글 멘션
   // 멘션된 사용자가 있으면 해당 부분을 강조 표시 - 추후개발
   // const renderContent = () => {
@@ -47,12 +53,13 @@ export default function CommentItem({ comment }: CommentProps) {
   //   return <CommentText>{comment.content}</CommentText>
   // }
 
-  // comment에서 필요한 속성 추출
-  const { username, profileImage, content, timeAgo } = comment
-
   return (
     <Container>
-      <ProfileImage src={profileImage} alt={`${username}의 프로필`} />
+      <ProfileImage
+        src={profileImage}
+        alt={`${username}의 프로필`}
+        onClick={handleProfileClick} // 프로필 사진 누르면 프로필 페이지로 이동
+      />
       <ContentWrapper>
         <UsernameRow>
           <Text variant="caption1" weight="bold">
@@ -62,7 +69,7 @@ export default function CommentItem({ comment }: CommentProps) {
             {timeAgo}
           </Text>
         </UsernameRow>
-        <Text variant="body1">{content}</Text>
+        <Text variant="body1">{highlightMentions(content)}</Text>
       </ContentWrapper>
     </Container>
   )
