@@ -10,5 +10,5 @@ export interface ProductProps {
   productImage: string
   manufacturer: string
   descriptions?: string | null
-  isFavorite?: boolean
+  isFavorite: boolean
 }

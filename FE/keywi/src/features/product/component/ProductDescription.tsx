@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Text } from '@/styles/typography'
-import { ShareIos, Star } from 'iconoir-react'
+import { ShareIos, Star, StarSolid } from 'iconoir-react'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import apiRequester from '@/services/api'
 import { ApiResponse } from '@/interfaces/ApiResponse'
+import { useFavorite } from '@/features/product/hooks/useFavorite'
 // useNavigate
 const ContentContainer = styled.div`
   ${tw`
@@ -45,7 +46,7 @@ const ActionButtons = tw.div`
   gap-4
 `
 const IconButton = tw.button`
-
+  p-2
 `
 
 const ViewStoreButton = styled.a`
@@ -78,7 +79,13 @@ export default function ProductDescription() {
   const { productId } = useParams<{ productId: string }>()
   // const navigate = useNavigate()
   const [productDetails, setProductDetails] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+
+  const {
+    isFavorite,
+    loading: favoriteLoading,
+    toggleFavorite,
+  } = useFavorite(Number(productId), productDetails?.isFavorite || false)
 
   const fetchProductDetails = async () => {
     setLoading(true)
@@ -87,13 +94,24 @@ export default function ProductDescription() {
         `/api/product/detail/${productId}`,
       )
       if (response.data.status === 'success') {
-        setProductDetails(response.data.data)
+        setProductDetails({
+          ...response.data.data,
+          isFavorite: response.data.data.isFavorite ?? false,
+        })
       }
     } catch (error) {
       console.error('상품 상세 정보 조회 실패:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleShare = () => {
+    const url = window.location.href
+    navigator.clipboard
+      .writeText(url)
+      .then(() => alert('링크가 클립보드에 복사되었습니다!'))
+      .catch((err) => console.error('링크 복사 실패:', err))
   }
 
   useEffect(() => {
@@ -138,10 +156,16 @@ export default function ProductDescription() {
             {productDetails.price.toLocaleString()}원
           </Text>
           <ActionButtons>
-            <IconButton>
-              <Star width={24} height={24} />
+            {/* 찜 버튼 */}
+            <IconButton onClick={toggleFavorite} disabled={favoriteLoading}>
+              {isFavorite ? (
+                <StarSolid width={24} height={24} color="#70C400" />
+              ) : (
+                <Star width={24} height={24} color="#D6E8BE" />
+              )}
             </IconButton>
-            <IconButton>
+            {/* 공유 버튼 */}
+            <IconButton onClick={handleShare}>
               <ShareIos width={24} height={24} />
             </IconButton>
           </ActionButtons>

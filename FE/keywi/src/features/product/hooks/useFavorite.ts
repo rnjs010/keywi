@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
-import apiRequester from '@/services/api'
+import apiRequester from '@/services/apijson'
 
-export const useFavorite = (productId: number) => {
-  const [isFavorite, setIsFavorite] = useState(false)
-  const [loading, setLoading] = useState(true)
+export const useFavorite = (productId: number, initialIsFavorite: boolean) => {
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setIsFavorite(initialIsFavorite)
+  }, [initialIsFavorite])
 
   const fetchFavoriteStatus = async () => {
     try {
@@ -34,9 +38,9 @@ export const useFavorite = (productId: number) => {
     }
   }
 
-  useEffect(() => {
-    fetchFavoriteStatus()
-  }, [productId])
+  // useEffect(() => {
+  //   fetchFavoriteStatus()
+  // }, [productId])
 
   return { isFavorite, loading, toggleFavorite }
 }
