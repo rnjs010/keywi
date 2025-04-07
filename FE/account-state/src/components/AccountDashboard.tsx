@@ -1,124 +1,136 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react"
+import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
 
-type UserType = 'assembler' | 'buyer' | 'keywi';
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Transaction {
-  transactionDate: string;
-  transactionTypeName: string;
-  transactionBalance: string;
-  transactionSummary: string;
-}
+export default function BankingApp() {
+  const [userType, setUserType] = useState("assembler")
 
-interface AccountData {
-  accountNo: string;
-  accountBalance: string;
-  transactions: Transaction[];
-}
+  // USD to KRW conversion rate
+  const usdToKrwRate = 1350 // Example rate: 1 USD = 1,350 KRW
 
-const dummyAccounts: Record<UserType, string> = {
-  assembler: '001-1111-2222',
-  buyer: '001-3333-4444',
-  keywi: '001-5555-6666',
-};
+  // Mock data for balance and transactions
+  const balances = {
+    assembler: 5280.42,
+    buyer: 12450.89,
+    corporation: 87650.32,
+  }
 
-const AccountDashboard: React.FC = () => {
-  const [userType, setUserType] = useState<UserType>('assembler');
-  const [account, setAccount] = useState<AccountData | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchAccountData = async (type: UserType) => {
-    setLoading(true);
-
-    // 실제로는 userType에 따라 다른 API 호출
-    const accountNo = dummyAccounts[type];
-
-    // 예시 API 호출 (백엔드 준비 시 교체)
-    const res = await fetch(`/api/financial/account/${type}`);
-    const data = await res.json();
-
-    setAccount({
-      accountNo: accountNo,
-      accountBalance: data.rec.accountBalance,
-      transactions: data.rec.list || [],
-    });
-
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchAccountData(userType);
-  }, [userType]);
-
-  const handleRefresh = () => {
-    fetchAccountData(userType);
-  };
+  const transactions = [
+    { id: 1, date: "2025-04-06 09:32:15", name: "John Smith", amount: 1250.0, type: "deposit" },
+    { id: 2, date: "2025-04-05 14:21:08", name: "ABC Suppliers", amount: -450.75, type: "withdrawal" },
+    { id: 3, date: "2025-04-04 11:15:42", name: "Sarah Johnson", amount: 825.5, type: "deposit" },
+    { id: 4, date: "2025-04-03 16:08:33", name: "Office Supplies Inc", amount: -128.99, type: "withdrawal" },
+    { id: 5, date: "2025-04-02 10:45:21", name: "Tech Solutions", amount: -1500.0, type: "withdrawal" },
+    { id: 6, date: "2025-04-01 08:30:17", name: "Robert Williams", amount: 3000.0, type: "deposit" },
+  ]
 
   return (
-    <div className='p-4 max-w-2xl mx-auto border rounded-xl shadow'>
-      <div className='flex gap-4 mb-4 justify-center'>
-        <button
-          onClick={() => setUserType('assembler')}
-          className={`px-4 py-2 rounded ${
-            userType === 'assembler' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-          }`}
-        >
-          조립자
-        </button>
-        <button
-          onClick={() => setUserType('buyer')}
-          className={`px-4 py-2 rounded ${
-            userType === 'buyer' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-          }`}
-        >
-          구매자
-        </button>
-        <button
-          onClick={() => setUserType('keywi')}
-          className={`px-4 py-2 rounded ${
-            userType === 'keywi' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-          }`}
-        >
-          키위
-        </button>
-      </div>
-
-      {loading ? (
-        <p className='text-center'>불러오는 중...</p>
-      ) : account ? (
-        <div>
-          <div className='mb-4'>
-            <h2 className='text-lg font-bold'>계좌번호: {account.accountNo}</h2>
-            <div className='flex items-center gap-2'>
-              <span className='text-xl font-semibold'>
-                잔액: ₩ {Number(account.accountBalance).toLocaleString()}
-              </span>
-              <button
-                onClick={handleRefresh}
-                className='bg-green-500 text-white px-2 py-1 rounded text-sm'
-              >
-                새로고침
-              </button>
+    <div className="min-h-screen bg-blue-50">
+      <div className="container mx-auto py-8 px-4">
+        <Card className="border-blue-200">
+          <CardHeader className="bg-blue-600 text-white">
+            <CardTitle className="text-2xl">Banking Dashboard</CardTitle>
+            <CardDescription className="text-blue-100">Manage your finances with ease</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            {/* User Type Selection */}
+            <div className="mb-8">
+              <h2 className="text-lg font-medium mb-4 text-blue-800">Select User Type</h2>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  variant={userType === "assembler" ? "default" : "outline"}
+                  onClick={() => setUserType("assembler")}
+                  className={
+                    userType === "assembler" ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-600"
+                  }
+                >
+                  Assembler
+                </Button>
+                <Button
+                  variant={userType === "buyer" ? "default" : "outline"}
+                  onClick={() => setUserType("buyer")}
+                  className={userType === "buyer" ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-600"}
+                >
+                  Buyer
+                </Button>
+                <Button
+                  variant={userType === "corporation" ? "default" : "outline"}
+                  onClick={() => setUserType("corporation")}
+                  className={
+                    userType === "corporation" ? "bg-blue-600 hover:bg-blue-700" : "border-blue-300 text-blue-600"
+                  }
+                >
+                  Corporation
+                </Button>
+              </div>
             </div>
-          </div>
 
-          <h3 className='text-md font-bold mb-2'>거래 내역</h3>
-          <ul className='space-y-2'>
-            {account.transactions.map((tx, idx) => (
-              <li key={idx} className='border p-2 rounded'>
-                <div className='text-sm'>{tx.transactionDate}</div>
-                <div className='text-sm text-gray-500'>
-                  {tx.transactionTypeName} - {tx.transactionBalance}원
+            {/* Balance Display */}
+            <div className="mb-8">
+              <h2 className="text-lg font-medium mb-4 text-blue-800">Current Balance</h2>
+              <div className="bg-white rounded-lg p-6 border border-blue-200 shadow-sm">
+                <div className="flex items-center">
+                  <div className="bg-blue-100 p-3 rounded-full mr-4">
+                    <DollarSign className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium">Available Balance</p>
+                    <p className="text-3xl font-bold text-blue-800">
+                      ₩{Math.round(balances[userType as keyof typeof balances] * usdToKrwRate).toLocaleString("ko-KR")}
+                    </p>
+                  </div>
                 </div>
-                <div className='text-sm'>{tx.transactionSummary}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p>계좌 정보가 없습니다.</p>
-      )}
-    </div>
-  );
-};
+              </div>
+            </div>
 
-export default AccountDashboard;
+            {/* Transaction History */}
+            <div>
+              <h2 className="text-lg font-medium mb-4 text-blue-800">Transaction History</h2>
+              <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-blue-50">
+                        <th className="px-4 py-3 text-left text-sm font-medium text-blue-800">Date & Time</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-blue-800">Name</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-blue-800">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-blue-100">
+                      {transactions.map((transaction) => (
+                        <tr key={transaction.id} className="hover:bg-blue-50">
+                          <td className="px-4 py-3 text-sm text-gray-700">{transaction.date}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{transaction.name}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium flex justify-end items-center">
+                            {transaction.amount > 0 ? (
+                              <>
+                                <ArrowDownIcon className="h-4 w-4 text-green-500 mr-1" />
+                                <span className="text-green-600">
+                                  +₩{Math.round(Math.abs(transaction.amount) * usdToKrwRate).toLocaleString("ko-KR")}
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <ArrowUpIcon className="h-4 w-4 text-red-500 mr-1" />
+                                <span className="text-red-600">
+                                  -₩{Math.round(Math.abs(transaction.amount) * usdToKrwRate).toLocaleString("ko-KR")}
+                                </span>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
