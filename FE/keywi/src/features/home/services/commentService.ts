@@ -28,6 +28,7 @@ const transformComment = (comment: CommentResponse): CommentData => {
       comment.author.profileImageUrl || '/default/default_product.png',
     content: comment.content,
     timeAgo: getTimeDiff(comment.createdAt),
+    authorId: comment.author.id,
     // 이후 mentionedUser 구현 시 추가
   }
 }
@@ -38,7 +39,12 @@ export const getComments = async (feedId: number): Promise<CommentData[]> => {
     const response = await apiRequester.get<CommentResponse[]>(
       `/api/feed/${feedId}/comments`,
     )
-    return response.data.map(transformComment)
+    // 시간순으로 정렬 (오래된 댓글 -> 최신 댓글 순)
+    const sortedComments = response.data.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    )
+    return sortedComments.map(transformComment)
   } catch (error) {
     console.error('댓글 조회 중 오류 발생:', error)
     return []

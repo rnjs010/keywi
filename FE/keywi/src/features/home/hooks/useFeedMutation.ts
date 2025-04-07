@@ -18,7 +18,7 @@ export function useFeedMutation() {
     onSuccess: () => {
       // 피드 목록 캐시 무효화 (새로운 피드 반영)
       queryClient.invalidateQueries({ queryKey: ['feeds'] })
-      console.log('게시물이 작성되었습니다!')
+      console.log('게시물이 작성되었습니다!', queryClient)
     },
 
     onError: (error) => {

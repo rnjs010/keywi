@@ -9,7 +9,7 @@ import {
   DrawerTrigger,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   FavoriteProduct,
   FeedSearchProduct,
@@ -21,6 +21,7 @@ import truncateText from '@/utils/truncateText'
 import highlightSearchTerm from '@/utils/highlightSearchTerm'
 import { useFeedProductSearch } from '../../hooks/useFeedProductSearch'
 import styled from '@emotion/styled'
+import { useQueryClient } from '@tanstack/react-query'
 const CardContainer = tw.div`
   flex items-center gap-4 cursor-pointer my-3
 `
@@ -84,13 +85,20 @@ export default function TagProductModal({
   const showSearchResults = searchTerm.trim().length > 0
   const displayProducts = showSearchResults ? searchResults : favoriteProducts
   const isLoading = showSearchResults ? isSearchLoading : isFavLoading
+  const queryClient = useQueryClient()
+
+  // 모달이 열릴 때마다 검색어와 검색 결과를 초기화
+  useEffect(() => {
+    if (isOpen) {
+      setSearchTerm('')
+      // 이전 검색 쿼리 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['FeedProductSearch'] })
+    }
+  }, [isOpen, queryClient])
 
   // 모달 상태 변경 핸들러 - 모달을 닫을 때 검색어 리셋
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open)
-    if (!open) {
-      setSearchTerm('')
-    }
   }
 
   // 직접 입력 모달 핸들러

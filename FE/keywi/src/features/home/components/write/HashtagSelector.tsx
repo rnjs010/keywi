@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
-import { colors } from '@/styles/colors'
 import { useHashtags } from '@/features/home/hooks/useHashtags'
 import { Hashtag } from '@/interfaces/HomeInterfaces'
 
@@ -14,10 +13,7 @@ const InputContainer = tw.div`
   relative
   flex
   items-center
-  border
-  border-littleGray
   rounded-lg
-  px-3
   py-2
 `
 
@@ -25,7 +21,8 @@ const HashtagInput = tw.input`
   w-full
   outline-none
   bg-transparent
-  text-sm
+  text-base
+  placeholder:text-gray
 `
 
 const SuggestionsContainer = tw.div`
@@ -36,13 +33,13 @@ const SuggestionsContainer = tw.div`
 `
 
 const SuggestionTag = tw.button`
-  px-2
-  py-1
-  rounded-full
-  bg-gray
-  text-xs
-  hover:bg-gray
+  px-1
+  border-kiwi
+  text-kiwi
   whitespace-nowrap
+  items-center
+  flex
+
 `
 
 const SelectedTagsContainer = tw.div`
@@ -54,19 +51,21 @@ const SelectedTagsContainer = tw.div`
 
 const SelectedTag = tw.div`
   px-2
-  py-1
-  rounded-lg
-  bg-gray
-  text-kiwi
-  flex
+  py-0.5
+  rounded-full
+  border
+  border-kiwi
   items-center
+  flex
   gap-1
 `
 
 const RemoveButton = tw.button`
-  text-gray
+  items-center
+  flex
+  px-1
+  py-0.5
   hover:text-gray
-  ml-1
 `
 
 interface HashtagSelectorProps {
@@ -86,8 +85,8 @@ export default function HashtagSelector({
   // 입력값에 따른 추천 해시태그 업데이트
   useEffect(() => {
     if (!inputValue.trim()) {
-      // 입력값이 없으면 인기 해시태그나 추천 해시태그를 보여줄 수 있음
-      const popularTags = hashtags.slice(0, 10) // 예시: 처음 10개 태그를 인기 태그로 가정
+      // 입력값이 없으면 인기 해시태그 10개 보여주고 시작
+      const popularTags = hashtags.slice(0, 10)
       setSuggestions(popularTags)
       return
     }
@@ -99,7 +98,7 @@ export default function HashtagSelector({
           tag.name.toLowerCase().includes(inputValue.toLowerCase()) &&
           !selectedTags.includes(tag.name),
       )
-      .slice(0, 12) // 최대 12개만 표시
+      .slice(0, 10) // 최대 10개만 표시
 
     setSuggestions(filtered)
   }, [inputValue, hashtags, selectedTags])
@@ -144,21 +143,14 @@ export default function HashtagSelector({
 
   return (
     <HashtagContainer>
-      <Text variant="body2" color="gray" className="mb-2">
-        해시태그 입력
-      </Text>
-
       {/* 입력 필드 */}
       <InputContainer>
-        <Text variant="caption2" color="gray" className="mr-1">
-          #
-        </Text>
         <HashtagInput
           ref={inputRef}
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="해시태그를 입력하세요 (Enter로 추가)"
+          placeholder="다양한 #해시태그도 추가할 수 있어요..."
         />
       </InputContainer>
 
@@ -170,7 +162,9 @@ export default function HashtagSelector({
               key={tag.id}
               onClick={() => handleSuggestionClick(tag.name)}
             >
-              #{tag.name}
+              <Text variant="caption1" weight="bold">
+                #{tag.name}
+              </Text>
             </SuggestionTag>
           ))}
         </SuggestionsContainer>
@@ -178,26 +172,28 @@ export default function HashtagSelector({
 
       {/* 선택된 해시태그 표시 */}
       {selectedTags.length > 0 && (
-        <>
-          <Text variant="caption2" color="gray" className="mt-4 mb-1">
+        <div className="mt-4 pt-4 border-t border-lightGray">
+          <Text variant="caption1" weight="bold" color="darkGray">
             선택된 해시태그
           </Text>
           <SelectedTagsContainer>
             {selectedTags.map((tag) => (
               <SelectedTag key={tag}>
-                <Text variant="caption2" color="kiwi">
+                <Text variant="caption1" color="kiwi" weight="bold">
                   #{tag}
                 </Text>
                 <RemoveButton
                   onClick={() => handleRemoveTag(tag)}
                   aria-label={`Remove ${tag}`}
                 >
-                  ×
+                  <Text variant="caption2" color="kiwi" weight="bold">
+                    x
+                  </Text>
                 </RemoveButton>
               </SelectedTag>
             ))}
           </SelectedTagsContainer>
-        </>
+        </div>
       )}
     </HashtagContainer>
   )

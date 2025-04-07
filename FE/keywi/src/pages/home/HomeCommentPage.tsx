@@ -17,7 +17,6 @@ const Container = tw.div`
   h-screen
   pb-4
 `
-
 const HeaderWrapper = tw.div`
   sticky
   top-0
@@ -25,14 +24,12 @@ const HeaderWrapper = tw.div`
   bg-white
   w-full
 `
-
 const ContentArea = styled.div`
   ${tw`
     flex
     flex-col
     flex-1
     overflow-y-auto
-    pb-20
     justify-end
   `}
 
@@ -41,7 +38,6 @@ const ContentArea = styled.div`
     display: none;
   }
 `
-
 const LoadingContainer = tw.div`
   flex
   justify-center

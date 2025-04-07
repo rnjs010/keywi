@@ -21,16 +21,7 @@ export const useFeedQuery = () => {
       }
     },
     initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      // 디버깅용 로그 추가
-      console.log('마지막 페이지 정보:', {
-        currentPage: lastPage.currentPage,
-        totalPages: lastPage.totalPages,
-        isLast: lastPage.last,
-        hasContent: lastPage.content.length > 0,
-        pageCount: allPages.length,
-      })
-
+    getNextPageParam: (lastPage) => {
       // 더 가져올 데이터가 있고, 현재 페이지가 전체 페이지보다 작은 경우 다음 페이지 반환
       if (!lastPage.last && lastPage.content.length > 0) {
         return lastPage.currentPage + 1

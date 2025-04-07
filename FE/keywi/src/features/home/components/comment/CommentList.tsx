@@ -9,14 +9,12 @@ const Container = tw.div`
   overflow-y-auto
   justify-end
 `
-
 const EmptyCommentContainer = tw.div`
   flex
   justify-center
   items-center
-  py-12
   text-gray
-  mt-auto
+  py-8
 `
 const CommentsWrapper = tw.div`
   flex
@@ -37,7 +35,6 @@ export default function CommentList({ comments }: CommentListProps) {
   return (
     <Container>
       <CommentsWrapper>
-        {/* 댓글을 시간순으로 정렬하여 표시 (과거->최신 순서로) */}
         {comments.map((comment) => (
           <CommentItem key={comment.id} comment={comment} />
         ))}

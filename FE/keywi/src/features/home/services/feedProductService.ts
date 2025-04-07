@@ -33,8 +33,8 @@ export const getSearchProducts = async (
       },
     )
 
-    // 응답이 배열인 경우와 data 속성을 가진 객체인 경우 모두 처리
     const productData = response.data
+    console.log('Search products:', productData)
 
     // 응답 데이터를 매핑하면서 null인 imageUrl을 기본 이미지로 대체
     return productData.map((product: FeedSearchProduct) => ({

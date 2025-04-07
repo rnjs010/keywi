@@ -97,6 +97,7 @@ export interface CommentData {
   profileImage: string
   content: string
   timeAgo: string
+  authorId: number
   // mentionedUser?: string // @ 멘션된 사용자 - 추후개발
 }
 

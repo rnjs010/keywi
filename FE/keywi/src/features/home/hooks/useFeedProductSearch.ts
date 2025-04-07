@@ -9,7 +9,6 @@ export const useFeedProductSearch = (searchTerm: string, enabled: boolean) => {
     queryFn: () => getSearchProducts(searchTerm),
     enabled: enabled && searchTerm.trim().length > 0,
     staleTime: 1000 * 60, // 1분간 캐시
-    initialData: [], // 초기 데이터로 빈 배열 제공
     retry: 1, // 실패 시 한 번만 재시도
   })
 }

@@ -26,7 +26,7 @@ export default function HomeWritePage() {
   const navigate = useNavigate()
   const feedMutation = useFeedMutation()
 
-  const handleTextChange = (text: string) => {
+  const handleTextChange = () => {
     // WriteText 컴포넌트에서 이미 스토어를 업데이트합니다.
   }
 

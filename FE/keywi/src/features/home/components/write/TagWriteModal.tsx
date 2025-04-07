@@ -106,7 +106,7 @@ export default function TagWriteModal({
               maxLength={20}
               autoFocus
             />
-            <Text variant="caption3" color="darkGray">
+            <Text variant="caption2" color="darkGray" className="pl-1">
               예시) MAS 푸딩 크레용 헬로키티 키캡(122키)
             </Text>
           </InputContainer>
