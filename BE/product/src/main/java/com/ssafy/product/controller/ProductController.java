@@ -23,10 +23,11 @@ public class ProductController {
     // 전체 상품 조회
     @GetMapping("")
     public ApiResponse<List<ProductDto>> getProductsAll(
+            @RequestHeader(value = "X-User-ID", required = false) Long userId,
             @RequestParam(required = false, defaultValue = "name") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
 
-        List<ProductDto> products = productService.getAllProducts();
+        List<ProductDto> products = productService.getAllProducts(userId);
         SortUtil.sortProducts(products, sortBy, sortOrder);
         return ApiResponse.success("전체 상품 조회 성공", products);
     }
@@ -35,10 +36,11 @@ public class ProductController {
     @GetMapping("/{categoryId}")
     public ApiResponse<List<ProductDto>> getProductsByCategory(
             @PathVariable int categoryId,
+            @RequestHeader(value = "X-User-ID", required = false) Long userId,
             @RequestParam(required = false, defaultValue = "name") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
 
-        List<ProductDto> products = productService.getProductsByCategory(categoryId);
+        List<ProductDto> products = productService.getProductsByCategory(categoryId, userId);
         SortUtil.sortProducts(products, sortBy, sortOrder);
         return ApiResponse.success("카테고리별 상품 조회 성공", products);
     }

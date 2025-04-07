@@ -15,21 +15,50 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
+    private final WishMapper wishMapper;
     private final ProductMapper productMapper;
     private final ProductDescriptionMapper productDescriptionMapper;
 
     @Override
-    public List<ProductDto> getAllProducts() {
-        return productMapper.findAllProducts();
+    public List<ProductDto> getAllProducts(Long userId) {
+        List<ProductDto> products = productMapper.findAllProducts();
+
+        if (userId != null) {
+            List<Integer> productIds = products.stream()
+                    .map(ProductDto::getProductId)
+                    .toList();
+
+            Set<Integer> wishedProductIds = wishMapper.findWishedProductIds(userId, productIds);
+            for (ProductDto product : products) {
+                product.setIsFavorite(wishedProductIds.contains(product.getProductId()));
+            }
+        }
+
+        return products;
     }
 
     @Override
-    public List<ProductDto> getProductsByCategory(int categoryId) {
+    public List<ProductDto> getProductsByCategory(int categoryId, Long userId) {
+        List<ProductDto> products;
+
         if (categoryId >= 1 && categoryId <= 7) {
-            return productMapper.findProductsByCategoryWithSub(categoryId);
+            products = productMapper.findProductsByCategoryWithSub(categoryId);
         } else {
-            return productMapper.findProductsByCategory(categoryId);
+            products = productMapper.findProductsByCategory(categoryId);
         }
+
+        if (userId != null) {
+            List<Integer> productIds = products.stream()
+                    .map(ProductDto::getProductId)
+                    .toList();
+
+            Set<Integer> wishedProductIds = wishMapper.findWishedProductIds(userId, productIds);
+            for (ProductDto product : products) {
+                product.setIsFavorite(wishedProductIds.contains(product.getProductId()));
+            }
+        }
+
+        return products;
     }
 
     @Override
@@ -39,8 +68,6 @@ public class ProductServiceImpl implements ProductService {
         product.setDescriptions(descriptions);
         return product;
     }
-
-    private final WishMapper wishMapper;
 
     @Override
     public List<ProductDto> getProductsByIds(List<Integer> productIds, Long userId) {
