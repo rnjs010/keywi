@@ -22,13 +22,6 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
     Page<ChatMessage> findByRoomIdOrderBySentAt(Long roomId, Pageable pageable);
 
     /**
-     * 특정 채팅방의 최근 메시지 목록 조회 (제한 개수)
-     * 페이지 객체가 아닌 리스트로 반환하는 메서드
-     */
-    @Query(value = "{'roomId': ?0}", sort = "{'sentAt': -1}")
-    List<ChatMessage> findRecentMessagesByRoomId(Long roomId, Pageable pageable);
-
-    /**
      * 특정 메시지 이전의 채팅 내역 조회
      */
     @Query("{'roomId': ?0, 'sentAt': {$lt: ?1}}")

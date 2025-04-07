@@ -8,6 +8,8 @@ import com.ssafy.chat.common.util.IdConverter;
 import com.ssafy.chat.domain.ChatRoom;
 import com.ssafy.chat.domain.mongo.ChatMessage;
 import com.ssafy.chat.dto.chat.ChatMessageDto;
+import com.ssafy.chat.dto.chat.ChatMessageGroupDto;
+import com.ssafy.chat.dto.chat.ChatMessageGroupResponse;
 import com.ssafy.chat.dto.chat.ChatMessageType;
 import com.ssafy.chat.dto.notification.NotificationDto;
 import com.ssafy.chat.dto.user.MemberResponseDto;
@@ -23,8 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,55 +99,100 @@ public class ChatMessageService {
     }
 
     /**
-     * 채팅 이력 조회
+     * 채팅 이력을 날짜별로 그룹화하여 조회
      * @param roomId 채팅방 ID
      * @param page 페이지 번호
      * @param size 페이지 크기
-     * @return 채팅 메시지 목록
+     * @return 날짜별로 그룹화된 채팅 메시지 목록
      */
-    public Page<ChatMessageDto> getChatHistory(String roomId, int page, int size) {
+    public ChatMessageGroupResponse getChatHistoryGrouped(String roomId, int page, int size) {
+        // 기존 메소드와 동일하게 메시지 조회
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderBySentAt(Long.parseLong(roomId), pageable);
+        Page<ChatMessage> messagesPage = chatMessageRepository.findByRoomIdOrderBySentAt(Long.parseLong(roomId), pageable);
 
-        return messages.map(this::convertToDto);
+        // 메시지를 DTO로 변환
+        List<ChatMessageDto> messageDtos = messagesPage.getContent().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        // 날짜별로 그룹화
+        Map<String, List<ChatMessageDto>> groupedMessages = messageDtos.stream()
+                .collect(Collectors.groupingBy(msg -> formatDateToGroup(msg.getSentAt())));
+
+        // 그룹화된 메시지를 날짜 순으로 정렬하여 리스트로 변환
+        List<ChatMessageGroupDto> messageGroups = groupedMessages.entrySet().stream()
+                .map(entry -> new ChatMessageGroupDto(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(ChatMessageGroupDto::getDateGroup))
+                .collect(Collectors.toList());
+
+        // 필요한 페이징 정보만 포함하는 Map 생성
+        Map<String, Object> pagingInfo = new HashMap<>();
+        pagingInfo.put("currentPage", messagesPage.getNumber());
+        pagingInfo.put("pageSize", messagesPage.getSize());
+        pagingInfo.put("hasMoreMessages", !messagesPage.isLast());
+        pagingInfo.put("totalMessages", messagesPage.getTotalElements());
+
+        // 응답 객체 생성
+        ChatMessageGroupResponse response = new ChatMessageGroupResponse();
+        response.setMessageGroups(messageGroups);
+        response.setPageInfo(pagingInfo);
+
+        return response;
     }
+
+    // 날짜를 "2025년 4월 7일" 형식으로 포맷팅하는 메소드
+    private String formatDateToGroup(LocalDateTime dateTime) {
+        if (dateTime == null) return "날짜 없음";
+
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"));
+    }
+
+
     /**
      * 이전 메시지 로딩 (스크롤 시 이전 메시지 로딩)
      * @param roomId 채팅방 ID
      * @param lastMessageId 마지막으로 로드된 메시지 ID
      * @param size 로드할 메시지 수
-     * @return 이전 채팅 메시지 목록
+     * @return 날짜별로 그룹화된 이전 채팅 메시지 목록
      */
-    public List<ChatMessageDto> getPreviousMessages(String roomId, String lastMessageId, int size) {
+    public ChatMessageGroupResponse getPreviousMessagesGrouped(String roomId, String lastMessageId, int size) {
         // 마지막 메시지 찾기
         ChatMessage lastMessage = chatMessageRepository.findById(lastMessageId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MESSAGE_NOT_FOUND, "메시지를 찾을 수 없습니다."));
 
         // 이전 메시지 조회 (마지막 메시지 시간보다 이전에 보낸 메시지)
-        // String을 Long으로 변환
         Pageable pageable = PageRequest.of(0, size);
         List<ChatMessage> messages = chatMessageRepository.findMessagesBeforeTimestamp(
                 Long.parseLong(roomId), lastMessage.getSentAt(), pageable);
 
-        return messages.stream()
+        // 메시지를 DTO로 변환
+        List<ChatMessageDto> messageDtos = messages.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-    }
 
-    /**
-     * 최근 채팅 메시지 조회 (최신 N개)
-     * @param roomId 채팅방 ID
-     * @param limit 조회할 메시지 수
-     * @return 최근 채팅 메시지 목록
-     */
-    public List<ChatMessageDto> getRecentMessages(String roomId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        // String을 Long으로 변환
-        List<ChatMessage> messages = chatMessageRepository.findRecentMessagesByRoomId(Long.parseLong(roomId), pageable);
+        // 날짜별로 그룹화
+        Map<String, List<ChatMessageDto>> groupedMessages = messageDtos.stream()
+                .collect(Collectors.groupingBy(msg -> formatDateToGroup(msg.getSentAt())));
 
-        return messages.stream()
-                .map(this::convertToDto)
+        // 그룹화된 메시지를 날짜 순으로 정렬하여 리스트로 변환
+        List<ChatMessageGroupDto> messageGroups = groupedMessages.entrySet().stream()
+                .map(entry -> new ChatMessageGroupDto(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(ChatMessageGroupDto::getDateGroup))
                 .collect(Collectors.toList());
+
+        // 필요한 페이징 정보만 포함하는 Map 생성
+        Map<String, Object> pagingInfo = new HashMap<>();
+        pagingInfo.put("currentPage", 0);
+        pagingInfo.put("pageSize", size);
+        pagingInfo.put("hasMoreMessages", messages.size() >= size);
+        pagingInfo.put("totalMessages", messages.size());
+
+        // 응답 객체 생성
+        ChatMessageGroupResponse response = new ChatMessageGroupResponse();
+        response.setMessageGroups(messageGroups);
+        response.setPageInfo(pagingInfo);
+
+        return response;
     }
 
     /**
@@ -477,7 +524,7 @@ public class ChatMessageService {
 
         // 발신자가 구매자인지 확인하기 위해서는 채팅방 정보가 필요
         // 간단히 발신자와 수신자 모두 기준으로 읽음 상태 결정
-        boolean isRead = chatMessage.isReadByBuyer() && chatMessage.isReadByAssembler();
+        boolean messageRead = chatMessage.isReadByBuyer() && chatMessage.isReadByAssembler();
 
         // 수정된 ChatMessage 클래스에 맞게 변환
         return ChatMessageDto.builder()
@@ -489,7 +536,7 @@ public class ChatMessageService {
                 .content(chatMessage.getMessage())
                 .messageType(messageType)
                 .sentAt(chatMessage.getSentAt())
-                .isRead(isRead) // 양쪽 모두 읽었으면 true
+                .messageRead(messageRead) // 양쪽 모두 읽었으면 true
                 .imageUrl(chatMessage.getMediaUrl())
                 .transactionAmount(chatMessage.getTransactionAmount())
                 .transactionStatus(chatMessage.getTransactionStatus())

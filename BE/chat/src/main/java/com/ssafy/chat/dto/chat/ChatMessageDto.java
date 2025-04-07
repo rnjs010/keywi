@@ -30,5 +30,5 @@ public class ChatMessageDto {
     private String transactionStatus;  // 거래 상태
 
     private LocalDateTime sentAt;  // 전송 시간
-    private boolean isRead;          // 읽음 여부
+    private boolean messageRead;          // 읽음 여부
 }
