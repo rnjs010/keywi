@@ -403,7 +403,7 @@ public class FeedService {
      * 피드 북마크 추가/취소
      */
     @Transactional
-    public BookmarkResponse toggleBookmark(Long feedId, Long userId) {
+    public BookmarkResponse toggleBookmark(Long feedId, Long userId) throws JsonProcessingException {
 //        boolean isBookmarked = feedMapper.isBookmarkedByUser(feedId, userId);
 //        int increment;
 //

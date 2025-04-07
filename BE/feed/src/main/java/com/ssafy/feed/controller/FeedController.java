@@ -164,7 +164,7 @@ public class FeedController {
     @PostMapping("/{feedId}/bookmark")
     public ResponseEntity<BookmarkResponse> toggleBookmark(
             @RequestHeader("X-User-ID") Long userId,
-            @PathVariable Long feedId) {
+            @PathVariable Long feedId) throws JsonProcessingException {
 
         BookmarkResponse response = feedService.toggleBookmark(feedId, userId);
 
