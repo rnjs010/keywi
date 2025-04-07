@@ -87,9 +87,22 @@ public class EstimateBoardServiceImpl implements EstimateBoardService {
         // 제품 목록 조회
         List<EstimateBoardDTO.BoardProduct> products = estimateBoardMapper.findBoardProducts(boardId);
 
+        for (EstimateBoardDTO.BoardProduct product : products) {
+            Integer productId = product.getProductId();
+            if (productId == null || productId == 0) {
+                product.setProductName("조립자 추천 요청");
+                product.setImageUrl(null);
+                product.setPrice(0);
+                product.setProductId(0);
+            }
+        }
+
         // 이미지와 제품 정보 설정
         boardDetails.setImageUrls(imageUrls);
         boardDetails.setProducts(products);
+        boardDetails.setViewCount(boardDetails.getViewCount()+1);
+
+        estimateBoardMapper.incrementViewCount(boardId);
 
         return boardDetails;
     }
