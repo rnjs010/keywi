@@ -53,17 +53,38 @@ export interface ChatPost {
 //   createdAt: string
 // }
 
-export interface Message {
+export interface ChatMessage {
   messageId: string
+  roomId: string
   senderId: string
-  senderType: string
   senderNickname: string
   senderProfileUrl: string
-  content: string
+  receiverId: string | null
   messageType: string
-  timestamp: string
-  formattedTime: string
-  read: boolean
+  content: string | null
+  imageUrl: string | null
+  transactionAmount: number | null
+  transactionStatus: string | null
+  sentAt: string // ISO 8601 형식 (예: "2025-04-07T16:04:30.782")
+  messageRead: boolean
+}
+
+export interface MessageGroup {
+  dateGroup: string // 예: "2025년 4월 7일"
+  messages: ChatMessage[]
+}
+
+export interface PageInfo {
+  totalMessages: number
+  pageSize: number
+  currentPage: number
+  hasMoreMessages: boolean
+}
+
+// API 응답 데이터
+export interface ChatMessagesResponseData {
+  messageGroups: MessageGroup[]
+  pageInfo: PageInfo
 }
 
 export interface DealMessageProps {

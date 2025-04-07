@@ -8,7 +8,7 @@ import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
 import { useChatImageStore } from '@/stores/chatStore'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import {
   useChatPartner,
   useChatPost,
@@ -20,7 +20,15 @@ import { StompContext } from '@/stores/stompContext'
 import { useUserStore } from '@/stores/userStore'
 import { Client } from '@stomp/stompjs'
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket'
-import { Message } from '@/interfaces/ChatInterfaces'
+import {
+  ChatMessage,
+  ChatMessagesResponseData,
+  MessageGroup,
+} from '@/interfaces/ChatInterfaces'
+import {
+  useChatHistory,
+  useChatHistoryMore,
+} from '@/features/chat/hooks/useChatHistory'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -40,13 +48,15 @@ const DownBtnBox = tw.button`
 
 export default function ChatRoomPage() {
   // const myId = 'user789'
-
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
-
   const { roomId } = useParams<{ roomId: string }>()
+  const prevScrollHeightRef = useRef<number>(0)
+  const isInitialLoadRef = useRef<boolean>(true)
+
+  // 정보 get
   const {
     data: partner,
     isLoading: loadingPartner,
@@ -58,13 +68,187 @@ export default function ChatRoomPage() {
     isError: errorPost,
   } = useChatPost(roomId!)
 
+  // 채팅 내역 가져오기
+  const location = useLocation()
+  const { data: chatHistory, refetch } = useChatHistory(roomId!)
+  const hasMoreMessages = chatHistory?.pageInfo?.hasMoreMessages ?? false
+  const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([])
+
+  useEffect(() => {
+    refetch()
+  }, [location])
+
+  useEffect(() => {
+    if (chatHistory?.messageGroups) {
+      setMessageGroups(chatHistory.messageGroups)
+
+      setTimeout(() => {
+        startToBottom()
+        isInitialLoadRef.current = false
+      }, 100)
+    }
+  }, [chatHistory])
+
+  const [initialLastMessageId, setInitialLastMessageId] = useState<
+    string | null
+  >(null)
+
+  useEffect(() => {
+    if ((chatHistory?.messageGroups ?? []).length > 0) {
+      const firstMessage = chatHistory?.messageGroups[0]?.messages[0]
+      if (firstMessage?.messageId) {
+        setInitialLastMessageId(firstMessage.messageId)
+      }
+    }
+  }, [chatHistory])
+
+  // 과거 채팅 무한스크롤
+  const {
+    data: moreHistoryData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useChatHistoryMore(roomId!, initialLastMessageId ?? '', {
+    enabled: !!roomId && !!initialLastMessageId && hasMoreMessages,
+    onSuccess: () => {
+      // 스크롤 위치 유지를 위해 현재 스크롤 높이 저장
+      if (chatContainerRef.current) {
+        prevScrollHeightRef.current = chatContainerRef.current.scrollHeight
+      }
+    },
+  })
+
+  // 무한스크롤: top에 도달하면 이전 메시지 불러오기
+  const topSentinelRef = useRef<HTMLDivElement>(null) // 상단 감지용
+
+  useEffect(() => {
+    if (!topSentinelRef.current || !hasNextPage) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // 상단에 도달하고 로딩 중이 아니면 이전 메시지 불러오기
+        if (entries[0].isIntersecting && !isFetchingNextPage && hasNextPage) {
+          console.log('Loading more messages...')
+          fetchNextPage()
+        }
+      },
+      {
+        root: null, // viewport 기준으로 변경
+        threshold: 0.1,
+        rootMargin: '100px', // 일찍 감지하기 위해 margin 추가
+      },
+    )
+
+    observer.observe(topSentinelRef.current)
+    return () => observer.disconnect()
+  }, [topSentinelRef.current, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  // 이전 메시지 로드 후 스크롤 위치 조정
+  useEffect(() => {
+    if (
+      isFetchingNextPage === false &&
+      chatContainerRef.current &&
+      prevScrollHeightRef.current > 0
+    ) {
+      // 이전 로드 후 스크롤 위치 유지
+      const newScrollHeight = chatContainerRef.current.scrollHeight
+      const scrollDiff = newScrollHeight - prevScrollHeightRef.current
+
+      if (scrollDiff > 0) {
+        chatContainerRef.current.scrollTop = scrollDiff
+      }
+
+      prevScrollHeightRef.current = 0
+    }
+  }, [isFetchingNextPage])
+
+  // 더 가져온 메시지 병합
+  useEffect(() => {
+    if (
+      !moreHistoryData ||
+      !moreHistoryData.messageGroups ||
+      moreHistoryData.messageGroups.length === 0
+    )
+      return
+
+    setMessageGroups((prev) => {
+      const mergedGroups = new Map<string, ChatMessage[]>()
+
+      // 기존 메시지 그룹을 Map에 저장
+      prev.forEach((group) => {
+        mergedGroups.set(group.dateGroup, [...group.messages])
+      })
+
+      // 새로 가져온 메시지를 Map에 병합
+      moreHistoryData.messageGroups.forEach((group: MessageGroup) => {
+        const existing = mergedGroups.get(group.dateGroup) || []
+
+        // 중복 메시지 방지
+        const uniqueMessages = group.messages.filter(
+          (newMsg: ChatMessage) =>
+            !existing.some(
+              (existingMsg) => existingMsg.messageId === newMsg.messageId,
+            ),
+        )
+
+        mergedGroups.set(
+          group.dateGroup,
+          [...uniqueMessages, ...existing].sort(
+            (a, b) =>
+              new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime(),
+          ),
+        )
+      })
+
+      // Map을 MessageGroup[] 배열로 변환하고 날짜순으로 정렬
+      return Array.from(mergedGroups.entries())
+        .map(([dateGroup, messages]) => ({ dateGroup, messages }))
+        .sort((a, b) => {
+          const aDate = new Date(a.messages[0]?.sentAt || '')
+          const bDate = new Date(b.messages[0]?.sentAt || '')
+          return aDate.getTime() - bDate.getTime()
+        })
+    })
+  }, [moreHistoryData])
+
+  // 메시지 수신
   const [client, setClient] = useState<Client | null>(null)
   const myId = useUserStore((state) => state.userId)
-  const [messages, setMessages] = useState<Message[]>([])
 
-  const onMessage = useCallback((msg: Message) => {
-    setMessages((prev) => [...prev, msg])
+  const onMessage = useCallback((msg: ChatMessage) => {
+    const sentDate = new Date(msg.sentAt)
+    const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
+
+    setMessageGroups((prevGroups) => {
+      const existingGroupIndex = prevGroups.findIndex(
+        (group) => group.dateGroup === formattedDate,
+      )
+
+      // 기존 날짜 그룹이 있는 경우
+      if (existingGroupIndex !== -1) {
+        const updatedGroups = [...prevGroups]
+        updatedGroups[existingGroupIndex] = {
+          ...updatedGroups[existingGroupIndex],
+          messages: [...updatedGroups[existingGroupIndex].messages, msg],
+        }
+        return updatedGroups
+      }
+
+      // 새로운 날짜 그룹 생성
+      return [
+        ...prevGroups,
+        {
+          dateGroup: formattedDate,
+          messages: [msg],
+        },
+      ]
+    })
+
     console.log('메시지 수신', msg)
+    // 새 메시지가 오면 자동 스크롤 다운
+    setTimeout(() => {
+      scrollToBottom()
+    }, 100)
   }, [])
 
   // 클라이언트 생성 후 저장
@@ -165,7 +349,8 @@ export default function ChatRoomPage() {
 
           {/* Date + Chat */}
           <ChatContainer ref={chatContainerRef}>
-            {messageGroup.map((group) => (
+            <div ref={topSentinelRef} />
+            {messageGroups.map((group) => (
               <>
                 {/* Date */}
                 <DateBox key={group.dateGroup}>
@@ -184,10 +369,6 @@ export default function ChatRoomPage() {
                 )}
               </>
             ))}
-
-            {messages.map((m) => (
-              <p key={m.messageId}>{m.content}</p>
-            ))}
           </ChatContainer>
 
           {/* Input */}
@@ -199,137 +380,3 @@ export default function ChatRoomPage() {
     </StompContext.Provider>
   )
 }
-
-// NOTE - 더미데이터
-const messageGroup = [
-  {
-    dateGroup: '2025년 3월 18일',
-    messages: [
-      {
-        messageId: 'msg123',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '안녕하세요, 조립 시작하겠습니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg124',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '네, 감사합니다. 잘 부탁드립니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-18T11:46:15',
-        formattedTime: '오전 11:46',
-        read: true,
-      },
-      {
-        messageId: 'msg125',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALREQUEST',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-    ],
-  },
-  {
-    dateGroup: '2025년 3월 17일',
-    messages: [
-      {
-        messageId: 'msg120',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '견적 확인 부탁드립니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-17T15:22:10',
-        formattedTime: '오후 3:22',
-        read: true,
-      },
-      {
-        messageId: 'msg126',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALREQUEST',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg127',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALPROGRESS',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg128',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALPROGRESS',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg129',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALCOMPLETE',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg180',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALCOMPLETE',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg121',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: 'https://picsum.photos/200',
-        messageType: 'IMAGE',
-        timestamp: '2025-03-17T15:30:45',
-        formattedTime: '오후 3:30',
-        read: true,
-      },
-    ],
-  },
-]
