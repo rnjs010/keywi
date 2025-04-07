@@ -17,5 +17,6 @@ public class ProductResponseDto {
     private String productUrl;
     private String productImage;
     private String manufacturer;
+    private boolean isFavorite;;
     private List<ProductDescriptionDTO> descriptions;
 }
