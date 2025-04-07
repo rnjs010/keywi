@@ -46,5 +46,8 @@ public interface WishMapper {
             "</if>" +
             "</script>")
     List<ProductDto> findUserWishes(@Param("userId") Long userId, @Param("categoryId") Integer categoryId);
-
+    
+    // 유저ID로 위시 찾기
+    @Select("SELECT product_id FROM wishes WHERE user_id = #{userId}")
+    Set<Integer> findWishedProductIdsByUser(@Param("userId") Long userId);
 }

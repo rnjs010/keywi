@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductMapper {
 
     // 전체 상품 조회
-    @Select("SELECT * FROM products")
+    @Select("SELECT  * FROM products")
     List<ProductDto> findAllProducts();
 
     // 특정 카테고리의 상품 조회
@@ -22,6 +22,16 @@ public interface ProductMapper {
     @Select("SELECT * FROM products WHERE category_id = #{categoryId} OR category_id IN " +
             "(SELECT category_id FROM category WHERE parent_id = #{categoryId})")
     List<ProductDto> findProductsByCategoryWithSub(@Param("categoryId") int categoryId);
+
+    @Select("<script>" +
+            "SELECT product_id, name, price, category_id, image_url FROM products " +
+            "WHERE category_id IN " +
+            "<foreach item='id' collection='categoryIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<ProductDto> findProductsInCategories(@Param("categoryIds") List<Integer> categoryIds);
+
 
     // 상품 상세 조회
     @Select("SELECT * FROM products WHERE product_id = #{productId}")

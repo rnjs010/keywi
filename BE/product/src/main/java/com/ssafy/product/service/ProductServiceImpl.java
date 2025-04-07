@@ -2,6 +2,8 @@ package com.ssafy.product.service;
 
 import com.ssafy.product.dto.ProductDescriptionDto;
 import com.ssafy.product.dto.ProductDto;
+import com.ssafy.product.dto.CategoryDto;
+import com.ssafy.product.mapper.CategoryMapper;
 import com.ssafy.product.mapper.ProductMapper;
 import com.ssafy.product.mapper.ProductDescriptionMapper;
 import com.ssafy.product.mapper.WishMapper;
@@ -9,13 +11,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final WishMapper wishMapper;
+    private final CategoryMapper categoryMapper;
     private final ProductMapper productMapper;
     private final ProductDescriptionMapper productDescriptionMapper;
 
@@ -23,12 +28,16 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getAllProducts(Long userId) {
         List<ProductDto> products = productMapper.findAllProducts();
 
-        if (userId != null) {
-            List<Integer> productIds = products.stream()
-                    .map(ProductDto::getProductId)
-                    .toList();
+        // 카테고리 이름 매핑
+        Map<Integer, String> categoryNameMap = categoryMapper.getAllCategories()
+                .stream().collect(Collectors.toMap(CategoryDto::getCategoryId, CategoryDto::getCategoryName));
+        for (ProductDto product : products) {
+            product.setCategoryName(categoryNameMap.get(product.getCategoryId()));
+        }
 
-            Set<Integer> wishedProductIds = wishMapper.findWishedProductIds(userId, productIds);
+        // 찜 여부 판별
+        if (userId != null) {
+            Set<Integer> wishedProductIds = wishMapper.findWishedProductIdsByUser(userId);
             for (ProductDto product : products) {
                 product.setIsFavorite(wishedProductIds.contains(product.getProductId()));
             }
@@ -39,20 +48,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProductsByCategory(int categoryId, Long userId) {
-        List<ProductDto> products;
+        // 카테고리 ID 리스트 구성
+        List<Integer> categoryIds = categoryMapper.findSubCategoryIds(categoryId);
+        categoryIds.add(categoryId);
 
-        if (categoryId >= 1 && categoryId <= 7) {
-            products = productMapper.findProductsByCategoryWithSub(categoryId);
-        } else {
-            products = productMapper.findProductsByCategory(categoryId);
+        // 상품 조회
+        List<ProductDto> products = productMapper.findProductsInCategories(categoryIds);
+
+        // 카테고리 이름 매핑
+        Map<Integer, String> categoryNameMap = categoryMapper.getAllCategories()
+                .stream().collect(Collectors.toMap(CategoryDto::getCategoryId, CategoryDto::getCategoryName));
+        for (ProductDto product : products) {
+            product.setCategoryName(categoryNameMap.get(product.getCategoryId()));
         }
 
+        // 찜 여부
         if (userId != null) {
-            List<Integer> productIds = products.stream()
-                    .map(ProductDto::getProductId)
-                    .toList();
-
-            Set<Integer> wishedProductIds = wishMapper.findWishedProductIds(userId, productIds);
+            Set<Integer> wishedProductIds = wishMapper.findWishedProductIdsByUser(userId);
             for (ProductDto product : products) {
                 product.setIsFavorite(wishedProductIds.contains(product.getProductId()));
             }
@@ -60,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
 
         return products;
     }
+
 
     @Override
     public ProductDto getProductDetail(int productId) {
