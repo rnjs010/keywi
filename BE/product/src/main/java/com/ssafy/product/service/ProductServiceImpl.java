@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    private WishMapper wishMapper;
+    private final WishMapper wishMapper;
 
     @Override
     public List<ProductDto> getProductsByIds(List<Integer> productIds, Long userId) {
