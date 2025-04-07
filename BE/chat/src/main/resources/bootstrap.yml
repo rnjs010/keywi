@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: chat
+  config:
+    import: configserver:https://j12e202.p.ssafy.io/config
+  cloud:
+    bus:
+      enabled: true
+      refresh:
+        enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,busrefresh
+  endpoint:
+    health:
+      show-details: never
