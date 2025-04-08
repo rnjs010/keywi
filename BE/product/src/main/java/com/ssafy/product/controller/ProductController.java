@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/product")
@@ -183,5 +186,14 @@ public class ProductController {
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to fetch Open Graph data");
         }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now().toString());
+        errorResponse.put("message", "서버 내부 오류가 발생했습니다");
+        errorResponse.put("detail", ex.getMessage()); // 상세 정보 (개발 환경에서만)
+        return ResponseEntity.status(500).body(errorResponse);
     }
 }
