@@ -26,12 +26,13 @@ import DealRequestPage from './pages/chat/DealRequestPage'
 import DealAcceptPage from './pages/chat/DealAcceptPage'
 import SearchingPage from './pages/search/SearchingPage'
 import { AfterSearchPage } from './pages/search/AfterSearchPage'
+import { WebSocketProvider } from './services/WebSocketProvider'
 import ProductPage from './pages/product/ProductPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 
 function App() {
   return (
-    <>
+    <WebSocketProvider>
       <Fonts />
       <Routes>
         {/* 공개 라우트 - 인증 필요 없음 */}
@@ -95,7 +96,7 @@ function App() {
         {/* 404 페이지나 기타 예외 처리 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </>
+    </WebSocketProvider>
   )
 }
 

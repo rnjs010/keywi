@@ -1,7 +1,7 @@
 import Badge from '@/components/Badge'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { PostInfo } from '@/interfaces/ChatInterfaces'
+import { ChatPost } from '@/interfaces/ChatInterfaces'
 import getBadgeData from '@/utils/getBadgeData'
 
 const Container = tw.div`
@@ -13,15 +13,18 @@ const ThumbnailImage = tw.img`
 `
 
 export default function ChatRoomPostInfo({
-  thumbnailUrl,
   title,
-  status,
-}: PostInfo) {
-  const badgeData = getBadgeData(status)
+  thumbnailUrl,
+  dealState,
+}: ChatPost) {
+  const badgeData = getBadgeData(dealState)
 
   return (
     <Container>
-      {thumbnailUrl && <ThumbnailImage src={thumbnailUrl} alt="thumbnail" />}
+      <ThumbnailImage
+        src={thumbnailUrl || '/default/default_product.png'}
+        alt="thumbnail"
+      />
       <div className="flex flex-col justify-center">
         <Badge title={badgeData.title} color={badgeData.color} />
         <Text variant="caption1" weight="bold" color="darkGray">

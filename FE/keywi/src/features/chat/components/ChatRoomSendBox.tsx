@@ -9,8 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useChatStore } from '@/stores/ChatStore'
+import { useChatImageStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { useUserStore } from '@/stores/userStore'
+import { WebSocketContext } from '@/services/WebSocketProvider'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
@@ -31,7 +34,7 @@ const IconCircle = tw.div`
 export default function ChatRoomSendBox() {
   const navigate = useNavigate()
   const { roomId } = useParams()
-  const setShowImage = useChatStore((state) => state.setShowImage)
+  const setShowImage = useChatImageStore((state) => state.setShowImage)
 
   const handleAddImageClick = () => {
     setShowImage(true)
@@ -39,6 +42,37 @@ export default function ChatRoomSendBox() {
 
   const handleDealRequestClick = () => {
     navigate(`/chat/${roomId}/dealrequest`)
+  }
+
+  const [message, setMessage] = useState('')
+  const { client, isConnected } = useContext(WebSocketContext)
+  const userId = useUserStore((state) => state.userId)
+  const sendMessage = () => {
+    if (!message.trim() || !isConnected || !roomId) return
+
+    if (client?.connected && roomId && userId) {
+      client.publish({
+        destination: '/app/chat/message',
+        body: JSON.stringify({
+          roomId,
+          messageType: 'TEXT',
+          content: message.trim(),
+          senderId: userId,
+        }),
+        headers: {
+          'X-User-ID': userId?.toString() || '',
+        },
+      })
+    }
+
+    setMessage('')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      sendMessage()
+    }
   }
 
   return (
@@ -70,10 +104,18 @@ export default function ChatRoomSendBox() {
       </DropdownMenu>
 
       <InputBox
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="메시지 보내기"
         className="bg-transparent outline-none text-[#303337]"
       />
-      <Send height="1.6rem" width="1.5rem" color={colors.darkGray} />
+      <Send
+        height="1.6rem"
+        width="1.5rem"
+        color={colors.darkGray}
+        onClick={sendMessage}
+      />
     </Container>
   )
 }

@@ -6,8 +6,20 @@ import ChatRoomSendBox from '@/features/chat/components/ChatRoomSendBox'
 import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
-import { useChatStore } from '@/stores/ChatStore'
-import { useEffect, useRef } from 'react'
+import { useChatImageStore } from '@/stores/chatStore'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+import {
+  useChatPartner,
+  useChatPost,
+} from '@/features/chat/hooks/useChatRoomInfo'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import ErrorMessage from '@/components/message/ErrorMessage'
+import NoDataMessage from '@/components/message/NoDataMessage'
+import { useUserStore } from '@/stores/userStore'
+import { ChatMessage, MessageGroup } from '@/interfaces/ChatInterfaces'
+import { useChatHistory } from '@/features/chat/hooks/useChatHistory'
+import { useChatSubscription } from '@/features/chat/hooks/useChatSub'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -26,12 +38,84 @@ const DownBtnBox = tw.button`
 `
 
 export default function ChatRoomPage() {
-  const myId = 'user789'
+  // const myId = 'user789'
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const showImage = useChatStore((state) => state.showImage)
+  const showImage = useChatImageStore((state) => state.showImage)
+  const { roomId } = useParams<{ roomId: string }>()
+  const myId = useUserStore((state) => state.userId)
 
+  // 정보 get
+  const {
+    data: partner,
+    isLoading: loadingPartner,
+    isError: errorPartner,
+  } = useChatPartner(roomId!)
+  const {
+    data: post,
+    isLoading: loadingPost,
+    isError: errorPost,
+  } = useChatPost(roomId!)
+
+  // 채팅 내역 가져오기
+  const location = useLocation()
+  const { data: chatHistory, refetch } = useChatHistory(roomId!)
+  const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([])
+
+  useEffect(() => {
+    refetch()
+  }, [location])
+
+  useEffect(() => {
+    if (chatHistory?.messageGroups) {
+      setMessageGroups(chatHistory.messageGroups)
+    }
+  }, [chatHistory])
+
+  // 메시지 수신
+  const onMessage = useCallback((msg: ChatMessage) => {
+    const sentDate = new Date(msg.sentAt)
+    const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
+
+    setMessageGroups((prevGroups) => {
+      const existingGroupIndex = prevGroups.findIndex(
+        (group) => group.dateGroup === formattedDate,
+      )
+
+      // 기존 날짜 그룹이 있는 경우
+      if (existingGroupIndex !== -1) {
+        const updatedGroups = [...prevGroups]
+        updatedGroups[existingGroupIndex] = {
+          ...updatedGroups[existingGroupIndex],
+          messages: [...updatedGroups[existingGroupIndex].messages, msg],
+        }
+        return updatedGroups
+      }
+
+      // 새로운 날짜 그룹 생성
+      return [
+        ...prevGroups,
+        {
+          dateGroup: formattedDate,
+          messages: [msg],
+        },
+      ]
+    })
+
+    console.log('메시지 수신', msg)
+    // 새 메시지가 오면 자동 스크롤 다운
+    setTimeout(() => {
+      scrollToBottom()
+    }, 100)
+  }, [])
+
+  useChatSubscription({
+    roomId: roomId!,
+    onMessage,
+  })
+
+  // 스크롤
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -86,12 +170,37 @@ export default function ChatRoomPage() {
     }
   }, [[showImage]])
 
+  if (!roomId)
+    return (
+      <Container>
+        <ErrorMessage text="채팅방 ID가 없습니다." />
+      </Container>
+    )
+  if (loadingPartner || loadingPost)
+    return (
+      <Container>
+        <LoadingMessage />
+      </Container>
+    )
+  if (errorPartner || errorPost)
+    return (
+      <Container>
+        <ErrorMessage text="정보를 불러오지 못했습니다." />
+      </Container>
+    )
+  if (!partner || !post)
+    return (
+      <Container>
+        <NoDataMessage text="채팅 기록이 없습니다." />
+      </Container>
+    )
+
   return (
     <>
       {!showImage && (
         <Container ref={containerRef}>
           <div className="sticky top-0">
-            <ChatRoomHeader {...chatParticipant} />
+            <ChatRoomHeader {...partner} />
             <ChatRoomPostInfo {...post} />
           </div>
 
@@ -102,7 +211,7 @@ export default function ChatRoomPage() {
 
           {/* Date + Chat */}
           <ChatContainer ref={chatContainerRef}>
-            {messageGroup.map((group) => (
+            {messageGroups.map((group) => (
               <>
                 {/* Date */}
                 <DateBox key={group.dateGroup}>
@@ -113,7 +222,7 @@ export default function ChatRoomPage() {
 
                 {/* Chat */}
                 {group.messages.map((message) =>
-                  message.senderId === myId ? (
+                  message.senderId === String(myId) ? (
                     <MyMessage key={message.messageId} {...message} />
                   ) : (
                     <OpponentMessage key={message.messageId} {...message} />
@@ -132,153 +241,3 @@ export default function ChatRoomPage() {
     </>
   )
 }
-
-// NOTE - 더미데이터
-const chatParticipant = {
-  assemblerId: 'user456',
-  nickname: '컴퓨터달인',
-  profileImageUrl: 'https://picsum.photos/200',
-  reliability: 85,
-}
-
-const post = {
-  postId: 'post789',
-  thumbnailUrl: 'https://picsum.photos/200',
-  title: '고성능 게이밍 키보드 조립 요청',
-  price: 150000,
-  status: 'IN_PROGRESS', // 견적요청, 진행중, 구매완료, 삭제됨 중 하나
-  createdAt: '2025-03-15T10:30:00',
-}
-
-const messageGroup = [
-  {
-    dateGroup: '2025년 3월 18일',
-    messages: [
-      {
-        messageId: 'msg123',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '안녕하세요, 조립 시작하겠습니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg124',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '네, 감사합니다. 잘 부탁드립니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-18T11:46:15',
-        formattedTime: '오전 11:46',
-        read: true,
-      },
-      {
-        messageId: 'msg125',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALREQUEST',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-    ],
-  },
-  {
-    dateGroup: '2025년 3월 17일',
-    messages: [
-      {
-        messageId: 'msg120',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '견적 확인 부탁드립니다.',
-        messageType: 'TEXT',
-        timestamp: '2025-03-17T15:22:10',
-        formattedTime: '오후 3:22',
-        read: true,
-      },
-      {
-        messageId: 'msg126',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALREQUEST',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg127',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALPROGRESS',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg128',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALPROGRESS',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg129',
-        senderId: 'user789',
-        senderType: 'REQUESTER',
-        senderNickname: '키린이',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '',
-        messageType: 'DEALCOMPLETE',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg180',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: '523,000',
-        messageType: 'DEALCOMPLETE',
-        timestamp: '2025-03-18T11:45:30',
-        formattedTime: '오전 11:45',
-        read: true,
-      },
-      {
-        messageId: 'msg121',
-        senderId: 'user456',
-        senderType: 'ASSEMBLER',
-        senderNickname: '컴퓨터달인',
-        senderProfileUrl: 'https://picsum.photos/200',
-        content: 'https://picsum.photos/200',
-        messageType: 'IMAGE',
-        timestamp: '2025-03-17T15:30:45',
-        formattedTime: '오후 3:30',
-        read: true,
-      },
-    ],
-  },
-]

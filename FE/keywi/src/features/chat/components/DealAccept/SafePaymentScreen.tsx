@@ -1,7 +1,7 @@
 import MainButton from '@/components/MainButton'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { useDealAcceptStore } from '@/stores/ChatStore'
+import { useDealAcceptStore } from '@/stores/chatStore'
 import { HelpCircle } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import { useState } from 'react'

@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { BASE_URL } from '@/config'
 import { useAuthStore } from '@/stores/authStore'
-import { fetchUserInfo } from '@/services/userIdServices'
 import { useUserStore } from '@/stores/userStore'
+import { fetchUserInfo } from '@/services/userIdService'
 
 const KakaoHandler = () => {
   const navigate = useNavigate()

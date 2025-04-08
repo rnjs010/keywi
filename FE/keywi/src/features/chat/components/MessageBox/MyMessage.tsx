@@ -1,7 +1,8 @@
 import DealMessage from './DealMessage'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { Message } from '@/interfaces/ChatInterfaces'
+import { ChatMessage } from '@/interfaces/ChatInterfaces'
+import { formatChatTime } from '@/utils/formatChatTime'
 
 const Container = tw.div`
   flex items-end mb-4 justify-end
@@ -9,14 +10,14 @@ const Container = tw.div`
 
 export default function MyMessage({
   content,
-  formattedTime,
+  sentAt,
   messageType,
-}: Message) {
+}: ChatMessage) {
   return (
     <Container>
       <div className="flex items-end gap-2">
         <Text variant="caption3" weight="regular" color="littleGray">
-          {formattedTime}
+          {formatChatTime(sentAt)}
         </Text>
         {messageType === 'TEXT' ? (
           <div className="py-1 px-4 rounded-3xl bg-kiwi">
@@ -27,7 +28,7 @@ export default function MyMessage({
         ) : messageType === 'IMAGE' ? (
           <div className="rounded-lg overflow-hidden max-w-[240px]">
             <img
-              src={content}
+              src={content ?? ''}
               alt="Sent image"
               className="w-full h-auto object-cover"
             />
@@ -35,7 +36,7 @@ export default function MyMessage({
         ) : (
           <DealMessage
             messageType={messageType}
-            content={content}
+            content={content ?? ''}
             isMine={true}
           />
         )}
