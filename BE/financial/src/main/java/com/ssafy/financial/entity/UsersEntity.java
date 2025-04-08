@@ -38,7 +38,7 @@ public class UsersEntity {
     @Column
     private String role;
 
-    @Column(name = "profile_image_url")
+    @Column(name = "profile_url")
     private String profileImageUrl;
 
     @Column(name = "is_deleted", nullable = false)
