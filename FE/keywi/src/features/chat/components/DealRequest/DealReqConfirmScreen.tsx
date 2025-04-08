@@ -3,6 +3,10 @@ import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
 import { useDealRequestStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useContext } from 'react'
+import { useUserStore } from '@/stores/userStore'
+import { WebSocketContext } from '@/services/WebSocketProvider'
+import { useChatSubscription } from '../../hooks/useChatSub'
 
 const TextContainer = tw.div`
   flex flex-row justify-center mt-8
@@ -24,12 +28,44 @@ export default function DealReqConfirmScreen() {
   const navigate = useNavigate()
   const { roomId } = useParams()
   const totalPrice = useDealRequestStore((state) => state.totalPrice)
+  const selectedProducts = useDealRequestStore(
+    (state) => state.selectedProducts,
+  )
+  const resetState = useDealRequestStore((state) => state.resetState)
+  const userId = useUserStore((state) => state.userId)
 
   // 내 계좌 정보 api 호출
   const bankName = '우리'
   const accountNumber = '1002039482304'
 
+  const { client } = useContext(WebSocketContext)
+
+  useChatSubscription({
+    roomId: roomId!,
+  })
+
   const handleNext = () => {
+    console.log('거래 내역', selectedProducts)
+
+    if (client?.connected && roomId && userId) {
+      client.publish({
+        destination: '/app/chat/message',
+        body: JSON.stringify({
+          roomId,
+          messageType: 'DEALREQUEST',
+          content: totalPrice.toString().trim(),
+          // items: JSON.stringify({
+          //   totalPrice,
+          //   products: selectedProducts,
+          // }),
+          senderId: userId,
+        }),
+        headers: {
+          'X-User-ID': userId?.toString() || '',
+        },
+      })
+    }
+    resetState()
     navigate(`/chat/${roomId}`)
   }
 

@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import tw from 'twin.macro'
 import ProductSelector from './ProductSelector'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import ProductSearchModal from './ProductSearchModal'
 import { useDealRequestStore } from '@/stores/chatStore'
 import ProductDirectModal from './ProductDirectModal'
 import AddMethodModal from './AddMethodModal'
 import { PlusCircleSolid } from 'iconoir-react'
 import { colors } from '@/styles/colors'
+import { useQueryClient } from '@tanstack/react-query'
+import { getCategoryAllProducts } from '../../sevices/dealService'
 
 const Form = tw.div`
   overflow-y-auto my-2 h-96
@@ -31,8 +33,6 @@ export default function ProductForm() {
   const selectedProducts = useDealRequestStore(
     (state) => state.selectedProducts,
   )
-  // const [selectedProductsLocal, setSelectedProductsLocal] =
-  //   useState<Record<string, BoardItem>>(selectedProducts)
 
   // 추가한 기타 카테고리
   const increaseCategory = useDealRequestStore(
@@ -52,8 +52,24 @@ export default function ProductForm() {
   const [openSearchModal, setOpenSearchModal] = useState<boolean>(false)
   const [openDirectModal, setOpenDirectModal] = useState<boolean>(false)
 
+  // 카테고리 선택 시 Drawer를 열어 상품 선택 UI 표시
+  const queryClient = useQueryClient()
+  const { setCategoryAllProducts, categoryAllProducts } = useDealRequestStore()
+
   // Modal 상태 변경
   const handleAddProduct = (category: string, categoryId: number) => {
+    if (!categoryAllProducts[category]) {
+      queryClient.fetchQuery({
+        queryKey: ['all-products', categoryId],
+        queryFn: async () => {
+          const data = await getCategoryAllProducts(categoryId)
+          const formatted = data.map((p) => ({ ...p, categoryName: category }))
+          setCategoryAllProducts(category, formatted)
+          return formatted
+        },
+      })
+    }
+
     setCurrentCategory(category)
     setCurrentCategoryId(categoryId)
     setOpenMethodModal(true)
@@ -78,7 +94,7 @@ export default function ProductForm() {
   }
 
   // 상품 추가 (검색용, 직접 입력)
-  const handleSelectProduct = (product: BoardItem) => {
+  const handleSelectProduct = (product: BoardItemUsingInfo) => {
     setSelectedProducts({
       ...selectedProducts,
       [product.categoryName]: product,
@@ -87,15 +103,13 @@ export default function ProductForm() {
   }
 
   const handleAddDirectProduct = (name: string, price: number) => {
-    const directProduct: BoardItem = {
+    const directProduct: BoardItemUsingInfo = {
       productId: Date.now(), // 임시 ID 생성
       productName: name,
       price,
       categoryName: currentCategory,
       categoryId: currentCategoryId,
       imageUrl: '',
-      manufacturer: null,
-      createdAt: null,
     }
 
     setSelectedProducts({
@@ -163,9 +177,8 @@ export default function ProductForm() {
           isOpen={openSearchModal}
           onOpenChange={setOpenSearchModal}
           title={currentCategory}
-          products={initialProducts.filter(
-            (p) => p.categoryName === currentCategory,
-          )}
+          categoryId={currentCategoryId}
+          products={categoryAllProducts[currentCategory] || []}
           onSelectProduct={handleSelectProduct}
         />
 
@@ -187,147 +200,3 @@ export default function ProductForm() {
     </>
   )
 }
-
-// 더미 데이터
-const initialProducts: BoardItem[] = [
-  {
-    categoryId: 1,
-    categoryName: '하우징',
-    productId: 1,
-    productName: 'Qwertykeys QK80MK2 WK PINK',
-    price: 241000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 1,
-    categoryName: '하우징',
-    productId: 2,
-    productName: '하우징2',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    productId: 3,
-    productName: '오스메 사쿠라 키캡',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    productId: 4,
-    productName: '세라키 세라믹 V2 키캡 Blue Crazed',
-    price: 217000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 2,
-    categoryName: '키캡',
-    productId: 5,
-    productName: '스웨그키 측각 그라데이션 키캡 Purple',
-    price: 149000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 3,
-    categoryName: '스위치',
-    productId: 6,
-    productName: '오스틴 샤지 키드',
-    price: 140000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 4,
-    categoryName: '스테빌라이저',
-    productId: 7,
-    productName: 'Durock V2 스테빌라이저',
-    price: 25000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 4,
-    categoryName: '스테빌라이저',
-    productId: 8,
-    productName: 'TX AP 스테빌라이저',
-    price: 28000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 5,
-    categoryName: '흡음재',
-    productId: 9,
-    productName: 'PORON PCB 흡음재',
-    price: 18000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 5,
-    categoryName: '흡음재',
-    productId: 10,
-    productName: 'PE Foam 흡음재',
-    price: 15000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 6,
-    categoryName: '보강판',
-    productId: 11,
-    productName: 'FR4 보강판',
-    price: 30000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 6,
-    categoryName: '보강판',
-    productId: 12,
-    productName: 'PC 보강판',
-    price: 32000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 7,
-    categoryName: '기판',
-    productId: 13,
-    productName: 'Hotswap 기판',
-    price: 95000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-  {
-    categoryId: 7,
-    categoryName: '기판',
-    productId: 14,
-    productName: 'Solder 기판',
-    price: 85000,
-    imageUrl: 'https://picsum.photos/200',
-    manufacturer: null,
-    createdAt: null,
-  },
-]

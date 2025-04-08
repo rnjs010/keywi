@@ -26,6 +26,7 @@ export const useChatSocket = (
         // 채팅방 메시지 구독
         client.subscribe(`/topic/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
+          console.log('채팅방 메시지 수신', body)
           onMessage(body)
         })
 

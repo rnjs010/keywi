@@ -24,10 +24,11 @@ import ChatListPage from './pages/chat/ChatListPage'
 import ChatRoomPage from './pages/chat/ChatRoomPage'
 import DealRequestPage from './pages/chat/DealRequestPage'
 import DealAcceptPage from './pages/chat/DealAcceptPage'
+import { WebSocketProvider } from './services/WebSocketProvider'
 
 function App() {
   return (
-    <>
+    <WebSocketProvider>
       <Fonts />
       <Routes>
         {/* 공개 라우트 - 인증 필요 없음 */}
@@ -77,7 +78,7 @@ function App() {
         {/* 404 페이지나 기타 예외 처리 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </>
+    </WebSocketProvider>
   )
 }
 

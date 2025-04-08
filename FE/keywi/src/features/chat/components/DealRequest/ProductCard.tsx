@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 
 const CardContainer = tw.div`
   flex flex-col items-center justify-between bg-pay py-3 px-2 rounded-lg my-1
@@ -17,7 +17,7 @@ export default function ProductCard({
   mode,
   onDelete,
 }: {
-  data: BoardItem
+  data: BoardItemUsingInfo
   mode: 'edit' | 'view'
   onDelete?: () => void
 }) {

@@ -1,3 +1,4 @@
+// 채팅방 리스트
 export interface ChatRoom {
   roomId: string
   otherUserId: string
@@ -8,6 +9,7 @@ export interface ChatRoom {
   notificationEnabled: boolean
 }
 
+// 채팅방 정보
 export interface ChatPartner {
   otherUserId: string
   otherUserNickname: string
@@ -23,36 +25,7 @@ export interface ChatPost {
   assemblerId: string
 }
 
-// export interface ChatRoomProps {
-//   roomId: string
-//   assembler: {
-//     assemblerId: string
-//     nickname: string
-//     profileImageUrl: string
-//   }
-//   lastMessage: string
-//   lastMessageTime: string
-//   formattedTime: string
-//   unreadCount: number
-//   postTitle: string
-// }
-
-// export interface ChatParticipant {
-//   assemblerId: string // 사용자 ID
-//   nickname: string // 사용자 닉네임
-//   profileImageUrl: string // 프로필 이미지 URL
-//   reliability: number // 신뢰도 점수 (당도)
-// }
-
-// export interface PostInfo {
-//   postId: string
-//   thumbnailUrl: string
-//   title: string
-//   price: number
-//   status: string
-//   createdAt: string
-// }
-
+// 단일 메시지
 export interface ChatMessage {
   messageId: string
   roomId: string
@@ -90,4 +63,24 @@ export interface DealMessageProps {
   messageType: string
   content: string
   isMine: boolean
+}
+
+// 거래 상품 정보 (카테고리 별 상품)
+export interface ProductData {
+  productId: number
+  categoryId: number
+  categoryName: string
+  productName: string
+  isFavorite: boolean
+  price: number
+  productUrl: string
+  productImage: string
+  manufacturer: string
+  descriptions: string | null
+}
+
+export interface CategoryAllProductResponse {
+  status: string
+  message: string
+  data: ProductData[]
 }

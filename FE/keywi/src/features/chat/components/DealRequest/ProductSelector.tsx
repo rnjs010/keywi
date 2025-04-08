@@ -2,7 +2,7 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { Plus } from 'iconoir-react'
-import { BoardItem } from '@/interfaces/BoardInterface'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
 import ProductCard from './ProductCard'
 
 const CategoryRow = tw.div`
@@ -11,7 +11,7 @@ const CategoryRow = tw.div`
 
 interface ProductSelectorProps {
   label: string
-  product?: BoardItem
+  product?: BoardItemUsingInfo
   onAdd?: () => void
   onDelete?: () => void
 }

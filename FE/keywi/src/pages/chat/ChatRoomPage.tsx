@@ -16,12 +16,10 @@ import {
 import LoadingMessage from '@/components/message/LoadingMessage'
 import ErrorMessage from '@/components/message/ErrorMessage'
 import NoDataMessage from '@/components/message/NoDataMessage'
-import { StompContext } from '@/stores/stompContext'
 import { useUserStore } from '@/stores/userStore'
-import { Client } from '@stomp/stompjs'
-import { useChatSocket } from '@/features/chat/hooks/useChatSocket'
 import { ChatMessage, MessageGroup } from '@/interfaces/ChatInterfaces'
 import { useChatHistory } from '@/features/chat/hooks/useChatHistory'
+import { useChatSubscription } from '@/features/chat/hooks/useChatSub'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -46,6 +44,7 @@ export default function ChatRoomPage() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
   const { roomId } = useParams<{ roomId: string }>()
+  const myId = useUserStore((state) => state.userId)
 
   // 정보 get
   const {
@@ -75,9 +74,6 @@ export default function ChatRoomPage() {
   }, [chatHistory])
 
   // 메시지 수신
-  const [client, setClient] = useState<Client | null>(null)
-  const myId = useUserStore((state) => state.userId)
-
   const onMessage = useCallback((msg: ChatMessage) => {
     const sentDate = new Date(msg.sentAt)
     const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
@@ -114,9 +110,12 @@ export default function ChatRoomPage() {
     }, 100)
   }, [])
 
-  // 클라이언트 생성 후 저장
-  useChatSocket(roomId!, onMessage, setClient)
+  useChatSubscription({
+    roomId: roomId!,
+    onMessage,
+  })
 
+  // 스크롤
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -197,7 +196,7 @@ export default function ChatRoomPage() {
     )
 
   return (
-    <StompContext.Provider value={client}>
+    <>
       {!showImage && (
         <Container ref={containerRef}>
           <div className="sticky top-0">
@@ -239,31 +238,6 @@ export default function ChatRoomPage() {
       )}
 
       {showImage && <ImageInputScreen />}
-    </StompContext.Provider>
+    </>
   )
-}
-
-function mergeMessageGroups(
-  newGroups: MessageGroup[],
-  prevGroups: MessageGroup[],
-): MessageGroup[] {
-  const merged = [...newGroups]
-
-  if (prevGroups.length > 0 && newGroups.length > 0) {
-    const lastNew = newGroups[newGroups.length - 1]
-    const firstPrev = prevGroups[0]
-
-    if (lastNew.dateGroup === firstPrev.dateGroup) {
-      // 같은 날짜 그룹이면 메시지 합치기
-      merged[merged.length - 1] = {
-        dateGroup: lastNew.dateGroup,
-        messages: [...lastNew.messages, ...firstPrev.messages],
-      }
-
-      // 기존 prevGroups에서 중복된 첫 그룹 제거
-      return [...merged, ...prevGroups.slice(1)]
-    }
-  }
-
-  return [...merged, ...prevGroups]
 }

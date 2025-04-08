@@ -12,8 +12,8 @@ import {
 import { useChatImageStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useContext, useState } from 'react'
-import { StompContext } from '@/stores/stompContext'
 import { useUserStore } from '@/stores/userStore'
+import { WebSocketContext } from '@/services/WebSocketProvider'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
@@ -45,23 +45,25 @@ export default function ChatRoomSendBox() {
   }
 
   const [message, setMessage] = useState('')
-  const stompClient = useContext(StompContext)
+  const { client, isConnected } = useContext(WebSocketContext)
   const userId = useUserStore((state) => state.userId)
   const sendMessage = () => {
-    if (!message.trim() || !stompClient || !roomId) return
+    if (!message.trim() || !isConnected || !roomId) return
 
-    stompClient.publish({
-      destination: '/app/chat/message',
-      body: JSON.stringify({
-        roomId,
-        messageType: 'TEXT',
-        content: message.trim(),
-        senderId: userId,
-      }),
-      headers: {
-        'X-User-ID': userId?.toString() || '',
-      },
-    })
+    if (client?.connected && roomId && userId) {
+      client.publish({
+        destination: '/app/chat/message',
+        body: JSON.stringify({
+          roomId,
+          messageType: 'TEXT',
+          content: message.trim(),
+          senderId: userId,
+        }),
+        headers: {
+          'X-User-ID': userId?.toString() || '',
+        },
+      })
+    }
 
     setMessage('')
   }

@@ -20,6 +20,9 @@ export default function DealReqFormScreen() {
   const selectedProducts = useDealRequestStore(
     (state) => state.selectedProducts,
   )
+  const setSelectedProducts = useDealRequestStore(
+    (state) => state.setSelectedProducts,
+  )
   const totalPrice = useDealRequestStore((state) => state.totalPrice)
   const setTotalPrice = useDealRequestStore((state) => state.setTotalPrice)
   const [assemblyCost, setAssemblyCost] = useState('')
@@ -36,6 +39,21 @@ export default function DealReqFormScreen() {
   }, [selectedProducts, assemblyCost, setTotalPrice])
 
   const handleNext = () => {
+    const assembly = Number(assemblyCost) || 0
+    const assemblyProduct = {
+      productId: 0,
+      productName: '인건비 및 상품구매 배송비',
+      price: assembly,
+      categoryName: '조립 비용',
+      categoryId: 0,
+      imageUrl: '',
+    }
+
+    setSelectedProducts({
+      ...selectedProducts,
+      [assemblyProduct.categoryName]: assemblyProduct,
+    })
+
     setStep(2)
   }
 

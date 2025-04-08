@@ -3,8 +3,11 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { Search } from 'iconoir-react'
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
-import { BoardItem } from '@/interfaces/BoardInterface'
-import React, { useState } from 'react'
+import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
+import React, { useEffect, useState } from 'react'
+import { useProductSearchDeal } from '../../hooks/useProductsSearchDeal'
+import truncateText from '@/utils/truncateText'
+import highlightSearchTerm from '@/utils/highlightSearchTerm'
 
 const CardContainer = tw.div`
   flex items-center gap-3 cursor-pointer my-2 pb-2
@@ -32,20 +35,36 @@ interface ProductDrawerProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   title: string
+  categoryId: number
   children?: React.ReactNode
-  products?: BoardItem[]
-  onSelectProduct?: (product: BoardItem) => void
+  products?: BoardItemUsingInfo[]
+  onSelectProduct?: (product: BoardItemUsingInfo) => void
 }
 
 export default function ProductSearchModal({
   isOpen,
   onOpenChange,
   title,
+  categoryId,
   children,
   products,
   onSelectProduct,
 }: ProductDrawerProps) {
   const [searchTerm, setSearchTerm] = useState('')
+  const { data: searchResults } = useProductSearchDeal(
+    categoryId,
+    searchTerm,
+    isOpen, // 모달 열려있을 때만 요청
+  )
+  const [suggestions, setSuggestions] = useState<BoardItemUsingInfo[]>([])
+  const displayedProducts = searchTerm ? suggestions : products
+
+  // 검색 결과 업데이트
+  useEffect(() => {
+    if (searchResults) {
+      setSuggestions(searchResults)
+    }
+  }, [searchResults])
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -70,9 +89,9 @@ export default function ProductSearchModal({
         </SearchContainer>
 
         {/* SECTION - 상품 리스트 */}
-        <div className="px-4 py-2 mb-4">
-          {products
-            ? products.map((product) => (
+        <div className="px-4 py-2 mb-4 max-h-60 overflow-y-auto">
+          {displayedProducts
+            ? displayedProducts.map((product) => (
                 <CardContainer
                   key={product.productId}
                   onClick={() => onSelectProduct && onSelectProduct(product)}
@@ -82,7 +101,10 @@ export default function ProductSearchModal({
                   )}
                   <div className="flex flex-col">
                     <Text variant="caption1" weight="regular">
-                      {product.productName}
+                      {highlightSearchTerm(
+                        truncateText(product.productName, 30),
+                        searchTerm,
+                      )}
                     </Text>
                     <Text variant="caption1" weight="bold">
                       {product.price.toLocaleString()}원
