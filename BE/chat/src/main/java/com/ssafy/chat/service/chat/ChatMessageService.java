@@ -1,17 +1,20 @@
 package com.ssafy.chat.service.chat;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.chat.client.UserServiceClient;
 import com.ssafy.chat.common.exception.CustomException;
 import com.ssafy.chat.common.exception.ErrorCode;
 import com.ssafy.chat.common.exception.handler.ApiResponse;
 import com.ssafy.chat.common.util.IdConverter;
+import com.ssafy.chat.dto.chat.*;
 import com.ssafy.chat.entity.ChatRoom;
+import com.ssafy.chat.entity.Receipts;
+import com.ssafy.chat.entity.ReceiptsItems;
 import com.ssafy.chat.entity.mongo.ChatMessage;
-import com.ssafy.chat.dto.chat.ChatMessageDto;
-import com.ssafy.chat.dto.chat.ChatMessageGroupDto;
-import com.ssafy.chat.dto.chat.ChatMessageGroupResponse;
-import com.ssafy.chat.dto.chat.ChatMessageType;
 import com.ssafy.chat.dto.user.MemberResponseDto;
+import com.ssafy.chat.repository.ReceiptsItemsRepository;
+import com.ssafy.chat.repository.ReceiptsRepository;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
 import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
 import com.ssafy.chat.service.notification.NotificationService;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -42,6 +46,8 @@ public class ChatMessageService {
     private final MessageSender messageSender;
     private final UserServiceClient userServiceClient;
     private final NotificationService notificationService;
+    private final ReceiptsRepository receiptsRepository;
+    private final ReceiptsItemsRepository receiptsItemsRepository;
 
     /**
      * 메시지 전송 처리
@@ -268,39 +274,221 @@ public class ChatMessageService {
         return false;
     }
 
-    /**
-     * 거래 요청 메시지 전송
-     * @param roomId 채팅방 ID
-     * @param senderId 발신자 ID (조립자)
-     * @param amount 거래 금액
-     * @return 전송된 메시지 정보
-     */
-    public ChatMessageDto sendTransactionRequest(String roomId, String senderId, int amount) {
-        // String을 Long으로 변환
-        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
-                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
+    public void saveDealRequest(ChatMessageDto messageDto) {
+        try {
+            // 채팅방 정보 조회
+            Long roomId = Long.parseLong(messageDto.getRoomId());
+            ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다."));
 
-        // 조립자만 거래 요청 가능 - String을 Long으로 변환
-        Long senderIdLong = Long.parseLong(senderId);
-        if (!chatRoom.getAssemblerId().equals(senderIdLong)) {
-            throw new CustomException(ErrorCode.ACCESS_DENIED, "거래 요청은 조립자만 가능합니다.");
+            // JSON 문자열 확인과 아이템 처리
+            List<ReceiptsItems> itemsList = new ArrayList<>();
+            Long amount = null;
+
+            if (messageDto.getItems() != null) {
+                try {
+                    // items가 이미 객체 리스트인 경우 (ReceiptItemDto 리스트)
+                    if (messageDto.getItems() instanceof List) {
+                        List<?> itemsFromDto = (List<?>) messageDto.getItems();
+
+                        // 디버깅용 로그
+                        log.info("Items 객체 타입: {}", messageDto.getItems().getClass().getName());
+                        log.info("Items 리스트 크기: {}", itemsFromDto.size());
+
+                        for (Object item : itemsFromDto) {
+                            log.info("아이템 타입: {}", item.getClass().getName());
+
+                            // ReceiptItemDto 클래스인 경우 처리
+                            if (item.getClass().getName().equals("com.ssafy.chat.dto.chat.ReceiptItemDto")) {
+                                try {
+                                    // 리플렉션으로 필드 값 가져오기
+                                    Class<?> itemClass = item.getClass();
+
+                                    // productName 필드 가져오기
+                                    String productName = "";
+                                    try {
+                                        Method getProductNameMethod = itemClass.getMethod("getProductName");
+                                        Object result = getProductNameMethod.invoke(item);
+                                        if (result != null) {
+                                            productName = result.toString();
+                                        }
+                                        log.info("상품명 리플렉션 성공: {}", productName);
+                                    } catch (Exception e) {
+                                        log.error("productName 필드 접근 실패: {}", e.getMessage());
+                                    }
+
+                                    // categoryName 필드 가져오기
+                                    String categoryName = "";
+                                    try {
+                                        Method getCategoryNameMethod = itemClass.getMethod("getCategoryName");
+                                        Object result = getCategoryNameMethod.invoke(item);
+                                        if (result != null) {
+                                            categoryName = result.toString();
+                                        }
+                                        log.info("카테고리명 리플렉션 성공: {}", categoryName);
+                                    } catch (Exception e) {
+                                        log.error("categoryName 필드 접근 실패: {}", e.getMessage());
+                                    }
+
+                                    // price 필드 가져오기
+                                    Long price = 0L;
+                                    try {
+                                        Method getPriceMethod = itemClass.getMethod("getPrice");
+                                        Object result = getPriceMethod.invoke(item);
+                                        if (result != null) {
+                                            price = Long.valueOf(result.toString());
+                                        }
+                                        log.info("가격 리플렉션 성공: {}", price);
+                                    } catch (Exception e) {
+                                        log.error("price 필드 접근 실패: {}", e.getMessage());
+                                    }
+
+                                    ReceiptsItems receiptItem = new ReceiptsItems();
+                                    receiptItem.setProductName(productName);
+                                    receiptItem.setCategoryName(categoryName);
+                                    receiptItem.setPrice(price);
+                                    itemsList.add(receiptItem);
+
+                                    log.info("추가된 아이템: productName={}, categoryName={}, price={}",
+                                            receiptItem.getProductName(), receiptItem.getCategoryName(), receiptItem.getPrice());
+                                } catch (Exception e) {
+                                    log.error("ReceiptItemDto 처리 중 오류: {}", e.getMessage(), e);
+                                }
+                            } else if (item instanceof Map) {
+                                // 기존 Map 처리 코드 유지
+                                Map<String, Object> itemMap = (Map<String, Object>) item;
+                                ReceiptsItems receiptItem = new ReceiptsItems();
+                                receiptItem.setProductName(itemMap.get("productName") != null ? itemMap.get("productName").toString() : "");
+                                receiptItem.setCategoryName(itemMap.get("categoryName") != null ? itemMap.get("categoryName").toString() : "");
+                                receiptItem.setPrice(itemMap.get("price") != null ? Long.valueOf(itemMap.get("price").toString()) : 0L);
+                                itemsList.add(receiptItem);
+
+                                log.info("추가된 아이템(Map): productName={}, price={}",
+                                        receiptItem.getProductName(), receiptItem.getPrice());
+                            }
+                        }
+
+                        // amount 찾기
+                        if (messageDto.getTransactionAmount() != null) {
+                            amount = Long.valueOf(messageDto.getTransactionAmount());
+                        }
+                    } else {
+                        // JSON 문자열로 변환하여 처리 시도
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String itemsJsonString = objectMapper.writeValueAsString(messageDto.getItems());
+                        log.info("Items JSON 문자열: {}", itemsJsonString);
+
+                        JsonNode itemsNode = objectMapper.readTree(itemsJsonString);
+
+                        // totalPrice 추출
+                        if (itemsNode.has("totalPrice")) {
+                            amount = itemsNode.get("totalPrice").asLong();
+                            log.info("JSON에서 추출한 amount: {}", amount);
+                        }
+
+                        // 배열인 경우
+                        if (itemsNode.isArray()) {
+                            for (JsonNode itemNode : itemsNode) {
+                                ReceiptsItems item = new ReceiptsItems();
+                                item.setProductName(itemNode.has("productName") ? itemNode.get("productName").asText() : "");
+                                item.setCategoryName(itemNode.has("categoryName") ? itemNode.get("categoryName").asText() : "");
+                                item.setPrice(itemNode.has("price") ? itemNode.get("price").asLong() : 0L);
+                                itemsList.add(item);
+
+                                log.info("JSON에서 추가된 아이템: productName={}, price={}",
+                                        item.getProductName(), item.getPrice());
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("아이템 파싱 오류: {}", e.getMessage(), e);
+                }
+            } else if (messageDto.getContent() != null && messageDto.getContent().startsWith("{")) {
+                // content가 JSON 형식으로 보이면 사용
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(messageDto.getContent());
+
+                    // totalPrice 추출
+                    if (rootNode.has("totalPrice")) {
+                        amount = rootNode.get("totalPrice").asLong();
+                    }
+
+                    // products 노드 처리
+                    if (rootNode.has("products")) {
+                        JsonNode productsNode = rootNode.get("products");
+                        if (productsNode.isArray()) {
+                            for (JsonNode productNode : productsNode) {
+                                ReceiptsItems item = new ReceiptsItems();
+                                item.setProductName(productNode.has("productName") ? productNode.get("productName").asText() : "");
+                                item.setCategoryName(productNode.has("categoryName") ? productNode.get("categoryName").asText() : "");
+                                item.setPrice(productNode.has("price") ? productNode.get("price").asLong() : 0L);
+                                itemsList.add(item);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("JSON 파싱 오류: {}", e.getMessage(), e);
+                }
+            }
+
+            // amount 설정 (위에서 설정 안된 경우 transactionAmount 사용)
+            if (amount == null) {
+                amount = messageDto.getTransactionAmount() != null ?
+                        Long.valueOf(messageDto.getTransactionAmount()) : 0L;
+            }
+
+            log.info("최종 설정된 amount: {}", amount);
+            log.info("저장할 아이템 개수: {}", itemsList.size());
+
+            // 견적서 엔티티 생성
+            Receipts receipt = Receipts.builder()
+                    .roomId(roomId)
+                    .messageId(messageDto.getMessageId())
+                    .buyerId(chatRoom.getBuyerId())
+                    .assemblerId(chatRoom.getAssemblerId())
+                    .totalAmount(0L) // totalAmount는 0으로 설정
+                    .amount(amount)  // 실제 amount 값 설정
+                    .charge(0L)      // charge는 0으로 설정
+                    .createdAt(LocalDateTime.now()) // 현재 시간 직접 설정
+                    .build();
+
+            // 견적서 저장
+            Receipts savedReceipt = receiptsRepository.save(receipt);
+            log.info("저장된 영수증 ID: {}", savedReceipt.getReceiptId());
+
+            // 아이템에 Receipt 설정 및 저장
+            if (!itemsList.isEmpty()) {
+                for (ReceiptsItems item : itemsList) {
+                    item.setReceiptId(savedReceipt.getReceiptId());
+                    item.setReceipts(savedReceipt);
+                    log.info("설정된 아이템: productName={}, price={}, receiptId={}",
+                            item.getProductName(), item.getPrice(), item.getReceiptId());
+                }
+
+                List<ReceiptsItems> savedItems = receiptsItemsRepository.saveAll(itemsList);
+                log.info("저장된 아이템 개수: {}", savedItems.size());
+            }
+
+            // 채팅방 마지막 메시지 업데이트
+            chatRoomService.updateLastMessage(roomId, amount + "원 견적서가 발송되었습니다.");
+
+        } catch (Exception e) {
+            log.error("견적서 저장 중 오류 발생: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "견적서 저장 중 오류가 발생했습니다.");
         }
-
-        // 거래 요청 메시지 생성
-        ChatMessageDto messageDto = ChatMessageDto.builder()
-                .roomId(roomId)
-                .messageType(ChatMessageType.TRANSACTION_REQUEST)
-                .content(amount + "원에 거래를 요청합니다.")
-                .transactionAmount(amount)
-                .transactionStatus("요청")
-                .build();
-
-        chatRoomService.updateChatRoomTransaction(Long.parseLong(roomId));
-
-        // 메시지 전송
-        return sendMessage(messageDto, senderId);
     }
 
+    // 견적서 항목 생성 헬퍼 메서드
+    private ReceiptsItems createReceiptItem(Receipts receipt, JsonNode productNode) {
+        return ReceiptsItems.builder()
+                .receiptId(receipt.getReceiptId())
+                .receipts(receipt)
+                .productName(productNode.has("productName") ? productNode.get("productName").asText() : "")
+                .categoryName(productNode.has("categoryName") ? productNode.get("categoryName").asText() : "")
+                .price(productNode.has("price") ? productNode.get("price").asLong() : 0L)
+                .build();
+    }
 
     /**
      * 이미지 업로드
@@ -363,13 +551,13 @@ public class ChatMessageService {
             case IMAGE:
                 lastMessage = "사진";
                 break;
-            case TRANSACTION_REQUEST:
+            case DEALREQUEST:
                 lastMessage = "거래 요청: " + messageDto.getTransactionAmount() + "원";
                 break;
-            case TRANSACTION_PROGRESS:
+            case DEALPROGRESS:
                 lastMessage = "거래 진행 중";
                 break;
-            case TRANSACTION_COMPLETE:
+            case DEALCOMPLETE:
                 lastMessage = "거래 완료";
                 break;
             case TEXT:
@@ -466,6 +654,7 @@ public class ChatMessageService {
                 .imageUrl(chatMessage.getMediaUrl())
                 .transactionAmount(chatMessage.getTransactionAmount())
                 .transactionStatus(chatMessage.getTransactionStatus())
+                .items(chatMessage.getItems()) // items 필드 추가
                 .build();
     }
 
@@ -493,6 +682,7 @@ public class ChatMessageService {
                 .mediaUrl(messageDto.getImageUrl())
                 .transactionAmount(messageDto.getTransactionAmount())
                 .transactionStatus(messageDto.getTransactionStatus())
+                .items(messageDto.getItems()) // items 필드 추가
                 .build();
     }
 

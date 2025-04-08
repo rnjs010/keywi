@@ -1,6 +1,7 @@
 package com.ssafy.chat.controller.websocket;
 
 import com.ssafy.chat.dto.chat.ChatMessageDto;
+import com.ssafy.chat.dto.chat.ChatMessageType;
 import com.ssafy.chat.service.chat.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
-/**
- * 웹소켓을 통한 채팅 메시지 처리 컨트롤러
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -21,30 +19,29 @@ public class ChatMessageController {
 
     /**
      * 일반 채팅 메시지 전송 처리
-     * 클라이언트로부터 메시지를 받아서 처리하고 모든 구독자에게 브로드캐스팅
      */
     @MessageMapping("/chat/message")
     public void sendMessage(@Payload ChatMessageDto message, @Header("X-User-ID") String senderId) {
-        log.debug("메시지 수신: roomId={}, senderId={}, type={}, content={}",
-                message.getRoomId(), senderId, message.getMessageType(), message.getContent());
+        try {
+            log.info("메시지 수신: roomId={}, senderId={}, type={}, content={}, items={}",
+                    message.getRoomId(), senderId, message.getMessageType(),
+                    message.getContent(), message.getItems());
 
-        // 명시적 senderId 설정
-        message.setSenderId(senderId);
+            // 명시적 senderId 설정
+            message.setSenderId(senderId);
 
-        chatMessageService.sendMessage(message, senderId);
-
-        log.debug("메시지 처리 완료: {}", message);
-    }
-
-    /**
-     * 거래 요청 메시지 전송 처리
-     */
-    @MessageMapping("/chat/transaction/request")
-    public void sendTransactionRequest(@Payload ChatMessageDto message, @Header("X-User-ID") String senderId) {
-        log.info("거래 요청 메시지: roomId={}, senderId={}, amount={}",
-                message.getRoomId(), senderId, message.getTransactionAmount());
-
-        // 거래 요청 메시지 처리
-        chatMessageService.sendTransactionRequest(message.getRoomId(), senderId, message.getTransactionAmount());
+            // 메시지 타입이 DEALREQUEST인 경우 견적서 저장 처리
+            if (message.getMessageType() == ChatMessageType.DEALREQUEST) {
+                log.info("DEALREQUEST 메시지 처리 시작");
+                ChatMessageDto savedMessage = chatMessageService.sendMessage(message, senderId);
+                chatMessageService.saveDealRequest(savedMessage);
+                log.info("DEALREQUEST 메시지 처리 완료");
+            } else {
+                chatMessageService.sendMessage(message, senderId);
+            }
+        } catch (Exception e) {
+            log.error("메시지 처리 중 오류 발생: {}", e.getMessage(), e);
+            // 오류 발생 시에도 클라이언트에 알림이 필요하다면 여기에 구현
+        }
     }
 }
