@@ -223,7 +223,7 @@ public class PayService {
 
         log.info("💡 거래 buyer_id: {}", transaction.getBuyer().getId());
         log.info("💡 요청 user_id: {}", request.getUserId());
-        
+
         UsersEntity buyer = usersRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 
