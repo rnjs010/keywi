@@ -121,7 +121,7 @@ public class ProductServiceAdapter {
                 .manufacturer(responseDto.getManufacturer())
                 .descriptions(responseDto.getDescriptions())
                 .isTemporary(false)
-                .isFavorite(responseDto.isFavorite())
+                .isFavorite(responseDto.getIsFavorite())
                 .build();
     }
 

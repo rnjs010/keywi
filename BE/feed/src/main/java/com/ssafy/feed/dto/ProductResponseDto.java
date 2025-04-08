@@ -13,10 +13,10 @@ public class ProductResponseDto {
     private int productId;
     private int categoryId;
     private String productName;
+    private Boolean isFavorite;
     private int price;
     private String productUrl;
     private String productImage;
     private String manufacturer;
-    private boolean isFavorite;;
     private List<ProductDescriptionDTO> descriptions;
 }
