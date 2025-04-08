@@ -12,6 +12,6 @@ ARG JAR_FILE
 COPY ${JAR_FILE} app.jar
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=51s --retries=3 \
-  CMD curl -f http://localhost:8090/actuator/health || exit 1
+  CMD curl -f http://localhost:8600/actuator/health || exit 1
 
 CMD java $JAVA_OPTS -jar app.jar
