@@ -3,7 +3,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_OPTS="-Xmx1g -Xms1g"
+ENV JAVA_OPTS="-Xmx768m -Xms768m"
 
 EXPOSE 8600
 USER 1001
