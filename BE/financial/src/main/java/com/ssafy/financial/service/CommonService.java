@@ -15,16 +15,21 @@ public class CommonService {
     private final UserAccountConnectionRepository userAccountConnectionRepository;
 
     public String getUserKeyByUserId(Long userId) {
-        log.info("🔍 userId={}", userId);
+        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findTopByUser_IdOrderByConnectedAtDesc(userId);
 
-        UserAccountConnectionEntity connection = userAccountConnectionRepository
-                .findTopByUser_IdOrderByConnectedAtDesc(userId)
-                .orElseThrow(() -> new IllegalArgumentException("연결된 계좌가 없습니다."));
+        if (connectionOpt.isEmpty()) {
+            log.warn("❌ userId={}에 대한 연결된 계좌가 없습니다.", userId);
+            throw new IllegalArgumentException("연결된 계좌가 없습니다.");
+        }
 
-        AccountEntity account = connection.getDemandAccount();
-        log.info("🔑 accountNo={}, userKey={}", account.getAccountNo(), account.getUserKey());
+        AccountEntity account = connectionOpt.get().getDemandAccount();
+        if (account == null || account.getUserKey() == null) {
+            log.warn("❌ userId={} → 계좌는 존재하나 userKey가 없습니다. account={}", userId, account);
+            throw new IllegalArgumentException("userKey가 존재하지 않습니다.");
+        }
 
-        return Optional.ofNullable(account.getUserKey())
-                .orElseThrow(() -> new IllegalArgumentException("userKey가 존재하지 않습니다."));
+        log.info("✅ userId={}, accountNo={}, userKey={}", userId, account.getAccountNo(), account.getUserKey());
+
+        return account.getUserKey();
     }
 }
