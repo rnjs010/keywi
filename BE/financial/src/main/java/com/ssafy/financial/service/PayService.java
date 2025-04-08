@@ -217,14 +217,15 @@ public class PayService {
 
     @Transactional
     public void acceptTransaction(EscrowTransactionAcceptRequest request) {
+        Long userId = request.getUserId();
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("거래 정보가 없습니다."));
 
         log.info("💡 거래 buyer_id: {}", transaction.getBuyer().getId());
-        log.info("💡 요청 user_id: {}", request.getUserId());
+        log.info("💡 요청 user_id: {}", userId);
 
-        UsersEntity buyer = usersRepository.findById(request.getUserId())
+        UsersEntity buyer = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
 
         if (!transaction.getBuyer().getId().equals(buyer.getId())) {
@@ -249,7 +250,7 @@ public class PayService {
         String escrowAccountNo = escrowAccountProperties.getNumber();
         String escrowBankCode = escrowAccountProperties.getBankCode();
 
-        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+        String userKey = commonService.getUserKeyByUserId(userId);
 
         // 5. 이체 요청 (DTO 구조에 맞춰 수정)
         AccountTransferRequest transferRequest = AccountTransferRequest.builder()
