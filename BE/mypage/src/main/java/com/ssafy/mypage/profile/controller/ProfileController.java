@@ -6,10 +6,7 @@ import com.ssafy.mypage.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -25,8 +22,7 @@ public class ProfileController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<ProfileDto>> getMyProfile(@AuthenticationPrincipal(expression = "username") String username) {
-        Long userId = Long.parseLong(username); // 직접 변환
+    public ResponseEntity<ApiResponse<ProfileDto>> getMyProfile(@RequestHeader("X-User-ID") Long userId) {
         ProfileDto profile = profileService.getProfileByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success("내 프로필 조회 성공", profile));
     }
