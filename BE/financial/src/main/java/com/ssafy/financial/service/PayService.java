@@ -17,11 +17,13 @@ import java.util.Optional;
 import com.ssafy.financial.util.FinancialHeaderUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PayService {
     private final SimplePasswordRepository simplePasswordRepository;
     private final PasswordEncoder passwordEncoder;
@@ -219,8 +221,12 @@ public class PayService {
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("거래 정보가 없습니다."));
 
+
         UsersEntity buyer = usersRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보가 없습니다."));
+
+        log.info("💡 거래 buyer_id: {}", transaction.getBuyer().getId());
+        log.info("💡 요청 user_id: {}", request.getUserId());
 
         if (!transaction.getBuyer().getId().equals(buyer.getId())) {
             throw new IllegalStateException("해당 거래의 구매자가 아닙니다.");
@@ -275,7 +281,8 @@ public class PayService {
         if (!transaction.getBuyer().getId().equals(request.getUserId())) {
             throw new IllegalStateException("해당 거래의 구매자가 아닙니다.");
         }
-
+        log.info("💡 거래 buyer_id: {}", transaction.getBuyer().getId());
+        log.info("💡 요청 user_id: {}", request.getUserId());
         // 3. 거래 상태 확인
 //        if (transaction.getStatus() != TransactionStatus.PAID) {
 //            throw new IllegalStateException("결제가 완료되지 않은 거래입니다.");
