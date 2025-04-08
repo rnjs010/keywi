@@ -1,6 +1,9 @@
 import DetailHeader from '@/components/DetailHeader'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import { useMyAccountInfo } from '@/features/mypage/hooks/useMypageProfile'
 import { colors } from '@/styles/colors'
 import { Text } from '@/styles/typography'
+import { getBankLogoPath, getBankName } from '@/utils/bankCodeMapper'
 import { PlusCircleSolid } from 'iconoir-react'
 import tw from 'twin.macro'
 
@@ -24,24 +27,36 @@ const ChangeAccountBtn = tw.button`
 `
 
 export function SettingAccountPage() {
+  const { data: accountInfo, isLoading, error } = useMyAccountInfo()
+
   return (
     <Container>
       <HeaderWrapper>
         <DetailHeader title="계좌 관리" />
       </HeaderWrapper>
       <ContentContainer>
-        {/* TODO - 현재 계좌 연결 정보 연동 */}
-        <AccountWrapper>
-          <div className="flex items-center gap-3">
-            <BankLogo src="/banks/우리.png"></BankLogo>
-            <Text variant="body1">우리 1002039482304</Text>
-          </div>
-          <ChangeAccountBtn>
-            <Text variant="caption3" weight="bold" color="darkKiwi">
-              계좌 변경
-            </Text>
-          </ChangeAccountBtn>
-        </AccountWrapper>
+        {isLoading ? (
+          <LoadingMessage />
+        ) : error || !accountInfo ? null : accountInfo?.accountNo &&
+          accountInfo?.bankCode ? (
+          <AccountWrapper>
+            <div className="flex items-center gap-3">
+              <BankLogo
+                src={getBankLogoPath(accountInfo.bankCode)}
+                alt={getBankName(accountInfo.bankCode)}
+              />
+              <Text variant="body1">
+                {getBankName(accountInfo.bankCode)} {accountInfo.accountNo}
+              </Text>
+            </div>
+            <ChangeAccountBtn>
+              <Text variant="caption3" weight="bold" color="darkKiwi">
+                계좌 변경
+              </Text>
+            </ChangeAccountBtn>
+          </AccountWrapper>
+        ) : null}
+
         <AccountWrapper>
           <div className="flex items-center gap-3">
             <PlusCircleSolid color={colors.kiwi} />

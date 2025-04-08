@@ -9,6 +9,7 @@ export const useProfileEdit = () => {
   const [nickname, setNickname] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null)
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
+  const [statusMessage, setStatusMessage] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
@@ -20,6 +21,7 @@ export const useProfileEdit = () => {
       if (userInfo.profileUrl) {
         setProfileImage(userInfo.profileUrl)
       }
+      setStatusMessage(userInfo.statusMessage || '')
     }
   }, [userInfo])
 
@@ -38,24 +40,31 @@ export const useProfileEdit = () => {
         return false
       }
       try {
-        // 프로필 이미지 파일이 있으면 사용, 없고 Data URL만 있으면 변환
         let imageFile: File | undefined = undefined
 
         if (profileImageFile) {
           // 직접 전달받은 File 객체가 있으면 사용
           imageFile = profileImageFile
         } else if (profileImage && profileImage !== userInfo?.profileUrl) {
-          // URL만 있고 기존 이미지와 다른 경우 File로 변환
+          // URL에서 파일로 변환 시도
           if (profileImage.startsWith('data:')) {
-            const response = await fetch(profileImage)
-            const blob = await response.blob()
-            imageFile = new File([blob], 'profile.jpg', { type: blob.type })
+            try {
+              const response = await fetch(profileImage)
+              const blob = await response.blob()
+              // profile.jpg 파일명 대신 의미있는 파일명 사용
+              imageFile = new File([blob], 'user_profile.jpg', {
+                type: blob.type || 'image/jpeg',
+              })
+            } catch (error) {
+              console.error('이미지 변환 오류:', error)
+            }
           }
         }
 
         await updateProfile({
           userNickname: nickname,
           profileImage: imageFile,
+          statusMessage: statusMessage,
         })
         return true
       } catch (err: any) {
@@ -69,6 +78,7 @@ export const useProfileEdit = () => {
     onSuccess: (result) => {
       if (result) {
         queryClient.invalidateQueries({ queryKey: USER_INFO_QUERY_KEY })
+        queryClient.invalidateQueries({ queryKey: ['mypage', 'profile'] })
       }
     },
   })
@@ -83,6 +93,8 @@ export const useProfileEdit = () => {
     setNickname,
     profileImage,
     setProfileImage: handleProfileImageChange,
+    statusMessage,
+    setStatusMessage,
     error,
     isLoading: isPending || userLoading,
     handleSave,

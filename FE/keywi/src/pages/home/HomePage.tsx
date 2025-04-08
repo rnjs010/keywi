@@ -4,7 +4,7 @@ import HomeFeedList from '@/features/home/components/feed/HomeFeedList'
 import HomeHeader from '@/features/home/components/feed/HomeHeader'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { useFeedQuery } from '@/features/home/hooks/useFeedQuery'
 import { FeedData } from '@/interfaces/HomeInterfaces'
 import InfiniteScroll from '@/components/InfiniteScroll'
@@ -12,6 +12,7 @@ import { useFeedStore } from '@/stores/homeStore'
 import { transformFeedData } from '@/features/home/utils/FeedDataConverter'
 import { addScrollListener, getScrollPosition } from '@/utils/scrollManager'
 import { useLocation } from 'react-router-dom'
+import PullToRefresh from '@/components/PulltoRefresh'
 
 const Container = tw.div`
   w-full 
@@ -57,7 +58,6 @@ const LoadingContainer = tw.div`
   py-4
   text-darkKiwi
 `
-
 const ErrorContainer = tw.div`
   p-4 
   text-center 
@@ -91,47 +91,35 @@ export default function HomePage() {
 
   const { setFeeds } = useFeedStore()
 
-  //SECTION - 스크롤 위치 기억
-
-  // 스크롤 영역에 대한 ref
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
-
   // 컴포넌트 마운트 시 항상 최신 데이터 조회 (staleTime이 지난 경우)
   useEffect(() => {
-    // 페이지 진입 시 항상 최신 데이터 확인
-    console.log('홈 페이지 진입: 최신 데이터 확인')
     refetch({ cancelRefetch: false })
   }, [refetch])
+
+  //SECTION - 스크롤 위치 기억
+  // 스크롤 영역에 대한 ref
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   // 스크롤 이벤트 리스너 등록
   useEffect(() => {
     const scrollElement = scrollAreaRef.current
     if (!scrollElement) return
-
     // 이벤트 리스너 등록 및 클린업 함수 받기
     const cleanup = addScrollListener(scrollElement, SCROLL_KEY)
-
     return cleanup
   }, [])
 
   // 스크롤 위치 복원
-  useEffect(() => {
-    // 새로고침이 아닌 경우에만 스크롤 위치 복원
-    const shouldRestoreScroll = !location.state?.refreshFeed
-
-    if (
-      scrollAreaRef.current &&
-      !isLoading &&
-      data?.pages &&
-      shouldRestoreScroll
-    ) {
-      const position = getScrollPosition(SCROLL_KEY)
-      if (position > 0) {
-        setTimeout(() => {
-          if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTop = position
-          }
-        }, 200)
+  useLayoutEffect(() => {
+    const isFromComments = location.state?.fromComments === true
+    if (!isLoading && data?.pages) {
+      if (scrollAreaRef.current && isFromComments) {
+        const position = getScrollPosition(SCROLL_KEY)
+        if (position > 0) {
+          scrollAreaRef.current.scrollTop = position
+        }
+      } else if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTop = 0
       }
     }
   }, [data, isLoading, location.state])
@@ -158,36 +146,51 @@ export default function HomePage() {
       )
     : []
 
+  // 새로고침 함수
+  const handleRefresh = async () => {
+    if (location.state?.fromComments) {
+      window.history.replaceState({}, document.title)
+    }
+
+    try {
+      await refetch()
+    } catch (error) {
+      console.error('피드 새로고침 실패:', error)
+    }
+  }
+
   return (
     <Container>
       <HeaderContainer>
         <HomeHeader />
       </HeaderContainer>
-      <ScrollArea ref={scrollAreaRef}>
-        {isError ? (
-          <ErrorContainer>
-            <div>피드를 불러오는 중 오류가 발생했습니다.</div>
-            <div className="mt-1 text-sm">{error?.message}</div>
-            <RetryButton onClick={() => refetch()}>다시 시도하기</RetryButton>
-          </ErrorContainer>
-        ) : (
-          <InfiniteScroll
-            onLoadMore={loadMoreFeeds}
-            hasNextPage={!!hasNextPage}
-            isLoading={isFetchingNextPage}
-            loadingComponent={
-              <LoadingContainer>
-                {isFetchingNextPage ? '더 많은 피드를 불러오는 중...' : ''}
-              </LoadingContainer>
-            }
-          >
-            <HomeFeedList
-              feeds={feeds}
-              isLoading={isLoading && feeds.length === 0}
-            />
-          </InfiniteScroll>
-        )}
-      </ScrollArea>
+      <PullToRefresh onRefresh={handleRefresh} scrollRef={scrollAreaRef}>
+        <ScrollArea ref={scrollAreaRef}>
+          {isError ? (
+            <ErrorContainer>
+              <div>피드를 불러오는 중 오류가 발생했습니다.</div>
+              <div className="mt-1 text-sm">{error?.message}</div>
+              <RetryButton onClick={() => refetch()}>다시 시도하기</RetryButton>
+            </ErrorContainer>
+          ) : (
+            <InfiniteScroll
+              onLoadMore={loadMoreFeeds}
+              hasNextPage={!!hasNextPage}
+              isLoading={isFetchingNextPage}
+              loadingComponent={
+                <LoadingContainer>
+                  {isFetchingNextPage ? '더 많은 피드를 불러오는 중...' : ''}
+                </LoadingContainer>
+              }
+            >
+              <HomeFeedList
+                feeds={feeds}
+                isLoading={isLoading && feeds.length === 0}
+              />
+            </InfiniteScroll>
+          )}
+        </ScrollArea>
+      </PullToRefresh>
       <FeedWriteButton />
       <NavBarContainer>
         <NavBar />

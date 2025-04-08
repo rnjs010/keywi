@@ -28,6 +28,7 @@ interface ProfileFormProps {
   header: ReactNode
   imageInput: ReactNode
   nameInput: ReactNode
+  statusInput?: ReactNode
   actionButton: ReactNode
 }
 
@@ -35,6 +36,7 @@ export default function ProfileForm({
   header,
   imageInput,
   nameInput,
+  statusInput,
   actionButton,
 }: ProfileFormProps) {
   return (
@@ -42,6 +44,7 @@ export default function ProfileForm({
       {header}
       {imageInput}
       {nameInput}
+      {statusInput && statusInput}
       {actionButton}
     </Container>
   )

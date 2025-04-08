@@ -15,8 +15,18 @@ const EmptyContainer = tw.div`
   items-center
 `
 
-export default function MypageBoard() {
-  const { data: quotes, isLoading, error } = useMyBoardList()
+interface MypageBoardProps {
+  userId: number
+  isMyProfile?: boolean
+}
+
+export default function MypageBoard({
+  userId,
+  isMyProfile = false,
+}: MypageBoardProps) {
+  const page = 0
+  const size = 10
+  const { data: quotes, isLoading, error } = useMyBoardList(userId, page, size)
 
   return (
     <>
@@ -33,7 +43,11 @@ export default function MypageBoard() {
       <ListContainer>
         {quotes &&
           quotes.map((item) => (
-            <MypageBoardCard key={item.boardId} {...item} />
+            <MypageBoardCard
+              key={item.boardId}
+              {...item}
+              isMyProfile={isMyProfile}
+            />
           ))}
       </ListContainer>
     </>
