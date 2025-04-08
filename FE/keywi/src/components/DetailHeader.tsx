@@ -26,13 +26,22 @@ const TitleContainer = tw.div`
 
 interface DetailHeaderProps {
   title: string
+  onBack?: () => void // 커스텀 뒤로가기 핸들러
+  // ... 다른 props
 }
 
-export default function DetailHeader({ title }: DetailHeaderProps) {
+export default function DetailHeader({ title, onBack }: DetailHeaderProps) {
   const navigate = useNavigate()
 
-  // 뒤로가기
-  const handleBack = () => navigate(-1)
+  const handleBack = () => {
+    if (onBack) {
+      // 커스텀 핸들러가 있으면 실행
+      onBack()
+    } else {
+      // 기본 동작은 그냥 뒤로가기
+      navigate(-1)
+    }
+  }
 
   return (
     <HeaderContainer>

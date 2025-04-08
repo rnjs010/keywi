@@ -116,15 +116,11 @@ export default function HomePage() {
 
   // 스크롤 위치 복원
   useEffect(() => {
-    // 새로고침이 아닌 경우에만 스크롤 위치 복원
-    const shouldRestoreScroll = !location.state?.refreshFeed
+    // location.state를 확인하여 댓글에서 돌아왔는지 확인
+    const isFromComments = location.state?.fromComments === true
 
-    if (
-      scrollAreaRef.current &&
-      !isLoading &&
-      data?.pages &&
-      shouldRestoreScroll
-    ) {
+    // 댓글에서 돌아온 경우에만 스크롤 위치 복원
+    if (scrollAreaRef.current && !isLoading && data?.pages && isFromComments) {
       const position = getScrollPosition(SCROLL_KEY)
       if (position > 0) {
         setTimeout(() => {
@@ -133,6 +129,9 @@ export default function HomePage() {
           }
         }, 200)
       }
+    } else {
+      // 댓글에서 돌아온 것이 아니면 스크롤 위치 초기화
+      scrollAreaRef.current?.scrollTo(0, 0)
     }
   }, [data, isLoading, location.state])
 

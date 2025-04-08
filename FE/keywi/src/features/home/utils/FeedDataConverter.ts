@@ -15,6 +15,7 @@ export const transformFeedData = (feedData: any): FeedData => {
     x: product.positionX,
     y: product.positionY,
     thumbnail: product.productImage,
+    isFavorite: product.isFavorite,
   }))
 
   // 해시태그 배열 추출

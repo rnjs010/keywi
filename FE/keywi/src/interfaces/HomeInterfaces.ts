@@ -82,6 +82,7 @@ export interface ProductTag {
   x: number // 이미지 내 x 좌표 (0~100 범위의 퍼센트 값)
   y: number // 이미지 내 y 좌표 (0~100 범위의 퍼센트 값)
   thumbnail?: string
+  isFavorite?: boolean
 }
 
 // 태그된 상품 리스트

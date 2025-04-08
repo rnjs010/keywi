@@ -16,7 +16,6 @@ import {
   useBookmarkMutation,
   useLikeMutation,
 } from '../../hooks/useFeedInteractions'
-import { saveScrollPosition } from '@/utils/scrollManager'
 
 const Container = tw.div`
   flex
@@ -41,9 +40,6 @@ const LikeWrapper = tw.div`
   items-center
   gap-1
 `
-
-// 스크롤 키
-const SCROLL_KEY = 'home-feed'
 
 export default function HomeFeedInteraction({
   likeCount: initialLikeCount,
@@ -87,13 +83,6 @@ export default function HomeFeedInteraction({
   }
 
   const handleCommentClick = () => {
-    // 현재 스크롤 위치 저장
-    const scrollElement = document.querySelector('[class*="ScrollArea"]')
-    if (scrollElement) {
-      // 스크롤 위치 저장
-      saveScrollPosition(SCROLL_KEY, scrollElement.scrollTop)
-    }
-
     navigate(`/home/comment/${feedId}`)
   }
 

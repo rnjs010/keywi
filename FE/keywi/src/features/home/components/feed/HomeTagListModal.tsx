@@ -14,6 +14,7 @@ import { colors } from '@/styles/colors'
 import styled from '@emotion/styled'
 import truncateText from '@/utils/truncateText'
 import { useNavigate } from 'react-router-dom'
+import { useProductFavorite } from '../../hooks/useProductFavorite'
 
 const TagItemContainer = tw.div`
   flex
@@ -49,20 +50,38 @@ export default function HomeTagListModal({
   triggerComponent,
 }: HomeTagListModalProps) {
   const navigate = useNavigate()
-  const [zzims, setZzims] = useState<Record<number, boolean>>({})
+  const [zzims, setZzims] = useState<Record<number, boolean>>(() => {
+    const initialZzims: Record<number, boolean> = {}
+    productTags.forEach((tag) => {
+      initialZzims[tag.id] = tag.isFavorite || false
+    })
+    return initialZzims
+  })
 
-  const handleZzim = (tagId: number) => {
-    setZzims((prev) => ({
-      ...prev,
-      [tagId]: !prev[tagId],
-    }))
+  const favoritesMutation = useProductFavorite()
+
+  const handleZzim = async (tagId: number, e: React.MouseEvent) => {
+    e.stopPropagation() // 이벤트 버블링 방지
+
+    try {
+      // API 호출
+      const result = await favoritesMutation.mutateAsync(tagId)
+
+      // 결과에 따라 상태 업데이트
+      setZzims((prev) => ({
+        ...prev,
+        [tagId]: result.data, // API 응답에 따라 찜 상태 설정
+      }))
+    } catch (error) {
+      console.error('찜 토글 실패:', error)
+    }
   }
 
   // 상품 페이지로 이동하는 함수
   const handleProductClick = (e: React.MouseEvent, productId: number) => {
     e.stopPropagation() // 이벤트 버블링 방지
     console.log(`상품 ID: ${productId}로 이동합니다.`)
-    navigate(`/product/${productId}`)
+    navigate(`/product/detail/${productId}`)
   }
 
   return (
@@ -99,7 +118,9 @@ export default function HomeTagListModal({
                   </Text>
                 </div>
               </ProductInfo>
-              <ZzimButton onClick={() => handleZzim(tag.id)}>
+              <ZzimButton
+                onClick={(e: React.MouseEvent) => handleZzim(tag.id, e)}
+              >
                 {zzims[tag.id] ? (
                   <StarSolid height={22} width={22} color={colors.kiwi} />
                 ) : (
