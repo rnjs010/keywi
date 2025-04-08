@@ -21,11 +21,11 @@ public class EscrowTransactionEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buyer_id")
+    @Column(name = "buyer_id")
     private UsersEntity buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assembler_id")
+    @Column(name = "assembler_id")
     private UsersEntity builder;
 
 //    @Column(columnDefinition = "TEXT")

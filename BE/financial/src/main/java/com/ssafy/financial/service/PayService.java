@@ -279,6 +279,7 @@ public class PayService {
 
         // 2. 구매자 확인
         if (!transaction.getBuyer().getId().equals(request.getUserId())) {
+
             throw new IllegalStateException("해당 거래의 구매자가 아닙니다.");
         }
         log.info("💡 거래 buyer_id: {}", transaction.getBuyer().getId());
