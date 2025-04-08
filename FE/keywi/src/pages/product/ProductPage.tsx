@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
 import { ApiResponse } from '@/interfaces/ApiResponse'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import LoadingMessage from '@/components/message/LoadingMessage'
 
 type CategoryKey = '1' | '2' | '3' | '4' | '5' | '6' | '7'
 type SubCategory = { id: string; label: string }
@@ -227,13 +228,7 @@ export default function ProductPage() {
         </TabsContainer>
       )}
 
-      {loading ? (
-        <div className="flex justify-center items-center flex-1">
-          로딩 중...
-        </div>
-      ) : (
-        <ProductList products={products} />
-      )}
+      {loading ? <LoadingMessage /> : <ProductList products={products} />}
 
       <NavBarContainer>
         <NavBar />
