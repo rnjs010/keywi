@@ -3,7 +3,7 @@ import tw from 'twin.macro'
 import MainButton from '@/components/MainButton'
 import ProductForm from '@/features/chat/components/DealRequest/ProductForm'
 import { useEffect, useState } from 'react'
-import { useDealRequestStore } from '@/stores/ChatStore'
+import { useDealRequestStore } from '@/stores/chatStore'
 
 const CostInput = tw.input`
   w-full border px-4 py-3 rounded mb-2 text-base my-2
@@ -19,6 +19,9 @@ export default function DealReqFormScreen() {
   const setStep = useDealRequestStore((state) => state.setStep)
   const selectedProducts = useDealRequestStore(
     (state) => state.selectedProducts,
+  )
+  const setSelectedProducts = useDealRequestStore(
+    (state) => state.setSelectedProducts,
   )
   const totalPrice = useDealRequestStore((state) => state.totalPrice)
   const setTotalPrice = useDealRequestStore((state) => state.setTotalPrice)
@@ -36,6 +39,21 @@ export default function DealReqFormScreen() {
   }, [selectedProducts, assemblyCost, setTotalPrice])
 
   const handleNext = () => {
+    const assembly = Number(assemblyCost) || 0
+    const assemblyProduct = {
+      productId: 0,
+      productName: '인건비 및 상품구매 배송비',
+      price: assembly,
+      categoryName: '조립 비용',
+      categoryId: 0,
+      imageUrl: '',
+    }
+
+    setSelectedProducts({
+      ...selectedProducts,
+      [assemblyProduct.categoryName]: assemblyProduct,
+    })
+
     setStep(2)
   }
 

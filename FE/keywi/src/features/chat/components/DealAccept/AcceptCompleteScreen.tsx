@@ -3,7 +3,7 @@ import { Text } from '@/styles/typography'
 import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { CheckCircleSolid } from 'iconoir-react'
-import { useDealAcceptStore } from '@/stores/ChatStore'
+import { useDealAcceptStore } from '@/stores/chatStore'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const Container = tw.div`

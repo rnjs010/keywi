@@ -1,7 +1,8 @@
 import DealMessage from './DealMessage'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
-import { Message } from '@/interfaces/ChatInterfaces'
+import { ChatMessage } from '@/interfaces/ChatInterfaces'
+import { formatChatTime } from '@/utils/formatChatTime'
 
 const Container = tw.div`
   flex items-start mb-4 gap-2
@@ -14,9 +15,9 @@ const ThumbnailImage = tw.img`
 export default function OpponentMessage({
   senderProfileUrl,
   content,
-  formattedTime,
+  sentAt,
   messageType,
-}: Message) {
+}: ChatMessage) {
   return (
     <Container>
       <ThumbnailImage src={senderProfileUrl} alt="thumbnail" />
@@ -30,7 +31,7 @@ export default function OpponentMessage({
         ) : messageType === 'IMAGE' ? (
           <div className="rounded-lg overflow-hidden max-w-[240px]">
             <img
-              src={content}
+              src={content ?? ''}
               alt="Sent image"
               className="w-full h-auto object-cover"
             />
@@ -38,12 +39,12 @@ export default function OpponentMessage({
         ) : (
           <DealMessage
             messageType={messageType}
-            content={content}
+            content={content ?? ''}
             isMine={false}
           />
         )}
         <Text variant="caption3" weight="regular" color="littleGray">
-          {formattedTime}
+          {formatChatTime(sentAt)}
         </Text>
       </div>
     </Container>

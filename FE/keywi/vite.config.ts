@@ -165,6 +165,9 @@ export default defineConfig({
     }),
     macrosPlugin(),
   ],
+  define: {
+    global: 'globalThis', // global 참조를 globalThis로 대체
+  },
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
