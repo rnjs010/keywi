@@ -8,7 +8,7 @@ import apiRequester from '@/services/api'
 
 // 채팅 방 생성
 export const createChatRoom = async (boardId: number) => {
-  const response = await apiRequester.post('/api/chat/rooms', { boardId })
+  const response = await apiRequester.post(`/api/chat/rooms?boardId=${boardId}`)
   return response.data.data.roomId
 }
 
