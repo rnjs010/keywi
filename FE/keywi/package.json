@@ -26,6 +26,7 @@
     "iconoir-react": "^7.10.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.483.0",
+    "open-graph-scraper": "^6.9.0",
     "postcss": "^8.5.3",
     "rdndmb-html5-to-touch": "^9.0.0",
     "react": "^18.3.1",

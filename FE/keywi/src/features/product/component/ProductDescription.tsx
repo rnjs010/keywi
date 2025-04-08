@@ -7,6 +7,7 @@ import styled from '@emotion/styled'
 import apiRequester from '@/services/api'
 import { ApiResponse } from '@/interfaces/ApiResponse'
 import { useFavorite } from '@/features/product/hooks/useFavorite'
+import LinkPreview from '@/features/product/component/LinkPreview'
 // useNavigate
 const ContentContainer = styled.div`
   ${tw`
@@ -253,7 +254,7 @@ function DescriptionRenderer({ description }: { description: any }) {
           rel="noopener noreferrer"
           className="text-blue-600 underline my-2"
         >
-          {description.description}
+          <LinkPreview url={description.description} />
         </a>
       )
     case 'hr':
