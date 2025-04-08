@@ -2,6 +2,7 @@ package com.ssafy.financial.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.financial.config.EscrowAccountProperties;
 import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.EscrowTransactionCreateResponse;
@@ -31,8 +32,7 @@ public class PayService {
     private final EscrowTransactionRepository escrowTransactionRepository;
     private final FinancialHeaderUtil financialHeaderUtil;
     private final FinancialApiService financialApiService;
-
-
+    private final EscrowAccountProperties escrowAccountProperties;
 
     // 기존 메서드 대신 아래 구조 사용
     public void setSimplePasswordAndConnectAccount(SetSimplePasswordRequest request) {
@@ -206,8 +206,8 @@ public class PayService {
                 .getDemandAccount();
 
         // 4. 에스크로 계좌 정보 (플랫폼 고정 계좌)
-        String escrowAccountNo = "10001111222233";
-        String escrowBankCode = "088"; // 예시
+        String escrowAccountNo = escrowAccountProperties.getNumber();
+        String escrowBankCode = escrowAccountProperties.getBankCode();
 
         // 5. 이체 요청 (DTO 구조에 맞춰 수정)
         AccountTransferRequest transferRequest = AccountTransferRequest.builder()
@@ -251,8 +251,8 @@ public class PayService {
                 .getDemandAccount();
 
         // 5. 키위 에스크로 계좌 → 조립자 계좌 송금
-        String escrowAccountNo = "10001111222233"; // 플랫폼 계좌
-        String escrowBankCode = "088"; // 예시
+        String escrowAccountNo = escrowAccountProperties.getNumber();
+        String escrowBankCode = escrowAccountProperties.getBankCode();
 
         AccountTransferRequest transferRequest = AccountTransferRequest.builder()
                 .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", true))
