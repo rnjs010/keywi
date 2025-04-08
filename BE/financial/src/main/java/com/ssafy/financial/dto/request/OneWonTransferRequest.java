@@ -21,4 +21,7 @@ public class OneWonTransferRequest {
 
     @JsonProperty("authText")
     private String authText;
+
+    private String userKey;
+
 }

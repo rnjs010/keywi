@@ -10,7 +10,6 @@ import com.ssafy.financial.dto.response.OneWonTransferResponse;
 import com.ssafy.financial.dto.response.OneWonVerifyResponse;
 import com.ssafy.financial.dto.response.TransactionHistoryListResponse;
 import com.ssafy.financial.service.FinancialApiService;
-import com.ssafy.financial.service.PayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -2,6 +2,7 @@ package com.ssafy.financial.controller;
 
 import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.EscrowTransactionCreateResponse;
+import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.dto.response.SimplePasswordVerifyResponse;
 import com.ssafy.financial.service.PayService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PayController {
 
     private final PayService payService;
+
+    @PostMapping("/transfer/initiate")
+    public ResponseEntity<OneWonTransferInitResponse> initiateOneWonTransfer(@RequestBody AccountCheckRequestDto dto) {
+        return ResponseEntity.ok(payService.startOneWonTransfer(dto.getAccountNo(), dto.getBankCode()));
+    }
+
     /*
     // 간편 결제 비밀번호 설정
     @PostMapping("/payment-password/set")
@@ -45,14 +52,14 @@ public class PayController {
         payService.connectAccount(requestDto);
         return ResponseEntity.ok("계좌 연결 성공");
     }*/
-
+/*
     // 거래 생성 (견적 요청)
     @PostMapping("/quote")
     public ResponseEntity<EscrowTransactionCreateResponse> createTransaction(
             @RequestBody EscrowTransactionCreateRequest request) {
         EscrowTransactionCreateResponse response = payService.createTransaction(request);
         return ResponseEntity.ok(response);
-    }
+    }*/
 
     // 견적 수락 (결제)
     @PostMapping("/accept")

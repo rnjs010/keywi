@@ -6,6 +6,7 @@ import com.ssafy.financial.config.EscrowAccountProperties;
 import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.EscrowTransactionCreateResponse;
+import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.entity.*;
 import com.ssafy.financial.repository.*;
 
@@ -34,7 +35,26 @@ public class PayService {
     private final FinancialApiService financialApiService;
     private final EscrowAccountProperties escrowAccountProperties;
 
-    // 기존 메서드 대신 아래 구조 사용
+    public OneWonTransferInitResponse startOneWonTransfer(String accountNo, String bankCode) {
+        AccountEntity account = accountRepository
+                .findByAccountNoAndBankCode(accountNo, bankCode)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 계좌가 없습니다."));
+
+        // 1원 송금 요청 생성
+        OneWonTransferRequest request = new OneWonTransferRequest();
+        request.setAccountNo(accountNo);
+        request.setUserKey(account.getUserKey());
+        request.setAuthText("키위");
+
+        financialApiService.sendOneWon(request);
+
+        return OneWonTransferInitResponse.builder()
+                .userKey(account.getUserKey())
+                .accountNo(accountNo)
+                .bankCode(bankCode)
+                .build();
+    }
+
     public void setSimplePasswordAndConnectAccount(SetSimplePasswordRequest request) {
         UsersEntity user = usersRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
@@ -134,7 +154,7 @@ public class PayService {
 
         userAccountConnectionRepository.save(connection);
     }*/
-
+/*
     @Transactional
     public EscrowTransactionCreateResponse createTransaction(EscrowTransactionCreateRequest request) {
         // 1. 사용자 조회
@@ -168,7 +188,7 @@ public class PayService {
         escrowTransactionRepository.save(transaction);
 
         return new EscrowTransactionCreateResponse(transaction.getId());
-    }
+    }*/
 
     private String toJsonString(Map<String, String> map) {
         try {
@@ -223,8 +243,8 @@ public class PayService {
 
 
         // 6. 거래 상태 변경
-        transaction.setStatus(TransactionStatus.PAID);
-        transaction.setUpdatedAt(LocalDateTime.now());
+//        transaction.setStatus(TransactionStatus.PAID);
+//        transaction.setUpdatedAt(LocalDateTime.now());
         escrowTransactionRepository.save(transaction);
     }
 
@@ -240,9 +260,9 @@ public class PayService {
         }
 
         // 3. 거래 상태 확인
-        if (transaction.getStatus() != TransactionStatus.PAID) {
-            throw new IllegalStateException("결제가 완료되지 않은 거래입니다.");
-        }
+//        if (transaction.getStatus() != TransactionStatus.PAID) {
+//            throw new IllegalStateException("결제가 완료되지 않은 거래입니다.");
+//        }
 
         // 4. 조립자 계좌 조회
         AccountEntity builderAccount = userAccountConnectionRepository
@@ -266,10 +286,9 @@ public class PayService {
         AccountTransferResponse transferResponse = financialApiService.transferAccount(transferRequest);
 
         // 6. 거래 상태 변경
-        transaction.setStatus(TransactionStatus.COMPLETED);
-        transaction.setUpdatedAt(LocalDateTime.now());
+//        transaction.setStatus(TransactionStatus.COMPLETED);
+//        transaction.setUpdatedAt(LocalDateTime.now());
         escrowTransactionRepository.save(transaction);
     }
-
 
 }
