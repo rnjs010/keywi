@@ -6,6 +6,7 @@ import HeaderText from '@/features/login/components/ProfileHeaderText'
 import ProfileImageInput from '@/features/login/components/ProfileImageInput'
 import ProfileNameInput from '@/features/login/components/ProfileNameInput'
 import ProfileNextBtn from '@/features/login/components/ProfileNextBtn'
+import ProfileStatusInput from '@/features/login/components/ProfileStatusInput'
 
 const ModalContainer = tw.div`
   fixed inset-0 bg-white flex items-center justify-center z-50
@@ -25,6 +26,8 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
     setNickname,
     profileImage,
     setProfileImage,
+    statusMessage,
+    setStatusMessage,
     error,
     isLoading,
     handleSave,
@@ -54,6 +57,12 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
             <ProfileNameInput
               nickname={nickname}
               onNicknameChange={setNickname}
+            />
+          }
+          statusInput={
+            <ProfileStatusInput
+              statusMessage={statusMessage}
+              onStatusMessageChange={setStatusMessage}
             />
           }
           actionButton={

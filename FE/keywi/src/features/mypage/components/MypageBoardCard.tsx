@@ -58,6 +58,11 @@ const CustomDialogTitle = styled(DialogTitle)`
   font-size: 1.1rem;
 `
 
+// BoardCardData에 isMyProfile 추가
+interface MypageBoardCardProps extends BoardCardData {
+  isMyProfile: boolean
+}
+
 export default function MypageBoardCard({
   boardId,
   title,
@@ -66,7 +71,8 @@ export default function MypageBoardCard({
   chatCount,
   createdAt,
   writerId,
-}: BoardCardData) {
+  isMyProfile,
+}: MypageBoardCardProps) {
   const badgeData = getBadgeData(dealState)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [ratingValue, setRatingValue] = useState(0)
@@ -151,70 +157,76 @@ export default function MypageBoardCard({
           )}
         </ContentContainer>
       </Link>
-      <StatusContainer>
-        {/* 조립요청 -> 진행중 버튼 */}
-        {showProgressBtn && (
-          <StatusBtn
-            className="bg-[#e3edf3]"
-            onClick={handleChangeStatus}
-            disabled={isStatusChangePending}
-          >
-            <Text variant="caption1" weight="bold" className="text-[#146695]">
-              진행중으로 바꾸기
-            </Text>
-          </StatusBtn>
-        )}
-        {/* 진행중 -> 거래 완료 버튼 */}
-        {showCompletedBtn && (
-          <StatusBtn
-            className="bg-[#edebeb]"
-            onClick={handleChangeStatus}
-            disabled={isStatusChangePending}
-          >
-            <Text variant="caption1" weight="bold" className="text-[#535353]">
-              거래 완료로 바꾸기
-            </Text>
-          </StatusBtn>
-        )}
-        {/* 거래완료 -> 별점 남기기 버튼 및 모달 */}
-        {showRatingBtn && (
-          <StopPropagationWrapper onClick={handleStopPropagation}>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <StatusBtn
-                  className="text-darkKiwi bg-pay"
-                  disabled={isStatusChangePending}
-                >
-                  <Text variant="caption1" weight="bold">
-                    별점 남기기
-                  </Text>
-                </StatusBtn>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <CustomDialogTitle>이번 거래는 어땠나요?</CustomDialogTitle>
-                <RatingContainer>
-                  <RatingMessage>
-                    <Text
-                      variant="caption1"
-                      color="gray"
-                      className="text-center"
-                    >
-                      별점은 조립자의 당도에 반영됩니다!
-                    </Text>
-                  </RatingMessage>
-                  <ReviewStars value={ratingValue} onChange={setRatingValue} />
-                  <SubmitButton
-                    onClick={handleSubmitRating}
-                    disabled={isRatingPending}
+
+      {isMyProfile && (
+        <StatusContainer>
+          {/* 조립요청 -> 진행중 버튼 */}
+          {showProgressBtn && (
+            <StatusBtn
+              className="bg-[#e3edf3]"
+              onClick={handleChangeStatus}
+              disabled={isStatusChangePending}
+            >
+              <Text variant="caption1" weight="bold" className="text-[#146695]">
+                진행중으로 바꾸기
+              </Text>
+            </StatusBtn>
+          )}
+          {/* 진행중 -> 거래 완료 버튼 */}
+          {showCompletedBtn && (
+            <StatusBtn
+              className="bg-[#edebeb]"
+              onClick={handleChangeStatus}
+              disabled={isStatusChangePending}
+            >
+              <Text variant="caption1" weight="bold" className="text-[#535353]">
+                거래 완료로 바꾸기
+              </Text>
+            </StatusBtn>
+          )}
+          {/* 거래완료 -> 별점 남기기 버튼 및 모달 */}
+          {showRatingBtn && (
+            <StopPropagationWrapper onClick={handleStopPropagation}>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <StatusBtn
+                    className="text-darkKiwi bg-pay"
+                    disabled={isStatusChangePending}
                   >
-                    {isRatingPending ? '제출 중...' : '확인'}
-                  </SubmitButton>
-                </RatingContainer>
-              </DialogContent>
-            </Dialog>
-          </StopPropagationWrapper>
-        )}
-      </StatusContainer>
+                    <Text variant="caption1" weight="bold">
+                      별점 남기기
+                    </Text>
+                  </StatusBtn>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <CustomDialogTitle>이번 거래는 어땠나요?</CustomDialogTitle>
+                  <RatingContainer>
+                    <RatingMessage>
+                      <Text
+                        variant="caption1"
+                        color="gray"
+                        className="text-center"
+                      >
+                        별점은 조립자의 당도에 반영됩니다!
+                      </Text>
+                    </RatingMessage>
+                    <ReviewStars
+                      value={ratingValue}
+                      onChange={setRatingValue}
+                    />
+                    <SubmitButton
+                      onClick={handleSubmitRating}
+                      disabled={isRatingPending}
+                    >
+                      {isRatingPending ? '제출 중...' : '확인'}
+                    </SubmitButton>
+                  </RatingContainer>
+                </DialogContent>
+              </Dialog>
+            </StopPropagationWrapper>
+          )}
+        </StatusContainer>
+      )}
     </CardContainer>
   )
 }

@@ -71,12 +71,21 @@ export const signup = async (userData: {
 export const updateProfile = async (userData: {
   userNickname: string
   profileImage?: File
+  statusMessage: string
 }) => {
   const formData = new FormData()
   formData.append('userNickname', userData.userNickname)
 
   if (userData.profileImage) {
-    formData.append('profileImage', userData.profileImage)
+    // 원본 파일명 유지 (확장자 포함)
+    const originalFileName = userData.profileImage.name
+
+    // 파일 객체를 직접 추가 (파일명 변경 없이)
+    formData.append('profileImage', userData.profileImage, originalFileName)
+  }
+
+  if (userData.statusMessage) {
+    formData.append('statusMessage', userData.statusMessage)
   }
 
   const response = await apiRequester.put('/api/auth/profile', formData, {
@@ -84,7 +93,7 @@ export const updateProfile = async (userData: {
       'Content-Type': 'multipart/form-data',
     },
   })
-
+  console.log('회원정보 수정', response.data)
   return response.data
 }
 

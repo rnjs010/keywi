@@ -1,9 +1,10 @@
 import Badge from '@/components/Badge'
 import { Text } from '@/styles/typography'
 import getDangdoBadgeData from '@/utils/getDandoBadgeData'
-import { useState } from 'react'
 import tw from 'twin.macro'
+import { useMypageProfile } from '../hooks/useMypageProfile'
 import ProfileEditModal from './ProfileEditModal'
+import { useState } from 'react'
 
 const ProfileContainer = tw.div`
   flex flex-col px-4 py-4
@@ -38,7 +39,7 @@ const StatItem = tw.div`
 `
 
 const DescriptionContainer = tw.div`
-  mt-3 ml-2
+  mt-3 ml-1
 `
 
 const ButtonsContainer = tw.div`
@@ -50,27 +51,37 @@ const ProfileButton = tw.button`
 `
 
 interface MypageProfileProps {
-  nickname: string
-  profileImage: string
-  levelBadgeText: number
-  followers: number
-  following: number
-  posts: number
-  description?: string
+  userId: number
   isMyProfile: boolean
 }
 
 export default function MypageProfile({
-  nickname,
-  profileImage,
-  levelBadgeText,
-  followers,
-  following,
-  posts,
-  description,
+  userId,
   isMyProfile,
 }: MypageProfileProps) {
+  const { data: profileInfo, isLoading, error } = useMypageProfile(userId)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+  // 로딩 중이면 로딩 메시지 표시
+  if (isLoading) {
+    console.log('isLoading')
+    // return <LoadingMessage />
+  }
+
+  // 데이터가 없거나 오류가 발생했을 때 처리
+  if (!profileInfo || error) {
+    return <Text variant="caption1">데이터를 찾을 수 없어요</Text>
+  }
+
+  const {
+    nickname,
+    profileImageUrl,
+    brix,
+    profileContent,
+    followerCount,
+    followingCount,
+    buildCount,
+  } = profileInfo
 
   return (
     <>
@@ -78,7 +89,7 @@ export default function MypageProfile({
         <ProfileSection>
           <ProfileImageContainer>
             <ProfileImage
-              src={profileImage}
+              src={profileImageUrl}
               alt={`${nickname}의 프로필 이미지`}
             />
           </ProfileImageContainer>
@@ -89,8 +100,8 @@ export default function MypageProfile({
                 {nickname}
               </Text>
               <Badge
-                title={`당도 ${levelBadgeText}`}
-                color={getDangdoBadgeData(levelBadgeText) || 'low'}
+                title={`당도 ${brix}`}
+                color={getDangdoBadgeData(brix) || 'low'}
               />
             </NicknameContainer>
 
@@ -100,7 +111,7 @@ export default function MypageProfile({
                   팔로워
                 </Text>
                 <Text variant="caption1" weight="bold">
-                  {followers}
+                  {followerCount}
                 </Text>
               </StatItem>
               <StatItem>
@@ -108,7 +119,7 @@ export default function MypageProfile({
                   팔로잉
                 </Text>
                 <Text variant="caption1" weight="bold">
-                  {following}
+                  {followingCount}
                 </Text>
               </StatItem>
               <StatItem>
@@ -116,18 +127,16 @@ export default function MypageProfile({
                   조립
                 </Text>
                 <Text variant="caption1" weight="bold">
-                  {posts}
+                  {buildCount}
                 </Text>
               </StatItem>
             </StatsContainer>
           </ProfileInfoContainer>
         </ProfileSection>
 
-        {description && (
-          <DescriptionContainer>
-            <Text variant="caption1">{description}</Text>
-          </DescriptionContainer>
-        )}
+        <DescriptionContainer>
+          <Text variant="caption1">{profileContent}</Text>
+        </DescriptionContainer>
         {isMyProfile && (
           <ButtonsContainer>
             <ProfileButton onClick={() => setIsEditModalOpen(true)}>
@@ -144,7 +153,8 @@ export default function MypageProfile({
         )}
       </ProfileContainer>
 
-      {isMyProfile && isEditModalOpen && (
+      {/* 프로필 수정 모달 */}
+      {isEditModalOpen && (
         <ProfileEditModal onClose={() => setIsEditModalOpen(false)} />
       )}
     </>

@@ -10,18 +10,24 @@ import {
 export const myboardKeys = {
   all: ['boards'] as const,
   lists: () => [...myboardKeys.all, 'list'] as const,
+  userBoards: (userId: number) => [...myboardKeys.lists(), userId] as const,
 }
 
 // 게시글 목록 조회 훅
-export const useMyBoardList = () => {
+export const useMyBoardList = (
+  userId: number,
+  page: number = 0,
+  size: number = 10,
+) => {
   return useQuery<BoardCardData[], Error>({
-    queryKey: myboardKeys.lists(),
-    queryFn: getMyBoardList,
+    queryKey: myboardKeys.userBoards(userId),
+    queryFn: () => getMyBoardList(userId, page, size),
+    enabled: !!userId, // userId가 있을 때만 쿼리 실행
   })
 }
 
 // 상태 변경 훅
-export const useChangeBoardStatus = () => {
+export const useChangeBoardStatus = (userId?: number) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -41,8 +47,15 @@ export const useChangeBoardStatus = () => {
       return changeBoardStatus(boardId, nextStatus)
     },
     onSuccess: () => {
-      // 성공 시 게시글 목록 갱신
-      queryClient.invalidateQueries({ queryKey: myboardKeys.lists() })
+      // 특정 사용자의 게시물 목록 갱신
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: myboardKeys.userBoards(userId),
+        })
+      } else {
+        // 전체 목록 갱신
+        queryClient.invalidateQueries({ queryKey: myboardKeys.lists() })
+      }
     },
   })
 }

@@ -8,7 +8,6 @@ import NavBar from '@/components/NavBar'
 import StyledTabs, { TabItem } from '@/components/StyledTabs'
 import { useParams } from 'react-router-dom'
 import { useUserStore } from '@/stores/userStore'
-import { useUserInfo } from '@/features/login/hooks/useUserInfo'
 import { useMypageFeedQuery } from '@/features/mypage/hooks/useMypageFeedQuery'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -51,11 +50,8 @@ export default function MyPage() {
   const myUserId = useUserStore((state) => state.userId)
 
   // 현재 사용자 ID 결정
-  const userId = userIdParam ? parseInt(userIdParam) : myUserId
-  const isMyProfile = !userIdParam || parseInt(userIdParam) === myUserId
-
-  // 사용자 정보 가져오기
-  const { userInfo, isLoading: isUserInfoLoading } = useUserInfo()
+  const userId = userIdParam ? parseInt(userIdParam) : undefined // 프로필 조회 유저 아이디
+  const isMyProfile = !userIdParam || parseInt(userIdParam) === myUserId // 내 프로필 주소인지 확인
 
   // 현재 적절한 쿼리 선택
   const feedQuery = useMypageFeedQuery(isMyProfile, userId || undefined)
@@ -64,7 +60,7 @@ export default function MyPage() {
   const [currentTab, setCurrentTab] = useState('feed')
 
   // 로딩 중이면 스켈레톤 표시
-  if (isUserInfoLoading || feedQuery.isLoading) {
+  if (feedQuery.isLoading) {
     return (
       <Container>
         <LoadingContainer>
@@ -99,7 +95,7 @@ export default function MyPage() {
     {
       value: 'quote',
       label: '견적',
-      content: <MypageBoard />,
+      content: <MypageBoard userId={userId || 0} />,
     },
   ]
 
@@ -108,32 +104,12 @@ export default function MyPage() {
     console.log('현재 탭', currentTab)
   }
 
-  // 프로필 정보 생성
-  const profileData = {
-    nickname: userInfo?.userNickname || '사용자',
-    profileImage: userInfo?.profileUrl || 'https://picsum.photos/200',
-    levelBadgeText: userInfo?.brix || 16,
-    followers: 0, // API에서 가져와야 함
-    following: 3, // API에서 가져와야 함
-    posts: 0, // API에서 가져와야함
-    description: userInfo?.statusMessage || 'ㅤ',
-  }
-
   return (
     <Container>
       {/* 상단 고정 영역 */}
       <FixedTopSection>
         <MypageHeader />
-        <MypageProfile
-          profileImage={profileData.profileImage}
-          nickname={profileData.nickname}
-          levelBadgeText={profileData.levelBadgeText}
-          followers={profileData.followers}
-          following={profileData.following}
-          posts={profileData.posts}
-          description={profileData.description}
-          isMyProfile={isMyProfile}
-        />
+        {userId && <MypageProfile userId={userId} isMyProfile={isMyProfile} />}
       </FixedTopSection>
 
       <StyledTabs

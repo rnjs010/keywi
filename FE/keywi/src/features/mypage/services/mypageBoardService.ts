@@ -9,11 +9,15 @@ export interface BoardListResponse {
   data: BoardCardData[]
 }
 
-export const getMyBoardList = async (): Promise<BoardCardData[]> => {
+export const getMyBoardList = async (
+  writerId: number,
+  page: number = 0,
+  size: number = 10,
+): Promise<BoardCardData[]> => {
   const response: AxiosResponse<BoardListResponse> = await apiRequester.get(
-    '/api/estimate-boards/me',
+    `/api/estimate-boards/users/${writerId}?page=${page}&size=${size}`,
   )
-  console.log('내 게시물 조회', response.data.data)
+  console.log(`사용자 ${writerId}의 게시물 조회`, response.data.data)
   return response.data.data
 }
 
