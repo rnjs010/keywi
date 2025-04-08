@@ -37,9 +37,9 @@ public class ProductDTO {
     private List<ProductDescriptionDTO> descriptions;
 
     // 기존 피드 서비스에서 사용하던 필드들 유지
-    private boolean isTemporary;
+    private Boolean isTemporary;
     private Long feedImageId;
     private Integer positionX;
     private Integer positionY;
-    private boolean isFavorite;
+    private Boolean isFavorite;
 }

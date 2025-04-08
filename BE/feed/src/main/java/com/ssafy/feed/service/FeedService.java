@@ -274,7 +274,7 @@ public class FeedService {
 
         // 상품 ID 목록 추출 (임시 상품 제외)
         Set<Long> productIds = feedProducts.stream()
-                .filter(fp -> !fp.isTemporary())
+                .filter(fp -> !fp.getIsTemporary())
                 .map(FeedProduct::getProductId)
                 .collect(Collectors.toSet());
 
@@ -289,7 +289,7 @@ public class FeedService {
         // 상품 정보 설정 (임시 상품 포함)
         List<ProductDTO> products = feedProducts.stream()
                 .map(fp -> {
-                    if (fp.isTemporary()) {
+                    if (fp.getIsTemporary()) {
                         // 임시 상품인 경우 FeedProduct 정보로 ProductDTO 생성
                         return ProductDTO.builder()
                                 .productId(fp.getProductId())
@@ -568,7 +568,7 @@ public class FeedService {
                         .build();
 
                 // 임시 상품인 경우 추가 정보 설정
-                if (feedProduct.isTemporary()) {
+                if (feedProduct.getIsTemporary()) {
                     feedProduct.setProductName(productRequest.getProductName());
 
                     // 가격이 없으면 0으로 설정
@@ -706,7 +706,7 @@ public class FeedService {
 
             // 상품 ID 목록 추출
             Set<Long> productIds = feedProducts.stream()
-                    .filter(fp -> !fp.isTemporary()) // 임시 상품 제외
+                    .filter(fp -> !fp.getIsTemporary()) // 임시 상품 제외
                     .map(FeedProduct::getProductId)
                     .collect(Collectors.toSet());
 
@@ -714,16 +714,6 @@ public class FeedService {
             final Map<Long, ProductDTO> productDTOMap;
             if (!productIds.isEmpty()) {
                 productDTOMap = productServiceAdapter.getProductsByIds(productIds, userId);
-
-//                final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
-
-                // 즐겨찾기 상태 설정
-//                productDTOMap.forEach((productId, productDTO) ->
-//                        productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
-//                );
-                productDTOMap.forEach((productId, productDTO) ->
-                        productDTO.setFavorite(false)
-                );
             } else {
                 productDTOMap = Collections.emptyMap();
             }
@@ -731,7 +721,7 @@ public class FeedService {
             // 상품 정보 설정 (임시 상품 포함)
             List<ProductDTO> products = feedProducts.stream()
                     .map(fp -> {
-                        if (fp.isTemporary()) {
+                        if (fp.getIsTemporary()) {
                             // 임시 상품인 경우 FeedProduct 정보로 ProductDTO 생성
                             return ProductDTO.builder()
                                     .productId(fp.getProductId())
@@ -739,6 +729,7 @@ public class FeedService {
                                     .price(fp.getPrice())
                                     .category(fp.getCategory())
                                     .isTemporary(true)
+                                    .isFavorite(false)
                                     .feedImageId(fp.getFeedImageId())
                                     .positionX(fp.getPositionX())
                                     .positionY(fp.getPositionY())

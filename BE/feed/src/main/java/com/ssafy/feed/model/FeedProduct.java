@@ -17,7 +17,7 @@ public class FeedProduct {
     private String productName;
     private int price;
     private String category;
-    private boolean isTemporary;  // 임시 상품 여부 (DB에 저장되지 않은 상품)
+    private Boolean isTemporary;  // 임시 상품 여부 (DB에 저장되지 않은 상품)
     private Long feedImageId;     // 태그된 이미지 ID
     private int positionX;        // X 좌표 (%)
     private int positionY;        // Y 좌표 (%)
