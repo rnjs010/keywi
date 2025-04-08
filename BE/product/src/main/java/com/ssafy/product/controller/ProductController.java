@@ -1,6 +1,7 @@
 package com.ssafy.product.controller;
 
 import com.ssafy.product.common.ApiResponse;
+import com.ssafy.product.dto.OpenGraphDto;
 import com.ssafy.product.dto.ProductDto;
 import com.ssafy.product.dto.request.ProductIdRequest;
 import com.ssafy.product.dto.request.WishRequest;
@@ -10,8 +11,16 @@ import com.ssafy.product.service.ProductService;
 import com.ssafy.product.service.WishService;
 import com.ssafy.product.util.SortUtil;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -134,5 +143,45 @@ public class ProductController {
         List<ProductDto> products = wishService.getUserWishes(userId, categoryId);
         SortUtil.sortProducts(products, sortBy, "asc");
         return ApiResponse.success("찜한 상품 조회 성공", products);
+    }
+
+    @GetMapping("/og")
+    public ResponseEntity<?> getOpenGraphData(@RequestParam String url) {
+        try {
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(10_000)
+                    .get();
+
+            Elements metaTags = doc.select("meta[property^=og:]");
+
+            OpenGraphDto ogData = new OpenGraphDto();
+            ogData.setUrl(url);
+            ogData.setHostname(new URL(url).getHost());
+
+            for (Element tag : metaTags) {
+                String property = tag.attr("property").toLowerCase();
+                String content = tag.attr("content");
+
+                switch (property) {
+                    case "og:title":
+                        ogData.setTitle(content);
+                        break;
+                    case "og:description":
+                        ogData.setDescription(content);
+                        break;
+                    case "og:image":
+                        ogData.setImage(content);
+                        break;
+                }
+            }
+
+            return ResponseEntity.ok(ogData);
+
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().body("Invalid URL format");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to fetch Open Graph data");
+        }
     }
 }
