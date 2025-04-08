@@ -213,15 +213,16 @@ public class MemberService {
 
     /**
      * 간소화된 회원 프로필 정보 수정
-     * 닉네임, 프로필 이미지만 업데이트
+     * 닉네임, 프로필 이미지, 상태 메시지 업데이트
      *
      * @param memberId 회원 ID
      * @param userNickname 변경할 닉네임 (null이면 기존 값 유지)
      * @param profileImage 변경할 프로필 이미지 (null이면 기존 값 유지)
+     * @param statusMessage 변경할 상태 메시지 (null이면 기존 값 유지)
      * @throws IllegalArgumentException 회원 정보 없음, 닉네임 중복 등의 검증 오류
      */
     @Transactional
-    public void updateMemberProfileSimplified(Long memberId, String userNickname, MultipartFile profileImage) {
+    public void updateMemberProfileSimplified(Long memberId, String userNickname, MultipartFile profileImage, String statusMessage) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
@@ -255,12 +256,11 @@ public class MemberService {
         member.updateProfile(
                 userNickname != null ? userNickname : member.getUserNickname(),
                 profileUrl,
-                member.getStatusMessage() // 상태 메시지는 그대로 유지
+                statusMessage != null ? statusMessage : member.getStatusMessage() // 상태 메시지 변경 또는 유지
         );
 
         log.info("회원 프로필 수정 완료: {}", memberId);
     }
-
     /**
      * 회원 탈퇴 처리
      * - Member 엔티티 삭제 시 CascadeType.ALL 설정으로 인해 연관된 엔티티들이 자동 삭제됨

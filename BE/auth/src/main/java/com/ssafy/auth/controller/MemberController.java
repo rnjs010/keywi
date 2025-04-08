@@ -38,7 +38,13 @@ public class MemberController {
         log.info("회원 정보 조회 요청: ID = {}", userId);
         try {
             Member member = memberService.getMemberById(userId);
+            log.info("회원 정보 확인: ID = {}, nickname = {}, profileUrl = '{}'",
+                    member.getUserId(), member.getUserNickname(), member.getProfileUrl());
+
             MemberResponseDto responseDto = MemberResponseDto.from(member);
+            log.info("회원 응답 DTO 확인: ID = {}, nickname = {}, profileUrl = '{}'",
+                    responseDto.getUserId(), responseDto.getUserNickname(), responseDto.getProfileUrl());
+
             return ResponseEntity.ok(ApiResponse.success(responseDto));
         } catch (IllegalArgumentException e) {
             log.error("회원 정보 조회 실패: {}", e.getMessage());
@@ -177,13 +183,14 @@ public class MemberController {
 
     /**
      * 회원 프로필 정보 수정
-     * 닉네임, 프로필 이미지만 업데이트
+     * 닉네임, 프로필 이미지, 상태 메시지 업데이트
      */
     @PutMapping(value = "/profile", consumes = {"multipart/form-data"})
     public ApiResponse<String> updateMemberProfile(
             @AuthenticationPrincipal String userId,
             @RequestPart(value = "userNickname", required = false) String userNickname,
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "statusMessage", required = false) String statusMessage
     ) {
         try {
             // 닉네임이 입력되었지만 빈 문자열인 경우 예외 처리
@@ -192,11 +199,11 @@ public class MemberController {
             }
 
             // 입력이 모두 없는 경우 처리
-            if (userNickname == null && (profileImage == null || profileImage.isEmpty())) {
+            if (userNickname == null && (profileImage == null || profileImage.isEmpty()) && statusMessage == null) {
                 return ApiResponse.error("수정할 정보가 없습니다.");
             }
 
-            memberService.updateMemberProfileSimplified(Long.parseLong(userId), userNickname, profileImage);
+            memberService.updateMemberProfileSimplified(Long.parseLong(userId), userNickname, profileImage, statusMessage);
             return ApiResponse.success("회원 프로필 정보 수정에 성공했습니다", "프로필이 정상적으로 수정되었습니다!");
         } catch (IllegalArgumentException e) {
             // 중복 닉네임 등의 검증 오류
