@@ -63,6 +63,10 @@ public class SecurityConfig {
                         //결제/페이
                         .pathMatchers("/api/payment/**").permitAll()
                         .pathMatchers("/api/financial/**").permitAll()
+                        //마이페이지
+                        .pathMatchers("/api/ratings/**").permitAll()
+                        .pathMatchers("/api/profile/**").permitAll()
+
                         // 액츄에이터는 전체 허용
                         .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/actuator/refresh").permitAll()
