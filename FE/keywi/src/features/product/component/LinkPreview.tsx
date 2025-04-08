@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
 import { BASE_URL } from '@/config'
 import { OpenGraphData } from '@/interfaces/OpenGraphData'
+import LoadingMessage from '@/components/message/LoadingMessage'
 
 const PreviewContainer = tw.div`
   my-4 p-4 border rounded-lg border-gray hover:border-blue-400 transition-colors
@@ -66,11 +67,7 @@ export default function LinkPreview({ url }: LinkPreviewProps) {
   }
 
   if (loading) {
-    return (
-      <PreviewContainer>
-        <div>로딩 중...</div>
-      </PreviewContainer>
-    )
+    return <LoadingMessage />
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { fetchUserInfo, UserData } from '@/services/userIdServices'
+import { fetchUserInfo, UserData } from '@/services/userIdService'
 import { useUserStore } from '@/stores/userStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useEffect } from 'react'
