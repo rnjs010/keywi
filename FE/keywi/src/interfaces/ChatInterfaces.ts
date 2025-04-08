@@ -77,7 +77,6 @@ export interface MessageGroup {
 export interface PageInfo {
   totalMessages: number
   pageSize: number
-  currentPage: number
   hasMoreMessages: boolean
 }
 

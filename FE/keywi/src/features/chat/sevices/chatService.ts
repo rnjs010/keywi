@@ -36,7 +36,7 @@ export const getChatPost = async (roomId: string): Promise<ChatPost> => {
 // 채팅 내역 가져오기
 export const getChatHistory = async (
   roomId: string,
-  size: number = 20,
+  size: number = 100,
 ): Promise<ChatMessagesResponseData> => {
   const response = await apiRequester.get(
     `/api/chat/rooms/${roomId}/messages`,
@@ -51,21 +51,22 @@ export const getChatHistory = async (
 // 채팅 내역 더 가져오기
 export const getChatHistoryMore = async ({
   roomId,
-  beforeMessageId,
+  lastMessageId,
   size = 20,
 }: {
   roomId: string
-  beforeMessageId: string
+  lastMessageId: string
   size?: number
 }): Promise<ChatMessagesResponseData> => {
   const response = await apiRequester.get(
     `/api/chat/rooms/${roomId}/messages/history`,
     {
       params: {
-        beforeMessageId,
+        lastMessageId,
         size,
       },
     },
   )
+  console.log('채팅내역 더', response)
   return response.data.data
 }

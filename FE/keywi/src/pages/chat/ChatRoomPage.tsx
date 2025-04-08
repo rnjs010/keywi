@@ -20,15 +20,8 @@ import { StompContext } from '@/stores/stompContext'
 import { useUserStore } from '@/stores/userStore'
 import { Client } from '@stomp/stompjs'
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket'
-import {
-  ChatMessage,
-  ChatMessagesResponseData,
-  MessageGroup,
-} from '@/interfaces/ChatInterfaces'
-import {
-  useChatHistory,
-  useChatHistoryMore,
-} from '@/features/chat/hooks/useChatHistory'
+import { ChatMessage, MessageGroup } from '@/interfaces/ChatInterfaces'
+import { useChatHistory } from '@/features/chat/hooks/useChatHistory'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -53,8 +46,6 @@ export default function ChatRoomPage() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
   const { roomId } = useParams<{ roomId: string }>()
-  const prevScrollHeightRef = useRef<number>(0)
-  const isInitialLoadRef = useRef<boolean>(true)
 
   // 정보 get
   const {
@@ -71,7 +62,6 @@ export default function ChatRoomPage() {
   // 채팅 내역 가져오기
   const location = useLocation()
   const { data: chatHistory, refetch } = useChatHistory(roomId!)
-  const hasMoreMessages = chatHistory?.pageInfo?.hasMoreMessages ?? false
   const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([])
 
   useEffect(() => {
@@ -81,135 +71,8 @@ export default function ChatRoomPage() {
   useEffect(() => {
     if (chatHistory?.messageGroups) {
       setMessageGroups(chatHistory.messageGroups)
-
-      setTimeout(() => {
-        startToBottom()
-        isInitialLoadRef.current = false
-      }, 100)
     }
   }, [chatHistory])
-
-  const [initialLastMessageId, setInitialLastMessageId] = useState<
-    string | null
-  >(null)
-
-  useEffect(() => {
-    if ((chatHistory?.messageGroups ?? []).length > 0) {
-      const firstMessage = chatHistory?.messageGroups[0]?.messages[0]
-      if (firstMessage?.messageId) {
-        setInitialLastMessageId(firstMessage.messageId)
-      }
-    }
-  }, [chatHistory])
-
-  // 과거 채팅 무한스크롤
-  const {
-    data: moreHistoryData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useChatHistoryMore(roomId!, initialLastMessageId ?? '', {
-    enabled: !!roomId && !!initialLastMessageId && hasMoreMessages,
-    onSuccess: () => {
-      // 스크롤 위치 유지를 위해 현재 스크롤 높이 저장
-      if (chatContainerRef.current) {
-        prevScrollHeightRef.current = chatContainerRef.current.scrollHeight
-      }
-    },
-  })
-
-  // 무한스크롤: top에 도달하면 이전 메시지 불러오기
-  const topSentinelRef = useRef<HTMLDivElement>(null) // 상단 감지용
-
-  useEffect(() => {
-    if (!topSentinelRef.current || !hasNextPage) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // 상단에 도달하고 로딩 중이 아니면 이전 메시지 불러오기
-        if (entries[0].isIntersecting && !isFetchingNextPage && hasNextPage) {
-          console.log('Loading more messages...')
-          fetchNextPage()
-        }
-      },
-      {
-        root: null, // viewport 기준으로 변경
-        threshold: 0.1,
-        rootMargin: '100px', // 일찍 감지하기 위해 margin 추가
-      },
-    )
-
-    observer.observe(topSentinelRef.current)
-    return () => observer.disconnect()
-  }, [topSentinelRef.current, hasNextPage, isFetchingNextPage, fetchNextPage])
-
-  // 이전 메시지 로드 후 스크롤 위치 조정
-  useEffect(() => {
-    if (
-      isFetchingNextPage === false &&
-      chatContainerRef.current &&
-      prevScrollHeightRef.current > 0
-    ) {
-      // 이전 로드 후 스크롤 위치 유지
-      const newScrollHeight = chatContainerRef.current.scrollHeight
-      const scrollDiff = newScrollHeight - prevScrollHeightRef.current
-
-      if (scrollDiff > 0) {
-        chatContainerRef.current.scrollTop = scrollDiff
-      }
-
-      prevScrollHeightRef.current = 0
-    }
-  }, [isFetchingNextPage])
-
-  // 더 가져온 메시지 병합
-  useEffect(() => {
-    if (
-      !moreHistoryData ||
-      !moreHistoryData.messageGroups ||
-      moreHistoryData.messageGroups.length === 0
-    )
-      return
-
-    setMessageGroups((prev) => {
-      const mergedGroups = new Map<string, ChatMessage[]>()
-
-      // 기존 메시지 그룹을 Map에 저장
-      prev.forEach((group) => {
-        mergedGroups.set(group.dateGroup, [...group.messages])
-      })
-
-      // 새로 가져온 메시지를 Map에 병합
-      moreHistoryData.messageGroups.forEach((group: MessageGroup) => {
-        const existing = mergedGroups.get(group.dateGroup) || []
-
-        // 중복 메시지 방지
-        const uniqueMessages = group.messages.filter(
-          (newMsg: ChatMessage) =>
-            !existing.some(
-              (existingMsg) => existingMsg.messageId === newMsg.messageId,
-            ),
-        )
-
-        mergedGroups.set(
-          group.dateGroup,
-          [...uniqueMessages, ...existing].sort(
-            (a, b) =>
-              new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime(),
-          ),
-        )
-      })
-
-      // Map을 MessageGroup[] 배열로 변환하고 날짜순으로 정렬
-      return Array.from(mergedGroups.entries())
-        .map(([dateGroup, messages]) => ({ dateGroup, messages }))
-        .sort((a, b) => {
-          const aDate = new Date(a.messages[0]?.sentAt || '')
-          const bDate = new Date(b.messages[0]?.sentAt || '')
-          return aDate.getTime() - bDate.getTime()
-        })
-    })
-  }, [moreHistoryData])
 
   // 메시지 수신
   const [client, setClient] = useState<Client | null>(null)
@@ -349,7 +212,6 @@ export default function ChatRoomPage() {
 
           {/* Date + Chat */}
           <ChatContainer ref={chatContainerRef}>
-            <div ref={topSentinelRef} />
             {messageGroups.map((group) => (
               <>
                 {/* Date */}
@@ -379,4 +241,29 @@ export default function ChatRoomPage() {
       {showImage && <ImageInputScreen />}
     </StompContext.Provider>
   )
+}
+
+function mergeMessageGroups(
+  newGroups: MessageGroup[],
+  prevGroups: MessageGroup[],
+): MessageGroup[] {
+  const merged = [...newGroups]
+
+  if (prevGroups.length > 0 && newGroups.length > 0) {
+    const lastNew = newGroups[newGroups.length - 1]
+    const firstPrev = prevGroups[0]
+
+    if (lastNew.dateGroup === firstPrev.dateGroup) {
+      // 같은 날짜 그룹이면 메시지 합치기
+      merged[merged.length - 1] = {
+        dateGroup: lastNew.dateGroup,
+        messages: [...lastNew.messages, ...firstPrev.messages],
+      }
+
+      // 기존 prevGroups에서 중복된 첫 그룹 제거
+      return [...merged, ...prevGroups.slice(1)]
+    }
+  }
+
+  return [...merged, ...prevGroups]
 }
