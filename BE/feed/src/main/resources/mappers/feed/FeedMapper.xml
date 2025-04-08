@@ -137,6 +137,10 @@
         </foreach>
     </select>
 
+    <select id="findAllBookmarkedFeedsByUserId" resultType="long">
+        SELECT feed_id FROM feed_bookmarks WHERE user_id = #{userId}
+    </select>
+
     <select id="findBookmarkedFeedsByUserAndFeedIds" resultType="long">
         SELECT feed_id FROM feed_bookmarks WHERE user_id = #{userId} AND feed_id IN
         <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">

@@ -47,6 +47,8 @@ public interface FeedMapper {
 
     int updateBookmarkCount(@Param("feedId") Long feedId, @Param("increment") int increment);
 
+    List<Long> findAllBookmarkedFeedsByUserId(Long userId);
+
     List<Long> findLikedFeedsByUserAndFeedIds(
             @Param("userId") Long userId, @Param("feedIds") Set<Long> feedIds);
 

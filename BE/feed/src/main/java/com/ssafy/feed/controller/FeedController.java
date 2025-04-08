@@ -7,6 +7,7 @@ import com.ssafy.feed.dto.request.CommentRequest;
 import com.ssafy.feed.dto.request.FeedCreateRequest;
 import com.ssafy.feed.dto.request.ProductCreateRequest;
 import com.ssafy.feed.dto.response.*;
+import com.ssafy.feed.model.Feed;
 import com.ssafy.feed.service.FeedService;
 import com.ssafy.feed.service.HashtagService;
 import com.ssafy.feed.service.LikeService;
@@ -14,10 +15,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +87,30 @@ public class FeedController {
     @GetMapping("/me")
     public ResponseEntity<List<FeedDTO>> getFeedsByMe(@RequestHeader("X-User-ID") Long userId){
         List<FeedDTO> feeds = feedService.getAllFeedsByUserId(userId);
+
+        return ResponseEntity.ok(feeds);
+    }
+
+    /**
+     * 본인이 북마크한 피드 리스트 조회
+     */
+    @GetMapping("/bookmarks")
+    public ResponseEntity<?> getBookmarkFeeds(@RequestHeader("X-User-ID") Long userId){
+        List<FeedDTO> feeds = feedService.getBookmarkFeedsByUserId(userId);
+
+        // 사용자 활동 이벤트 발행 (북마크 피드 조회)
+        kafkaTemplate.send("user-activity-events", Map.of(
+                "userId", userId,
+                "activityType", "VIEW_BOOKMARKS",
+                "activityData", Map.of("timestamp", System.currentTimeMillis())
+        ));
+
+        // 북마크한 피드가 없는 경우 404 응답
+        if (feeds.isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "북마크 정보가 없습니다");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
 
         return ResponseEntity.ok(feeds);
     }

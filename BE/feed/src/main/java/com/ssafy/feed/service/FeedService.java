@@ -242,6 +242,62 @@ public class FeedService {
         return feeds;
     }
 
+    @Transactional(readOnly = true)
+    public List<FeedDTO> getBookmarkFeedsByUserId(Long userId){
+        // 북마크한 피드 ID 목록 조회
+        String userBookmarkedFeedsKey = "user:bookmarked:feeds:" + userId;
+
+        // Redis에서 북마크한 피드 ID 목록 조회 시도
+        Set<Object> bookmarkedFeedObjects = redisTemplate.opsForSet().members(userBookmarkedFeedsKey);
+        Set<Long> bookmarkedFeedIds = new HashSet<>();
+
+        if (bookmarkedFeedObjects != null && !bookmarkedFeedObjects.isEmpty()) {
+            // Redis에 데이터가 있는 경우
+            for (Object feedIdObj : bookmarkedFeedObjects) {
+                if (feedIdObj instanceof Long) {
+                    bookmarkedFeedIds.add((Long) feedIdObj);
+                } else if (feedIdObj instanceof Integer) {
+                    bookmarkedFeedIds.add(((Integer) feedIdObj).longValue());
+                } else {
+                    bookmarkedFeedIds.add(Long.valueOf(feedIdObj.toString()));
+                }
+            }
+        } else {
+            // Redis에 데이터가 없는 경우, DB에서 조회
+            List<Long> dbBookmarkedFeedIds = feedMapper.findAllBookmarkedFeedsByUserId(userId);
+            bookmarkedFeedIds.addAll(dbBookmarkedFeedIds);
+
+            // Redis에 캐싱 (결과가 있는 경우)
+            if (!bookmarkedFeedIds.isEmpty()) {
+                for (Long feedId : bookmarkedFeedIds) {
+                    redisTemplate.opsForSet().add(userBookmarkedFeedsKey, feedId);
+                }
+                redisTemplate.expire(userBookmarkedFeedsKey, 7, TimeUnit.DAYS);
+            }
+        }
+
+        if (bookmarkedFeedIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 북마크한 피드 정보 조회
+        List<FeedDTO> feeds = new ArrayList<>();
+        for (Long feedId : bookmarkedFeedIds) {
+            Feed feed = feedMapper.findById(feedId);
+            if (feed != null && !feed.isDelete()) {
+                feeds.add(convertToFeedDTO(feed));
+            }
+        }
+
+        // 피드 정보 보강 (작성자, 이미지, 상품, 해시태그 등)
+        enrichFeedInformation(feeds, userId);
+
+        // 최신순 정렬
+        feeds.sort(Comparator.comparing(FeedDTO::getCreatedAt).reversed());
+
+        return feeds;
+    }
+
 
     /**
      * 단일 피드 상세 조회
