@@ -55,33 +55,44 @@ public class ChatMessageDto {
             try {
                 // 먼저 JSON 문자열을 Map으로 파싱
                 Map<String, Object> itemsMap = mapper.readValue(itemsStr, new TypeReference<Map<String, Object>>() {});
+                List<ReceiptItemDto> result = new ArrayList<>();
 
-                // products 배열 가져오기
+                // products 객체 가져오기
                 if (itemsMap.containsKey("products")) {
-                    List<Map<String, Object>> productsList = (List<Map<String, Object>>) itemsMap.get("products");
-                    List<ReceiptItemDto> result = new ArrayList<>();
+                    Object productsObj = itemsMap.get("products");
 
-                    // 각 상품을 ReceiptItemDto로 변환
-                    for (Map<String, Object> product : productsList) {
-                        ReceiptItemDto item = new ReceiptItemDto();
+                    // products가 Map(Object)인 경우 처리
+                    if (productsObj instanceof Map) {
+                        Map<String, Object> productsMap = (Map<String, Object>) productsObj;
 
-                        if (product.containsKey("productName"))
-                            item.setProductName((String) product.get("productName"));
+                        // 각 상품 항목을 순회
+                        for (Map.Entry<String, Object> entry : productsMap.entrySet()) {
+                            if (entry.getValue() instanceof Map) {
+                                Map<String, Object> productData = (Map<String, Object>) entry.getValue();
 
-                        if (product.containsKey("categoryName"))
-                            item.setCategoryName((String) product.get("categoryName"));
+                                ReceiptItemDto item = new ReceiptItemDto();
 
-                        if (product.containsKey("price"))
-                            item.setPrice(((Number) product.get("price")).longValue());
+                                // productName이 없으면 키 값을 사용
+                                item.setProductName(productData.containsKey("productName") ?
+                                        (String) productData.get("productName") : entry.getKey());
 
-                        result.add(item);
+                                if (productData.containsKey("categoryName"))
+                                    item.setCategoryName((String) productData.get("categoryName"));
+
+                                if (productData.containsKey("price"))
+                                    item.setPrice(((Number) productData.get("price")).longValue());
+
+                                result.add(item);
+                            }
+                        }
                     }
-
-                    return result;
                 }
+
+                return result;
             } catch (Exception e) {
-                // 에러 로깅
+                // 디버깅을 위한 상세 에러 로깅
                 System.err.println("Error deserializing items: " + e.getMessage());
+                e.printStackTrace();
             }
 
             // 파싱 실패시 빈 배열 반환
