@@ -27,6 +27,8 @@ import DealAcceptPage from './pages/chat/DealAcceptPage'
 import SearchingPage from './pages/search/SearchingPage'
 import { AfterSearchPage } from './pages/search/AfterSearchPage'
 import { WebSocketProvider } from './services/WebSocketProvider'
+import ProductPage from './pages/product/ProductPage'
+import ProductDetailPage from './pages/product/ProductDetailPage'
 
 function App() {
   return (
@@ -61,6 +63,16 @@ function App() {
 
           {/* 결제 라우트 */}
           <Route path="/pay" element={<PayPage />} />
+
+          {/* 상품 라우트 */}
+          <Route
+            path="/product/:categoryId?/:subCategoryId?"
+            element={<ProductPage />}
+          />
+          <Route
+            path="/product/detail/:productId"
+            element={<ProductDetailPage />}
+          />
 
           {/* 마이페이지 라우트 */}
           <Route path="/mypage" element={<MyPage />} />

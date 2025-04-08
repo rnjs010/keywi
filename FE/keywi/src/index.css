@@ -13,7 +13,10 @@ body {
   overflow: hidden;
 }
 
-
+.url-container {
+  white-space: pre-wrap; /* 줄바꿈과 공백 유지 */
+  word-wrap: break-word;
+}
 
 @layer base {
   :root {
@@ -70,8 +73,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {

@@ -22,7 +22,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Product */}
-      <NavLink to="/pay" style={navActiveStyle}>
+      <NavLink to="/product" style={navActiveStyle}>
         <ShopFourTilesWindow width="1.7rem" height="1.7rem" />
       </NavLink>
 
