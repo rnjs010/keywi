@@ -6,7 +6,6 @@ import com.ssafy.financial.entity.UsersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,5 +14,5 @@ public interface UserAccountConnectionRepository extends JpaRepository<UserAccou
     boolean existsByUserAndDemandAccount(UsersEntity user, AccountEntity account);
     Optional<UserAccountConnectionEntity> findByUserAndDemandAccount(UsersEntity user, AccountEntity account);
     Optional<UserAccountConnectionEntity> findTopByUserIdOrderByConnectedAtDesc(Long userId);
-
+    Optional<UserAccountConnectionEntity> findByUserId(Long userId);
 }

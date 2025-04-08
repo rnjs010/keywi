@@ -5,18 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.financial.config.EscrowAccountProperties;
 import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
-import com.ssafy.financial.dto.response.EscrowTransactionCreateResponse;
+import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.entity.*;
 import com.ssafy.financial.repository.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.ssafy.financial.util.FinancialHeaderUtil;
-import com.ssafy.financial.util.TransactionStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +32,22 @@ public class PayService {
     private final FinancialHeaderUtil financialHeaderUtil;
     private final FinancialApiService financialApiService;
     private final EscrowAccountProperties escrowAccountProperties;
+
+    public MyAccountCheckResponse checkMyAccount(Long userId) {
+        Optional<UserAccountConnectionEntity> optional = userAccountConnectionRepository.findByUserId(userId);
+
+        if (optional.isEmpty()) {
+            return null;
+        }
+
+        UserAccountConnectionEntity connection = optional.get();
+        AccountEntity account = connection.getDemandAccount();
+
+        return MyAccountCheckResponse.builder()
+                .accountNo(account.getAccountNo())
+                .bankCode(account.getBankCode())
+                .build();
+    }
 
     public OneWonTransferInitResponse startOneWonTransfer(String accountNo, String bankCode) {
         AccountEntity account = accountRepository
