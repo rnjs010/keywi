@@ -121,7 +121,7 @@ public class ProductServiceAdapter {
                 .manufacturer(responseDto.getManufacturer())
                 .descriptions(responseDto.getDescriptions())
                 .isTemporary(false)
-                .isFavorited(responseDto.isFavorite())
+                .isFavorite(responseDto.isFavorite())
                 .build();
     }
 
@@ -135,7 +135,7 @@ public class ProductServiceAdapter {
                 .price(0)
                 .imageUrl("/default-product.png")
                 .isTemporary(false)
-                .isFavorited(false)
+                .isFavorite(false)
                 .build();
     }
 }

@@ -41,5 +41,5 @@ public class ProductDTO {
     private Long feedImageId;
     private Integer positionX;
     private Integer positionY;
-    private boolean isFavorited;
+    private boolean isFavorite;
 }

@@ -282,18 +282,6 @@ public class FeedService {
         final Map<Long, ProductDTO> productDTOMap;
         if (!productIds.isEmpty()) {
             productDTOMap = productServiceAdapter.getProductsByIds(productIds, userId);
-
-            /*
-            상품 쪽 즐겨찾기 api 부재로 인한 대체
-             */
-//            final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
-
-            // 즐겨찾기 상태 설정
-//            productDTOMap.forEach((productId, productDTO) ->
-//                    productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
-//            );
-            productDTOMap.forEach((productId, productDTO) ->
-                    productDTO.setFavorited(false));
         } else {
             productDTOMap = Collections.emptyMap();
         }
@@ -309,6 +297,7 @@ public class FeedService {
                                 .price(fp.getPrice())
                                 .category(fp.getCategory())
                                 .isTemporary(true)
+                                .isFavorite(false)
                                 .feedImageId(fp.getFeedImageId())
                                 .positionX(fp.getPositionX())
                                 .positionY(fp.getPositionY())
@@ -733,7 +722,7 @@ public class FeedService {
 //                        productDTO.setFavorited(favoriteStatus.getOrDefault(productId, false))
 //                );
                 productDTOMap.forEach((productId, productDTO) ->
-                        productDTO.setFavorited(false)
+                        productDTO.setFavorite(false)
                 );
             } else {
                 productDTOMap = Collections.emptyMap();
