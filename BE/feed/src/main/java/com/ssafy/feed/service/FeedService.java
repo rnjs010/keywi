@@ -281,7 +281,7 @@ public class FeedService {
         // 상품 정보 조회 및 즐겨찾기 상태 조회
         final Map<Long, ProductDTO> productDTOMap;
         if (!productIds.isEmpty()) {
-            productDTOMap = productServiceAdapter.getProductsByIds(productIds);
+            productDTOMap = productServiceAdapter.getProductsByIds(productIds, userId);
 
             /*
             상품 쪽 즐겨찾기 api 부재로 인한 대체
@@ -724,7 +724,7 @@ public class FeedService {
             // 상품 정보 조회 및 즐겨찾기 상태 조회
             final Map<Long, ProductDTO> productDTOMap;
             if (!productIds.isEmpty()) {
-                productDTOMap = productServiceAdapter.getProductsByIds(productIds);
+                productDTOMap = productServiceAdapter.getProductsByIds(productIds, userId);
 
 //                final Map<Long, Boolean> favoriteStatus = productServiceAdapter.getFavoriteStatus(userId, productIds);
 

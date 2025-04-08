@@ -29,7 +29,7 @@ public class ProductServiceClientFallbackFactory implements FallbackFactory<Prod
             }
 
             @Override
-            public ProductApiResponse<List<ProductResponseDto>> getProductsByIds(ProductIdRequest request) {
+            public ProductApiResponse<List<ProductResponseDto>> getProductsByIds(ProductIdRequest request, Long userId) {
                 log.error("상품 서비스 호출 실패 (getProductsByIds). productIds: {}",
                         request != null ? request.getProductIds() : null, cause);
                 return new ProductApiResponse<>(false, "상품 서비스 호출 실패", Collections.emptyList());

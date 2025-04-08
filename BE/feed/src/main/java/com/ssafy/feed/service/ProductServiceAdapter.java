@@ -42,7 +42,7 @@ public class ProductServiceAdapter {
     /**
      * 여러 상품 ID로 상품 정보 일괄 조회
      */
-    public Map<Long, ProductDTO> getProductsByIds(Set<Long> productIds) {
+    public Map<Long, ProductDTO> getProductsByIds(Set<Long> productIds, Long userId) {
         if (productIds == null || productIds.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -54,7 +54,8 @@ public class ProductServiceAdapter {
                     .collect(Collectors.toList());
 
             ProductIdRequest request = new ProductIdRequest(intProductIds);
-            List<ProductResponseDto> productList = productServiceClient.getProductsByIds(request).getData();
+            List<ProductResponseDto> productList = productServiceClient.getProductsByIds(request, userId).getData();
+
 
 
             if (productList != null && !productList.isEmpty()) {
@@ -101,18 +102,6 @@ public class ProductServiceAdapter {
 //        } catch (Exception e) {
 //            log.error("즐겨찾기 상태 조회 실패: userId={}, productIds={}", userId, productIds, e);
 //            return Collections.emptyMap();
-//        }
-//    }
-
-//    /**
-//     * 즐겨찾기 토글
-//     */
-//    public boolean toggleProductFavorite(Long userId, Long productId) {
-//        try {
-//            return productServiceClient.toggleProductFavorite(userId, productId.intValue()).getData();
-//        } catch (Exception e) {
-//            log.error("즐겨찾기 토글 실패: userId={}, productId={}", userId, productId, e);
-//            return false;
 //        }
 //    }
 

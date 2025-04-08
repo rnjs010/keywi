@@ -17,7 +17,9 @@ public interface ProductServiceClient {
     ProductApiResponse<ProductResponseDto> getProductById(@PathVariable("productId") Integer productId);
 
     @PostMapping("/api/product/list")
-    ProductApiResponse<List<ProductResponseDto>> getProductsByIds(@RequestBody ProductIdRequest request);
+    ProductApiResponse<List<ProductResponseDto>> getProductsByIds(
+            @RequestBody ProductIdRequest request,
+            @RequestHeader(value = "X-User-ID", required = false) Long userId);
 
     @GetMapping("/api/products/favorite/{userId}")
     ProductApiResponse<List<Integer>> getFavoriteProductIds(@PathVariable("userId") Long userId);
