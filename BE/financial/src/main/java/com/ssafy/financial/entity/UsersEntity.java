@@ -7,9 +7,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        catalog  = "keywi",
         name = "users",
-
+        catalog  = "keywi",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "kakao_id"),
                 @UniqueConstraint(columnNames = "user_nickname")
