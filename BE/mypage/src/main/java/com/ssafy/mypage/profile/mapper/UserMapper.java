@@ -8,5 +8,5 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
     ProfileDto selectProfileByUserId(Long userId);
     void updateBrix(@Param("userId") Long userId, @Param("brixIncrease") double brixIncrease);
-
+    void updateStatusMessage(@Param("userId") Long userId, @Param("statusMessage") String statusMessage);
 }

@@ -9,15 +9,15 @@
         SELECT
             u.user_id,
             u.user_nickname,
-            u.profile_image_url,
+            u.profile_url,
             u.brix,
-            u.profile_content,
+            u.status_message,
             (
-                SELECT COUNT(*) FROM follows
+                SELECT COUNT(*) FROM keywi_feed.follow_user
                 WHERE following_id = #{userId} AND is_active = TRUE
             ) AS followerCount,
             (
-                SELECT COUNT(*) FROM follows
+                SELECT COUNT(*) FROM keywi_feed.follow_user
                 WHERE follower_id = #{userId} AND is_active = TRUE
             ) AS followingCount,
             0 AS buildCount  -- 조립수는 아직 없으면 0으로 대체
@@ -31,5 +31,10 @@
         WHERE user_id = #{userId}
     </update>
 
+    <update id="updateStatusMessage">
+        UPDATE users
+        SET status_message = #{statusMessage}
+        WHERE user_id = #{userId}
+    </update>
 
 </mapper>

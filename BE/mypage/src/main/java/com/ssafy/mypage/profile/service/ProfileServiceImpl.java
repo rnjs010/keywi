@@ -15,5 +15,11 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileDto getProfileByUserId(Long userId) {
         return userMapper.selectProfileByUserId(userId);
     }
+
+
+    @Override
+    public void updateStatusMessage(Long userId, String statusMessage) {
+        userMapper.updateStatusMessage(userId, statusMessage);
+    }
 }
 
