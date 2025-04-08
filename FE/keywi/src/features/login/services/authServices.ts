@@ -46,8 +46,8 @@ export const refreshTokens = async (
   return response.data
 }
 
-// 회원가입 또는 프로필 업데이트
-export const updateUserProfile = async (userData: {
+// 회원가입
+export const signup = async (userData: {
   userName: string
   profileImage?: File
 }) => {
@@ -58,15 +58,32 @@ export const updateUserProfile = async (userData: {
     formData.append('profileImage', userData.profileImage)
   }
 
-  const response = await apiRequester.post(
-    '/api/auth/members/profile',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  const response = await apiRequester.post('/api/auth/signup', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
-  )
+  })
+
+  return response.data
+}
+
+// 회원정보 수정
+export const updateProfile = async (userData: {
+  userNickname: string
+  profileImage?: File
+}) => {
+  const formData = new FormData()
+  formData.append('userNickname', userData.userNickname)
+
+  if (userData.profileImage) {
+    formData.append('profileImage', userData.profileImage)
+  }
+
+  const response = await apiRequester.put('/api/auth/profile', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
 
   return response.data
 }
@@ -78,6 +95,17 @@ export const logout = async () => {
     return true
   } catch (error) {
     console.error('Logout failed:', error)
+    return false
+  }
+}
+
+// 회원탈퇴
+export const deleteAccount = async () => {
+  try {
+    await apiRequester.delete('/api/auth/me')
+    return true
+  } catch (error) {
+    console.error('Delete account failed:', error)
     return false
   }
 }

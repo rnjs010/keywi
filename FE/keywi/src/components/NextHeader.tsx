@@ -37,7 +37,7 @@ interface WriteHeaderProps {
   startTitle: string
   isNextEnabled?: boolean
   onNextClick?: () => void
-  endTitle: string
+  endTitle?: string
 }
 
 export default function NextHeader({

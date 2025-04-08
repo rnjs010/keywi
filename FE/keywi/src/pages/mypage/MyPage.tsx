@@ -63,28 +63,6 @@ export default function MyPage() {
   // 현재 탭
   const [currentTab, setCurrentTab] = useState('feed')
 
-  // 더미 견적 데이터 (실제 API 연동 필요)
-  const [quotes] = useState([
-    {
-      id: 1,
-      status: 'REQUEST',
-      title: '견적부탁드립니다...',
-      date: '2023.03.13',
-      time: '15:43',
-      chatCount: 1,
-      thumbnailUrl: 'https://picsum.photos/50?random=10',
-    },
-    {
-      id: 2,
-      status: 'COMPLETED',
-      title: '키위에 견적 부탁드려요...!!',
-      date: '2023.03.10',
-      time: '10:43',
-      chatCount: 3,
-      thumbnailUrl: 'https://picsum.photos/50?random=11',
-    },
-  ])
-
   // 로딩 중이면 스켈레톤 표시
   if (isUserInfoLoading || feedQuery.isLoading) {
     return (
@@ -121,13 +99,13 @@ export default function MyPage() {
     {
       value: 'quote',
       label: '견적',
-      content: <MypageBoard quotes={quotes} />,
+      content: <MypageBoard />,
     },
   ]
 
-  // 탭 변경 핸들러 (추후 api 호출시 사용)
   const handleTabChange = (value: string) => {
     setCurrentTab(value)
+    console.log('현재 탭', currentTab)
   }
 
   // 프로필 정보 생성

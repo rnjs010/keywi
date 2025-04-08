@@ -6,7 +6,6 @@ import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { ChatBubbleSolid } from 'iconoir-react'
 import { Link } from 'react-router-dom'
-import { MypageBoardCardProps } from '@/interfaces/MypageInterface'
 import {
   Dialog,
   DialogContent,
@@ -15,21 +14,27 @@ import {
 } from '@/components/ui/dialog'
 import { useState } from 'react'
 import { ReviewStars } from './ReviewStars'
+import { BoardCardData } from '@/interfaces/BoardInterface'
+import { formatDateTime } from '@/utils/formatDateTime'
+import { useChangeBoardStatus, useRatingBoard } from '../hooks/useMypageBoard'
 
 const CardContainer = tw.div`
-  flex flex-col justify-between items-start py-4 border-b border-white
+  flex flex-col py-4 border-b border-[#EEEEEE] gap-1
 `
 const ContentContainer = tw.div`
-  mt-1 flex flex-row justify-between w-full justify-items-center
+  mt-1 flex flex-row justify-between w-full items-start justify-items-center px-1
 `
 const TitleContainer = tw.div`
   flex items-center gap-4
 `
+const StatusContainer = tw.div`
+  flex items-center justify-center
+`
 const ThumbnailImage = tw.img`
   w-[3rem] h-[3rem] rounded-md object-cover self-start
 `
-const ReviewBtn = tw.button`
-  w-full py-1 rounded-md mt-3 justify-center text-darkKiwi bg-pay
+const StatusBtn = tw.button`
+  w-full py-1 rounded-md mt-3 justify-center
 `
 const RatingContainer = tw.div`
   flex flex-col items-center justify-center
@@ -54,25 +59,53 @@ const CustomDialogTitle = styled(DialogTitle)`
 `
 
 export default function MypageBoardCard({
-  id,
-  status,
+  boardId,
   title,
-  date,
-  time,
-  chstCount,
   thumbnailUrl,
-}: MypageBoardCardProps) {
-  const badgeData = getBadgeData(status)
+  dealState,
+  chatCount,
+  createdAt,
+  writerId,
+}: BoardCardData) {
+  const badgeData = getBadgeData(dealState)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [ratingValue, setRatingValue] = useState(0)
 
-  // status 가 'COMPLETED' 일 때만 별점 버튼 표시
-  const showReviewButton = status === 'COMPLETED'
+  // 상태변경 mutation 훅
+  const { mutate: changeBoardStatus, isPending: isStatusChangePending } =
+    useChangeBoardStatus()
+
+  // 별점 제출 mutation 훅
+  const { mutate: submitRating, isPending: isRatingPending } = useRatingBoard()
+
+  // 각 status 마다 버튼 다르게 하기
+  const showProgressBtn = dealState === 'REQUEST'
+  const showCompletedBtn = dealState === 'IN_PROGRESS'
+  const showRatingBtn = dealState === 'COMPLETED'
+
+  // 상태 변경 핸들러
+  const handleChangeStatus = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    changeBoardStatus({ boardId, currentStatus: dealState })
+  }
 
   // 별점 제출 핸들러
   const handleSubmitRating = () => {
-    // 여기에 별점 api 호출 handler 연동
-    console.log(`별점 제출되었습니다.`)
-    setIsDialogOpen(false)
+    submitRating(
+      {
+        boardId,
+        targetUserId: writerId,
+        rating: ratingValue,
+      },
+      {
+        onSuccess: () => {
+          setIsDialogOpen(false)
+          // 성공 알림 또는 추가 작업 (선택사항)
+        },
+      },
+    )
   }
 
   // 이벤트 전파 방지 핸들러
@@ -82,8 +115,8 @@ export default function MypageBoardCard({
   }
 
   return (
-    <Link to={`/board/${id}`}>
-      <CardContainer>
+    <CardContainer>
+      <Link to={`/board/${boardId}`}>
         <Badge title={badgeData.title} color={badgeData.color} />
         <ContentContainer>
           <div className="flex-1">
@@ -92,7 +125,7 @@ export default function MypageBoardCard({
               <Text variant="body1" weight="regular">
                 {title}
               </Text>
-              {chstCount !== 0 && (
+              {chatCount !== 0 && (
                 <span className="flex flex-row gap-1 items-center">
                   <ChatBubbleSolid
                     color={colors.gray}
@@ -100,15 +133,15 @@ export default function MypageBoardCard({
                     height="1rem"
                   />
                   <Text variant="caption1" weight="regular" color="gray">
-                    {chstCount}
+                    {chatCount}
                   </Text>
                 </span>
               )}
             </TitleContainer>
-            {/* 닉네임, 날짜 */}
+            {/* 날짜, 시간 */}
             <div className="mt-1">
               <Text variant="caption2" weight="regular" color="gray">
-                {date} | {time}
+                {formatDateTime(createdAt)}
               </Text>
             </div>
           </div>
@@ -117,20 +150,48 @@ export default function MypageBoardCard({
             <ThumbnailImage src={thumbnailUrl} alt="thumbnail" />
           )}
         </ContentContainer>
-        {/* 별점 버튼 및 모달 */}
-        {showReviewButton && (
+      </Link>
+      <StatusContainer>
+        {/* 조립요청 -> 진행중 버튼 */}
+        {showProgressBtn && (
+          <StatusBtn
+            className="bg-[#e3edf3]"
+            onClick={handleChangeStatus}
+            disabled={isStatusChangePending}
+          >
+            <Text variant="caption1" weight="bold" className="text-[#146695]">
+              진행중으로 바꾸기
+            </Text>
+          </StatusBtn>
+        )}
+        {/* 진행중 -> 거래 완료 버튼 */}
+        {showCompletedBtn && (
+          <StatusBtn
+            className="bg-[#edebeb]"
+            onClick={handleChangeStatus}
+            disabled={isStatusChangePending}
+          >
+            <Text variant="caption1" weight="bold" className="text-[#535353]">
+              거래 완료로 바꾸기
+            </Text>
+          </StatusBtn>
+        )}
+        {/* 거래완료 -> 별점 남기기 버튼 및 모달 */}
+        {showRatingBtn && (
           <StopPropagationWrapper onClick={handleStopPropagation}>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <ReviewBtn>
+                <StatusBtn
+                  className="text-darkKiwi bg-pay"
+                  disabled={isStatusChangePending}
+                >
                   <Text variant="caption1" weight="bold">
                     별점 남기기
                   </Text>
-                </ReviewBtn>
+                </StatusBtn>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <CustomDialogTitle>이번 거래는 어땠나요?</CustomDialogTitle>
-
                 <RatingContainer>
                   <RatingMessage>
                     <Text
@@ -141,14 +202,19 @@ export default function MypageBoardCard({
                       별점은 조립자의 당도에 반영됩니다!
                     </Text>
                   </RatingMessage>
-                  <ReviewStars />
-                  <SubmitButton onClick={handleSubmitRating}>확인</SubmitButton>
+                  <ReviewStars value={ratingValue} onChange={setRatingValue} />
+                  <SubmitButton
+                    onClick={handleSubmitRating}
+                    disabled={isRatingPending}
+                  >
+                    {isRatingPending ? '제출 중...' : '확인'}
+                  </SubmitButton>
                 </RatingContainer>
               </DialogContent>
             </Dialog>
           </StopPropagationWrapper>
         )}
-      </CardContainer>
-    </Link>
+      </StatusContainer>
+    </CardContainer>
   )
 }

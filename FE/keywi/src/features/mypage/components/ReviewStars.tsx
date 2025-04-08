@@ -1,6 +1,6 @@
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Star, StarSolid } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 
@@ -88,16 +88,27 @@ const ColorOverlay = styled.div<{ $rating: number; $index: number }>`
   }};
 `
 
-export function ReviewStars() {
+interface ReviewStarsProps {
+  value: number
+  onChange: (value: number) => void
+}
+
+export function ReviewStars({ value, onChange }: ReviewStarsProps) {
   // 별점 상태 관리
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
+
+  // 외부 value가 변경되면 내부 상태도 업데이트
+  useEffect(() => {
+    setRating(value)
+  }, [value])
 
   // 별점 변경 함수 (0.5점 단위)
   const handleRating = (starIndex: number, isLeftHalf: boolean) => {
     // isLeftHalf가 true면 해당 별의 0.5점, false면 1점
     const newRating = starIndex + (isLeftHalf ? 0.5 : 1)
     setRating(newRating)
+    onChange(newRating)
   }
 
   // 호버 효과
@@ -145,10 +156,6 @@ export function ReviewStars() {
   return (
     <StarsContainer>
       <StarsRow>{stars}</StarsRow>
-      {/* 여기서 점수 보내주면 됨 */}
-      {/* {rating > 0 && (
-        <div className="text-sm text-gray-500 mt-2">{rating}점</div>
-      )} */}
     </StarsContainer>
   )
 }

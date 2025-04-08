@@ -2,16 +2,20 @@ import tw from 'twin.macro'
 import { Text } from '@/styles/typography'
 
 const Container = tw.div`
-    flex
-    items-center
-    justify-center
-  `
+  flex
+  items-center
+  justify-center
+`
 
-export default function LoginHeader() {
+interface HeaderTextProps {
+  title: string
+}
+
+export default function HeaderText({ title }: HeaderTextProps) {
   return (
     <Container>
       <Text variant="title3" weight="bold">
-        프로필 입력
+        {title}
       </Text>
     </Container>
   )

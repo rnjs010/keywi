@@ -45,7 +45,7 @@ export default function BoardDetailPage() {
         <NavArrowLeft
           height="1.875rem"
           width="1.875rem"
-          onClick={() => navigate('/board')}
+          onClick={() => navigate(-1)} // 이전 페이지로 이동하게 수정 : 마이페이지도 써야해서ㅠㅠㅠ
         />
         <HeaderIcons />
       </HeaderContainer>

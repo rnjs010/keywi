@@ -5,18 +5,32 @@ import HomeFeed from '@/features/home/components/feed/HomeFeed'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { motion, AnimatePresence, PanInfo } from 'framer-motion'
-import { ArrowUp, ArrowDown, XmarkCircle } from 'iconoir-react'
+import { XmarkCircle } from 'iconoir-react'
 import { useMypageFeedQuery } from '@/features/mypage/hooks/useMypageFeedQuery'
 import { useUserStore } from '@/stores/userStore'
+import NavBar from '@/components/NavBar'
+import MypageHeader from '@/features/mypage/components/MypageHeader'
+import NextHeader from '@/components/NextHeader'
 
 const Container = tw.div`
   fixed
   inset-0
-  bg-black
+  bg-white
   z-50
   flex
   flex-col
   overflow-hidden
+`
+const NavBarContainer = tw.div`
+  fixed
+  bottom-0
+  left-0
+  right-0
+  bg-white
+  z-10
+  max-w-screen-sm
+  mx-auto
+  w-full
 `
 const Header = tw.div`
   flex
@@ -35,37 +49,6 @@ const FeedContainer = tw.div`
 `
 const CloseButton = tw.button`
   p-1
-`
-const PageIndicator = tw.div`
-  text-white
-  text-sm
-`
-const NavButton = styled(motion.button)`
-  ${tw`
-    absolute
-    w-10
-    h-10
-    rounded-full
-    bg-modal
-    flex
-    items-center
-    justify-center
-    z-10
-  `}
-`
-const PrevButton = styled(NavButton)`
-  ${tw`
-    left-4
-    top-1/2
-    -translate-y-1/2
-  `}
-`
-const NextButton = styled(NavButton)`
-  ${tw`
-    right-4
-    top-1/2
-    -translate-y-1/2
-  `}
 `
 const LoadingIndicator = styled(motion.div)`
   ${tw`
@@ -134,7 +117,7 @@ export default function FeedFullscreenPage() {
 
   // 드래그 시작 위치
   const dragStartY = useRef(0)
-  const dragThreshold = 100 // 스와이프로 인정할 임계값
+  const dragThreshold = 200 // 스와이프로 인정할 임계값
 
   // 데이터가 로드되면 피드 인덱스 업데이트
   useEffect(() => {
@@ -174,7 +157,7 @@ export default function FeedFullscreenPage() {
         changeFeed(currentIndex - 1)
         setIsLoading(false)
         setIsRefreshing(false)
-      }, 800)
+      }, 400)
     }
   }
 
@@ -189,7 +172,7 @@ export default function FeedFullscreenPage() {
         changeFeed(currentIndex + 1)
         setIsLoading(false)
         setIsRefreshing(false)
-      }, 800)
+      }, 400)
     }
   }
 
@@ -210,11 +193,11 @@ export default function FeedFullscreenPage() {
 
     // 위로 스와이프
     if (dragDistance < -dragThreshold) {
-      goToNextFeed()
+      goToPreviousFeed()
     }
     // 아래로 스와이프
     else if (dragDistance > dragThreshold) {
-      goToPreviousFeed()
+      goToNextFeed()
     }
   }
 
@@ -222,30 +205,26 @@ export default function FeedFullscreenPage() {
   if (feedQuery.isLoading || allFeeds.length === 0) {
     return (
       <Container>
+        <MypageHeader />
         <Header>
           <div>로딩 중...</div>
           <CloseButton onClick={handleClose}>
-            <XmarkCircle width={24} height={24} color="white" />
+            <XmarkCircle width={24} height={24} />
           </CloseButton>
         </Header>
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-white">피드를 불러오는 중...</div>
+          <div>피드를 불러오는 중...</div>
         </div>
+        <NavBarContainer>
+          <NavBar />
+        </NavBarContainer>
       </Container>
     )
   }
 
   return (
     <Container>
-      <Header>
-        <PageIndicator>
-          {currentIndex + 1} / {allFeeds.length}
-        </PageIndicator>
-        <CloseButton onClick={handleClose}>
-          <XmarkCircle width={24} height={24} color="white" />
-        </CloseButton>
-      </Header>
-
+      <NextHeader startTitle="나의 피드" />
       <FeedContainer>
         {/* 로딩 인디케이터 */}
         <AnimatePresence>
@@ -258,7 +237,6 @@ export default function FeedFullscreenPage() {
             />
           )}
         </AnimatePresence>
-
         {/* 피드 컨텐츠 */}
         <AnimatePresence initial={false}>
           <FeedWrapper
@@ -278,28 +256,10 @@ export default function FeedFullscreenPage() {
             </div>
           </FeedWrapper>
         </AnimatePresence>
-
-        {/* 네비게이션 버튼 */}
-        {currentIndex > 0 && (
-          <PrevButton
-            onClick={goToPreviousFeed}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <ArrowUp width={20} height={20} color="white" />
-          </PrevButton>
-        )}
-
-        {currentIndex < allFeeds.length - 1 && (
-          <NextButton
-            onClick={goToNextFeed}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <ArrowDown width={20} height={20} color="white" />
-          </NextButton>
-        )}
       </FeedContainer>
+      <NavBarContainer>
+        <NavBar />
+      </NavBarContainer>
     </Container>
   )
 }
