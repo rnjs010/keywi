@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
     "eslint": "^9.22.0",
+    "framer-motion": "^12.6.3",
     "iconoir-react": "^7.10.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.483.0",

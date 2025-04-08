@@ -29,14 +29,14 @@ export default function InfiniteScroll({
   })
 
   // 디버깅용 로그 추가
-  useEffect(() => {
-    console.log('InfiniteScroll 상태:', {
-      inView,
-      hasNextPage,
-      isLoading,
-      attemptedLoad,
-    })
-  }, [inView, hasNextPage, isLoading, attemptedLoad])
+  // useEffect(() => {
+  //   console.log('InfiniteScroll 상태:', {
+  //     inView,
+  //     hasNextPage,
+  //     isLoading,
+  //     attemptedLoad,
+  //   })
+  // }, [inView, hasNextPage, isLoading, attemptedLoad])
 
   // 스크롤이 감지되면 다음 페이지 로드
   useEffect(() => {

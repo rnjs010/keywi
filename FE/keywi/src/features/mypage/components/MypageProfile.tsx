@@ -1,5 +1,9 @@
+import Badge from '@/components/Badge'
 import { Text } from '@/styles/typography'
+import getDangdoBadgeData from '@/utils/getDandoBadgeData'
+import { useState } from 'react'
 import tw from 'twin.macro'
+import ProfileEditModal from './ProfileEditModal'
 
 const ProfileContainer = tw.div`
   flex flex-col px-4 py-4
@@ -48,87 +52,101 @@ const ProfileButton = tw.button`
 interface MypageProfileProps {
   nickname: string
   profileImage: string
-  // levelBadgeText: string
+  levelBadgeText: number
   followers: number
   following: number
   posts: number
   description?: string
+  isMyProfile: boolean
 }
 
 export default function MypageProfile({
   nickname,
   profileImage,
-  // levelBadgeText,
+  levelBadgeText,
   followers,
   following,
   posts,
   description,
+  isMyProfile,
 }: MypageProfileProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
   return (
-    <ProfileContainer>
-      <ProfileSection>
-        <ProfileImageContainer>
-          <ProfileImage
-            src={profileImage}
-            alt={`${nickname}의 프로필 이미지`}
-          />
-        </ProfileImageContainer>
+    <>
+      <ProfileContainer>
+        <ProfileSection>
+          <ProfileImageContainer>
+            <ProfileImage
+              src={profileImage}
+              alt={`${nickname}의 프로필 이미지`}
+            />
+          </ProfileImageContainer>
 
-        <ProfileInfoContainer>
-          <NicknameContainer>
-            <Text variant="body2" weight="bold">
-              {nickname}
-            </Text>
-            {/* <BadgeContainer>{levelBadgeText}</BadgeContainer> */}
-          </NicknameContainer>
+          <ProfileInfoContainer>
+            <NicknameContainer>
+              <Text variant="body2" weight="bold">
+                {nickname}
+              </Text>
+              <Badge
+                title={`당도 ${levelBadgeText}`}
+                color={getDangdoBadgeData(levelBadgeText) || 'low'}
+              />
+            </NicknameContainer>
 
-          <StatsContainer>
-            <StatItem>
-              <Text variant="caption1" color="darkGray">
-                팔로워
-              </Text>
-              <Text variant="caption1" weight="bold">
-                {followers}
-              </Text>
-            </StatItem>
-            <StatItem>
-              <Text variant="caption1" color="darkGray">
-                팔로잉
-              </Text>
-              <Text variant="caption1" weight="bold">
-                {following}
-              </Text>
-            </StatItem>
-            <StatItem>
-              <Text variant="caption1" color="darkGray">
-                조립
-              </Text>
-              <Text variant="caption1" weight="bold">
-                {posts}
-              </Text>
-            </StatItem>
-          </StatsContainer>
-        </ProfileInfoContainer>
-      </ProfileSection>
+            <StatsContainer>
+              <StatItem>
+                <Text variant="caption1" color="darkGray">
+                  팔로워
+                </Text>
+                <Text variant="caption1" weight="bold">
+                  {followers}
+                </Text>
+              </StatItem>
+              <StatItem>
+                <Text variant="caption1" color="darkGray">
+                  팔로잉
+                </Text>
+                <Text variant="caption1" weight="bold">
+                  {following}
+                </Text>
+              </StatItem>
+              <StatItem>
+                <Text variant="caption1" color="darkGray">
+                  조립
+                </Text>
+                <Text variant="caption1" weight="bold">
+                  {posts}
+                </Text>
+              </StatItem>
+            </StatsContainer>
+          </ProfileInfoContainer>
+        </ProfileSection>
 
-      {description && (
-        <DescriptionContainer>
-          <Text variant="caption1">{description}</Text>
-        </DescriptionContainer>
+        {description && (
+          <DescriptionContainer>
+            <Text variant="caption1">{description}</Text>
+          </DescriptionContainer>
+        )}
+        {isMyProfile && (
+          <ButtonsContainer>
+            <ProfileButton onClick={() => setIsEditModalOpen(true)}>
+              <Text variant="caption2" color="darkGray">
+                프로필 편집
+              </Text>
+            </ProfileButton>
+            <ProfileButton>
+              <Text variant="caption2" color="darkGray">
+                프로필 공유
+              </Text>
+            </ProfileButton>
+          </ButtonsContainer>
+        )}
+      </ProfileContainer>
+
+      {isMyProfile && isEditModalOpen && (
+        <ProfileEditModal onClose={() => setIsEditModalOpen(false)} />
       )}
-
-      <ButtonsContainer>
-        <ProfileButton>
-          <Text variant="caption2" color="darkGray">
-            프로필 편집
-          </Text>
-        </ProfileButton>
-        <ProfileButton>
-          <Text variant="caption2" color="darkGray">
-            프로필 공유
-          </Text>
-        </ProfileButton>
-      </ButtonsContainer>
-    </ProfileContainer>
+    </>
   )
 }

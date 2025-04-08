@@ -1,9 +1,15 @@
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
-import LoginHeader from '@/features/login/components/LoginHeader'
-import LoginImgBtn from '@/features/login/components/LoginImgBtn'
-import LoginNameInput from '@/features/login/components/LoginNameInput'
-import LoginNextBtn from '@/features/login/components/LoginNextBtn'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/stores/authStore'
+import { useEffect } from 'react'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import { useSignupStore } from '@/stores/signupStore'
+import ProfileForm from '@/features/login/components/ProfileForm'
+import HeaderText from '@/features/login/components/ProfileHeaderText'
+import ProfileImageInput from '@/features/login/components/ProfileImageInput'
+import ProfileNameInput from '@/features/login/components/ProfileNameInput'
+import ProfileNextBtn from '@/features/login/components/ProfileNextBtn'
 
 const Container = styled.div`
   ${tw`
@@ -28,12 +34,63 @@ const Container = styled.div`
 `
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const { isAuthenticated, isLoading, initialized } = useAuthStore()
+  const {
+    nickname,
+    profileImage,
+    isLoading: signupLoading,
+    error,
+    setNickname,
+    setProfileImage,
+    signup,
+  } = useSignupStore()
+
+  // 인증이 안 된 경우 메인 페이지로 리다이렉트
+  useEffect(() => {
+    if (initialized && !isAuthenticated) {
+      navigate('/', { replace: true })
+    }
+  }, [isAuthenticated, initialized, navigate])
+
+  const handleSignup = async () => {
+    if (nickname.length < 2 || signupLoading) return
+
+    const success = await signup()
+    if (success) {
+      navigate('/login/complete')
+    }
+  }
+
+  if (isLoading || !initialized) {
+    return <LoadingMessage />
+  }
   return (
     <Container>
-      <LoginHeader />
-      <LoginImgBtn />
-      <LoginNameInput />
-      <LoginNextBtn />
+      <ProfileForm
+        header={<HeaderText title="프로필 입력" />}
+        imageInput={
+          <ProfileImageInput
+            imageUrl={profileImage}
+            onImageChange={setProfileImage}
+          />
+        }
+        nameInput={
+          <ProfileNameInput
+            nickname={nickname}
+            onNicknameChange={setNickname}
+          />
+        }
+        actionButton={
+          <ProfileNextBtn
+            text="다음"
+            onClick={handleSignup}
+            disabled={nickname.length < 2}
+            error={error}
+            isLoading={signupLoading}
+          />
+        }
+      />
     </Container>
   )
 }

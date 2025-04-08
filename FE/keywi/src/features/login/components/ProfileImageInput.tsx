@@ -3,7 +3,6 @@ import { Camera } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import styled from '@emotion/styled'
 import { useRef } from 'react'
-import { useSignupStore } from '@/stores/signupStore'
 
 // 프로필 이미지 섹션
 const ProfileImgSection = tw.div`
@@ -11,7 +10,7 @@ const ProfileImgSection = tw.div`
   items-center
   justify-center
   pt-20
-  `
+`
 
 // 프로필 이미지 업로드 버튼
 const ImageUploadBtn = styled.div<{ $hasImage: boolean }>`
@@ -36,8 +35,15 @@ const FileInput = tw.input`
   hidden
 `
 
-export default function LoginImgBtn() {
-  const { profileImage, setProfileImage } = useSignupStore()
+interface ProfileImageInputProps {
+  imageUrl: string | null
+  onImageChange: (imageUrl: string, file?: File) => void
+}
+
+export default function ProfileImageInput({
+  imageUrl,
+  onImageChange,
+}: ProfileImageInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 프로필 이미지 버튼 클릭 핸들러
@@ -54,7 +60,7 @@ export default function LoginImgBtn() {
       // 선택된 이미지를 Data URL로 변환
       const reader = new FileReader()
       reader.onloadend = () => {
-        setProfileImage(reader.result as string)
+        onImageChange(reader.result as string, file)
       }
       reader.readAsDataURL(file)
     }
@@ -64,12 +70,12 @@ export default function LoginImgBtn() {
     <ProfileImgSection>
       <ImageUploadBtn
         onClick={handleImageBtnClick}
-        $hasImage={profileImage !== null}
+        $hasImage={imageUrl !== null}
         style={{
-          backgroundImage: profileImage ? `url(${profileImage})` : 'none',
+          backgroundImage: imageUrl ? `url(${imageUrl})` : 'none',
         }}
       >
-        {!profileImage && (
+        {!imageUrl && (
           <Camera
             width={'5rem'}
             height={'5rem'}
@@ -84,7 +90,6 @@ export default function LoginImgBtn() {
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        // capture="environment" // 모바일에서 카메라 접근 허용 (optional)
       />
     </ProfileImgSection>
   )

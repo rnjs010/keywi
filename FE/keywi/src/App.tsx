@@ -29,14 +29,19 @@ import { AfterSearchPage } from './pages/search/AfterSearchPage'
 import { WebSocketProvider } from './services/WebSocketProvider'
 import ProductPage from './pages/product/ProductPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
+import { AuthRedirect } from './components/AuthRedirect'
+import FeedFullscreenPage from './pages/mypage/FeedFullscreenPage'
 
 function App() {
   return (
     <WebSocketProvider>
       <Fonts />
       <Routes>
+        {/* 메인 라우트 - 인증 상태에 따라 리다이렉트 */}
+        <Route path="/" element={<AuthRedirect />} />
+
         {/* 공개 라우트 - 인증 필요 없음 */}
-        <Route path="/" element={<MainPage />} />
+        <Route path="/main" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/complete" element={<LoginCompletePage />} />
         <Route path="/callback/kakao" element={<KakaoHandler />} />
@@ -51,6 +56,7 @@ function App() {
         >
           {/* 홈 관련 라우트 */}
           <Route path="/home" element={<HomePage />} />
+          <Route path="/home/feed/:feedId" element={<FeedFullscreenPage />} />
           <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
           <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
           <Route path="/home/tag" element={<HomeTagPage />} />
@@ -75,7 +81,7 @@ function App() {
           />
 
           {/* 마이페이지 라우트 */}
-          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/profile/:userId" element={<MyPage />} />
           <Route path="/setting" element={<SettingPage />} />
           <Route path="/setting/account" element={<SettingAccountPage />} />
 

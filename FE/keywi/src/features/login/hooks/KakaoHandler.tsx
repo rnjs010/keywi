@@ -1,15 +1,20 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { BASE_URL } from '@/config'
 import { useAuthStore } from '@/stores/authStore'
 import { useUserStore } from '@/stores/userStore'
+import { processKakaoLogin } from '../services/authServices'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import ErrorMessage from '@/components/message/ErrorMessage'
 import { fetchUserInfo } from '@/services/userIdService'
 
 const KakaoHandler = () => {
   const navigate = useNavigate()
   const { setLoading, setError, login } = useAuthStore()
   const { setUserId } = useUserStore()
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>(
+    'loading',
+  )
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const handleKakaoLogin = async () => {
@@ -22,7 +27,10 @@ const KakaoHandler = () => {
         const isProcessed = sessionStorage.getItem('processed_code') === code
 
         if (!code || isProcessed) {
-          if (!code) console.error('인가 코드가 없습니다')
+          if (!code) {
+            setErrorMessage('인가 코드가 없습니다')
+            setStatus('error')
+          }
           navigate('/')
           return
         }
@@ -34,13 +42,10 @@ const KakaoHandler = () => {
         setError(null)
 
         // 백엔드 API 호출 - jwt access token, refresh token 발급
-        const response = await axios.get(
-          `${BASE_URL}/api/auth/callback/kakao?code=${code}`,
-        )
-        console.log('로그인 응답:', response)
+        const response = await processKakaoLogin(code)
 
-        const { accessToken, refreshToken } = response.data.data.token
-        const { newUser } = response.data.data
+        const { accessToken, refreshToken } = response.data.token
+        const { newUser } = response.data
 
         // 토큰 저장 및 인증 상태 업데이트
         login(accessToken, refreshToken)
@@ -50,9 +55,12 @@ const KakaoHandler = () => {
           const userData = await fetchUserInfo()
           setUserId(userData.userId)
           console.log('userId 저장 완료:', userData.userId)
+          setStatus('success')
         } catch (fetchError) {
           console.error('유저 정보 가져오기 실패:', fetchError)
           setError('유저 정보를 가져오는 데 실패했어요.')
+          setErrorMessage('유저 정보를 가져오는 데 실패했어요.')
+          setStatus('error')
         }
 
         // 사용자 상태에 따라 리디렉션
@@ -65,7 +73,10 @@ const KakaoHandler = () => {
         }
       } catch (error: any) {
         console.error('로그인 에러:', error)
-        setError(error.response.data.message || '로그인 실패')
+        const message = error.response?.data?.message || '로그인 실패'
+        setError(message)
+        setErrorMessage(message)
+        setStatus('error')
         setLoading(false)
         navigate('/', { replace: true })
       }
@@ -79,12 +90,16 @@ const KakaoHandler = () => {
     }
   }, [])
 
-  // 로딩 중 표시
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <p>카카오 로그인 처리 중...</p>
-    </div>
-  )
+  // 상태에 따른 UI 렌더링
+  if (status === 'loading') {
+    return <LoadingMessage />
+  }
+
+  if (status === 'error') {
+    return <ErrorMessage text={errorMessage || ''} />
+  }
+
+  return <LoadingMessage />
 }
 
 export default KakaoHandler

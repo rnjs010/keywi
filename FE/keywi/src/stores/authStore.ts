@@ -26,25 +26,57 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      isLoading: false, // 기본값 false로 변경
+      isLoading: false,
       isAuthenticated: false,
       error: null,
-      initialized: false, // 초기화 상태 추가
+      initialized: false,
 
       setLoading: (isLoading) => set({ isLoading }),
       setAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
       setError: (error) => set({ error }),
 
-      initialize: () => {
+      initialize: async () => {
         // 이미 초기화되었으면 아무것도 하지 않음
         if (get().initialized) return
 
-        const isAuthenticated = get().checkAuth()
-        set({
-          initialized: true,
-          isAuthenticated,
-          isLoading: false,
-        })
+        set({ isLoading: true })
+
+        try {
+          // 토큰 유효성 체크 (필요시 리프레시 시도)
+          const accessToken = getCookie(TOKEN_NAME)
+          const refreshToken = getCookie(REFRESH_TOKEN_NAME)
+
+          let isAuth = false
+
+          if (accessToken || refreshToken) {
+            // 토큰이 있으면 유효성을 한번 체크
+            try {
+              // 액세스 토큰이 만료되었다면 리프레시 시도
+              if (!accessToken && refreshToken) {
+                await get().refreshTokens()
+              }
+              isAuth = true
+            } catch (error) {
+              console.error('Auth check failed:', error)
+              // 리프레시 실패시 로그아웃
+              get().logout()
+              isAuth = false
+            }
+          }
+
+          set({
+            initialized: true,
+            isAuthenticated: isAuth,
+            isLoading: false,
+          })
+        } catch (error) {
+          console.error('Initialization error:', error)
+          set({
+            initialized: true,
+            isAuthenticated: false,
+            isLoading: false,
+          })
+        }
       },
 
       login: (accessToken, refreshToken) => {

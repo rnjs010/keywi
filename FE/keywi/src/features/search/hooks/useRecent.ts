@@ -6,7 +6,7 @@ import {
 } from '../services/searchService'
 
 // 최근 검색어
-export const useRecent = (userId: number = 1) => {
+export const useRecent = (userId: number) => {
   // 유저아이디 꼭 필요한 것인가,,, 토큰으로 유저 검색 가능함,,?
   const queryClient = useQueryClient()
 

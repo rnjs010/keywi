@@ -4,12 +4,14 @@ import { ShopFourTilesWindow, ChatBubble, ProfileCircle } from 'iconoir-react'
 import { PiClipboardText } from 'react-icons/pi'
 import { IoHomeOutline } from 'react-icons/io5'
 import { NavLink } from 'react-router-dom'
+import { useUserStore } from '@/stores/userStore'
 
 const NavContainer = tw.div`
   flex justify-between items-center px-7 pt-3 pb-9 border-t border-t-[#EEEEEE]
 `
 
 export default function NavBar() {
+  const userId = useUserStore((state) => state.userId)
   const navActiveStyle = ({ isActive }: { isActive: boolean }) => ({
     color: isActive ? colors.default : colors.darkGray,
   })
@@ -37,7 +39,7 @@ export default function NavBar() {
       </NavLink>
 
       {/* Profile */}
-      <NavLink to="/mypage" style={navActiveStyle}>
+      <NavLink to={`/profile/${userId}`} style={navActiveStyle}>
         <ProfileCircle width="1.7rem" height="1.7rem" />
       </NavLink>
     </NavContainer>
