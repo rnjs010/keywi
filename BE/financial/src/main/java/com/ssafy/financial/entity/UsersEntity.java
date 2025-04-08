@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        schema = "keywi",
+        catalog  = "keywi",
         name = "users",
 
         uniqueConstraints = {
