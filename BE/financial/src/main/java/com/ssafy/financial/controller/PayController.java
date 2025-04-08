@@ -75,13 +75,17 @@ public class PayController {
 
     // 견적 수락 (결제)
     @PostMapping("/accept")
-    public ResponseEntity<String> acceptTransaction(@RequestBody EscrowTransactionAcceptRequest request) {
+    public ResponseEntity<String> acceptTransaction(@RequestHeader("X-User-ID") Long userId, @RequestBody EscrowTransactionAcceptRequest request) {
+        request.setUserId(userId);
+
         payService.acceptTransaction(request);
         return ResponseEntity.ok("거래 수락 및 결제 완료");
     }
-
+    // 거래 완료
     @PostMapping("/complete")
-    public ResponseEntity<String> completeTransaction(@RequestBody EscrowTransactionCompleteRequest request) {
+    public ResponseEntity<String> completeTransaction(@RequestHeader("X-User-ID") Long userId, @RequestBody EscrowTransactionCompleteRequest request) {
+        request.setUserId(userId);
+
         payService.completeTransaction(request);
         return ResponseEntity.ok("거래 완료 및 조립자 지급 완료");
     }

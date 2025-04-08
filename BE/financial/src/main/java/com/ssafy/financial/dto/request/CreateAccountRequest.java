@@ -16,6 +16,8 @@ public class CreateAccountRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
+    private Long userId;
+
     @JsonProperty("accountTypeUniqueNo")
     private String accountTypeUniqueNo;
 }

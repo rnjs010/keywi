@@ -16,6 +16,8 @@ public class AccountTransferRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
+    private Long userId;
+
     private String depositAccountNo;
     private String depositTransactionSummary;
     private String transactionBalance;

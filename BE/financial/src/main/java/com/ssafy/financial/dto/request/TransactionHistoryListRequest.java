@@ -16,6 +16,7 @@ public class TransactionHistoryListRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
+    private String userKey;
     private String accountNo;
     private String startDate;
     private String endDate;

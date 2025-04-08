@@ -16,6 +16,7 @@ public class OneWonVerifyRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
+    private Long userId;
     private String accountNo;
     private String authText = "싸피"; // 기본값 고정
     private String authCode;

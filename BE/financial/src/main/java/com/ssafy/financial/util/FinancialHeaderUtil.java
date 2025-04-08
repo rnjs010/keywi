@@ -3,6 +3,7 @@ package com.ssafy.financial.util;
 import com.ssafy.financial.config.FinancialApiConfig;
 import com.ssafy.financial.dto.request.common.FinancialRequestHeader;
 import com.ssafy.financial.dto.request.common.FinancialUserInfo;
+import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +14,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class FinancialHeaderUtil {
 
     private final FinancialApiConfig apiConfig;
-    private final FinancialUserInfo userInfo;
 
-    public FinancialRequestHeader createHeader(String apiName, boolean needUserKey) {
+    public FinancialHeaderUtil(FinancialApiConfig apiConfig) {
+        this.apiConfig = apiConfig;
+    }
+
+    public FinancialRequestHeader createHeader(String apiName, @Nullable String userKey) {
         String nowDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String nowTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
         String randomSix = String.format("%06d", new Random().nextInt(999999));
@@ -35,11 +38,11 @@ public class FinancialHeaderUtil {
         header.setInstitutionTransactionUniqueNo(nowDate + nowTime + randomSix);
         header.setApiKey(apiConfig.getIssuedApiKey());
 
-        if (needUserKey) {
-            header.setUserKey(userInfo.getUserKey());
+        if (userKey != null) {
+            header.setUserKey(userKey);
         }
 
-        log.info("[📦 HEADER 생성 완료] apiName={}, needUserKey={}, header={}", apiName, needUserKey, header);
+        log.info("[📦 HEADER 생성 완료] apiName={}, userKey={}, header={}", apiName, userKey, header);
 
         return header;
     }

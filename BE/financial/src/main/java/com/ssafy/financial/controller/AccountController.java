@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,21 +41,27 @@ public class AccountController {
 
     // 계좌 생성
     @PostMapping("/account/create")
-    public ResponseEntity<CreateAccountResponse> createAccount(@RequestBody CreateAccountRequest request) {
+    public ResponseEntity<CreateAccountResponse> createAccount(@RequestHeader("X-User-ID") Long userId, @RequestBody CreateAccountRequest request) {
+        request.setUserId(userId);
+
         CreateAccountResponse response = financialApiService.createAccount(request);
         return ResponseEntity.ok(response);
     }
 
     // 1원 송금 (인증번호 송금)
     @PostMapping("/transfer/onewon")
-    public ResponseEntity<OneWonTransferResponse> sendOneWon(@RequestBody OneWonTransferRequest request) {
+    public ResponseEntity<OneWonTransferResponse> sendOneWon(@RequestHeader("X-User-ID") Long userId, @RequestBody OneWonTransferRequest request) {
+        request.setUserId(userId);
+
         OneWonTransferResponse response = financialApiService.sendOneWon(request);
         return ResponseEntity.ok(response);
     }
 
     // 1원 송금 인증번호 검증
     @PostMapping("/transfer/onewon/verify")
-    public ResponseEntity<OneWonVerifyResponse> verifyOneWon(@RequestBody OneWonVerifyRequest request) {
+    public ResponseEntity<OneWonVerifyResponse> verifyOneWon(@RequestHeader("X-User-ID") Long userId, @RequestBody OneWonVerifyRequest request) {
+        request.setUserId(userId);
+
         OneWonVerifyResponse response = financialApiService.verifyOneWon(request);
         return ResponseEntity.ok(response);
     }
@@ -76,7 +83,9 @@ public class AccountController {
 
     // 계좌 이체
     @PostMapping("/account/transfer")
-    public ResponseEntity<AccountTransferResponse> transfer(@RequestBody AccountTransferRequest request) {
+    public ResponseEntity<AccountTransferResponse> transfer(@RequestHeader("X-User-ID") Long userId, @RequestBody AccountTransferRequest request) {
+        request.setUserId(userId);
+
         AccountTransferResponse response = financialApiService.transferAccount(request);
         return ResponseEntity.ok(response);
     }

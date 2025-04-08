@@ -32,6 +32,7 @@ public class PayService {
     private final FinancialHeaderUtil financialHeaderUtil;
     private final FinancialApiService financialApiService;
     private final EscrowAccountProperties escrowAccountProperties;
+    private final CommonService commonService;
 
     public MyAccountCheckResponse checkMyAccount(Long userId) {
         Optional<UserAccountConnectionEntity> optional = userAccountConnectionRepository.findByUserId(userId);
@@ -243,9 +244,11 @@ public class PayService {
         String escrowAccountNo = escrowAccountProperties.getNumber();
         String escrowBankCode = escrowAccountProperties.getBankCode();
 
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
         // 5. 이체 요청 (DTO 구조에 맞춰 수정)
         AccountTransferRequest transferRequest = AccountTransferRequest.builder()
-                .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", true))
+                .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", userKey))
                 .depositAccountNo(escrowAccountNo)
                 .depositTransactionSummary("에스크로 결제")
                 .transactionBalance(String.valueOf(transaction.getTotalAmount()))
@@ -288,8 +291,10 @@ public class PayService {
         String escrowAccountNo = escrowAccountProperties.getNumber();
         String escrowBankCode = escrowAccountProperties.getBankCode();
 
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
         AccountTransferRequest transferRequest = AccountTransferRequest.builder()
-                .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", true))
+                .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", userKey))
                 .depositAccountNo(builderAccount.getAccountNo())
                 .depositTransactionSummary("조립비 지급")
                 .transactionBalance(String.valueOf(transaction.getTotalAmount()))

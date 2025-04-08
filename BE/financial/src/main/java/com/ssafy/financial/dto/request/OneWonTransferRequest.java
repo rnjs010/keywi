@@ -16,6 +16,8 @@ public class OneWonTransferRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
+    private Long userId;
+
     @JsonProperty("accountNo")
     private String accountNo;
 

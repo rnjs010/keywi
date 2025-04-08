@@ -48,7 +48,7 @@ public class FinancialApiService {
     private final RegisterProductRepository registerProductRepository;
     private final FinancialUserRepository financialUserRepository;
     private final AccountRepository accountRepository;
-
+    private final CommonService commonService;
     // 사용자 계정 생성
     public CreateUserResponse createUser(CreateUserRequest request) {
         HttpHeaders headers = new HttpHeaders();
@@ -89,7 +89,7 @@ public class FinancialApiService {
 
         // API 호출을 위한 request 객체 생성 (Header 포함)
         DemandDepositProductRequest apiRequest = DemandDepositProductRequest.builder()
-                .header(financialHeaderUtil.createHeader("createDemandDeposit", false))
+                .header(financialHeaderUtil.createHeader("createDemandDeposit", null))
                 .bankCode(bankCode)
                 .accountName(bankName + " 수시입출금 상품명")
                 .accountDescription(bankName + " 수시입출금 상품설명")
@@ -132,7 +132,9 @@ public class FinancialApiService {
     public CreateAccountResponse createAccount(CreateAccountRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/createDemandDepositAccount";
 
-        FinancialRequestHeader header = financialHeaderUtil.createHeader("createDemandDepositAccount", true);
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
+        FinancialRequestHeader header = financialHeaderUtil.createHeader("createDemandDepositAccount", userKey);
         request.setHeader(header);
 
         HttpHeaders headers = new HttpHeaders();
@@ -169,9 +171,11 @@ public class FinancialApiService {
     public OneWonTransferResponse sendOneWon(OneWonTransferRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/accountAuth/openAccountAuth";
 
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
         // 📌 공통 헤더 생성
         FinancialRequestHeader header = financialHeaderUtil.createHeader(
-                "openAccountAuth", true
+                "openAccountAuth", userKey
         );
         request.setHeader(header);
 
@@ -198,7 +202,9 @@ public class FinancialApiService {
     public OneWonVerifyResponse verifyOneWon(OneWonVerifyRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/accountAuth/checkAuthCode";
 
-        FinancialRequestHeader header = financialHeaderUtil.createHeader("checkAuthCode", true);
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
+        FinancialRequestHeader header = financialHeaderUtil.createHeader("checkAuthCode", userKey);
         request.setHeader(header);
 
         // authText 고정값 설정 (혹시 dto에서 안 들어올 경우를 대비해)
@@ -228,7 +234,7 @@ public class FinancialApiService {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/inquireTransactionHistoryList";
 
         // 공통 헤더 생성
-        FinancialRequestHeader header = financialHeaderUtil.createHeader("inquireTransactionHistoryList", true);
+        FinancialRequestHeader header = financialHeaderUtil.createHeader("inquireTransactionHistoryList", request.getUserKey());
         request.setHeader(header);
 
         // 기본값 설정
@@ -270,8 +276,7 @@ public class FinancialApiService {
     public AccountBalanceResponse inquireAccountBalance(AccountBalanceRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/inquireDemandDepositAccountBalance";
 
-        // 👉 여기서 header 자동 생성해서 세팅
-        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", true));
+        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", request.getUserKey()));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -292,8 +297,9 @@ public class FinancialApiService {
     public AccountTransferResponse transferAccount(AccountTransferRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/updateDemandDepositAccountTransfer";
 
-        // 💡 헤더 세팅
-        request.setHeader(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", true));
+        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+
+        request.setHeader(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", userKey));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
