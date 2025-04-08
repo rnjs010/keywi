@@ -102,7 +102,7 @@ export default function HomeFeedTag({
   const handleProductClick = (e: React.MouseEvent, productId: number) => {
     e.stopPropagation() // 이벤트 버블링 방지
     console.log(`상품 ID: ${productId}로 이동합니다.`)
-    navigate(`/product/${productId}`)
+    navigate(`/product/detail/${productId}`)
   }
 
   return (
