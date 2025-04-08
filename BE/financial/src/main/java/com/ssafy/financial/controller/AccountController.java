@@ -1,13 +1,6 @@
 package com.ssafy.financial.controller;
 
-import com.ssafy.financial.dto.request.AccountBalanceRequest;
-import com.ssafy.financial.dto.request.AccountTransferRequest;
-import com.ssafy.financial.dto.request.CreateAccountRequest;
-import com.ssafy.financial.dto.request.CreateUserRequest;
-import com.ssafy.financial.dto.request.DemandDepositProductRequest;
-import com.ssafy.financial.dto.request.OneWonTransferRequest;
-import com.ssafy.financial.dto.request.OneWonVerifyRequest;
-import com.ssafy.financial.dto.request.TransactionHistoryListRequest;
+import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountBalanceResponse;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.CreateAccountResponse;
@@ -17,6 +10,7 @@ import com.ssafy.financial.dto.response.OneWonTransferResponse;
 import com.ssafy.financial.dto.response.OneWonVerifyResponse;
 import com.ssafy.financial.dto.response.TransactionHistoryListResponse;
 import com.ssafy.financial.service.FinancialApiService;
+import com.ssafy.financial.service.PayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
 
     private final FinancialApiService financialApiService;
+    private final PayService payService;
+
+    // 계좌 연결 + 간편비밀번호 등록을 동시에 수행
+    @PostMapping("/connect")
+    public ResponseEntity<String> connectAndSetPassword(@RequestBody SetSimplePasswordRequest request) {
+        payService.setSimplePasswordAndConnectAccount(request);
+        return ResponseEntity.ok("계좌 연결 및 비밀번호 설정 완료");
+    }
 
     // 사용자 생성 (금융망 사용자 등록)
     @PostMapping("/user/create")
