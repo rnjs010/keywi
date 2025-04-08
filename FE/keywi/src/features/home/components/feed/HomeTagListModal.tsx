@@ -60,9 +60,11 @@ export default function HomeTagListModal({
 
   // 상품 페이지로 이동하는 함수
   const handleProductClick = (e: React.MouseEvent, productId: number) => {
-    e.stopPropagation() // 이벤트 버블링 방지
-    console.log(`상품 ID: ${productId}로 이동합니다.`)
-    navigate(`/product/detail/${productId}`)
+    if (productId > 0) {
+      e.stopPropagation() // 이벤트 버블링 방지
+      console.log(`상품 ID: ${productId}로 이동합니다.`)
+      navigate(`/product/detail/${productId}`)
+    }
   }
 
   return (

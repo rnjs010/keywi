@@ -100,9 +100,11 @@ export default function HomeFeedTag({
 
   // 상품 페이지로 이동하는 함수
   const handleProductClick = (e: React.MouseEvent, productId: number) => {
-    e.stopPropagation() // 이벤트 버블링 방지
-    console.log(`상품 ID: ${productId}로 이동합니다.`)
-    navigate(`/product/detail/${productId}`)
+    if (productId > 0) {
+      e.stopPropagation() // 이벤트 버블링 방지
+      console.log(`상품 ID: ${productId}로 이동합니다.`)
+      navigate(`/product/detail/${productId}`)
+    }
   }
 
   return (
@@ -118,6 +120,7 @@ export default function HomeFeedTag({
               $x={tag.x}
               $y={tag.y}
               $isLeftAligned={tag.x > 70} // x 좌표가 70% 이상이면 왼쪽 정렬
+              onClick={(e: React.MouseEvent) => handleProductClick(e, tag.id)} // 버튼 전체 클릭 가능
             >
               {tag.thumbnail && (
                 <ProductThumbnail src={tag.thumbnail} alt={tag.name} />
@@ -130,9 +133,7 @@ export default function HomeFeedTag({
                   {tag.price}
                 </Text>
               </ProductInfo>
-              <ProductPageBtn
-                onClick={(e: React.MouseEvent) => handleProductClick(e, tag.id)}
-              >
+              <ProductPageBtn>
                 <NavArrowRight
                   width={14}
                   height={14}
