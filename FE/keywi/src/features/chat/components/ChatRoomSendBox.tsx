@@ -57,6 +57,7 @@ export default function ChatRoomSendBox() {
           roomId,
           messageType: 'TEXT',
           content: message.trim(),
+          items: null,
           senderId: userId,
         }),
         headers: {

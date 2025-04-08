@@ -47,24 +47,29 @@ export default function DealReqConfirmScreen() {
   const handleNext = () => {
     console.log('거래 내역', selectedProducts)
 
+    const messageBody = {
+      roomId,
+      messageType: 'DEALREQUEST',
+      content: totalPrice.toString().trim(),
+      items: JSON.stringify({
+        totalPrice: totalPrice,
+        products: selectedProducts,
+      }),
+      senderId: userId,
+    }
+
+    console.log('보내는 메시지:', JSON.stringify(messageBody, null, 2))
+
     if (client?.connected && roomId && userId) {
       client.publish({
         destination: '/app/chat/message',
-        body: JSON.stringify({
-          roomId,
-          messageType: 'DEALREQUEST',
-          content: totalPrice.toString().trim(),
-          // items: JSON.stringify({
-          //   totalPrice,
-          //   products: selectedProducts,
-          // }),
-          senderId: userId,
-        }),
+        body: JSON.stringify(messageBody),
         headers: {
           'X-User-ID': userId?.toString() || '',
         },
       })
     }
+
     resetState()
     navigate(`/chat/${roomId}`)
   }

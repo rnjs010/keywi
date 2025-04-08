@@ -26,6 +26,12 @@ export interface ChatPost {
 }
 
 // 단일 메시지
+export interface ChatMessageItems {
+  productId: number
+  productName: string
+  price: number
+}
+
 export interface ChatMessage {
   messageId: string
   roomId: string
@@ -35,6 +41,7 @@ export interface ChatMessage {
   receiverId: string | null
   messageType: string
   content: string | null
+  items: ChatMessageItems[] // JSON 형식의 문자열 (예: '[{"productId": 1, "productName": "상품명", "price": 1000}]')
   imageUrl: string | null
   transactionAmount: number | null
   transactionStatus: string | null
