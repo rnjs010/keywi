@@ -6,6 +6,8 @@ import { HelpCircle } from 'iconoir-react'
 import { colors } from '@/styles/colors'
 import { useState } from 'react'
 import CommissionInfoModal from './CommissionInfoModal'
+import { useAccount } from '../../hooks/useAccount'
+import { BANK_CODE_TO_NAME } from '@/interfaces/BankCode'
 
 const PaymentContainer = tw.div`
   mx-4 my-2 p-4 bg-pay rounded-lg
@@ -19,18 +21,16 @@ const PaymentRow = tw.div`
   flex flex-row justify-between items-center
 `
 
-// 수수료 계산 함수
-const calculateCommission = (total: number) => {
-  return Math.round(total * 0.01)
-}
-
 export default function SafePaymentScreen() {
   const setStep = useDealAcceptStore((state) => state.setStep)
-  const totalPrice = useDealAcceptStore((state) => state.totalPrice)
-  const commission = calculateCommission(totalPrice)
-  const finalAmount = totalPrice + commission
-
+  const receipt = useDealAcceptStore((state) => state.receipt)
   const [openModal, setOpenModal] = useState<boolean>(false)
+  const { data } = useAccount()
+
+  const bankName = data?.bankCode
+    ? BANK_CODE_TO_NAME[data.bankCode]
+    : '알 수 없음'
+  const lastDigits = data?.accountNo.slice(-4)
 
   const handleOpenModal = () => {
     setOpenModal(true)
@@ -53,7 +53,7 @@ export default function SafePaymentScreen() {
               거래금액
             </Text>
             <Text variant="caption1" weight="bold" color="darkGray">
-              {totalPrice.toLocaleString()}원
+              {receipt.amount.toLocaleString()}원
             </Text>
           </PaymentRow>
           <PaymentRow>
@@ -69,7 +69,7 @@ export default function SafePaymentScreen() {
               />
             </div>
             <Text variant="caption1" weight="bold" color="darkGray">
-              {commission.toLocaleString()}원
+              {receipt.charge.toLocaleString()}원
             </Text>
           </PaymentRow>
         </PaymentSection>
@@ -79,7 +79,7 @@ export default function SafePaymentScreen() {
             최종 결제 금액
           </Text>
           <Text variant="caption1" weight="bold" color="darkGray">
-            {finalAmount.toLocaleString()}원
+            {receipt.totalAmount.toLocaleString()}원
           </Text>
         </PaymentRow>
       </PaymentContainer>
@@ -94,7 +94,7 @@ export default function SafePaymentScreen() {
             키위페이 연결계좌
           </Text>
           <Text variant="caption1" weight="bold" color="darkGray">
-            우리은행 2304
+            {bankName} {lastDigits}
           </Text>
         </PaymentRow>
       </PaymentContainer>

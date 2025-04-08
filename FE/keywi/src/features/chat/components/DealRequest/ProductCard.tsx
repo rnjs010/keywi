@@ -3,6 +3,7 @@ import { colors } from '@/styles/colors'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
 import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
+import truncateText from '@/utils/truncateText'
 
 const CardContainer = tw.div`
   flex flex-col items-center justify-between bg-pay py-3 px-2 rounded-lg my-1
@@ -42,7 +43,7 @@ export default function ProductCard({
 
       <FlexBox>
         <Text variant="caption1" weight="regular">
-          {data.productName}
+          {truncateText(data.productName, 25)}
         </Text>
         <Text variant="caption1" weight="bold">
           {data.price.toLocaleString()}원

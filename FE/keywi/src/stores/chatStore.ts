@@ -1,4 +1,5 @@
 import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
+import { ReceiptData } from '@/interfaces/ChatInterfaces'
 import { Client } from '@stomp/stompjs'
 import { create } from 'zustand'
 
@@ -103,16 +104,16 @@ export const useDealRequestStore = create<DealRequestStore>((set) => ({
 // 거래 수락
 interface DealAcceptStore {
   step: number
-  totalPrice: number
+  receipt: ReceiptData
   setStep: (step: number) => void
-  setTotalPrice: (total: number) => void
+  setReceipt: (receipt: ReceiptData) => void
   resetState: () => void
 }
 
 export const useDealAcceptStore = create<DealAcceptStore>((set) => ({
   step: 1,
-  totalPrice: 0,
+  receipt: {} as ReceiptData,
   setStep: (step) => set({ step }),
-  setTotalPrice: (total) => set({ totalPrice: total }),
-  resetState: () => set({ step: 1, totalPrice: 0 }),
+  setReceipt: (receipt) => set({ receipt }),
+  resetState: () => set({ step: 1, receipt: {} as ReceiptData }),
 }))

@@ -1,6 +1,9 @@
 import apiRequester from '@/services/api'
 import { BoardItemUsingInfo } from '@/interfaces/BoardInterface'
-import { CategoryAllProductResponse } from '@/interfaces/ChatInterfaces'
+import {
+  CategoryAllProductResponse,
+  ReceiptData,
+} from '@/interfaces/ChatInterfaces'
 
 // 카테고리 별 전체 상품 조회 함수
 export const getCategoryAllProducts = async (
@@ -55,3 +58,54 @@ export const searchProductsDeal = async (
     imageUrl: item.imageUrl ?? '',
   }))
 }
+
+// 거래 영수증 조회 함수
+interface DealReceiptResponse {
+  status: string
+  message: string
+  data: ReceiptData
+}
+
+export const getDealReceipt = async (
+  messageId: string,
+): Promise<ReceiptData> => {
+  const response = await apiRequester.get<DealReceiptResponse>(
+    `/api/chat/message/${messageId}`,
+  )
+  console.log('거래 영수증 조회 응답:', response.data)
+  return response.data.data
+}
+
+// 간편 비밀번호 검증 함수
+interface VerifyPasswordRequest {
+  userId: number
+  rawPassword: string
+}
+
+interface VerifyPasswordResponse {
+  matched: boolean
+}
+
+export const verifyPaymentPassword = async (
+  payload: VerifyPasswordRequest,
+): Promise<VerifyPasswordResponse> => {
+  const response = await apiRequester.post<VerifyPasswordResponse>(
+    '/api/payment/payment-password/verify',
+    payload,
+  )
+  return response.data
+}
+
+// 계좌 정보 조회 함수
+export interface PaymentAccountResponse {
+  accountNo: string
+  bankCode: string
+}
+
+export const getPaymentAccount =
+  async (): Promise<PaymentAccountResponse | null> => {
+    const response = await apiRequester.get<PaymentAccountResponse | null>(
+      '/api/payment/account',
+    )
+    return response.data
+  }

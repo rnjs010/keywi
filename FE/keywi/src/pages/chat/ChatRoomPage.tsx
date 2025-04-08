@@ -38,7 +38,6 @@ const DownBtnBox = tw.button`
 `
 
 export default function ChatRoomPage() {
-  // const myId = 'user789'
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -65,7 +64,7 @@ export default function ChatRoomPage() {
 
   useEffect(() => {
     refetch()
-  }, [location])
+  }, [location, messageGroups])
 
   useEffect(() => {
     if (chatHistory?.messageGroups) {

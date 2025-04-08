@@ -1,3 +1,5 @@
+import { BoardItemUsingInfo } from './BoardInterface'
+
 // 채팅방 리스트
 export interface ChatRoom {
   roomId: string
@@ -60,13 +62,14 @@ export interface PageInfo {
   hasMoreMessages: boolean
 }
 
-// API 응답 데이터
 export interface ChatMessagesResponseData {
   messageGroups: MessageGroup[]
   pageInfo: PageInfo
 }
 
+// 거래 메시지 타입
 export interface DealMessageProps {
+  messageId: string
   messageType: string
   content: string
   isMine: boolean
@@ -90,4 +93,18 @@ export interface CategoryAllProductResponse {
   status: string
   message: string
   data: ProductData[]
+}
+
+// 거래 영수증 정보
+export interface ReceiptData {
+  receiptId: number
+  roomId: number
+  messageId: string
+  assemblerId: number
+  buyerId: number
+  totalAmount: number
+  amount: number
+  charge: number
+  createdAt: string
+  items: BoardItemUsingInfo[]
 }

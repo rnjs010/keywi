@@ -13,6 +13,7 @@ const ThumbnailImage = tw.img`
 `
 
 export default function OpponentMessage({
+  messageId,
   senderProfileUrl,
   content,
   sentAt,
@@ -38,6 +39,7 @@ export default function OpponentMessage({
           </div>
         ) : (
           <DealMessage
+            messageId={messageId}
             messageType={messageType}
             content={content ?? ''}
             isMine={false}

@@ -3,16 +3,49 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { useDealAcceptStore } from '@/stores/chatStore'
 import { useState } from 'react'
+import { useVerifyPassword } from '../../hooks/useVerifyPassword'
+import { useUserStore } from '@/stores/userStore'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4 justify-center
 `
 
 export default function PasswordScreen() {
-  const RealPw = '010213'
+  const myId = useUserStore((state) => state.userId)
   const setStep = useDealAcceptStore((state) => state.setStep)
   const [password, setPasswordInput] = useState('')
   const [showError, setShowError] = useState(false)
+
+  const { mutate: verifyPassword } = useVerifyPassword()
+
+  const handleKeyPress = (key: string) => {
+    if (password.length < 6) {
+      const newPassword = password + key
+      setPasswordInput(newPassword)
+
+      if (newPassword.length === 6 && myId !== null) {
+        verifyPassword(
+          { userId: myId, rawPassword: newPassword },
+          {
+            onSuccess: (res) => {
+              if (res.matched) {
+                setShowError(false)
+                setStep(4)
+              } else {
+                setShowError(true)
+                setPasswordInput('')
+              }
+            },
+            onError: (err) => {
+              console.error('비밀번호 검증 실패', err)
+              setShowError(true)
+              setPasswordInput('')
+            },
+          },
+        )
+      }
+    }
+  }
 
   const handleDelete = () => {
     setPasswordInput(password.slice(0, -1))
@@ -22,21 +55,6 @@ export default function PasswordScreen() {
   const handleAllDelete = () => {
     setPasswordInput('')
     if (showError) setShowError(false)
-  }
-
-  const handleKeyPress = (key: string) => {
-    if (password.length < 6) {
-      setPasswordInput(password + key)
-    }
-    if (password.length === 5) {
-      const newPassword = password + key
-      if (newPassword === RealPw) {
-        setStep(4)
-      } else {
-        setShowError(true)
-        setPasswordInput('')
-      }
-    }
   }
 
   return (
