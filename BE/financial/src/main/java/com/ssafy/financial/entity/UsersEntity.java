@@ -6,8 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users",
+@Table(
         schema = "keywi",
+        name = "users",
+
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "kakao_id"),
                 @UniqueConstraint(columnNames = "user_nickname")
