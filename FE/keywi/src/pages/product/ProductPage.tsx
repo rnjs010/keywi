@@ -210,8 +210,6 @@ export default function ProductPage() {
       <TabsContainer>
         {/* 상위 카테고리 탭 */}
         <StyledTabs
-          key={selectedCategory}
-          defaultValue="all"
           value={selectedCategory}
           onChange={handleCategoryChange}
           tabs={categoryTabItems}
@@ -222,8 +220,6 @@ export default function ProductPage() {
       {showSubCategories && hasSubCategories(selectedCategory) && (
         <TabsContainer>
           <StyledTabs
-            key={`${selectedCategory}-${selectedSubCategory}`}
-            defaultValue="all"
             value={selectedSubCategory}
             onChange={handleSubCategoryChange}
             tabs={getSubCategoryTabItems()}

@@ -1,5 +1,5 @@
 //SECTION - 마이페이지, 검색에서 사용하는 탭
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -29,6 +29,7 @@ const ScrollContainer = styled.div`
     border-b
     border-white
   `}
+  scroll-behavior: smooth;
 
   /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
@@ -51,7 +52,9 @@ const TabsListWrapper = styled(TabsList)`
   `}
 `
 // 탭 트리거 버튼 스타일링
-const TabsTriggerWrapper = styled(TabsTrigger)`
+const TabsTriggerWrapper = styled(TabsTrigger, {
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})<{ isActive?: boolean }>`
   ${tw`
     flex-1 
     text-base 
@@ -109,19 +112,48 @@ export default function StyledTabs({
   value,
   onChange,
 }: StyledTabsProps) {
-  // 기본값이 없을 경우 첫 번째 탭의 값을 기본값으로 사용
-  const defaultTab =
-    value !== undefined
-      ? value
-      : defaultValue || (tabs.length > 0 ? tabs[0].value : '')
+  const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({})
+  const currentValue =
+    value || defaultValue || (tabs.length > 0 ? tabs[0].value : '')
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (currentValue && tabRefs.current[currentValue]) {
+      // 약간의 지연 후 스크롤 실행 (DOM이 완전히 렌더링 된 후)
+      setTimeout(() => {
+        tabRefs.current[currentValue]?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        })
+      }, 100)
+    }
+  }, [currentValue])
+
+  // useEffect(() => {
+  //   if (value && tabRefs.current[value]) {
+  //     tabRefs.current[value].scrollIntoView({
+  //       behavior: 'smooth',
+  //       block: 'nearest',
+  //       inline: 'center',
+  //     })
+  //   }
+  // }, [value])
 
   return (
     <TabContainer>
-      <TabsWrapper defaultValue={defaultTab} onValueChange={onChange}>
-        <ScrollContainer>
+      <TabsWrapper defaultValue={currentValue} onValueChange={onChange}>
+        <ScrollContainer ref={scrollContainerRef}>
           <TabsListWrapper>
             {tabs.map((tab) => (
-              <TabsTriggerWrapper key={tab.value} value={tab.value}>
+              <TabsTriggerWrapper
+                key={tab.value}
+                value={tab.value}
+                ref={(el) => {
+                  tabRefs.current[tab.value] = el
+                }}
+              >
                 {tab.label}
               </TabsTriggerWrapper>
             ))}
