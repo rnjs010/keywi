@@ -2,6 +2,7 @@ import { Text } from '@/styles/typography'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 import { useRecent } from '../hooks/useRecent'
+import { useUserStore } from '@/stores/userStore'
 
 const Container = tw.div`
   w-full
@@ -23,7 +24,8 @@ const EmptyState = tw.div`
 
 export default function SearchRecent() {
   const navigate = useNavigate()
-  const { recentKeywords, deleteAllRecentKeywords } = useRecent()
+  const myUserId = useUserStore((state) => state.userId)
+  const { recentKeywords, deleteAllRecentKeywords } = useRecent(myUserId || 1)
 
   // 검색어 클릭 핸들러
   const handleKeywordClick = (keyword: string) => {
