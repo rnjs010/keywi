@@ -23,9 +23,17 @@ public class ChatMessageController {
     @MessageMapping("/chat/message")
     public void sendMessage(@Payload ChatMessageDto message, @Header("X-User-ID") String senderId) {
         try {
-            log.info("메시지 수신: roomId={}, senderId={}, type={}, content={}, items={}",
-                    message.getRoomId(), senderId, message.getMessageType(),
-                    message.getContent(), message.getItems());
+            // 원본 items 문자열 저장
+            if (message.getItems() != null) {
+                // items 필드가 문자열로 전달된 경우 (프론트에서 JSON.stringify한 경우)
+                if (message.getItems() instanceof String) {
+                    message.setOriginalItems((String) message.getItems());
+                    log.info("원본 items 문자열 저장: {}", message.getOriginalItems());
+                }
+            }
+
+            log.info("메시지 수신: roomId={}, senderId={}, type={}, content={}",
+                    message.getRoomId(), senderId, message.getMessageType(), message.getContent());
 
             // 명시적 senderId 설정
             message.setSenderId(senderId);
@@ -41,7 +49,6 @@ public class ChatMessageController {
             }
         } catch (Exception e) {
             log.error("메시지 처리 중 오류 발생: {}", e.getMessage(), e);
-            // 오류 발생 시에도 클라이언트에 알림이 필요하다면 여기에 구현
         }
     }
 }

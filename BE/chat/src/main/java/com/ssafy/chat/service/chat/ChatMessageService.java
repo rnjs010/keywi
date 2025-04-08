@@ -281,27 +281,64 @@ public class ChatMessageService {
             ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                     .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다."));
 
-            // 아이템 처리 목록 (기존 로직 유지)
+            // 아이템 처리 목록
             List<ReceiptsItems> itemsList = new ArrayList<>();
 
-            // items에서 ReceiptItemDto 리스트 가져오기
-            if (messageDto.getItems() != null && messageDto.getItems() instanceof List) {
-                List<?> itemsFromDto = (List<?>) messageDto.getItems();
+            // items 필드 처리 (Object 타입이므로 타입에 따라 다르게 처리)
+            if (messageDto.getItems() != null) {
+                // 문자열인 경우 (JSON)
+                if (messageDto.getItems() instanceof String) {
+                    String itemsStr = (String) messageDto.getItems();
+                    log.info("items 문자열: {}", itemsStr);
 
-                log.info("Items 객체 타입: {}", messageDto.getItems().getClass().getName());
-                log.info("Items 리스트 크기: {}", itemsFromDto.size());
+                    try {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        JsonNode rootNode = objectMapper.readTree(itemsStr);
 
-                for (Object item : itemsFromDto) {
-                    if (item instanceof ReceiptItemDto) {
-                        ReceiptItemDto itemDto = (ReceiptItemDto) item;
-                        ReceiptsItems receiptItem = new ReceiptsItems();
-                        receiptItem.setProductName(itemDto.getProductName() != null ? itemDto.getProductName() : "");
-                        receiptItem.setCategoryName(itemDto.getCategoryName() != null ? itemDto.getCategoryName() : "");
-                        receiptItem.setPrice(itemDto.getPrice() != null ? itemDto.getPrice() : 0L);
-                        itemsList.add(receiptItem);
+                        // products 객체가 있으면 처리
+                        if (rootNode.has("products")) {
+                            JsonNode productsNode = rootNode.get("products");
 
-                        log.info("추가된 아이템: productName={}, categoryName={}, price={}",
-                                receiptItem.getProductName(), receiptItem.getCategoryName(), receiptItem.getPrice());
+                            // products가 객체인 경우 (키-값 쌍)
+                            if (productsNode.isObject()) {
+                                Iterator<Map.Entry<String, JsonNode>> fields = productsNode.fields();
+                                while (fields.hasNext()) {
+                                    Map.Entry<String, JsonNode> entry = fields.next();
+                                    JsonNode productNode = entry.getValue();
+
+                                    ReceiptsItems item = new ReceiptsItems();
+                                    item.setProductName(productNode.has("productName") ?
+                                            productNode.get("productName").asText() : entry.getKey());
+                                    item.setCategoryName(productNode.has("categoryName") ?
+                                            productNode.get("categoryName").asText() : "");
+                                    item.setPrice(productNode.has("price") ?
+                                            productNode.get("price").asLong() : 0L);
+
+                                    itemsList.add(item);
+                                    log.info("JSON에서 추가된 아이템: {}, 가격: {}", item.getProductName(), item.getPrice());
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("JSON 파싱 오류: {}", e.getMessage(), e);
+                    }
+                }
+                // 리스트인 경우 (이미 파싱된 ReceiptItemDto 리스트)
+                else if (messageDto.getItems() instanceof List) {
+                    List<?> itemsFromDto = (List<?>) messageDto.getItems();
+
+                    for (Object item : itemsFromDto) {
+                        if (item instanceof ReceiptItemDto) {
+                            ReceiptItemDto itemDto = (ReceiptItemDto) item;
+                            ReceiptsItems receiptItem = new ReceiptsItems();
+                            receiptItem.setProductName(itemDto.getProductName() != null ? itemDto.getProductName() : "");
+                            receiptItem.setCategoryName(itemDto.getCategoryName() != null ? itemDto.getCategoryName() : "");
+                            receiptItem.setPrice(itemDto.getPrice() != null ? itemDto.getPrice() : 0L);
+                            itemsList.add(receiptItem);
+
+                            log.info("추가된 아이템: productName={}, categoryName={}, price={}",
+                                    receiptItem.getProductName(), receiptItem.getCategoryName(), receiptItem.getPrice());
+                        }
                     }
                 }
             }

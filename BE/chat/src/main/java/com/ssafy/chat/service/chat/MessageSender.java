@@ -29,9 +29,9 @@ public class MessageSender {
      */
     public void sendChatMessage(ChatMessageDto message) {
         String destination = DESTINATION_PREFIX + message.getRoomId();
-        log.debug("WebSocket 메시지 전송: destination={}, message={}", destination, message);
+        log.debug("WebSocket 메시지 전송: destination={}", destination);
 
-        // WebSocket으로만 메시지 전송
+        // 메시지 그대로 전송 - 더 이상 items 타입 변환 필요 없음
         messagingTemplate.convertAndSend(destination, message);
 
         // Kafka는 주석 처리하여 중복 전송 방지
