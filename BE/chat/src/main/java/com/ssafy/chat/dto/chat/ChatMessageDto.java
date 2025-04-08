@@ -38,65 +38,69 @@ public class ChatMessageDto {
     private Integer transactionAmount; // 거래 금액
     private String transactionStatus;  // 거래 상태
 
-    // 견적서 항목 정보
-    @JsonDeserialize(using = ItemsDeserializer.class)
-    private List<ReceiptItemDto> items; // 견적서 항목 정보
+//    // 견적서 항목 정보
+//    @JsonDeserialize(using = ItemsDeserializer.class)
+//    private List<ReceiptItemDto> items; // 견적서 항목 정보
+
+    private Object items;
 
     private LocalDateTime sentAt;  // 전송 시간
     private boolean messageRead;   // 읽음 여부
 
-    // 커스텀 역직렬화 로직
-    public static class ItemsDeserializer extends JsonDeserializer<List<ReceiptItemDto>> {
-        @Override
-        public List<ReceiptItemDto> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            ObjectMapper mapper = (ObjectMapper) p.getCodec();
-            String itemsStr = p.getText();
+    private String originalItems; // 원본 items 문자열 저장용
 
-            try {
-                // 먼저 JSON 문자열을 Map으로 파싱
-                Map<String, Object> itemsMap = mapper.readValue(itemsStr, new TypeReference<Map<String, Object>>() {});
-                List<ReceiptItemDto> result = new ArrayList<>();
-
-                // products 객체 가져오기
-                if (itemsMap.containsKey("products")) {
-                    Object productsObj = itemsMap.get("products");
-
-                    // products가 Map(Object)인 경우 처리
-                    if (productsObj instanceof Map) {
-                        Map<String, Object> productsMap = (Map<String, Object>) productsObj;
-
-                        // 각 상품 항목을 순회
-                        for (Map.Entry<String, Object> entry : productsMap.entrySet()) {
-                            if (entry.getValue() instanceof Map) {
-                                Map<String, Object> productData = (Map<String, Object>) entry.getValue();
-
-                                ReceiptItemDto item = new ReceiptItemDto();
-
-                                // productName이 없으면 키 값을 사용
-                                item.setProductName(productData.containsKey("productName") ?
-                                        (String) productData.get("productName") : entry.getKey());
-
-                                if (productData.containsKey("categoryName"))
-                                    item.setCategoryName((String) productData.get("categoryName"));
-
-                                if (productData.containsKey("price"))
-                                    item.setPrice(((Number) productData.get("price")).longValue());
-
-                                result.add(item);
-                            }
-                        }
-                    }
-                }
-
-                return result;
-            } catch (Exception e) {
-                // 디버깅을 위한 상세 에러 로깅
-                System.err.println("Error deserializing items: " + e.getMessage());
-                e.printStackTrace();
-            }
-
-            // 파싱 실패시 빈 배열 반환
-            return new ArrayList<>();
-        }
-    }
+//    // 커스텀 역직렬화 로직
+//    public static class ItemsDeserializer extends JsonDeserializer<List<ReceiptItemDto>> {
+//        @Override
+//        public List<ReceiptItemDto> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+//            ObjectMapper mapper = (ObjectMapper) p.getCodec();
+//            String itemsStr = p.getText();
+//
+//            try {
+//                // 먼저 JSON 문자열을 Map으로 파싱
+//                Map<String, Object> itemsMap = mapper.readValue(itemsStr, new TypeReference<Map<String, Object>>() {});
+//                List<ReceiptItemDto> result = new ArrayList<>();
+//
+//                // products 객체 가져오기
+//                if (itemsMap.containsKey("products")) {
+//                    Object productsObj = itemsMap.get("products");
+//
+//                    // products가 Map(Object)인 경우 처리
+//                    if (productsObj instanceof Map) {
+//                        Map<String, Object> productsMap = (Map<String, Object>) productsObj;
+//
+//                        // 각 상품 항목을 순회
+//                        for (Map.Entry<String, Object> entry : productsMap.entrySet()) {
+//                            if (entry.getValue() instanceof Map) {
+//                                Map<String, Object> productData = (Map<String, Object>) entry.getValue();
+//
+//                                ReceiptItemDto item = new ReceiptItemDto();
+//
+//                                // productName이 없으면 키 값을 사용
+//                                item.setProductName(productData.containsKey("productName") ?
+//                                        (String) productData.get("productName") : entry.getKey());
+//
+//                                if (productData.containsKey("categoryName"))
+//                                    item.setCategoryName((String) productData.get("categoryName"));
+//
+//                                if (productData.containsKey("price"))
+//                                    item.setPrice(((Number) productData.get("price")).longValue());
+//
+//                                result.add(item);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                return result;
+//            } catch (Exception e) {
+//                // 디버깅을 위한 상세 에러 로깅
+//                System.err.println("Error deserializing items: " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//
+//            // 파싱 실패시 빈 배열 반환
+//            return new ArrayList<>();
+//        }
+//    }
 }

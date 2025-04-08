@@ -55,5 +55,5 @@ public class ChatMessage {
     private String transactionStatus;  // 거래 상태
 
     @Field("items")
-    private List<ReceiptItemDto> items;  // 견적서 항목 정보
+    private Object items;  // 견적서 항목 정보
 }
