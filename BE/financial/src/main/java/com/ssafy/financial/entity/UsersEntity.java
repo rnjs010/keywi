@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users",
+        schema = "keywi",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "kakao_id"),
                 @UniqueConstraint(columnNames = "user_nickname")

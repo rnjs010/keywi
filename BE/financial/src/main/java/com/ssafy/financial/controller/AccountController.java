@@ -24,14 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
 
     private final FinancialApiService financialApiService;
-    private final PayService payService;
-
-    // 계좌 연결 + 간편비밀번호 등록을 동시에 수행
-    @PostMapping("/connect")
-    public ResponseEntity<String> connectAndSetPassword(@RequestBody SetSimplePasswordRequest request) {
-        payService.setSimplePasswordAndConnectAccount(request);
-        return ResponseEntity.ok("계좌 연결 및 비밀번호 설정 완료");
-    }
 
     // 사용자 생성 (금융망 사용자 등록)
     @PostMapping("/user/create")
