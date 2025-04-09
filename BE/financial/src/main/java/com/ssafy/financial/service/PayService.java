@@ -307,6 +307,8 @@ public class PayService {
                 .withdrawalTransactionSummary("구매 확정")
                 .build();
 
+        transferRequest.setUserId(request.getUserId());
+
         AccountTransferResponse transferResponse = financialApiService.transferAccount(transferRequest);
 
         // 6. 거래 상태 변경
