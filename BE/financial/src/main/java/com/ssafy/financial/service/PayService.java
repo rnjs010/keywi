@@ -260,6 +260,8 @@ public class PayService {
                 .withdrawalTransactionSummary("견적 수락 결제")
                 .build();
 
+        transferRequest.setUserId(userId);
+
         AccountTransferResponse transferResponse = financialApiService.transferAccount(transferRequest);
 
 
