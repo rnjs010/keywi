@@ -28,8 +28,5 @@ public class MessageReceiver {
     public void receiveMessage(ChatMessageDto message) {
         // 로깅만 하고 실제로 메시지를 전송하지 않음
         log.debug("Kafka 메시지 수신 (전송하지 않음): {}", message);
-
-        // 중복 전송 방지를 위해 주석 처리
-        // messagingTemplate.convertAndSend(DESTINATION_PREFIX + message.getRoomId(), message);
     }
 }
