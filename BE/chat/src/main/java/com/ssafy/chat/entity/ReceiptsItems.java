@@ -25,11 +25,20 @@ public class ReceiptsItems {
     @Column(name = "receipt_id", nullable = false, insertable = false, updatable = false)
     private Long receiptId;    // 연결된 영수증 ID
 
+    @Column(name = "product_id", nullable = false)
+    private Integer productId;    // 제품 ID
+
+    @Column(name = "category_id", nullable = false)
+    private Integer categoryId;   // 카테고리 ID
+
     @Column(name = "product_name", nullable = false)
     private String productName;  // 제품 이름
 
     @Column(name = "category_name", nullable = false)
     private String categoryName; // 카테고리 이름
+
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl;     // 이미지 URL
 
     @Column(name = "price", nullable = false)
     private Long price;          // 가격

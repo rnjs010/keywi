@@ -22,4 +22,11 @@ public interface ReceiptsRepository extends JpaRepository<Receipts, Long> {
 
     // 사용자 ID(구매자 또는 조립자)로 관련된 모든 영수증 조회
     List<Receipts> findByBuyerIdOrAssemblerIdOrderByCreatedAtDesc(Long buyerId, Long assemblerId);
+
+    // 게시글 ID로 해당 게시글과 관련된 모든 영수증 조회
+    List<Receipts> findByBoardIdOrderByCreatedAtDesc(Long boardId);
+
+    // 게시글 ID로 영수증과 영수증 항목 함께 조회 (선택적)
+    @Query("SELECT r FROM Receipts r LEFT JOIN FETCH r.items WHERE r.boardId = :boardId")
+    List<Receipts> findByBoardIdWithItems(@Param("boardId") Long boardId);
 }
