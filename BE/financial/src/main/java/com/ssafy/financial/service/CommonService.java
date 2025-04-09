@@ -16,7 +16,7 @@ public class CommonService {
 
     public String getUserKeyByUserId(Long userId) {
         log.info("유저아이디: " + userId.toString());
-        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findTopByUserUserIdOrderByConnectedAtDesc(userId);
+        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findUser_Id(userId);
 
         if (connectionOpt.isEmpty()) {
             log.warn("❌ userId={}에 대한 연결된 계좌가 없습니다.", userId);
