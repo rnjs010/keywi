@@ -30,9 +30,10 @@ import { WebSocketProvider } from './services/WebSocketProvider'
 import ProductPage from './pages/product/ProductPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import { AuthRedirect } from './components/AuthRedirect'
-import FeedFullscreenPage from './pages/mypage/FeedFullscreenPage'
 import { ZzimListPage } from './pages/home/ZzimListPage'
 import { BookmarkListPage } from './pages/home/BookmarkListPage'
+import MypageFeedFullscreenPage from './pages/mypage/MypageFeedFullscreenPage'
+import BookmarkFullscreenPage from './pages/home/BookmarkFeedFullscreenPage'
 
 function App() {
   return (
@@ -65,7 +66,7 @@ function App() {
           <Route path="/home/bookmark" element={<BookmarkListPage />} />
           <Route
             path="/bookmark/feed/:feedId"
-            element={<FeedFullscreenPage />}
+            element={<BookmarkFullscreenPage />}
           />
 
           {/* 게시판 관련 라우트 */}
@@ -91,7 +92,7 @@ function App() {
           <Route path="/profile/:userId" element={<MyPage />} />
           <Route
             path="/profile/feed/:feedId"
-            element={<FeedFullscreenPage />}
+            element={<MypageFeedFullscreenPage />}
           />
           <Route path="/setting" element={<SettingPage />} />
           <Route path="/setting/account" element={<SettingAccountPage />} />

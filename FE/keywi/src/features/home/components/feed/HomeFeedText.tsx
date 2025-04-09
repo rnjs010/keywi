@@ -37,7 +37,7 @@ export default function HomeFeedText({
         {hashtags.map((tag, index) => (
           <HashTag key={index}>
             <Text variant="caption1" color="kiwi">
-              #{tag}
+              #{typeof tag === 'object' ? tag : tag}
             </Text>
           </HashTag>
         ))}
