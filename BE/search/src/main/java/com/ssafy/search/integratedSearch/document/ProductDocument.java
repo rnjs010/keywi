@@ -42,4 +42,7 @@ public class ProductDocument {
 
     @Field(type = FieldType.Date)
     private Instant createdAt;
+
+    @Field(type = FieldType.Text)
+    private String manufacturer;
 }
