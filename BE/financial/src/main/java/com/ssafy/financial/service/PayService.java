@@ -7,9 +7,12 @@ import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
+import com.ssafy.financial.dto.response.common.OpenApiResponse;
 import com.ssafy.financial.entity.*;
+import com.ssafy.financial.handler.ApiException;
 import com.ssafy.financial.repository.*;
 
+import com.ssafy.financial.util.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -52,23 +55,27 @@ public class PayService {
                 .build();
     }
 
-    public OneWonTransferInitResponse startOneWonTransfer(String accountNo, String bankCode) {
+    public OpenApiResponse<OneWonTransferInitResponse> startOneWonTransfer(String accountNo, String bankCode) {
         AccountEntity account = accountRepository
                 .findByAccountNoAndBankCode(accountNo, bankCode)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 계좌가 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorCode.A1003));
 
-        // 1원 송금 요청 생성
+        // 1원 송금 요청
         OneWonTransferRequest request = new OneWonTransferRequest();
         request.setAccountNo(accountNo);
         request.setUserKey(account.getUserKey());
         request.setAuthText("키위");
-
         financialApiService.sendOneWon(request);
 
-        return OneWonTransferInitResponse.builder()
+        OneWonTransferInitResponse rec = OneWonTransferInitResponse.builder()
                 .userKey(account.getUserKey())
                 .accountNo(accountNo)
                 .bankCode(bankCode)
+                .build();
+
+        return OpenApiResponse.<OneWonTransferInitResponse>builder()
+                .header(financialHeaderUtil.createSuccessHeader())
+                .data(rec)
                 .build();
     }
 

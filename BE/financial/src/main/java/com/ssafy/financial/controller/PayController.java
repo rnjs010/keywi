@@ -4,6 +4,8 @@ import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.dto.response.SimplePasswordVerifyResponse;
+import com.ssafy.financial.dto.response.common.FinancialResponseHeader;
+import com.ssafy.financial.dto.response.common.OpenApiResponse;
 import com.ssafy.financial.entity.UserAccountConnectionEntity;
 import com.ssafy.financial.service.PayService;
 import java.util.Optional;
@@ -26,8 +28,13 @@ public class PayController {
     private final PayService payService;
 
     @PostMapping("/transfer/initiate")
-    public ResponseEntity<OneWonTransferInitResponse> initiateOneWonTransfer(@RequestBody AccountCheckRequestDto dto) {
-        return ResponseEntity.ok(payService.startOneWonTransfer(dto.getAccountNo(), dto.getBankCode()));
+    public ResponseEntity<OpenApiResponse<OneWonTransferInitResponse>> initiateOneWonTransfer(
+            @RequestBody AccountCheckRequestDto dto
+    ) {
+        OpenApiResponse<OneWonTransferInitResponse> response =
+                payService.startOneWonTransfer(dto.getAccountNo(), dto.getBankCode());
+
+        return ResponseEntity.ok(response);
     }
 
     // 연결된 계좌 조회

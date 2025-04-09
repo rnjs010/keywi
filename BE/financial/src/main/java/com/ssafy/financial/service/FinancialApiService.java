@@ -208,7 +208,7 @@ public class FinancialApiService {
         request.setHeader(header);
 
         // authText 고정값 설정 (혹시 dto에서 안 들어올 경우를 대비해)
-        request.setAuthText("싸피");
+        request.setAuthText("키위");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

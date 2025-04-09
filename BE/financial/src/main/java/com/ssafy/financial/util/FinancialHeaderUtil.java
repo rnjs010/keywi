@@ -3,6 +3,7 @@ package com.ssafy.financial.util;
 import com.ssafy.financial.config.FinancialApiConfig;
 import com.ssafy.financial.dto.request.common.FinancialRequestHeader;
 import com.ssafy.financial.dto.request.common.FinancialUserInfo;
+import com.ssafy.financial.dto.response.common.FinancialResponseHeader;
 import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,5 +46,19 @@ public class FinancialHeaderUtil {
         log.info("[📦 HEADER 생성 완료] apiName={}, userKey={}, header={}", apiName, userKey, header);
 
         return header;
+    }
+
+    public FinancialResponseHeader createSuccessHeader() {
+        return FinancialResponseHeader.builder()
+                .responseCode("H0000")
+                .responseMessage("정상처리 되었습니다.")
+                .build();
+    }
+
+    public FinancialResponseHeader createErrorHeader(ErrorCode code) {
+        return FinancialResponseHeader.builder()
+                .responseCode(code.name())
+                .responseMessage(code.getMessage())
+                .build();
     }
 }
