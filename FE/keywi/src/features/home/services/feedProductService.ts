@@ -10,10 +10,11 @@ interface FavoriteProductsResponse {
   data: FavoriteProduct[]
 }
 
-export const getFavoriteProducts = async (): Promise<FavoriteProduct[]> => {
+export const getZzimProducts = async (): Promise<FavoriteProduct[]> => {
   const response = await apiRequester.get<FavoriteProductsResponse>(
     '/api/product/favorites/list',
   )
+  console.log('상품 찜 목록 조회 성공:', response)
   return response.data.data
 }
 

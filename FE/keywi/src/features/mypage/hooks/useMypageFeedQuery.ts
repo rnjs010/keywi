@@ -13,7 +13,7 @@ export const useMypageFeedQuery = (isMyProfile: boolean, userId?: number) => {
   const [displayedFeeds, setDisplayedFeeds] = useState<FeedData[]>([])
 
   // 한 페이지당 보여줄 피드 수 (가상 페이지네이션)
-  const PAGE_SIZE = 2
+  const PAGE_SIZE = 1
 
   // 쿼리 키와 함수 결정
   const queryKey = isMyProfile ? ['feeds', 'my'] : ['feeds', 'user', userId]

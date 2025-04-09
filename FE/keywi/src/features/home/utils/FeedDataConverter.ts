@@ -19,7 +19,9 @@ export const transformFeedData = (feedData: any): FeedData => {
   }))
 
   // 해시태그 배열 추출
-  const hashtags = feedData.hashtags.map((tag: any) => tag.name)
+  const hashtags = feedData.hashtags.map((tag: any) =>
+    typeof tag === 'object' ? tag.name : tag,
+  )
 
   // 시간 변환
   const timeAgo = getTimeDiff(feedData.createdAt)

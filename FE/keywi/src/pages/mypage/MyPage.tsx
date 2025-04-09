@@ -95,7 +95,7 @@ export default function MyPage() {
     {
       value: 'quote',
       label: '견적',
-      content: <MypageBoard userId={userId || 0} />,
+      content: <MypageBoard userId={userId || 0} isMyProfile={isMyProfile} />,
     },
   ]
 

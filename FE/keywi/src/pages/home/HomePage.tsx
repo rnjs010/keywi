@@ -111,15 +111,17 @@ export default function HomePage() {
 
   // 스크롤 위치 복원
   useLayoutEffect(() => {
-    const isFromComments = location.state?.fromComments === true
+    const isFromComments = location.state?.fromComments === true // 댓글 창에서 돌아왔는지 확인
+    const isInitialLoad = data?.pages?.length === 1 // 첫 로딩인지 확인
+
     if (!isLoading && data?.pages) {
       if (scrollAreaRef.current && isFromComments) {
         const position = getScrollPosition(SCROLL_KEY)
         if (position > 0) {
           scrollAreaRef.current.scrollTop = position
         }
-      } else if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTop = 0
+      } else if (scrollAreaRef.current && isInitialLoad) {
+        scrollAreaRef.current.scrollTop = 0 // 최초 로딩 시에만 맨 위로 스크롤
       }
     }
   }, [data, isLoading, location.state])

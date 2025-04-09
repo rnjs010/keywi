@@ -1,7 +1,13 @@
 import { Text } from '@/styles/typography'
-import { NavArrowLeft } from 'iconoir-react'
+import { MoreVert, NavArrowLeft } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const HeaderContainer = tw.div`
   flex
@@ -14,6 +20,12 @@ const HeaderContainer = tw.div`
 const BackButton = tw.button`
   absolute
   left-4
+  z-10
+`
+
+const MoreButton = tw.button`
+  absolute
+  right-4
   z-10
 `
 
@@ -33,11 +45,16 @@ const NextButton = tw.button`
   z-10
 `
 
-interface WriteHeaderProps {
+interface NextHeaderProps {
   startTitle: string
   isNextEnabled?: boolean
   onNextClick?: () => void
   endTitle?: string
+  more?: boolean
+  // 새로운 props
+  isMyContent?: boolean
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
 export default function NextHeader({
@@ -45,7 +62,11 @@ export default function NextHeader({
   isNextEnabled = false,
   onNextClick,
   endTitle,
-}: WriteHeaderProps) {
+  more,
+  isMyContent = false, // 내 콘텐츠인지 여부
+  onEdit,
+  onDelete,
+}: NextHeaderProps) {
   const navigate = useNavigate()
 
   // 뒤로가기
@@ -54,26 +75,58 @@ export default function NextHeader({
   return (
     <HeaderContainer>
       <BackButton onClick={handleBack}>
-        <NavArrowLeft height={24} width={24} strokeWidth={2} />
+        <NavArrowLeft height={'1.5rem'} width={'1.5rem'} strokeWidth={2} />
       </BackButton>
       <TitleContainer>
         <Text variant="body2" weight="bold">
           {startTitle}
         </Text>
       </TitleContainer>
-      <NextButton
-        onClick={isNextEnabled ? onNextClick : undefined}
-        disabled={!isNextEnabled}
-        className={!isNextEnabled ? 'opacity-50' : ''}
-      >
-        <Text
-          variant="body2"
-          weight="bold"
-          color={isNextEnabled ? 'kiwi' : 'gray'}
+      {more && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <MoreButton>
+              <MoreVert height={'1.5rem'} width={'1.5rem'} strokeWidth={2} />
+            </MoreButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {isMyContent && (
+              <>
+                {onEdit && (
+                  <DropdownMenuItem onClick={onEdit}>
+                    <Text variant="caption1">수정</Text>
+                  </DropdownMenuItem>
+                )}
+                {onDelete && (
+                  <DropdownMenuItem
+                    onClick={onDelete}
+                    className="text-red-500 focus:text-red-500"
+                  >
+                    <Text variant="caption1" color="darkGray">
+                      삭제
+                    </Text>
+                  </DropdownMenuItem>
+                )}
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {isNextEnabled && (
+        <NextButton
+          onClick={isNextEnabled ? onNextClick : undefined}
+          disabled={!isNextEnabled}
+          className={!isNextEnabled ? 'opacity-50' : ''}
         >
-          {endTitle}
-        </Text>
-      </NextButton>
+          <Text
+            variant="body2"
+            weight="bold"
+            color={isNextEnabled ? 'kiwi' : 'gray'}
+          >
+            {endTitle}
+          </Text>
+        </NextButton>
+      )}
     </HeaderContainer>
   )
 }

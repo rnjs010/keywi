@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
     if (location.state?.category) {
       navigate(location.state.category)
     } else {
-      navigate('/product')
+      navigate(-1)
     }
   }
 

@@ -30,7 +30,10 @@ import { WebSocketProvider } from './services/WebSocketProvider'
 import ProductPage from './pages/product/ProductPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import { AuthRedirect } from './components/AuthRedirect'
-import FeedFullscreenPage from './pages/mypage/FeedFullscreenPage'
+import { ZzimListPage } from './pages/home/ZzimListPage'
+import { BookmarkListPage } from './pages/home/BookmarkListPage'
+import MypageFeedFullscreenPage from './pages/mypage/MypageFeedFullscreenPage'
+import BookmarkFullscreenPage from './pages/home/BookmarkFeedFullscreenPage'
 
 function App() {
   return (
@@ -56,11 +59,15 @@ function App() {
         >
           {/* 홈 관련 라우트 */}
           <Route path="/home" element={<HomePage />} />
-          <Route path="/home/feed/:feedId" element={<FeedFullscreenPage />} />
           <Route path="/home/comment/:feedId" element={<HomeCommentPage />} />
           <Route path="/home/imgselect" element={<HomeImgSelectPage />} />
           <Route path="/home/tag" element={<HomeTagPage />} />
           <Route path="/home/write" element={<HomeWritePage />} />
+          <Route path="/home/bookmark" element={<BookmarkListPage />} />
+          <Route
+            path="/bookmark/feed/:feedId"
+            element={<BookmarkFullscreenPage />}
+          />
 
           {/* 게시판 관련 라우트 */}
           <Route path="/board" element={<BoardPage />} />
@@ -79,9 +86,14 @@ function App() {
             path="/product/detail/:productId"
             element={<ProductDetailPage />}
           />
+          <Route path="/product/zzim" element={<ZzimListPage />} />
 
           {/* 마이페이지 라우트 */}
           <Route path="/profile/:userId" element={<MyPage />} />
+          <Route
+            path="/profile/feed/:feedId"
+            element={<MypageFeedFullscreenPage />}
+          />
           <Route path="/setting" element={<SettingPage />} />
           <Route path="/setting/account" element={<SettingAccountPage />} />
 
