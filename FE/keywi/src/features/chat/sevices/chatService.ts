@@ -67,3 +67,35 @@ export const getChatHistoryMore = async ({
   console.log('채팅내역 더', response)
   return response.data.data
 }
+
+// 업로드용 이미지 주소 변환
+interface ImageUploadResponse {
+  success: boolean
+  message: string
+  data: string
+}
+
+export const chatService = {
+  uploadChatImage: async (
+    roomId: string,
+    file: File,
+  ): Promise<ImageUploadResponse> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('messageType', 'IMAGE')
+
+    const response = await apiRequester.post<ImageUploadResponse>(
+      `/api/chat/rooms/${roomId}/media`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    )
+
+    console.log('이미지 업로드 응답', response)
+
+    return response.data
+  },
+}

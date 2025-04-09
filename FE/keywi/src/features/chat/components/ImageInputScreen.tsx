@@ -5,6 +5,8 @@ import { useChatImageStore } from '@/stores/chatStore'
 import { colors } from '@/styles/colors'
 import { Camera, Xmark } from 'iconoir-react'
 import MainButton from '@/components/MainButton'
+import { useParams } from 'react-router-dom'
+import { useChatImageUpload } from '../hooks/useImageUpload'
 
 const Container = tw.div`
   fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col p-4
@@ -39,11 +41,16 @@ export default function ImageInputScreen() {
   const selectedImage = useChatImageStore((state) => state.selectedImage)
   const setSelectedImage = useChatImageStore((state) => state.setSelectedImage)
   const [disabled, setDisabled] = useState(true)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const { roomId } = useParams<{ roomId: string }>()
+
+  const { uploadAndSendImage, isLoading } = useChatImageUpload(roomId!)
 
   // 파일 선택 핸들러 (단일 선택)
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      setSelectedFile(file)
       const reader = new FileReader()
       reader.onloadend = () => {
         setSelectedImage(reader.result as string)
@@ -56,13 +63,12 @@ export default function ImageInputScreen() {
     if (fileInputRef.current) {
       fileInputRef.current.click()
     }
-
     setDisabled(false)
   }
 
   const handleDeleteImage = () => {
     setSelectedImage(null)
-
+    setSelectedFile(null)
     if (fileInputRef.current) {
       setDisabled(true)
       fileInputRef.current.value = ''
@@ -71,7 +77,15 @@ export default function ImageInputScreen() {
 
   // 이미지 전송 처리
   const handleSend = async () => {
-    resetState()
+    if (selectedFile) {
+      try {
+        await uploadAndSendImage(selectedFile)
+        resetState() // 성공 시 상태 초기화
+      } catch (error) {
+        console.error('이미지 업로드 중 오류 발생:', error)
+        alert('이미지 업로드에 실패했습니다.')
+      }
+    }
   }
 
   const handleClose = () => {
@@ -114,7 +128,11 @@ export default function ImageInputScreen() {
           </ImageContainer>
         </Content>
 
-        <MainButton text="전송하기" onClick={handleSend} disabled={disabled} />
+        <MainButton
+          text={isLoading ? '전송 중...' : '전송하기'}
+          onClick={handleSend}
+          disabled={disabled}
+        />
 
         <FileInput
           ref={fileInputRef}

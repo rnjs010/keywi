@@ -7,7 +7,7 @@ import ImageInputScreen from '@/features/chat/components/ImageInputScreen'
 import tw from 'twin.macro'
 import { ArrowDown } from 'iconoir-react'
 import { useChatImageStore } from '@/stores/chatStore'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import {
   useChatPartner,
@@ -46,6 +46,7 @@ export default function ChatRoomPage() {
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
+  const [showDownBtn, setShowDownBtn] = useState(false)
   const { roomId } = useParams<{ roomId: string }>()
   const myId = useUserStore((state) => state.userId)
 
@@ -63,25 +64,19 @@ export default function ChatRoomPage() {
 
   // 채팅 내역 가져오기
   const location = useLocation()
+  const queryClient = useQueryClient()
   const { data: chatHistory, refetch } = useChatHistory(roomId!)
+  const messageGroups = chatHistory?.messageGroups || []
 
-  // 컴포넌트 마운트 또는 location 변경 시에만 refetch
   useEffect(() => {
     refetch()
   }, [location, refetch])
-
-  // chatHistory에서 직접 데이터를 사용하도록 수정
-  const messageGroups = chatHistory?.messageGroups || []
-
-  // 메시지 수신 처리 함수 (queryClient를 통해 캐시 업데이트)
-  const queryClient = useQueryClient()
 
   const onMessage = useCallback(
     (msg: ChatMessage) => {
       const sentDate = new Date(msg.sentAt)
       const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
 
-      // 쿼리 캐시 업데이트
       queryClient.setQueryData(
         chatKeys.history(roomId!),
         (oldData: ChatMessagesResponseData | undefined) => {
@@ -160,7 +155,6 @@ export default function ChatRoomPage() {
     handleVisualViewPortResize()
     startToBottom()
 
-    // 이벤트 리스너 등록
     if (window.visualViewport) {
       window.visualViewport.addEventListener(
         'resize',
@@ -179,6 +173,25 @@ export default function ChatRoomPage() {
     }
   }, [[showImage]])
 
+  // Down button 표시 여부
+  useEffect(() => {
+    const container = chatContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container
+      const isBottom = scrollHeight - scrollTop <= clientHeight + 10 // 하단 여유 범위 10px
+      setShowDownBtn(!isBottom)
+    }
+
+    container.addEventListener('scroll', handleScroll)
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // 상태별 화면
   if (!roomId)
     return (
       <Container>
@@ -214,9 +227,11 @@ export default function ChatRoomPage() {
           </div>
 
           {/* Down Button */}
-          <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
-            <ArrowDown />
-          </DownBtnBox>
+          {showDownBtn && (
+            <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
+              <ArrowDown />
+            </DownBtnBox>
+          )}
 
           {/* Date + Chat */}
           <ChatContainer ref={chatContainerRef}>
