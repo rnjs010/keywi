@@ -17,13 +17,10 @@ const EmptyContainer = tw.div`
 
 interface MypageBoardProps {
   userId: number
-  isMyProfile?: boolean
+  isMyProfile: boolean
 }
 
-export default function MypageBoard({
-  userId,
-  isMyProfile = false,
-}: MypageBoardProps) {
+export default function MypageBoard({ userId, isMyProfile }: MypageBoardProps) {
   const page = 0
   const size = 10
   const { data: quotes, isLoading, error } = useMyBoardList(userId, page, size)

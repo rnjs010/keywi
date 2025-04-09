@@ -16,7 +16,7 @@ import {
   ProductItem,
 } from '@/interfaces/HomeInterfaces'
 import TagWriteModal from './TagWriteModal'
-import { useFavoriteProducts } from '../../hooks/useFavoriteProducts'
+import { useZzimProducts } from '../../hooks/useFavoriteProducts'
 import truncateText from '@/utils/truncateText'
 import highlightSearchTerm from '@/utils/highlightSearchTerm'
 import { useFeedProductSearch } from '../../hooks/useFeedProductSearch'
@@ -76,8 +76,8 @@ export default function TagProductModal({
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false)
 
   // API 데이터 가져오기
-  const { data: favoriteProducts, isLoading: isFavLoading } =
-    useFavoriteProducts()
+  const { favoriteProducts: favoriteProducts, isLoading: isFavLoading } =
+    useZzimProducts()
   const { data: searchResults, isLoading: isSearchLoading } =
     useFeedProductSearch(searchTerm, isOpen)
 

@@ -178,7 +178,9 @@ export interface ProductPosition {
 export interface FavoriteProduct {
   productId: number
   categoryId: number
+  categoryName: string
   productName: string
+  isFavorite: boolean | null
   price: number
   productUrl: string
   productImage: string
