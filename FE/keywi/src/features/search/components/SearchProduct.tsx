@@ -64,7 +64,7 @@ export default function SearchProduct({ products }: SearchProductProps) {
       {products.map((product) => (
         <ProductItem
           key={product.productId}
-          to={`/product/${product.productId}`}
+          to={`/product/detail/${product.productId}`}
         >
           <ProductImage src={product.thumbnailUrl} alt={product.productName} />
           <ProductInfo>

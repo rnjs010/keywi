@@ -41,3 +41,43 @@ export const ratingBoard = async (
   })
   return response.data
 }
+
+// 영수증 정보 조회 함수
+export interface ReceiptItem {
+  productId: number
+  categoryId: number
+  productName: string
+  categoryName: string
+  imageUrl: string
+  price: number
+}
+
+export interface ReceiptData {
+  receiptId: number
+  roomId: number
+  boardId: number
+  messageId: string
+  assemblerId: number
+  buyerId: number
+  totalAmount: number
+  amount: number
+  charge: number
+  createdAt: string
+  items: ReceiptItem[]
+}
+
+export interface ReceiptResponse {
+  success: boolean
+  message: string
+  data: ReceiptData[]
+}
+
+export const getBoardReceipt = async (
+  boardId: number,
+): Promise<ReceiptData[]> => {
+  const response: AxiosResponse<ReceiptResponse> = await apiRequester.get(
+    `/api/chat/board/${boardId}`,
+  )
+  console.log(`게시글 ${boardId}의 영수증 정보:`, response.data.data)
+  return response.data.data
+}

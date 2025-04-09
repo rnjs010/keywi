@@ -268,6 +268,7 @@ export default function MypageFeedFullscreenPage() {
           // 마지막 피드가 삭제된 경우 인덱스 조정
           setCurrentIndex(updatedFeeds.length - 1)
         }
+        navigate(-1)
       } else {
         toast.error('피드 삭제에 실패했습니다')
       }

@@ -12,11 +12,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ReviewStars } from './ReviewStars'
 import { BoardCardData } from '@/interfaces/BoardInterface'
 import { formatDateTime } from '@/utils/formatDateTime'
-import { useChangeBoardStatus, useRatingBoard } from '../hooks/useMypageBoard'
+import {
+  useChangeBoardStatus,
+  useCheckRatingExists,
+  useRatingBoard,
+} from '../hooks/useMypageBoard'
+import { toast } from 'sonner'
 
 const CardContainer = tw.div`
   flex flex-col py-4 border-b border-[#EEEEEE] gap-1
@@ -70,12 +75,24 @@ export default function MypageBoardCard({
   dealState,
   chatCount,
   createdAt,
-  writerId,
   isMyProfile,
 }: MypageBoardCardProps) {
   const badgeData = getBadgeData(dealState)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [ratingValue, setRatingValue] = useState(0)
+  // 별점 제출 여부 상태 추가
+  const [isRatingSubmitted, setIsRatingSubmitted] = useState(false)
+
+  // 별점 제출 여부 확인 쿼리 (선택적)
+  const { data: ratingExists, isLoading: isCheckingRating } =
+    useCheckRatingExists(boardId, dealState === 'COMPLETED')
+
+  // 별점 제출 여부 확인 결과를 상태에 반영
+  useEffect(() => {
+    if (ratingExists) {
+      setIsRatingSubmitted(ratingExists)
+    }
+  }, [ratingExists])
 
   // 상태변경 mutation 훅
   const { mutate: changeBoardStatus, isPending: isStatusChangePending } =
@@ -87,7 +104,8 @@ export default function MypageBoardCard({
   // 각 status 마다 버튼 다르게 하기
   const showProgressBtn = dealState === 'REQUEST'
   const showCompletedBtn = dealState === 'IN_PROGRESS'
-  const showRatingBtn = dealState === 'COMPLETED'
+  const showRatingBtn =
+    dealState === 'COMPLETED' && !isRatingSubmitted && !isCheckingRating
 
   // 상태 변경 핸들러
   const handleChangeStatus = (e: React.MouseEvent) => {
@@ -102,13 +120,21 @@ export default function MypageBoardCard({
     submitRating(
       {
         boardId,
-        targetUserId: writerId,
         rating: ratingValue,
       },
       {
         onSuccess: () => {
           setIsDialogOpen(false)
-          // 성공 알림 또는 추가 작업 (선택사항)
+          // 별점 제출 완료 상태로 변경
+          setIsRatingSubmitted(true)
+          // 성공 알림
+          toast.success('별점이 성공적으로 제출되었습니다!')
+        },
+        onError: (error) => {
+          // 오류 처리
+          toast.error(
+            `별점 제출 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`,
+          )
         },
       },
     )
@@ -224,6 +250,12 @@ export default function MypageBoardCard({
                 </DialogContent>
               </Dialog>
             </StopPropagationWrapper>
+          )}
+          {/* 별점이 제출된 경우 제출 완료 메시지 표시 (선택 사항) */}
+          {dealState === 'COMPLETED' && isRatingSubmitted && (
+            <Text variant="caption1" color="gray" className="text-center mt-2">
+              별점이 제출되었습니다
+            </Text>
           )}
         </StatusContainer>
       )}
