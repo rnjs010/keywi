@@ -215,7 +215,6 @@ public class PayService {
         }
     }
 
-    @Transactional
     public void acceptTransaction(Long userId, EscrowTransactionAcceptRequest request) {
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
@@ -270,7 +269,6 @@ public class PayService {
         escrowTransactionRepository.save(transaction);
     }
 
-    @Transactional
     public void completeTransaction(EscrowTransactionCompleteRequest request) {
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
