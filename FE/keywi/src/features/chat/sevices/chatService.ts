@@ -15,28 +15,25 @@ export const createChatRoom = async (boardId: number) => {
 // 채팅방 목록 조회
 export const getChatRoomList = async (): Promise<ChatRoom[]> => {
   const response = await apiRequester.get('/api/chat/rooms')
-  console.log('목록', response)
   return response.data.data
 }
 
 // 상대방 정보 가져오기
 export const getChatPartner = async (roomId: string): Promise<ChatPartner> => {
   const response = await apiRequester.get(`/api/chat/rooms/${roomId}/partner`)
-  console.log('상대방', response)
   return response.data.data
 }
 
 // 거래 게시글 정보 가져오기
 export const getChatPost = async (roomId: string): Promise<ChatPost> => {
   const response = await apiRequester.get(`/api/chat/rooms/${roomId}/board`)
-  console.log('게시글', response)
   return response.data.data
 }
 
 // 채팅 내역 가져오기
 export const getChatHistory = async (
   roomId: string,
-  size: number = 100,
+  size: number = 200,
 ): Promise<ChatMessagesResponseData> => {
   const response = await apiRequester.get(
     `/api/chat/rooms/${roomId}/messages`,

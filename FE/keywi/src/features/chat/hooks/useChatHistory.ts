@@ -18,7 +18,10 @@ export const useChatHistory = (roomId: string) => {
     queryKey: chatKeys.history(roomId),
     queryFn: () => getChatHistory(roomId, 100),
     enabled: !!roomId, // roomId가 있을 때만 호출
-    staleTime: 1000 * 60, // 1분 동안 캐시 유지
+    // staleTime: 1000 * 60, // 1분 동안 캐시 유지
+    staleTime: 0,
+    gcTime: 0, // ✅ 캐시 제거
+    refetchOnMount: true, // ✅ 컴포넌트 진입 시마다 refetch
   })
 }
 

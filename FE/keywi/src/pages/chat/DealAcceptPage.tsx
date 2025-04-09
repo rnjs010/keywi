@@ -65,7 +65,6 @@ export default function DealAcceptPage() {
       })
     }
 
-    resetState()
     navigate(`/chat/${roomId}`)
   }
 

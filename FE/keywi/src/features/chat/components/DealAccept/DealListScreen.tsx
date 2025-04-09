@@ -28,12 +28,11 @@ export default function DealListScreen() {
           거래 내역
         </Text>
         <ListContainer>
-          형식 오류로 출력 안됨 (없을 때 처리 필요)
-          {/* {receipt.items.map((product) => (
+          {receipt.items.map((product) => (
             <div key={product.productId}>
               <ProductCard data={product} mode="view" />
             </div>
-          ))} */}
+          ))}
         </ListContainer>
       </div>
 

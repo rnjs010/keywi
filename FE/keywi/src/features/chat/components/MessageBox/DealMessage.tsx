@@ -3,8 +3,12 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { DealMessageProps } from '@/interfaces/ChatInterfaces'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import TwoBtnModal from '@/components/TwoBtnModal'
+import { WebSocketContext } from '@/services/WebSocketProvider'
+import { useUserStore } from '@/stores/userStore'
+import { useDealReceipt } from '../../hooks/useDealReceipt'
+import { useDealAcceptStore } from '@/stores/chatStore'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -26,9 +30,16 @@ export default function DealMessage({
 }: DealMessageProps) {
   const navigate = useNavigate()
   const { roomId } = useParams()
+  const { client } = useContext(WebSocketContext)
+  const { userId } = useUserStore()
+  const receipt = useDealAcceptStore((state) => state.receipt)
+  const resetState = useDealAcceptStore((state) => state.resetState)
 
   // 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const handleOpenModal = () => setIsModalOpen(true)
+  const handleCloseModal = () => setIsModalOpen(false)
+
   let modalTitle = ''
   let modalContent = ''
   let modalActions: {
@@ -37,9 +48,27 @@ export default function DealMessage({
     onCancle: () => void
     onConfirm: () => void
   } = { cancel: '', confirm: '', onCancle: () => {}, onConfirm: () => {} }
-  const handleOpenModal = () => setIsModalOpen(true)
-  const handleCloseModal = () => setIsModalOpen(false)
 
+  // 채팅 보내기
+  const sendChatMessage = (type: string, message: string) => {
+    if (!client?.connected || !roomId || !userId) return
+
+    client.publish({
+      destination: '/app/chat/message',
+      body: JSON.stringify({
+        roomId,
+        messageType: type,
+        content: message,
+        items: null,
+        senderId: userId,
+      }),
+      headers: {
+        'X-User-ID': userId.toString(),
+      },
+    })
+  }
+
+  // 채팅 화면 구성
   let title = ''
   let imageSrc = ''
   let contentText = ''
@@ -77,8 +106,9 @@ export default function DealMessage({
           confirm: '확정하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
-            console.log('거래 완료 처리')
+            sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
             handleCloseModal()
+            resetState()
           },
         }
       } else {
@@ -89,7 +119,7 @@ export default function DealMessage({
           confirm: '요청하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
-            console.log('거래 완료 요청')
+            sendChatMessage('TEXT', '거래 완료를 요청합니다.')
             handleCloseModal()
           },
         }
