@@ -7,7 +7,6 @@ import { useContext, useState } from 'react'
 import TwoBtnModal from '@/components/TwoBtnModal'
 import { WebSocketContext } from '@/services/WebSocketProvider'
 import { useUserStore } from '@/stores/userStore'
-import { useDealReceipt } from '../../hooks/useDealReceipt'
 import { useDealAcceptStore } from '@/stores/chatStore'
 
 const Container = tw.div`
