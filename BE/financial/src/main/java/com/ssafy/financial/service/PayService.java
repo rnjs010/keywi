@@ -55,45 +55,39 @@ public class PayService {
                 .build();
     }
 
-    public OpenApiResponse<OneWonTransferInitResponse> startOneWonTransfer(Long userId, String accountNo, String bankCode) {
+    public OneWonTransferInitResponse startOneWonTransfer(Long userId, String accountNo, String bankCode) {
         AccountEntity account = accountRepository
                 .findByAccountNoAndBankCode(accountNo, bankCode)
                 .orElseThrow(() -> new ApiException(ErrorCode.A1003));
 
-        // 1원 송금 요청
         OneWonTransferRequest request = new OneWonTransferRequest();
         request.setAccountNo(accountNo);
         request.setUserKey(account.getUserKey());
         request.setAuthText("키위");
         request.setUserId(userId);
+
         financialApiService.sendOneWon(request);
 
-        OneWonTransferInitResponse rec = OneWonTransferInitResponse.builder()
+        return OneWonTransferInitResponse.builder()
                 .userKey(account.getUserKey())
                 .accountNo(accountNo)
                 .bankCode(bankCode)
-                .build();
-
-        return OpenApiResponse.<OneWonTransferInitResponse>builder()
-                .header(financialHeaderUtil.createSuccessHeader())
-                .data(rec)
                 .build();
     }
 
     public void setSimplePasswordAndConnectAccount(SetSimplePasswordRequest request) {
         UsersEntity user = usersRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+                .orElseThrow(() -> new ApiException(ErrorCode.H1009)); // 사용자 없음
 
         AccountEntity account = accountRepository.findByAccountNoAndBankCode(
                 request.getAccountNo(), request.getBankCode()
-        ).orElseThrow(() -> new IllegalArgumentException("계좌 정보 없음"));
+        ).orElseThrow(() -> new ApiException(ErrorCode.A1003)); // 계좌 정보 없음
 
         boolean alreadyConnected = userAccountConnectionRepository.existsByUserAndDemandAccount(user, account);
         if (alreadyConnected) {
-            throw new IllegalStateException("이미 연결된 계좌입니다.");
+            throw new ApiException(ErrorCode.A1006); // "이미 연결된 계좌입니다." → 재사용 가능 or 새 코드 정의
         }
 
-        // 간편 비밀번호 저장 or 업데이트
         String encoded = passwordEncoder.encode(request.getRawPassword());
         Optional<SimplePasswordEntity> existing = simplePasswordRepository.findByUser(user);
 
@@ -110,7 +104,6 @@ public class PayService {
         );
         simplePasswordRepository.save(entity);
 
-        // 계좌 연결
         UserAccountConnectionEntity connection = UserAccountConnectionEntity.builder()
                 .user(user)
                 .demandAccount(account)
