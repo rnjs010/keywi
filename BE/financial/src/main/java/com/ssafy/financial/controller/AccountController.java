@@ -76,8 +76,8 @@ public class AccountController {
 
     // 계좌 잔액 조회
     @PostMapping("/account/balance")
-    public ResponseEntity<AccountBalanceResponse> getAccountBalance(@RequestBody AccountBalanceRequest request) {
-        AccountBalanceResponse response = financialApiService.inquireAccountBalance(request);
+    public ResponseEntity<AccountBalanceResponse> getAccountBalance(@RequestHeader("X-User-ID") Long userId, @RequestBody AccountBalanceRequest request) {
+        AccountBalanceResponse response = financialApiService.inquireAccountBalance(userId, request);
         return ResponseEntity.ok(response);
     }
 

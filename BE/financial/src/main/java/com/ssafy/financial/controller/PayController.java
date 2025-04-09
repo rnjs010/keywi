@@ -83,9 +83,8 @@ public class PayController {
     // 견적 수락 (결제)
     @PostMapping("/accept")
     public ResponseEntity<String> acceptTransaction(@RequestHeader("X-User-ID") Long userId, @RequestBody EscrowTransactionAcceptRequest request) {
-        request.setUserId(userId);
 
-        payService.acceptTransaction(request);
+        payService.acceptTransaction(userId, request);
         return ResponseEntity.ok("거래 수락 및 결제 완료");
     }
     // 거래 완료

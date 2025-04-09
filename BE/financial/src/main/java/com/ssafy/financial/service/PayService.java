@@ -222,9 +222,7 @@ public class PayService {
         }
     }
 
-    @Transactional
-    public void acceptTransaction(EscrowTransactionAcceptRequest request) {
-        Long userId = request.getUserId();
+    public void acceptTransaction(Long userId, EscrowTransactionAcceptRequest request) {
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("거래 정보가 없습니다."));
@@ -269,6 +267,8 @@ public class PayService {
                 .withdrawalTransactionSummary("견적 수락 결제")
                 .build();
 
+        transferRequest.setUserId(userId);
+
         AccountTransferResponse transferResponse = financialApiService.transferAccount(transferRequest);
 
 
@@ -278,7 +278,6 @@ public class PayService {
         escrowTransactionRepository.save(transaction);
     }
 
-    @Transactional
     public void completeTransaction(EscrowTransactionCompleteRequest request) {
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
@@ -314,6 +313,8 @@ public class PayService {
                 .withdrawalAccountNo(escrowAccountNo)
                 .withdrawalTransactionSummary("구매 확정")
                 .build();
+
+        transferRequest.setUserId(request.getUserId());
 
         AccountTransferResponse transferResponse = financialApiService.transferAccount(transferRequest);
 

@@ -15,15 +15,19 @@ public class CommonService {
     private final UserAccountConnectionRepository userAccountConnectionRepository;
 
     public String getUserKeyByUserId(Long userId) {
-        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findTopByUser_IdOrderByConnectedAtDesc(userId);
-
-        if (connectionOpt.isEmpty()) {
-            log.warn("❌ userId={}에 대한 연결된 계좌가 없습니다.", userId);
-            throw new IllegalArgumentException("연결된 계좌가 없습니다.");
+        if (userId == null) {
+            log.error("❌ userId가 null로 전달되었습니다.");
+            throw new IllegalArgumentException("userId는 null일 수 없습니다.");
         }
 
-        AccountEntity account = connectionOpt.get().getDemandAccount();
-        if (account == null || account.getUserKey() == null) {
+        AccountEntity account = userAccountConnectionRepository.findByUser_Id(userId)
+                .map(UserAccountConnectionEntity::getDemandAccount)
+                .orElseThrow(() -> {
+                    log.warn("❌ userId={}에 대한 연결된 계좌가 없습니다.", userId);
+                    return new IllegalArgumentException("연결된 계좌가 없습니다.");
+                });
+
+        if (account.getUserKey() == null) {
             log.warn("❌ userId={} → 계좌는 존재하나 userKey가 없습니다. account={}", userId, account);
             throw new IllegalArgumentException("userKey가 존재하지 않습니다.");
         }
@@ -32,4 +36,5 @@ public class CommonService {
 
         return account.getUserKey();
     }
+
 }
