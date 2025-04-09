@@ -126,8 +126,36 @@ public class FeedService {
      */
     @Transactional
     public FeedPageResponse getRecommendedFeeds(Long userId, Pageable pageable) {
+        // 최근 작성 피드 확인
+        String recentlyCreatedFeedKey = "user:" + userId + ":recently_created_feed";
+        Object recentFeedIdObj = redisTemplate.opsForValue().get(recentlyCreatedFeedKey);
+        Long recentFeedId = null;
+
+        if (recentFeedIdObj != null) {
+            // 캐시에서 찾았으면 ID로 변환
+            if (recentFeedIdObj instanceof Integer) {
+                recentFeedId = ((Integer) recentFeedIdObj).longValue();
+            } else if (recentFeedIdObj instanceof Long) {
+                recentFeedId = (Long) recentFeedIdObj;
+            } else {
+                recentFeedId = Long.valueOf(recentFeedIdObj.toString());
+            }
+
+            // 캐시키 삭제 (1회성으로만 표시하기 위해)
+            redisTemplate.delete(recentlyCreatedFeedKey);
+        }
+
         // 캐시를 무시하고 매번 새로 생성
         List<FeedDTO> recommendedFeeds = new ArrayList<>();
+
+        // 0. 최근 작성한 피드가 있으면 맨 앞에 추가
+        if (recentFeedId != null) {
+            Feed recentFeed = feedMapper.findById(recentFeedId);
+            if (recentFeed != null && !recentFeed.isDelete()) {
+                FeedDTO recentFeedDTO = convertToFeedDTO(recentFeed);
+                recommendedFeeds.add(recentFeedDTO);
+            }
+        }
 
         // 1. 팔로우 기반 추천 피드(그 중 읽지 않은 최신 피드)
         List<Feed> followingFeeds = feedMapper.findUnreadFeedsByFollowings(userId);
@@ -649,6 +677,10 @@ public class FeedService {
             // 해시태그 추가
             hashtagService.addHashtagsToFeed(feed.getFeedId(), request.getHashtags(), defaultCategory);
         }
+
+        // 피드 생성 성공 후 Redis에 최근 생성된 피드 ID 저장 (1분 동안만 유효)
+        String recentlyCreatedFeedKey = "user:" + userId + ":recently_created_feed";
+        redisTemplate.opsForValue().set(recentlyCreatedFeedKey, feed.getFeedId(), 1, TimeUnit.MINUTES);
 
         // 4. 작성된 피드 정보 반환
         return getFeedById(feed.getFeedId(), userId);
