@@ -273,10 +273,12 @@ public class FinancialApiService {
     }
 
     // 잔액 조회
-    public AccountBalanceResponse inquireAccountBalance(AccountBalanceRequest request) {
+    public AccountBalanceResponse inquireAccountBalance(Long userId, AccountBalanceRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/inquireDemandDepositAccountBalance";
 
-        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", request.getUserKey()));
+        String userKey = commonService.getUserKeyByUserId(userId);
+
+        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", userKey));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
