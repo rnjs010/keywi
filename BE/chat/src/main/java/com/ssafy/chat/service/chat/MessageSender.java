@@ -34,8 +34,6 @@ public class MessageSender {
         // 메시지 그대로 전송 - 더 이상 items 타입 변환 필요 없음
         messagingTemplate.convertAndSend(destination, message);
 
-        // Kafka는 주석 처리하여 중복 전송 방지
-        // kafkaUtil.sendMessage(CHAT_TOPIC, message.getRoomId(), message);
     }
 
     /**

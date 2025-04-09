@@ -18,6 +18,7 @@ import com.ssafy.chat.repository.ReceiptsRepository;
 import com.ssafy.chat.repository.chat.ChatRoomRepository;
 import com.ssafy.chat.repository.chat.mongo.ChatMessageRepository;
 import com.ssafy.chat.service.notification.NotificationService;
+import com.ssafy.chat.service.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,9 +46,9 @@ public class ChatMessageService {
     private final ChatRoomService chatRoomService;
     private final MessageSender messageSender;
     private final UserServiceClient userServiceClient;
-    private final NotificationService notificationService;
     private final ReceiptsRepository receiptsRepository;
     private final ReceiptsItemsRepository receiptsItemsRepository;
+    private final S3Service s3Service;
 
     /**
      * 메시지 전송 처리
@@ -448,8 +449,8 @@ public class ChatMessageService {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE, "지원하지 않는 파일 형식입니다.");
         }
 
-        // 실제 구현에서는 여기서 파일 저장 로직 필요 (S3 등)
-        String fileUrl = "https://example.com/images/" + UUID.randomUUID().toString() + "-" + originalFilename;
+        // S3에 이미지 업로드
+        String fileUrl = s3Service.uploadImage(file);
 
         // 이미지 메시지 생성 및 전송
         ChatMessageDto messageDto = ChatMessageDto.builder()

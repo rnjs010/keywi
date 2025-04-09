@@ -273,12 +273,12 @@ public class ChatRoomService {
 
         // 임시 구현: 채팅방에 저장된 간단한 게시글 정보 반환
         Map<String, Object> boardInfo = new HashMap<>();
-        boardInfo.put("boardId", chatRoom.getBoardId().toString()); // Long을 String으로 변환
+        boardInfo.put("boardId", chatRoom.getBoardId().toString());
         boardInfo.put("title", chatRoom.getTitle());
         boardInfo.put("thumbnailUrl", chatRoom.getThumbnailUrl());
         boardInfo.put("dealState", chatRoom.getDealState());
-        boardInfo.put("buyerId", chatRoom.getBuyerId().toString()); // Long을 String으로 변환
-        boardInfo.put("assemblerId", chatRoom.getAssemblerId().toString()); // Long을 String으로 변환
+        boardInfo.put("buyerId", chatRoom.getBuyerId().toString());
+        boardInfo.put("assemblerId", chatRoom.getAssemblerId().toString());
 
         return boardInfo;
     }
