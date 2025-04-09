@@ -54,10 +54,10 @@ export default function DealReqConfirmScreen() {
           roomId,
           messageType: 'DEALREQUEST',
           content: totalPrice.toString().trim(),
-          // items: JSON.stringify({
-          //   totalPrice,
-          //   products: selectedProducts,
-          // }),
+          items: JSON.stringify({
+            totalPrice,
+            products: selectedProducts,
+          }),
           senderId: userId,
         }),
         headers: {
