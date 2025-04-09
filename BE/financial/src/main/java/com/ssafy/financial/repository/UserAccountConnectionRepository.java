@@ -15,6 +15,6 @@ public interface UserAccountConnectionRepository extends JpaRepository<UserAccou
 //    Optional<UserAccountConnectionEntity> findByUserAndDemandAccount(UsersEntity user, AccountEntity account);
     Optional<UserAccountConnectionEntity> findTopByUserIdOrderByConnectedAtDesc(Long userId);
     Optional<UserAccountConnectionEntity> findByUserId(Long userId);
-    Optional<UserAccountConnectionEntity> findUser_Id(Long userId);
+//    Optional<UserAccountConnectionEntity> findUser_Id(Long userId);
 
 }
