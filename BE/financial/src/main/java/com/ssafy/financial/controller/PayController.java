@@ -29,10 +29,11 @@ public class PayController {
 
     @PostMapping("/transfer/initiate")
     public ResponseEntity<OpenApiResponse<OneWonTransferInitResponse>> initiateOneWonTransfer(
+            @RequestHeader ("X-User-ID") Long userId,
             @RequestBody AccountCheckRequestDto dto
     ) {
         OpenApiResponse<OneWonTransferInitResponse> response =
-                payService.startOneWonTransfer(dto.getAccountNo(), dto.getBankCode());
+                payService.startOneWonTransfer(userId, dto.getAccountNo(), dto.getBankCode());
 
         return ResponseEntity.ok(response);
     }

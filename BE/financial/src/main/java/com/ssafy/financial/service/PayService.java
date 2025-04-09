@@ -55,7 +55,7 @@ public class PayService {
                 .build();
     }
 
-    public OpenApiResponse<OneWonTransferInitResponse> startOneWonTransfer(String accountNo, String bankCode) {
+    public OpenApiResponse<OneWonTransferInitResponse> startOneWonTransfer(Long userId, String accountNo, String bankCode) {
         AccountEntity account = accountRepository
                 .findByAccountNoAndBankCode(accountNo, bankCode)
                 .orElseThrow(() -> new ApiException(ErrorCode.A1003));
@@ -65,6 +65,7 @@ public class PayService {
         request.setAccountNo(accountNo);
         request.setUserKey(account.getUserKey());
         request.setAuthText("키위");
+        request.setUserId(userId);
         financialApiService.sendOneWon(request);
 
         OneWonTransferInitResponse rec = OneWonTransferInitResponse.builder()
