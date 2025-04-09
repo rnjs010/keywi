@@ -15,8 +15,9 @@ public class CommonService {
     private final UserAccountConnectionRepository userAccountConnectionRepository;
 
     public String getUserKeyByUserId(Long userId) {
-        log.info("유저아이디: " + userId.toString());
-        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findByUserId(userId);
+
+        Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository
+                .findLatestWithAccountByUserId(userId); // 가장 최근 연결 계좌 기준
 
         if (connectionOpt.isEmpty()) {
             log.warn("❌ userId={}에 대한 연결된 계좌가 없습니다.", userId);
@@ -33,4 +34,5 @@ public class CommonService {
 
         return account.getUserKey();
     }
+
 }
