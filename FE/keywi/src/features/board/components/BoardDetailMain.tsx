@@ -17,8 +17,7 @@ export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
           key={item.productId}
           onClick={() => {
             if (item.categoryId !== 0) {
-              // FIXME: 상품 상세페이지 경로로 변경 필요
-              navigate(`/chat`)
+              navigate(`/product/detail/${item.productId}`)
             }
           }}
           className="cursor-pointer"
