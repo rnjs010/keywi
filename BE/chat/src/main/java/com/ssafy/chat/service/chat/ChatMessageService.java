@@ -423,11 +423,11 @@ public class ChatMessageService {
      * @return 업로드된 이미지 URL
      */
     public String uploadMedia(String roomId, String userId, MultipartFile file) {
-        // 채팅방 확인 - String을 Long으로 변환
+        // 채팅방 확인
         ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 메시지 발신자가 채팅방 참여자인지 확인 - String을 Long으로 변환
+        // 메시지 발신자가 채팅방 참여자인지 확인
         Long userIdLong = Long.parseLong(userId);
         if (!chatRoom.getBuyerId().equals(userIdLong) && !chatRoom.getAssemblerId().equals(userIdLong)) {
             throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 채팅방에 속해있지 않습니다.");
@@ -452,15 +452,15 @@ public class ChatMessageService {
         // S3에 이미지 업로드
         String fileUrl = s3Service.uploadImage(file);
 
-        // 이미지 메시지 생성 및 전송
-        ChatMessageDto messageDto = ChatMessageDto.builder()
-                .roomId(roomId)
-                .messageType(ChatMessageType.IMAGE)
-                .content("이미지")
-                .imageUrl(fileUrl)
-                .build();
-
-        sendMessage(messageDto, userId);
+//        // 이미지 메시지 생성 및 전송
+//        ChatMessageDto messageDto = ChatMessageDto.builder()
+//                .roomId(roomId)
+//                .messageType(ChatMessageType.IMAGE)
+//                .content("이미지")
+//                .imageUrl(fileUrl)
+//                .build();
+//
+//        sendMessage(messageDto, userId);
 
         return fileUrl;
     }
