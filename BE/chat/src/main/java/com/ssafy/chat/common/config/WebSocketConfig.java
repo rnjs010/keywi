@@ -46,7 +46,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-endpoint")
+        registry.addEndpoint("/chat/ws-endpoint")
                 .setAllowedOriginPatterns("*") // 모든 출처 허용
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
@@ -65,10 +65,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(64 * 1024)       // 64KB
-                .setSendBufferSizeLimit(512 * 1024)       // 512KB
-                .setSendTimeLimit(20000);                 // 20 seconds
+        registration.setMessageSizeLimit(1024 * 1024)       // 1MB
+                .setSendBufferSizeLimit(5 * 1024 * 1024)    // 5MB
+                .setSendTimeLimit(60000);                   // 60 seconds
     }
+
 
     /**
      * STOMP 인터셉터 설정 (메시지 처리 전 JWT 토큰 검증 등)
