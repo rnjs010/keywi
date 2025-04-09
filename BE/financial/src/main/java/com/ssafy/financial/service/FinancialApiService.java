@@ -208,7 +208,10 @@ public class FinancialApiService {
     public OneWonVerifyResponse verifyOneWon(OneWonVerifyRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/accountAuth/checkAuthCode";
 
-        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+        String userKey = accountRepository
+                .findByAccountNoAndBankCode(request.getAccountNo(), request.getBankCode())
+                .orElseThrow(() -> new ApiException(ErrorCode.A1003)) // 계좌 없음
+                .getUserKey();
 
         FinancialRequestHeader header = financialHeaderUtil.createHeader("checkAuthCode", userKey);
         request.setHeader(header);
