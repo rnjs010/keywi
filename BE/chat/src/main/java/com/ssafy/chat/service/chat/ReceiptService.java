@@ -62,4 +62,15 @@ public class ReceiptService {
                 .map(ReceiptDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 게시글 ID로 해당 게시글과 관련된 모든 영수증 조회
+     */
+    public List<ReceiptDto> getReceiptsByBoardId(Long boardId) {
+        List<Receipts> receipts = receiptsRepository.findByBoardIdOrderByCreatedAtDesc(boardId);
+
+        return receipts.stream()
+                .map(ReceiptDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

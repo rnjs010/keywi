@@ -308,6 +308,7 @@ public class ChatMessageService {
                                     JsonNode productNode = entry.getValue();
 
                                     ReceiptsItems item = new ReceiptsItems();
+                                    // 기존 필드 설정
                                     item.setProductName(productNode.has("productName") ?
                                             productNode.get("productName").asText() : entry.getKey());
                                     item.setCategoryName(productNode.has("categoryName") ?
@@ -315,8 +316,18 @@ public class ChatMessageService {
                                     item.setPrice(productNode.has("price") ?
                                             productNode.get("price").asLong() : 0L);
 
+                                    // 새로 추가된 필드들 설정
+                                    item.setProductId(productNode.has("productId") ?
+                                            productNode.get("productId").asInt() : 0);
+                                    item.setCategoryId(productNode.has("categoryId") ?
+                                            productNode.get("categoryId").asInt() : 0);
+                                    item.setImageUrl(productNode.has("imageUrl") ?
+                                            productNode.get("imageUrl").asText() : "");
+
                                     itemsList.add(item);
-                                    log.info("JSON에서 추가된 아이템: {}, 가격: {}", item.getProductName(), item.getPrice());
+                                    log.info("JSON에서 추가된 아이템: {}, 카테고리: {}, 가격: {}, 제품ID: {}, 카테고리ID: {}, 이미지URL: {}",
+                                            item.getProductName(), item.getCategoryName(), item.getPrice(),
+                                            item.getProductId(), item.getCategoryId(), item.getImageUrl());
                                 }
                             }
                         }
@@ -335,10 +346,17 @@ public class ChatMessageService {
                             receiptItem.setProductName(itemDto.getProductName() != null ? itemDto.getProductName() : "");
                             receiptItem.setCategoryName(itemDto.getCategoryName() != null ? itemDto.getCategoryName() : "");
                             receiptItem.setPrice(itemDto.getPrice() != null ? itemDto.getPrice() : 0L);
+
+                            // 새로 추가된 필드들 설정
+                            receiptItem.setProductId(itemDto.getProductId() != null ? itemDto.getProductId() : 0);
+                            receiptItem.setCategoryId(itemDto.getCategoryId() != null ? itemDto.getCategoryId() : 0);
+                            receiptItem.setImageUrl(itemDto.getImageUrl() != null ? itemDto.getImageUrl() : "");
+
                             itemsList.add(receiptItem);
 
-                            log.info("추가된 아이템: productName={}, categoryName={}, price={}",
-                                    receiptItem.getProductName(), receiptItem.getCategoryName(), receiptItem.getPrice());
+                            log.info("추가된 아이템: productName={}, categoryName={}, price={}, productId={}, categoryId={}, imageUrl={}",
+                                    receiptItem.getProductName(), receiptItem.getCategoryName(), receiptItem.getPrice(),
+                                    receiptItem.getProductId(), receiptItem.getCategoryId(), receiptItem.getImageUrl());
                         }
                     }
                 }
@@ -367,6 +385,7 @@ public class ChatMessageService {
             // 견적서 엔티티 생성
             Receipts receipt = Receipts.builder()
                     .roomId(roomId)
+                    .boardId(chatRoom.getBoardId())  // 추가: 게시글 ID 설정
                     .messageId(messageDto.getMessageId())
                     .buyerId(chatRoom.getBuyerId())
                     .assemblerId(chatRoom.getAssemblerId())
@@ -409,8 +428,11 @@ public class ChatMessageService {
         return ReceiptsItems.builder()
                 .receiptId(receipt.getReceiptId())
                 .receipts(receipt)
+                .productId(productNode.has("productId") ? productNode.get("productId").asInt() : 0)
+                .categoryId(productNode.has("categoryId") ? productNode.get("categoryId").asInt() : 0)
                 .productName(productNode.has("productName") ? productNode.get("productName").asText() : "")
                 .categoryName(productNode.has("categoryName") ? productNode.get("categoryName").asText() : "")
+                .imageUrl(productNode.has("imageUrl") ? productNode.get("imageUrl").asText() : "")
                 .price(productNode.has("price") ? productNode.get("price").asLong() : 0L)
                 .build();
     }
@@ -598,6 +620,7 @@ public class ChatMessageService {
         return ChatMessage.builder()
                 .id(messageDto.getMessageId())
                 .roomId(roomIdLong)
+                .boardId(chatRoom.getBoardId())  // 추가: 게시글 ID 설정
                 .senderId(senderIdLong)
                 .messageType(messageDto.getMessageType().name())
                 .message(messageDto.getContent())
@@ -607,7 +630,7 @@ public class ChatMessageService {
                 .mediaUrl(messageDto.getImageUrl())
                 .transactionAmount(messageDto.getTransactionAmount())
                 .transactionStatus(messageDto.getTransactionStatus())
-                .items(messageDto.getItems()) // items 필드 추가
+                .items(messageDto.getItems()) // 원래 형식 그대로 유지
                 .build();
     }
 

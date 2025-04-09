@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class ReceiptDto {
     private Long receiptId;
     private Long roomId;
+    private Long boardId;  // 추가된 boardId 필드
     private String messageId;
     private Long assemblerId;
     private Long buyerId;
@@ -29,6 +30,7 @@ public class ReceiptDto {
         return ReceiptDto.builder()
                 .receiptId(receipts.getReceiptId())
                 .roomId(receipts.getRoomId())
+                .boardId(receipts.getBoardId())  // boardId 추가
                 .messageId(receipts.getMessageId())
                 .assemblerId(receipts.getAssemblerId())
                 .buyerId(receipts.getBuyerId())
@@ -38,8 +40,11 @@ public class ReceiptDto {
                 .createdAt(receipts.getCreatedAt())
                 .items(receipts.getItems().stream()
                         .map(item -> ReceiptItemDto.builder()
+                                .productId(item.getProductId())      // 추가된 필드
+                                .categoryId(item.getCategoryId())    // 추가된 필드
                                 .productName(item.getProductName())
                                 .categoryName(item.getCategoryName())
+                                .imageUrl(item.getImageUrl())        // 추가된 필드
                                 .price(item.getPrice())
                                 .build())
                         .collect(Collectors.toList()))

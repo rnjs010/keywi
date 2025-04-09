@@ -25,6 +25,9 @@ public class Receipts {
     @Column(name = "room_id", nullable = false)
     private Long roomId;         // 채팅방 ID
 
+    @Column(name = "board_id", nullable = false)
+    private Long boardId;        // 연결된 게시글 ID (키보드 견적 게시글)
+
     @Column(name = "message_id", nullable = false)
     private String messageId;    // MongoDB 메시지 ID
 

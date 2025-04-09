@@ -46,4 +46,14 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
      */
     @Query("{'roomId': {$in: ?0}, 'senderId': {$ne: ?1}, $or: [{'isReadByBuyer': false, 'buyerId': ?1}, {'isReadByAssembler': false, 'assemblerId': ?1}]}")
     long countAllUnreadMessages(List<Long> roomIds, Long userId);
+
+    /**
+     * 특정 게시글과 관련된 메시지 조회
+     */
+    List<ChatMessage> findByBoardId(Long boardId);
+
+    /**
+     * 특정 게시글과 관련된 메시지 조회 (페이징)
+     */
+    Page<ChatMessage> findByBoardIdOrderBySentAtDesc(Long boardId, Pageable pageable);
 }

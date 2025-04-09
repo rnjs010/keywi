@@ -56,4 +56,14 @@ public class ReceiptController {
         List<ReceiptDto> receipts = receiptService.getReceiptsByUserId(userId);
         return ApiResponse.success(receipts);
     }
+
+    /**
+     * 게시글 ID로 해당 게시글과 관련된 모든 영수증 조회
+     */
+    @GetMapping("/board/{boardId}")
+    public ApiResponse<List<ReceiptDto>> getReceiptsByBoardId(@PathVariable Long boardId) {
+        log.info("게시글 영수증 조회 요청: boardId={}", boardId);
+        List<ReceiptDto> receipts = receiptService.getReceiptsByBoardId(boardId);
+        return ApiResponse.success(receipts);
+    }
 }

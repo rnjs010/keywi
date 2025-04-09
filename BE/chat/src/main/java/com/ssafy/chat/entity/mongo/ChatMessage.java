@@ -1,18 +1,12 @@
 package com.ssafy.chat.entity.mongo;
 
-import com.ssafy.chat.dto.chat.ReceiptItemDto;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-/**
- * 채팅 메시지 정보를 저장하는 도메인 모델
- * MongoDB에 저장됨
- */
 @Getter
 @Setter
 @Builder
@@ -26,6 +20,9 @@ public class ChatMessage {
 
     @Field("room_id")
     private Long roomId;  // MySQL의 채팅방 ID
+
+    @Field("board_id")
+    private Long boardId;  // 추가: 게시글 ID
 
     @Field("sender_id")
     private Long senderId;  // 발신자 ID
@@ -55,5 +52,5 @@ public class ChatMessage {
     private String transactionStatus;  // 거래 상태
 
     @Field("items")
-    private Object items;  // 견적서 항목 정보
+    private Object items;  // 견적서 항목 정보 (원래 형식 유지)
 }
