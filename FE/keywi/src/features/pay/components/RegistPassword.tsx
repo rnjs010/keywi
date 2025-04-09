@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import RandomKeyPad from './RandomKeyPad'
+import { useUserStore } from '@/stores/userStore'
+import { useConnectAccount } from '../hooks/useConnectAccount'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4 justify-center
@@ -20,6 +22,12 @@ export default function RegistPassword() {
     '간편 비밀번호를\n입력해 주세요',
     '비밀번호를\n다시 한 번 입력해 주세요',
   ]
+
+  const accountNo = usePayStore((state) => state.accountNumber)
+  const bankCode = usePayStore((state) => state.bank)
+  const userId = useUserStore((state) => state.userId)
+
+  const { mutate: connectAccount } = useConnectAccount()
 
   const handleDelete = () => {
     setPasswordInput(password.slice(0, -1))
@@ -44,6 +52,26 @@ export default function RegistPassword() {
       } else if (step === 5) {
         if (newPassword === firstPassword) {
           setPassword(newPassword)
+          // 이 부분에서 api 호출해서 등록
+          if (userId !== null) {
+            connectAccount(
+              {
+                userId,
+                rawPassword: newPassword,
+                accountNo,
+                bankCode,
+              },
+              {
+                onSuccess: () => {
+                  setStep(6)
+                },
+                onError: () => {
+                  setShowError(true)
+                  setPasswordInput('')
+                },
+              },
+            )
+          }
           setStep(6)
         } else {
           setShowError(true)

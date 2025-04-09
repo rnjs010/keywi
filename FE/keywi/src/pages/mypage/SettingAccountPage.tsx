@@ -5,6 +5,7 @@ import { colors } from '@/styles/colors'
 import { Text } from '@/styles/typography'
 import { getBankLogoPath, getBankName } from '@/utils/bankCodeMapper'
 import { PlusCircleSolid } from 'iconoir-react'
+import { useNavigate } from 'react-router-dom'
 import tw from 'twin.macro'
 
 const Container = tw.div`
@@ -27,6 +28,7 @@ const ChangeAccountBtn = tw.button`
 `
 
 export function SettingAccountPage() {
+  const navigite = useNavigate()
   const { data: accountInfo, isLoading, error } = useMyAccountInfo()
 
   return (
@@ -57,7 +59,11 @@ export function SettingAccountPage() {
           </AccountWrapper>
         ) : null}
 
-        <AccountWrapper>
+        <AccountWrapper
+          onClick={() => {
+            navigite('/pay')
+          }}
+        >
           <div className="flex items-center gap-3">
             <PlusCircleSolid color={colors.kiwi} />
             <Text variant="body1" color="kiwi">

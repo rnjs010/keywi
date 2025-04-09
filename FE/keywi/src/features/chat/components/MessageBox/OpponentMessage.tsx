@@ -21,7 +21,13 @@ export default function OpponentMessage({
 }: ChatMessage) {
   return (
     <Container>
-      <ThumbnailImage src={senderProfileUrl} alt="thumbnail" />
+      <ThumbnailImage
+        src={senderProfileUrl}
+        alt="thumbnail"
+        onError={(e: { target: HTMLImageElement }) => {
+          ;(e.target as HTMLImageElement).src = '/default/default_product.png'
+        }}
+      />
       <div className="flex items-end gap-2">
         {messageType === 'TEXT' ? (
           <div className="py-1 px-4 rounded-3xl bg-[#F2F3F6]">
