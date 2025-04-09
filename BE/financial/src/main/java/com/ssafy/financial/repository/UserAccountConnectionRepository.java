@@ -17,10 +17,7 @@ public interface UserAccountConnectionRepository extends JpaRepository<UserAccou
 //    Optional<UserAccountConnectionEntity> findByUserAndDemandAccount(UsersEntity user, AccountEntity account);
     Optional<UserAccountConnectionEntity> findTopByUserIdOrderByConnectedAtDesc(Long userId);
     Optional<UserAccountConnectionEntity> findByUserId(Long userId);
-    @Query("SELECT c FROM UserAccountConnectionEntity c " +
-            "JOIN FETCH c.demandAccount " +
-            "WHERE c.user.id = :userId " +
-            "ORDER BY c.connectedAt DESC")
-    Optional<UserAccountConnectionEntity> findLatestWithAccountByUserId(@Param("userId") Long userId);
+    @Query("SELECT uac FROM UserAccountConnectionEntity uac WHERE uac.user.id = :userId ORDER BY uac.connectedAt DESC")
+    Optional<UserAccountConnectionEntity> findLatestByUserId(@Param("userId") Long userId);
 
 }
