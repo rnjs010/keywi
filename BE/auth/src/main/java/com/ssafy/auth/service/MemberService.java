@@ -77,7 +77,7 @@ public class MemberService {
                 .statusMessage(request.getStatusMessage() != null ? request.getStatusMessage() : "")
                 .isDeleted(false)
                 .accountConnected(false)
-                .brix(0)
+                .brix(16)
                 .role("USER")
                 .build();
 
