@@ -1,5 +1,6 @@
 import traceback
 from time import sleep
+from product_og import og_crawling
 from product_detail import detail_crawling
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -21,7 +22,7 @@ def today(wait):
         print("팝업 없음")
 
 
-def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
+def crawler(driver, wait, URL, List, Dic, Data, KeyWi):
     baseURL="https://smartstore.naver.com"
     query="?st=RECENT&dt=IMAGE&page=1&size=80"
     driver.get(baseURL+URL)
@@ -48,7 +49,7 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
         sub=menu.find_element(By.XPATH, f"//a[text()='{l}']")
         act.move_to_element(sub).perform()
         sub_menu=wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "T20614P231")))
-        sleep(1)
+        sleep(0.5)
         
         if Dic[l]:
             # 마우스 호버해서 얻은 세부 카테고리
@@ -98,7 +99,7 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
                 page_button=pagenation.find_element(By.XPATH,f"//a[text()='{i}']")
                 page_button.click()
                 driver.implicitly_wait(5)
-                sleep(5)
+                sleep(4)
                 
                 body=driver.find_element(By.TAG_NAME, 'body')
                 body.send_keys(Keys.END)
@@ -111,86 +112,109 @@ def crawler(driver, wait, product_id, URL, List, Dic, Data, KeyWi):
                 products = wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'flu7YgFW2k')))
                 for product in products:
                     product_name = product.find_element(By.CLASS_NAME, '_26YxgX-Nu5').text
-                    if KeyWi.exist_product(product_name):
-                        print(f"\n{product_name} 존재.\n")
-                        continue
                     sleep(0.5)
-                    if KeyWi.exist_product(product_name):
-                        print(f"\n{product_name} 존재.\n")
-                        continue
-                    product_get=product.find_element(By.CLASS_NAME, '_25CKxIKjAk')
-                    product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
-                    price = int(product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',',''))
-                    product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('src')
+                    # if KeyWi.exist_product(product_name) and KeyWi.exist_product_description(KeyWi.get_product_id_by_name(product_name)):
+                    #     print(f"\n{KeyWi.get_product_id_by_name(product_name)}번 {product_name} 존재.\n")
+                    #     continue
                     
-                    # 세부 카테고리 Id 할당 안된 애들 할당해주기
-                    category_id=0
-                    if cid > 3:
-                        category_id=cid
-                    
-                    # 1. 키보드 케이스(하우징)
-                    elif cid == 1:
-                        if 'PCB' in product_name or '보강판' in product_name or '전용' in product_name or '악세사리' in product_name or '범폰' in product_name:
-                            continue
-                        for hn, cate in Data.housing.items():
-                            if hn in product_name:
-                                category_id=cate
-                                break
-                        if category_id==0: category_id=13
-                    
-                    # 2. 스위치(지온웍스)
-                    elif cid == 2:
-                        frag=False
-                        for r in Data.geon_remove:
-                            if r in product_name:
-                                frag=True
-                                break
-                        if frag:continue
-                        for switch in Data.geon_switch:
-                            if switch in product_name:
-                                category_id=Data.geon_mapping[switch]
-                                break
-                        if category_id==0:category_id=2
-                    
-                    # 3. 키캡(스웨그키)
-                    elif cid == 3:
-                        descrpt=product.find_elements(By.TAG_NAME, 'p')
-                        # 상품 설명이 있다면 거기서 가져오기
-                        if descrpt:
-                            for cap, cate in Data.keycap.items():
-                                if cap in descrpt[0].text:
+                    if not KeyWi.exist_product(product_name):
+                        product_url=product.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                        price = int(product.find_element(By.CLASS_NAME, '_2DywKu0J_8').text.replace(',',''))
+                        product_image = product.find_elements(By.CLASS_NAME, '_25CKxIKjAk')[-1].get_attribute('src')
+                        
+                        # 세부 카테고리 Id 할당 안된 애들 할당해주기
+                        category_id=0
+                        if cid > 3:
+                            category_id=cid
+                        
+                        # 1. 키보드 케이스(하우징)
+                        elif cid == 1:
+                            if 'PCB' in product_name or '보강판' in product_name or '전용' in product_name or '악세사리' in product_name or '범폰' in product_name:
+                                continue
+                            for hn, cate in Data.housing.items():
+                                if hn in product_name:
                                     category_id=cate
                                     break
-                        # 없다면 상품명에서 가져오기
-                        else:
-                            for cap, cate in Data.keycap.items():
-                                if cap in product_name:
-                                    category_id=cate
+                            if category_id==0: category_id=13
+                        
+                        # 2. 스위치(지온웍스)
+                        elif cid == 2:
+                            frag=False
+                            for r in Data.geon_remove:
+                                if r in product_name:
+                                    frag=True
                                     break
-                        # 찾지못하면 기타분류
-                        if category_id==0: category_id=21
+                            if frag:continue
+                            for switch in Data.geon_switch:
+                                if switch in product_name:
+                                    category_id=Data.geon_mapping[switch]
+                                    break
+                            if category_id==0:category_id=2
+                        
+                        # 3. 키캡(스웨그키)
+                        elif cid == 3:
+                            descrpt=product.find_elements(By.TAG_NAME, 'p')
+                            # 상품 설명이 있다면 거기서 가져오기
+                            if descrpt:
+                                for cap, cate in Data.keycap.items():
+                                    if cap in descrpt[0].text:
+                                        category_id=cate
+                                        break
+                            # 없다면 상품명에서 가져오기
+                            else:
+                                for cap, cate in Data.keycap.items():
+                                    if cap in product_name:
+                                        category_id=cate
+                                        break
+                            # 찾지못하면 기타분류
+                            if category_id==0: category_id=21
+                        
+                        if category_id in [2,14,15,16,17] and price>1200 and price<14000: price=price//10
+                        KeyWi.insert_product(category_id, product_name, price, product_url, product_image)
+                        product_id = KeyWi.get_product_id_by_name(product_name)
+                        print(product_id, category_id, product_name, price, product_url, product_image)
+                        product_list[product_id]=(category_id, product_name, price, product_url, product_image, None)
                     
-                    if category_id in [2,14,15,16,17] and price>1200 and price<14000: price=price//10
-                    KeyWi.insert_product(category_id, product_name, price, product_url, product_image)
-                    product_id+=1
-                    print(product_id, category_id, product_name, price, product_url, product_image)
-                    product_list[product_id]=(category_id, product_name, price, product_url, product_image, None)
-                    
-                    try:
+                    if KeyWi.exist_product(product_name) and not KeyWi.exist_product_description(KeyWi.get_product_id_by_name(product_name)):
+                        product_id = KeyWi.get_product_id_by_name(product_name)
                         lasttab=driver.current_window_handle
-                        act.move_to_element(product).perform()
-                        sleep(0.3)
-                        act.key_down(Keys.CONTROL).move_to_element_with_offset(product_get, 10, 10).click().key_up(Keys.CONTROL).perform()
-                        sleep(1)
-                        driver.switch_to.window(driver.window_handles[-1])
-                        # 작업
-                        detail_crawling(KeyWi, driver, act, wait, product_id, product_name)
-                        # 완료
-                    except Exception as e:
-                        print(e)
-                        traceback.print_exc()
-                        print("상세 크롤링 실패.")
-                    driver.switch_to.window(lasttab)
+                        try:
+                            act.move_to_element(product).perform()
+                            product_get=product.find_element(By.CLASS_NAME, '_26YxgX-Nu5')
+                            sleep(0.3)
+                            act.move_to_element(product_get).key_down(Keys.CONTROL).click().key_up(Keys.CONTROL).perform()
+                            sleep(1)
+                            driver.switch_to.window(driver.window_handles[-1])
+                            # 작업
+                            detail_crawling(KeyWi, driver, act, wait, product_id, product_name)
+                            # 완료
+                        except Exception as e:
+                            print(e)
+                            traceback.print_exc()
+                            print("상세 크롤링 실패.")
+                        driver.switch_to.window(lasttab)
+                    
+                    if KeyWi.exist_product(product_name) and KeyWi.exist_product_description(KeyWi.get_product_id_by_name(product_name)) and KeyWi.exist_link(KeyWi.get_product_id_by_name(product_name)) != 0:
+                        product_id=KeyWi.get_product_id_by_name(product_name)
+                        print("isExist", KeyWi.exist_link(product_id))
+                        lasttab=driver.current_window_handle
+                        try:
+                            act.move_to_element(product).perform()
+                            product_get=product.find_element(By.CLASS_NAME, '_26YxgX-Nu5')
+                            sleep(0.3)
+                            act.move_to_element(product_get).key_down(Keys.CONTROL).click().key_up(Keys.CONTROL).perform()
+                            sleep(1)
+                            driver.switch_to.window(driver.window_handles[-1])
+                            print("og===", driver.current_url, product_name)
+                            # 작업
+                            og_crawling(KeyWi, driver, act, wait, product_id, product_name)
+                            # 완료
+                        except Exception as e:
+                            print(e)
+                            traceback.print_exc()
+                            print("상세 크롤링 실패.")
+                        driver.switch_to.window(lasttab)
+                    
             driver.close()
             driver.switch_to.window(driver.window_handles[-1])
         

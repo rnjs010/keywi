@@ -89,7 +89,35 @@ class DBs:
             (product_id, detail_description, description_order, content_type, hyperlink)
         )
         self.DB.commit()
+        
+    def exist_link(self, product_id):
+        self.cursor.execute("""
+            SELECT COUNT(*) FROM products_descriptions
+            WHERE product_id = %s AND content_type = 'link' AND hyperlink IS NULL
+        """, (product_id,))
+        result = self.cursor.fetchone()
+        return result[0]
 
+    def update_link(self, strd, url, des_id):
+        self.cursor.execute("UPDATE products_descriptions SET description = %s, hyperlink = %s WHERE product_description_id = %s", 
+                            (strd, url, des_id))
+        result = self.DB.commit()
+        print(result)
+
+    def get_product_id_by_name(self, product_name):
+        self.cursor.execute( "SELECT product_id FROM products WHERE product_name = %s",  (product_name,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+    
+    def get_link_description_ids(self, product_id):
+        self.cursor.execute("""
+            SELECT product_description_id 
+            FROM products_descriptions
+            WHERE product_id = %s AND content_type = 'link' AND hyperlink IS NULL
+            ORDER BY description_order
+        """, (product_id,))
+        return [row[0] for row in self.cursor.fetchall()]
+    
     def exist_product(self, product_name):
         self.cursor.execute("SELECT EXISTS(SELECT 1 FROM products WHERE product_name = %s)", (product_name,))
         return self.cursor.fetchone()[0]

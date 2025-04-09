@@ -18,6 +18,7 @@ def detail_crawling(KeyWi, driver, act, wait, product_id, product_name):
         var event = new WheelEvent('wheel', {deltaY: 120});
         arguments[0].dispatchEvent(event);
     """, body)
+    name=driver.find_element(By.CLASS_NAME, '_22kNQuEXmb').text
     body.send_keys(Keys.END)
     driver.execute_script("""
         var event = new WheelEvent('wheel', {deltaY: -130});
@@ -25,6 +26,8 @@ def detail_crawling(KeyWi, driver, act, wait, product_id, product_name):
     """, body)
     driver.implicitly_wait(5)
     sleep(1)
+    
+    if name.strip()!=product_name.strip():return False
     
     try:
         body.send_keys(Keys.END)
@@ -123,5 +126,7 @@ def detail_crawling(KeyWi, driver, act, wait, product_id, product_name):
         KeyWi.insert_product_description(*description)
     print(product_name)
     pprint(description_list)
+    description_list=[]
     print()
+    sleep(2)
     driver.close()
