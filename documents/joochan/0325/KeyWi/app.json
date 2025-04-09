@@ -2,7 +2,7 @@
   "expo": {
     "name": "KeyWi",
     "slug": "KeyWi",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -16,7 +16,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.team2room.KeyWi"
+      "package": "com.team2room.KeyWi",
+      "versionCode": 3,
+      "releaseStatus": "draft"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +34,15 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#E8FFAE"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "proguardRules": "proguard-rules.pro"
+          }
         }
       ]
     ],
