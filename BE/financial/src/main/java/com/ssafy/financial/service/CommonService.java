@@ -15,6 +15,7 @@ public class CommonService {
     private final UserAccountConnectionRepository userAccountConnectionRepository;
 
     public String getUserKeyByUserId(Long userId) {
+        log.info("유저아이디: " + userId.toString());
         Optional<UserAccountConnectionEntity> connectionOpt = userAccountConnectionRepository.findTopByUser_IdOrderByConnectedAtDesc(userId);
 
         if (connectionOpt.isEmpty()) {
