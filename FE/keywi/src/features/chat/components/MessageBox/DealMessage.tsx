@@ -3,8 +3,12 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { DealMessageProps } from '@/interfaces/ChatInterfaces'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import TwoBtnModal from '@/components/TwoBtnModal'
+import { WebSocketContext } from '@/services/WebSocketProvider'
+import { useUserStore } from '@/stores/userStore'
+import { useDealReceipt } from '../../hooks/useDealReceipt'
+import { useDealAcceptStore } from '@/stores/chatStore'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -19,15 +23,23 @@ const BottomBox = tw.div`
 `
 
 export default function DealMessage({
+  messageId,
   messageType,
   content,
   isMine,
 }: DealMessageProps) {
   const navigate = useNavigate()
   const { roomId } = useParams()
+  const { client } = useContext(WebSocketContext)
+  const { userId } = useUserStore()
+  const receipt = useDealAcceptStore((state) => state.receipt)
+  const resetState = useDealAcceptStore((state) => state.resetState)
 
   // 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const handleOpenModal = () => setIsModalOpen(true)
+  const handleCloseModal = () => setIsModalOpen(false)
+
   let modalTitle = ''
   let modalContent = ''
   let modalActions: {
@@ -36,9 +48,27 @@ export default function DealMessage({
     onCancle: () => void
     onConfirm: () => void
   } = { cancel: '', confirm: '', onCancle: () => {}, onConfirm: () => {} }
-  const handleOpenModal = () => setIsModalOpen(true)
-  const handleCloseModal = () => setIsModalOpen(false)
 
+  // 채팅 보내기
+  const sendChatMessage = (type: string, message: string) => {
+    if (!client?.connected || !roomId || !userId) return
+
+    client.publish({
+      destination: '/app/chat/message',
+      body: JSON.stringify({
+        roomId,
+        messageType: type,
+        content: message,
+        items: null,
+        senderId: userId,
+      }),
+      headers: {
+        'X-User-ID': userId.toString(),
+      },
+    })
+  }
+
+  // 채팅 화면 구성
   let title = ''
   let imageSrc = ''
   let contentText = ''
@@ -51,11 +81,12 @@ export default function DealMessage({
       title = '거래요청'
       imageSrc = 'salary'
       contentText = isMine
-        ? `조립자님이 ${content}원을 거래 요청했어요.`
-        : `조립자님이 ${content}원을 송금 요청했어요.`
+        ? `조립자님이 ${Number(content).toLocaleString()}원을 거래 요청했어요.`
+        : `조립자님이 ${Number(content).toLocaleString()}원을 송금 요청했어요.`
       buttonText = '거래 진행하기'
       showButton = !isMine // 내가 보낸 요청이 아닐 때만 버튼 표시
-      onClickHandler = () => navigate(`/chat/${roomId}/dealaccept`)
+      onClickHandler = () =>
+        navigate(`/chat/${roomId}/dealaccept`, { state: { messageId } })
       break
     case 'DEALPROGRESS':
       title = '거래 진행중'
@@ -75,8 +106,9 @@ export default function DealMessage({
           confirm: '확정하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
-            console.log('거래 완료 처리')
+            sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
             handleCloseModal()
+            resetState()
           },
         }
       } else {
@@ -87,7 +119,7 @@ export default function DealMessage({
           confirm: '요청하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
-            console.log('거래 완료 요청')
+            sendChatMessage('TEXT', '거래 완료를 요청합니다.')
             handleCloseModal()
           },
         }
@@ -98,7 +130,7 @@ export default function DealMessage({
       imageSrc = 'deal'
       contentText = isMine
         ? '거래를 완료해서 금액이 조립자에게 전달되었어요.'
-        : `조립금이 계좌로 들어왔어요.\n■ 금액: ${content}원`
+        : `조립금이 계좌로 들어왔어요.\n■ 금액: ${Number(content).toLocaleString()}원`
       showButton = false // 양쪽 다 버튼 없음
       break
     default:

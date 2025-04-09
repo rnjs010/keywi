@@ -17,9 +17,13 @@ import LoadingMessage from '@/components/message/LoadingMessage'
 import ErrorMessage from '@/components/message/ErrorMessage'
 import NoDataMessage from '@/components/message/NoDataMessage'
 import { useUserStore } from '@/stores/userStore'
-import { ChatMessage, MessageGroup } from '@/interfaces/ChatInterfaces'
-import { useChatHistory } from '@/features/chat/hooks/useChatHistory'
+import {
+  ChatMessage,
+  ChatMessagesResponseData,
+} from '@/interfaces/ChatInterfaces'
+import { chatKeys, useChatHistory } from '@/features/chat/hooks/useChatHistory'
 import { useChatSubscription } from '@/features/chat/hooks/useChatSub'
+import { useQueryClient } from '@tanstack/react-query'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -38,11 +42,11 @@ const DownBtnBox = tw.button`
 `
 
 export default function ChatRoomPage() {
-  // const myId = 'user789'
   const containerRef = useRef<HTMLDivElement>(null)
   const downBtnRef = useRef<HTMLButtonElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const showImage = useChatImageStore((state) => state.showImage)
+  const [showDownBtn, setShowDownBtn] = useState(false)
   const { roomId } = useParams<{ roomId: string }>()
   const myId = useUserStore((state) => state.userId)
 
@@ -60,55 +64,55 @@ export default function ChatRoomPage() {
 
   // 채팅 내역 가져오기
   const location = useLocation()
+  const queryClient = useQueryClient()
   const { data: chatHistory, refetch } = useChatHistory(roomId!)
-  const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([])
+  const messageGroups = chatHistory?.messageGroups || []
 
   useEffect(() => {
     refetch()
-  }, [location])
+  }, [location, refetch])
 
-  useEffect(() => {
-    if (chatHistory?.messageGroups) {
-      setMessageGroups(chatHistory.messageGroups)
-    }
-  }, [chatHistory])
+  const onMessage = useCallback(
+    (msg: ChatMessage) => {
+      const sentDate = new Date(msg.sentAt)
+      const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
 
-  // 메시지 수신
-  const onMessage = useCallback((msg: ChatMessage) => {
-    const sentDate = new Date(msg.sentAt)
-    const formattedDate = `${sentDate.getFullYear()}년 ${sentDate.getMonth() + 1}월 ${sentDate.getDate()}일`
+      queryClient.setQueryData(
+        chatKeys.history(roomId!),
+        (oldData: ChatMessagesResponseData | undefined) => {
+          if (!oldData) return { messageGroups: [] }
 
-    setMessageGroups((prevGroups) => {
-      const existingGroupIndex = prevGroups.findIndex(
-        (group) => group.dateGroup === formattedDate,
+          const updatedGroups = [...oldData.messageGroups]
+          const existingGroupIndex = updatedGroups.findIndex(
+            (group) => group.dateGroup === formattedDate,
+          )
+
+          // 기존 날짜 그룹이 있는 경우
+          if (existingGroupIndex !== -1) {
+            updatedGroups[existingGroupIndex] = {
+              ...updatedGroups[existingGroupIndex],
+              messages: [...updatedGroups[existingGroupIndex].messages, msg],
+            }
+          } else {
+            // 새로운 날짜 그룹 생성
+            updatedGroups.push({
+              dateGroup: formattedDate,
+              messages: [msg],
+            })
+          }
+
+          return { ...oldData, messageGroups: updatedGroups }
+        },
       )
 
-      // 기존 날짜 그룹이 있는 경우
-      if (existingGroupIndex !== -1) {
-        const updatedGroups = [...prevGroups]
-        updatedGroups[existingGroupIndex] = {
-          ...updatedGroups[existingGroupIndex],
-          messages: [...updatedGroups[existingGroupIndex].messages, msg],
-        }
-        return updatedGroups
-      }
-
-      // 새로운 날짜 그룹 생성
-      return [
-        ...prevGroups,
-        {
-          dateGroup: formattedDate,
-          messages: [msg],
-        },
-      ]
-    })
-
-    console.log('메시지 수신', msg)
-    // 새 메시지가 오면 자동 스크롤 다운
-    setTimeout(() => {
-      scrollToBottom()
-    }, 100)
-  }, [])
+      console.log('메시지 수신', msg)
+      // 새 메시지가 오면 자동 스크롤 다운
+      setTimeout(() => {
+        scrollToBottom()
+      }, 100)
+    },
+    [queryClient, roomId],
+  )
 
   useChatSubscription({
     roomId: roomId!,
@@ -151,7 +155,6 @@ export default function ChatRoomPage() {
     handleVisualViewPortResize()
     startToBottom()
 
-    // 이벤트 리스너 등록
     if (window.visualViewport) {
       window.visualViewport.addEventListener(
         'resize',
@@ -170,6 +173,25 @@ export default function ChatRoomPage() {
     }
   }, [[showImage]])
 
+  // Down button 표시 여부
+  useEffect(() => {
+    const container = chatContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container
+      const isBottom = scrollHeight - scrollTop <= clientHeight + 10 // 하단 여유 범위 10px
+      setShowDownBtn(!isBottom)
+    }
+
+    container.addEventListener('scroll', handleScroll)
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // 상태별 화면
   if (!roomId)
     return (
       <Container>
@@ -205,9 +227,11 @@ export default function ChatRoomPage() {
           </div>
 
           {/* Down Button */}
-          <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
-            <ArrowDown />
-          </DownBtnBox>
+          {showDownBtn && (
+            <DownBtnBox ref={downBtnRef} onClick={scrollToBottom}>
+              <ArrowDown />
+            </DownBtnBox>
+          )}
 
           {/* Date + Chat */}
           <ChatContainer ref={chatContainerRef}>
@@ -233,7 +257,7 @@ export default function ChatRoomPage() {
           </ChatContainer>
 
           {/* Input */}
-          <ChatRoomSendBox />
+          <ChatRoomSendBox dealDisabled={Number(post.buyerId) === myId} />
         </Container>
       )}
 

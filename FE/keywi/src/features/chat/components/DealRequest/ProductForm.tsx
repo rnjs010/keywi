@@ -87,8 +87,7 @@ export default function ProductForm() {
 
   // 하단 + 버튼 클릭 시 DirectModal 열기 (기타 카테고리 추가)
   const handleAddEtcCategory = () => {
-    const etcCategoryName = '기타'
-    setCurrentCategory(etcCategoryName)
+    setCurrentCategory(`기타 ${etcCategoryCount}`)
     setCurrentCategoryId(currentCategoryId + etcCategoryCount)
     setOpenDirectModal(true)
   }
@@ -117,7 +116,7 @@ export default function ProductForm() {
       [currentCategory]: directProduct,
     })
 
-    if (currentCategory === '기타') {
+    if (currentCategory.startsWith('기타')) {
       increaseCategory()
     }
     setOpenDirectModal(false)

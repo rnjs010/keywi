@@ -5,8 +5,15 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { Xmark } from 'iconoir-react'
 import { useDealAcceptStore } from '@/stores/chatStore'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SafePaymentScreen from '@/features/chat/components/DealAccept/SafePaymentScreen'
+import { useDealReceipt } from '@/features/chat/hooks/useDealReceipt'
+import { useContext, useEffect } from 'react'
+import LoadingMessage from '@/components/message/LoadingMessage'
+import ErrorMessage from '@/components/message/ErrorMessage'
+import { WebSocketContext } from '@/services/WebSocketProvider'
+import { useChatSubscription } from '@/features/chat/hooks/useChatSub'
+import { useUserStore } from '@/stores/userStore'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden
@@ -18,11 +25,48 @@ const HeaderContainer = tw.div`
 
 export default function DealAcceptPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { messageId } = location.state || {}
   const { roomId } = useParams()
   const step = useDealAcceptStore((state) => state.step)
+  const setReceipt = useDealAcceptStore((state) => state.setReceipt)
   const resetState = useDealAcceptStore((state) => state.resetState)
-
   const headerText = ['거래 진행', '안심 결제', '안심 결제', ''][step - 1]
+  const { data, isLoading, isError } = useDealReceipt(messageId)
+  const { client } = useContext(WebSocketContext)
+  const myId = useUserStore((state) => state.userId)
+
+  useEffect(() => {
+    if (data) {
+      setReceipt(data)
+    }
+  }, [data, setReceipt])
+
+  useChatSubscription({
+    roomId: roomId!,
+  })
+
+  const handleClick = () => {
+    const messageBody = {
+      roomId,
+      messageType: 'DEALPROGRESS',
+      content: '',
+      items: null,
+      senderId: myId,
+    }
+
+    if (client?.connected && roomId && myId) {
+      client.publish({
+        destination: '/app/chat/message',
+        body: JSON.stringify(messageBody),
+        headers: {
+          'X-User-ID': myId?.toString() || '',
+        },
+      })
+    }
+
+    navigate(`/chat/${roomId}`)
+  }
 
   const renderStepComponent = () => {
     switch (step) {
@@ -33,7 +77,7 @@ export default function DealAcceptPage() {
       case 3:
         return <PasswordScreen />
       case 4:
-        return <AcceptCompleteScreen />
+        return <AcceptCompleteScreen onConfirm={handleClick} />
       default:
         return null
     }
@@ -43,6 +87,19 @@ export default function DealAcceptPage() {
     resetState()
     navigate(`/chat/${roomId}`)
   }
+
+  if (isLoading)
+    return (
+      <Container>
+        <LoadingMessage />
+      </Container>
+    )
+  if (isError)
+    return (
+      <Container>
+        <ErrorMessage text="정보를 불러오지 못했습니다." />
+      </Container>
+    )
 
   return (
     <Container>

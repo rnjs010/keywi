@@ -31,7 +31,11 @@ const IconCircle = tw.div`
   w-10 h-10 rounded-full flex items-center justify-center
 `
 
-export default function ChatRoomSendBox() {
+type Props = {
+  dealDisabled?: boolean
+}
+
+export default function ChatRoomSendBox({ dealDisabled = false }: Props) {
   const navigate = useNavigate()
   const { roomId } = useParams()
   const setShowImage = useChatImageStore((state) => state.setShowImage)
@@ -57,6 +61,7 @@ export default function ChatRoomSendBox() {
           roomId,
           messageType: 'TEXT',
           content: message.trim(),
+          items: null,
           senderId: userId,
         }),
         headers: {
@@ -92,8 +97,14 @@ export default function ChatRoomSendBox() {
               사진 첨부
             </Text>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDealRequestClick}>
-            <IconCircle className="bg-kiwi">
+          <DropdownMenuItem
+            onClick={handleDealRequestClick}
+            className={dealDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+            disabled={dealDisabled}
+          >
+            <IconCircle
+              className={`bg-kiwi ${dealDisabled ? 'grayscale' : ''}`}
+            >
               <Wallet color={colors.white} />
             </IconCircle>
             <Text variant="body1" weight="regular" color="darkGray">

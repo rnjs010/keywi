@@ -7,6 +7,8 @@ import { useContext } from 'react'
 import { useUserStore } from '@/stores/userStore'
 import { WebSocketContext } from '@/services/WebSocketProvider'
 import { useChatSubscription } from '../../hooks/useChatSub'
+import { useAccount } from '../../hooks/useAccount'
+import { BANK_CODE_TO_NAME } from '@/interfaces/BankCode'
 
 const TextContainer = tw.div`
   flex flex-row justify-center mt-8
@@ -35,8 +37,11 @@ export default function DealReqConfirmScreen() {
   const userId = useUserStore((state) => state.userId)
 
   // 내 계좌 정보 api 호출
-  const bankName = '우리'
-  const accountNumber = '1002039482304'
+  const { data } = useAccount()
+  const bankName = data?.bankCode
+    ? BANK_CODE_TO_NAME[data.bankCode].slice(0, -2)
+    : '알 수 없음'
+  const accountNumber = data?.accountNo
 
   const { client } = useContext(WebSocketContext)
 
@@ -47,24 +52,26 @@ export default function DealReqConfirmScreen() {
   const handleNext = () => {
     console.log('거래 내역', selectedProducts)
 
+    const messageBody = {
+      roomId,
+      messageType: 'DEALREQUEST',
+      content: totalPrice.toString().trim(),
+      items: JSON.stringify({
+        products: selectedProducts,
+      }),
+      senderId: userId,
+    }
+
     if (client?.connected && roomId && userId) {
       client.publish({
         destination: '/app/chat/message',
-        body: JSON.stringify({
-          roomId,
-          messageType: 'DEALREQUEST',
-          content: totalPrice.toString().trim(),
-          items: JSON.stringify({
-            totalPrice,
-            products: selectedProducts,
-          }),
-          senderId: userId,
-        }),
+        body: JSON.stringify(messageBody),
         headers: {
           'X-User-ID': userId?.toString() || '',
         },
       })
     }
+
     resetState()
     navigate(`/chat/${roomId}`)
   }

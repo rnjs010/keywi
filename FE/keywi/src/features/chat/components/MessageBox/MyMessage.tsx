@@ -9,6 +9,7 @@ const Container = tw.div`
 `
 
 export default function MyMessage({
+  messageId,
   content,
   sentAt,
   messageType,
@@ -35,6 +36,7 @@ export default function MyMessage({
           </div>
         ) : (
           <DealMessage
+            messageId={messageId}
             messageType={messageType}
             content={content ?? ''}
             isMine={true}
