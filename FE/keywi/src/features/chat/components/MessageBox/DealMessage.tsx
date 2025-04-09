@@ -8,6 +8,7 @@ import TwoBtnModal from '@/components/TwoBtnModal'
 import { WebSocketContext } from '@/services/WebSocketProvider'
 import { useUserStore } from '@/stores/userStore'
 import { useDealAcceptStore } from '@/stores/chatStore'
+import { useCompleteTrade } from '../../hooks/trades/useCompleteTrade'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -33,6 +34,7 @@ export default function DealMessage({
   const { userId } = useUserStore()
   const receipt = useDealAcceptStore((state) => state.receipt)
   const resetState = useDealAcceptStore((state) => state.resetState)
+  const { mutate: completeTradeMutate } = useCompleteTrade()
 
   // 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -105,9 +107,20 @@ export default function DealMessage({
           confirm: '확정하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
-            sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
-            handleCloseModal()
-            resetState()
+            if (!receipt?.receiptId) return
+            completeTradeMutate(
+              { escrowTransactionId: receipt.receiptId },
+              {
+                onSuccess: () => {
+                  sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
+                  handleCloseModal()
+                  resetState()
+                },
+                onError: (err) => {
+                  console.error('거래 완료 실패', err)
+                },
+              },
+            )
           },
         }
       } else {
