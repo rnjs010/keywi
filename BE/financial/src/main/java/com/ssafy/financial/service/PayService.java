@@ -216,8 +216,7 @@ public class PayService {
     }
 
     @Transactional
-    public void acceptTransaction(EscrowTransactionAcceptRequest request) {
-        Long userId = request.getUserId();
+    public void acceptTransaction(Long userId, EscrowTransactionAcceptRequest request) {
         // 1. 거래 조회
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("거래 정보가 없습니다."));
