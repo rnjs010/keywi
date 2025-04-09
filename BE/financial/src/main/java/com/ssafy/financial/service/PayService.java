@@ -65,6 +65,7 @@ public class PayService {
         request.setUserKey(account.getUserKey());
         request.setAuthText("키위");
         request.setUserId(userId);
+        request.setBankCode(bankCode);
 
         financialApiService.sendOneWon(request);
 
