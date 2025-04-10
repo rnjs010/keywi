@@ -291,7 +291,7 @@ public class FinancialApiService {
         String userKey = commonService.getUserKeyAllowUnlinked(request.getUserId());
 
         // 공통 헤더 생성
-        FinancialRequestHeader header = financialHeaderUtil.createHeader("inquireTransactionHistoryList", request.getUserKey());
+        FinancialRequestHeader header = financialHeaderUtil.createHeader("inquireTransactionHistoryList", userKey);
         request.setHeader(header);
 
         // 기본값 설정
