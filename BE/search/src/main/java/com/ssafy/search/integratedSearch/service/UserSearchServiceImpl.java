@@ -47,6 +47,7 @@ public class UserSearchServiceImpl implements UserSearchService {
                             .nickname(user.getNickname())
                             .profileImageUrl(user.getProfileImageUrl())
                             .profileContent(user.getProfileContent())
+                            .brix(user.getBrix())
                             .build())
                     .toList();
 
