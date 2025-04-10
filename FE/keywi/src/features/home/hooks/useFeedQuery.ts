@@ -30,6 +30,6 @@ export const useFeedQuery = () => {
     refetchOnWindowFocus: false, // 창이 포커스를 얻을 때 다시 가져오지 않음
     retry: 2, // 실패 시 최대 2번 재시도
     // React Query 캐시가 유지되는 시간 설정 (10분)
-    gcTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 1,
   })
 }

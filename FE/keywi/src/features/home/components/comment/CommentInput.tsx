@@ -17,6 +17,7 @@ const Container = tw.div`
   z-10
 `
 const InputWrapper = tw.div`
+  w-full
   flex
   justify-between
   bg-white
@@ -27,6 +28,7 @@ const InputWrapper = tw.div`
 `
 const Input = tw.input`
   flex
+  w-full
   border-none
   bg-transparent
   outline-none

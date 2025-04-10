@@ -32,6 +32,7 @@ export const getRecommendedFeeds = async (
     const response = await apiRequester.get<FeedResponse>(
       `/api/feed/recommended?page=${page}&size=${size}`,
     )
+    console.log(response.data)
     return response.data
   } catch (error) {
     console.error(`피드 가져오기 실패 - 페이지 ${page}:`, error)
