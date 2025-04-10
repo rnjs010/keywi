@@ -15,7 +15,5 @@ public class AccountBalanceRequest {
     @JsonProperty("Header")
     private FinancialRequestHeader header;
 
-    private Long userId;
-    private String userKey;
     private String accountNo;
 }

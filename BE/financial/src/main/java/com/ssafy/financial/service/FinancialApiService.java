@@ -333,7 +333,9 @@ public class FinancialApiService {
     public AccountBalanceResponse inquireAccountBalance(AccountBalanceRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/inquireDemandDepositAccountBalance";
 
-        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", request.getUserKey()));
+        String userKey = commonService.getUserKeyAllowUnlinked(request.getUserId());
+
+        request.setHeader(financialHeaderUtil.createHeader("inquireDemandDepositAccountBalance", userKey));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
