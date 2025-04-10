@@ -248,14 +248,10 @@ function DescriptionRenderer({ description }: { description: any }) {
       )
     case 'link':
       return (
-        <a
-          href={description.description}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline my-2"
-        >
-          <LinkPreview url={description.description} />
-        </a>
+        <LinkPreview
+          description={description.description}
+          hyperlink={description.hyperlink}
+        />
       )
     case 'hr':
       return (

@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
 import tw from 'twin.macro'
-import { BASE_URL } from '@/config'
-import { OpenGraphData } from '@/interfaces/OpenGraphData'
-import LoadingMessage from '@/components/message/LoadingMessage'
+import { parseOpenGraph } from '@/utils/parseOpenGraph'
 
 const PreviewContainer = tw.div`
   my-4 p-4 border rounded-lg border-gray hover:border-blue-400 transition-colors
@@ -21,58 +18,31 @@ const PreviewText = tw.div`
 `
 
 interface LinkPreviewProps {
-  url: string
+  description: string // JSON 문자열 형태의 Open Graph 데이터
+  hyperlink: string // 링크 URL
 }
 
-export default function LinkPreview({ url }: LinkPreviewProps) {
-  const [ogData, setOgData] = useState<{
-    title?: string
-    description?: string
-    image?: string
-    hostname?: string
-  }>({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export default function LinkPreview({
+  description,
+  hyperlink,
+}: LinkPreviewProps) {
+  const ogData = parseOpenGraph(description)
 
-  // LinkPreview.tsx
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${BASE_URL}/api/product/og?url=${encodeURIComponent(url)}`,
-        )
-
-        if (!response.ok) throw new Error('Request failed')
-
-        const data = (await response.json()) as OpenGraphData
-        setOgData(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [url])
-
-  if (error) {
+  if (!ogData) {
     return (
       <PreviewContainer>
-        <div>
-          <span className="url-container">{url}</span>
-        </div>
+        <div>미리보기를 로드할 수 없습니다.</div>
       </PreviewContainer>
     )
   }
 
-  if (loading) {
-    return <LoadingMessage />
-  }
-
   return (
     <PreviewContainer>
-      <PreviewContent href={url} target="_blank" rel="noopener noreferrer">
+      <PreviewContent
+        href={hyperlink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {ogData.image && (
           <PreviewImage
             src={ogData.image}
@@ -80,9 +50,7 @@ export default function LinkPreview({ url }: LinkPreviewProps) {
           />
         )}
         <PreviewText>
-          <div>{ogData.title || '제목 없음'}</div>
-          <div>{ogData.description || '설명 없음'}</div>
-          <div>{ogData.hostname}</div>
+          <div>{ogData.title}</div>
         </PreviewText>
       </PreviewContent>
     </PreviewContainer>
