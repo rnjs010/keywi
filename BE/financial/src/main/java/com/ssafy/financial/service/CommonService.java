@@ -3,7 +3,6 @@ package com.ssafy.financial.service;
 import com.ssafy.financial.entity.AccountEntity;
 import com.ssafy.financial.entity.UserAccountConnectionEntity;
 import com.ssafy.financial.repository.UserAccountConnectionRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

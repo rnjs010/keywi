@@ -2,12 +2,10 @@ package com.ssafy.financial.util;
 
 import com.ssafy.financial.config.FinancialApiConfig;
 import com.ssafy.financial.dto.request.common.FinancialRequestHeader;
-import com.ssafy.financial.dto.request.common.FinancialUserInfo;
 import com.ssafy.financial.dto.response.common.FinancialResponseHeader;
 import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

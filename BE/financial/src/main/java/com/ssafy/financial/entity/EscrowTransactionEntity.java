@@ -1,6 +1,5 @@
 package com.ssafy.financial.entity;
 
-import com.ssafy.financial.util.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

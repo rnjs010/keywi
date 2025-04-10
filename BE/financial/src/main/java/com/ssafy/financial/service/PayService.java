@@ -7,7 +7,6 @@ import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
-import com.ssafy.financial.dto.response.common.OpenApiResponse;
 import com.ssafy.financial.entity.*;
 import com.ssafy.financial.handler.ApiException;
 import com.ssafy.financial.repository.*;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.ssafy.financial.util.FinancialHeaderUtil;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

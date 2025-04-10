@@ -1,24 +1,18 @@
 package com.ssafy.financial.controller;
 
 import com.ssafy.financial.dto.request.*;
-import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.dto.response.SimplePasswordVerifyResponse;
-import com.ssafy.financial.dto.response.common.FinancialResponseHeader;
 import com.ssafy.financial.dto.response.common.OpenApiResponse;
-import com.ssafy.financial.entity.UserAccountConnectionEntity;
 import com.ssafy.financial.service.PayService;
 import com.ssafy.financial.util.ResponseUtil;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
