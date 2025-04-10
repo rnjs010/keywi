@@ -160,7 +160,6 @@ public class FinancialApiService {
 
         UserAccountConnectionEntity connection = optional.get();
         AccountEntity account = connection.getDemandAccount();
-
         return MyAccountCheckResponse.builder()
                 .accountNo(account.getAccountNo())
                 .bankCode(account.getBankCode())
@@ -250,7 +249,7 @@ public class FinancialApiService {
     public CreateAccountResponse createAccount(CreateAccountRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/createDemandDepositAccount";
 
-        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+        String userKey = commonService.getUserKeyAllowUnlinked(request.getUserId());
 
         FinancialRequestHeader header = financialHeaderUtil.createHeader("createDemandDepositAccount", userKey);
         request.setHeader(header);

@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     Optional<AccountEntity> findByAccountNoAndBankCode(String accountNo, String bankCode);
+    Optional<AccountEntity> findTopByCreatedByUserIdOrderByCreatedAtDesc(Long userId);
 
 }
