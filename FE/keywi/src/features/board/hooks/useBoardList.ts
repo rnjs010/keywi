@@ -14,6 +14,7 @@ export const useBoardList = () => {
     queryKey: boardKeys.lists(),
     queryFn: getBoardList,
     staleTime: 0,
+    refetchInterval: 5000, // 5초마다 갱신
     refetchOnMount: true, // 컴포넌트 마운트될 때마다 refetch
     refetchOnWindowFocus: true, // 새로고침 포함 브라우저 포커스될 때도 refetch
   })
