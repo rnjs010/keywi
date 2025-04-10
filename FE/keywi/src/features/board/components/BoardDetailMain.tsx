@@ -7,7 +7,7 @@ export default function BoardDetailMain({ data }: { data: BoardDetailData }) {
   const navigate = useNavigate()
 
   return (
-    <div className="py-4">
+    <div className="py-4 pb-16">
       {/* 상품 리스트 */}
       <Text variant="body2" weight="bold" color="darkKiwi">
         견적 상품 내역
