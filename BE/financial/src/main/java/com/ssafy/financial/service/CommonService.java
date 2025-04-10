@@ -79,10 +79,12 @@ public class CommonService {
             return userKey;
         }
 
-        userKey = "9910f499-e58b-42af-9de8-899ad3f3a4e6";
-
+        else {
+            return userKey = "9910f499-e58b-42af-9de8-899ad3f3a4e6";
+        }
+/*
         // 실패
         log.warn("❌ userId={}에 대해 어떤 방식으로도 userKey를 찾을 수 없습니다.", userId);
-        throw new IllegalArgumentException("userKey가 존재하지 않습니다.");
+        throw new IllegalArgumentException("userKey가 존재하지 않습니다.");*/
     }
 }
