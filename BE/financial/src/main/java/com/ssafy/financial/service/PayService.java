@@ -7,9 +7,12 @@ import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.AccountTransferResponse;
 import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
+import com.ssafy.financial.dto.response.common.OpenApiResponse;
 import com.ssafy.financial.entity.*;
+import com.ssafy.financial.handler.ApiException;
 import com.ssafy.financial.repository.*;
 
+import com.ssafy.financial.util.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -52,16 +55,17 @@ public class PayService {
                 .build();
     }
 
-    public OneWonTransferInitResponse startOneWonTransfer(String accountNo, String bankCode) {
+    public OneWonTransferInitResponse startOneWonTransfer(Long userId, String accountNo, String bankCode) {
         AccountEntity account = accountRepository
                 .findByAccountNoAndBankCode(accountNo, bankCode)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 계좌가 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorCode.A1003));
 
-        // 1원 송금 요청 생성
         OneWonTransferRequest request = new OneWonTransferRequest();
         request.setAccountNo(accountNo);
         request.setUserKey(account.getUserKey());
         request.setAuthText("키위");
+        request.setUserId(userId);
+        request.setBankCode(bankCode);
 
         financialApiService.sendOneWon(request);
 
@@ -74,18 +78,17 @@ public class PayService {
 
     public void setSimplePasswordAndConnectAccount(SetSimplePasswordRequest request) {
         UsersEntity user = usersRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+                .orElseThrow(() -> new ApiException(ErrorCode.H1009)); // 사용자 없음
 
         AccountEntity account = accountRepository.findByAccountNoAndBankCode(
                 request.getAccountNo(), request.getBankCode()
-        ).orElseThrow(() -> new IllegalArgumentException("계좌 정보 없음"));
+        ).orElseThrow(() -> new ApiException(ErrorCode.A1003)); // 계좌 정보 없음
 
         boolean alreadyConnected = userAccountConnectionRepository.existsByUserAndDemandAccount(user, account);
         if (alreadyConnected) {
-            throw new IllegalStateException("이미 연결된 계좌입니다.");
+            throw new ApiException(ErrorCode.A1006); // "이미 연결된 계좌입니다." → 재사용 가능 or 새 코드 정의
         }
 
-        // 간편 비밀번호 저장 or 업데이트
         String encoded = passwordEncoder.encode(request.getRawPassword());
         Optional<SimplePasswordEntity> existing = simplePasswordRepository.findByUser(user);
 
@@ -102,7 +105,6 @@ public class PayService {
         );
         simplePasswordRepository.save(entity);
 
-        // 계좌 연결
         UserAccountConnectionEntity connection = UserAccountConnectionEntity.builder()
                 .user(user)
                 .demandAccount(account)

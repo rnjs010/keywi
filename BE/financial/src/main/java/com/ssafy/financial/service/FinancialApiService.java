@@ -21,10 +21,12 @@ import com.ssafy.financial.dto.response.TransactionHistoryListResponse;
 import com.ssafy.financial.entity.AccountEntity;
 import com.ssafy.financial.entity.FinancialUserEntity;
 import com.ssafy.financial.entity.RegisterProductEntity;
+import com.ssafy.financial.handler.ApiException;
 import com.ssafy.financial.repository.AccountRepository;
 import com.ssafy.financial.repository.FinancialUserRepository;
 import com.ssafy.financial.repository.RegisterProductRepository;
 import com.ssafy.financial.util.BankCodeMapper;
+import com.ssafy.financial.util.ErrorCode;
 import com.ssafy.financial.util.FinancialHeaderUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -171,7 +173,11 @@ public class FinancialApiService {
     public OneWonTransferResponse sendOneWon(OneWonTransferRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/accountAuth/openAccountAuth";
 
-        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+        // 계좌에서 직접 userKey 추출 (계좌는 이미 입력받음)
+        String userKey = accountRepository
+                .findByAccountNoAndBankCode(request.getAccountNo(), request.getBankCode())
+                .orElseThrow(() -> new ApiException(ErrorCode.A1003)) // 계좌 없음
+                .getUserKey();
 
         // 📌 공통 헤더 생성
         FinancialRequestHeader header = financialHeaderUtil.createHeader(
@@ -202,13 +208,16 @@ public class FinancialApiService {
     public OneWonVerifyResponse verifyOneWon(OneWonVerifyRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/accountAuth/checkAuthCode";
 
-        String userKey = commonService.getUserKeyByUserId(request.getUserId());
+        String userKey = accountRepository
+                .findByAccountNoAndBankCode(request.getAccountNo(), request.getBankCode())
+                .orElseThrow(() -> new ApiException(ErrorCode.A1003)) // 계좌 없음
+                .getUserKey();
 
         FinancialRequestHeader header = financialHeaderUtil.createHeader("checkAuthCode", userKey);
         request.setHeader(header);
 
         // authText 고정값 설정 (혹시 dto에서 안 들어올 경우를 대비해)
-        request.setAuthText("싸피");
+        request.setAuthText("키위");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -4,8 +4,11 @@ import com.ssafy.financial.dto.request.*;
 import com.ssafy.financial.dto.response.MyAccountCheckResponse;
 import com.ssafy.financial.dto.response.OneWonTransferInitResponse;
 import com.ssafy.financial.dto.response.SimplePasswordVerifyResponse;
+import com.ssafy.financial.dto.response.common.FinancialResponseHeader;
+import com.ssafy.financial.dto.response.common.OpenApiResponse;
 import com.ssafy.financial.entity.UserAccountConnectionEntity;
 import com.ssafy.financial.service.PayService;
+import com.ssafy.financial.util.ResponseUtil;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,10 +27,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class PayController {
 
     private final PayService payService;
+    private final ResponseUtil responseUtil;
 
     @PostMapping("/transfer/initiate")
-    public ResponseEntity<OneWonTransferInitResponse> initiateOneWonTransfer(@RequestBody AccountCheckRequestDto dto) {
-        return ResponseEntity.ok(payService.startOneWonTransfer(dto.getAccountNo(), dto.getBankCode()));
+    public ResponseEntity<OpenApiResponse<OneWonTransferInitResponse>> initiateOneWonTransfer(
+            @RequestHeader("X-User-ID") Long userId,
+            @RequestBody AccountCheckRequestDto dto
+    ) {
+        OneWonTransferInitResponse result = payService.startOneWonTransfer(
+                userId,
+                dto.getAccountNo(),
+                dto.getBankCode()
+        );
+
+        return responseUtil.success(result);
     }
 
     // 연결된 계좌 조회
@@ -46,9 +59,9 @@ public class PayController {
 
     // 계좌 연결 + 간편비밀번호 등록을 동시에 수행
     @PostMapping("/connect")
-    public ResponseEntity<String> connectAndSetPassword(@RequestBody SetSimplePasswordRequest request) {
+    public ResponseEntity<OpenApiResponse<Void>> connectAndSetPassword(@RequestBody SetSimplePasswordRequest request) {
         payService.setSimplePasswordAndConnectAccount(request);
-        return ResponseEntity.ok("계좌 연결 및 비밀번호 설정 완료");
+        return responseUtil.success(); // 한 줄이면 끝
     }
 
     // 간편 비밀번호 검증

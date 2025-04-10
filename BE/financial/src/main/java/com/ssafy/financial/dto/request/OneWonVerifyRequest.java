@@ -18,6 +18,7 @@ public class OneWonVerifyRequest {
 
     private Long userId;
     private String accountNo;
-    private String authText = "싸피"; // 기본값 고정
+    private String authText = "키위"; // 기본값 고정
     private String authCode;
+    private String bankCode;
 }

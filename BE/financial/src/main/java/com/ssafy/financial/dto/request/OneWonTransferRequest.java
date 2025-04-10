@@ -25,5 +25,5 @@ public class OneWonTransferRequest {
     private String authText;
 
     private String userKey;
-
+    private String bankCode;
 }
