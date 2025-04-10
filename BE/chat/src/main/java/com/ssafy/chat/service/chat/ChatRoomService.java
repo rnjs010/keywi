@@ -66,10 +66,8 @@ public class ChatRoomService {
             }
 
             // 이미 해당 게시글에 대한 채팅방이 있는지 확인
-            Optional<ChatRoom> existingRoom = chatRoomRepository.findByBoardId(boardId);
-            if (existingRoom.isPresent()) {
-                ChatRoom room = existingRoom.get();
-
+            List<ChatRoom> existingRooms = chatRoomRepository.findByBoardId(boardId);
+            for (ChatRoom room : existingRooms) {
                 // 이미 동일한 조립자와 구매자 간의 채팅방이 있는 경우
                 if (room.getAssemblerId().equals(assemblerId) && room.getBuyerId().equals(buyerId)) {
                     // 비활성화된 경우 다시 활성화
