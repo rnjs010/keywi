@@ -5,6 +5,8 @@ import { colors } from '@/styles/colors'
 import { CheckCircleSolid } from 'iconoir-react'
 import { useNavigate } from 'react-router-dom'
 import { usePayStore } from '@/stores/payStore'
+import { fetchUserInfo } from '@/services/userIdService'
+import { useEffect, useState } from 'react'
 
 const Container = tw.div`
   flex flex-col items-center justify-center h-screen px-4
@@ -13,7 +15,19 @@ const Container = tw.div`
 export default function Complete() {
   const navigate = useNavigate()
   const resetState = usePayStore((state) => state.resetState)
-  const nickname = '규리몽땅'
+  const [nickname, setNickname] = useState<string>('')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetchUserInfo()
+        setNickname(userData?.userName || '')
+      } catch (error) {
+        console.error('유저 정보 가져오기 실패:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleNext = () => {
     resetState()
