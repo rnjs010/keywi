@@ -43,14 +43,13 @@ const LoadingContainer = tw.div`
   flex justify-center items-center py-8
 `
 const CustomDrawerContent = styled(DrawerContent)`
-  max-height: 90vh;
+  /* max-height: 90vh; */
 `
 const ProductListContainer = tw.div`
   px-4 
   py-2 
   mb-4 
   overflow-y-auto
-  max-h-60
 `
 
 interface ProductDrawerProps {
