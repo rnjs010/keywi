@@ -43,9 +43,11 @@ public class BoardProductSearchRepositoryImpl implements BoardProductSearchRepos
             boolQuery.must(keywordQuery);
 
             if (categoryId != null && !categoryId.isBlank()) {
-                boolQuery.filter(f -> f.term(t -> t
-                        .field("categoryId")
-                        .value(Integer.parseInt(categoryId))));
+                boolQuery.filter(f -> f.bool(b -> b.should(s -> s
+                                .term(t -> t.field("categoryId").value(Integer.parseInt(categoryId))))
+                        .should(s -> s
+                                .term(t -> t.field("parentCategoryId").value(Integer.parseInt(categoryId))))
+                ));
             }
 
             SearchRequest request = new SearchRequest.Builder()

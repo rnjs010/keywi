@@ -31,6 +31,8 @@ public class BoardProductSearchServiceImpl implements BoardProductSearchService 
                 .productName(doc.getProductName())
                 .categoryId(doc.getCategoryId())
                 .categoryName(doc.getCategoryName())
+                .parentCategoryId(doc.getParentCategoryId())
+                .parentCategoryName(doc.getParentCategoryName())
                 .imageUrl(doc.getImageUrl())
                 .price(doc.getPrice())
                 .build();

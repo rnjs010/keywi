@@ -28,6 +28,12 @@ public class BoardProductDocument {
     @Field(type = FieldType.Keyword)
     private String categoryName;
 
+    @Field(type = FieldType.Keyword)
+    private Integer parentCategoryId;
+
+    @Field(type = FieldType.Keyword)
+    private String parentCategoryName;
+
     @Field(type = FieldType.Integer)
     private Integer price;
 

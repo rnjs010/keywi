@@ -12,6 +12,8 @@ public class BoardProductSearchResponse {
     private String productName;
     private Integer categoryId;
     private String categoryName;
+    private Integer parentCategoryId;
+    private String parentCategoryName;
     private String imageUrl;
     private Integer price;
 }
