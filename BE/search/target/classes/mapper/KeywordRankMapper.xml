@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.search.keywordRanking.mapper.KeywordRankMapper">
+
+    <!-- 배치 결과 저장 -->
+    <insert id="insertKeywordRanks">
+        INSERT INTO keyword_rank (time_block, keyword, ranking, change_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.timeBlock}, #{item.keyword}, #{item.ranking}, #{item.changeStatus})
+        </foreach>
+    </insert>
+
+    <!-- 이전 랭킹 조회 -->
+    <select id="selectRanksByTime" resultType="com.ssafy.search.keywordRanking.dto.KeywordRankDto">
+        SELECT time_block, keyword, ranking, change_status
+        FROM keyword_rank
+        WHERE time_block = #{timeBlock}
+        ORDER BY ranking ASC
+    </select>
+
+    <select id="findLatestTimeBlock" resultType="java.time.LocalDateTime">
+        SELECT MAX(time_block) FROM keyword_rank
+    </select>
+
+</mapper>

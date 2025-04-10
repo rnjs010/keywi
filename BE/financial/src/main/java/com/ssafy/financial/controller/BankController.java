@@ -20,7 +20,7 @@ public class BankController {
 
     // 연결된 계좌 조회
     @GetMapping("/account")
-    public ResponseEntity<?> checkMyAccount(@RequestBody Long userId) {
+    public ResponseEntity<?> checkMyAccount(@RequestParam Long userId) {
         return ResponseEntity.ok(payService.checkMyAccount(userId));
     }
 
