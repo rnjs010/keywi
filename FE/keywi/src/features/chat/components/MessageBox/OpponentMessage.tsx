@@ -22,11 +22,10 @@ export default function OpponentMessage({
   return (
     <Container>
       <ThumbnailImage
-        src={senderProfileUrl}
+        src={
+          senderProfileUrl ? senderProfileUrl : '/default/default_product.png'
+        }
         alt="thumbnail"
-        onError={(e: { target: HTMLImageElement }) => {
-          ;(e.target as HTMLImageElement).src = '/default/default_product.png'
-        }}
       />
       <div className="flex items-end gap-2">
         {messageType === 'TEXT' ? (
