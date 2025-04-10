@@ -113,7 +113,6 @@ export default function HomePage() {
   useLayoutEffect(() => {
     const isFromComments = location.state?.fromComments === true // 댓글 창에서 돌아왔는지 확인
     const isFromProduct = location.state?.fromFeed === true // 상품 페이지에서 돌아왔는지 확인
-    const isInitialLoad = data?.pages?.length === 1 // 첫 로딩인지 확인
 
     if (!isLoading && data?.pages) {
       if (scrollAreaRef.current && (isFromComments || isFromProduct)) {
@@ -121,8 +120,8 @@ export default function HomePage() {
         if (position > 0) {
           scrollAreaRef.current.scrollTop = position
         }
-      } else if (scrollAreaRef.current && isInitialLoad) {
-        scrollAreaRef.current.scrollTop = 0 // 최초 로딩 시에만 맨 위로 스크롤
+      } else if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTop = 0
       }
     }
   }, [data, isLoading, location.state])
