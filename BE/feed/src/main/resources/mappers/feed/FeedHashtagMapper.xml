@@ -48,9 +48,9 @@
                      LEFT JOIN feed_bookmarks fb ON f.feed_id = fb.feed_id AND fb.user_id = #{userId}
             WHERE fl.feed_id IS NOT NULL OR fb.feed_id IS NOT NULL
         )
-        SELECT fh.hashtag_id, COUNT(*) as count
+        SELECT fh.hashtag_id as "hashtag_id", COUNT(*) as "count"
         FROM user_interactions ui
-            JOIN feed_hashtags fh ON ui.feed_id = fh.feed_id
+                 JOIN feed_hashtags fh ON ui.feed_id = fh.feed_id
         GROUP BY fh.hashtag_id
         ORDER BY count DESC
     </select>
