@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useProductSearchDeal } from '../../hooks/useProductsSearchDeal'
 import truncateText from '@/utils/truncateText'
 import highlightSearchTerm from '@/utils/highlightSearchTerm'
+import styled from '@emotion/styled'
 
 const CardContainer = tw.div`
   flex items-center gap-3 cursor-pointer my-2 pb-2
@@ -29,6 +30,10 @@ const SearchInput = tw.input`
 
 const SearchIconWrapper = tw.div`
   absolute left-2 top-1/2 transform -translate-y-1/2
+`
+
+const CustomDrawerContent = styled(DrawerContent)`
+  max-height: 90vh; /* 화면 높이의 2/3 */
 `
 
 interface ProductDrawerProps {
@@ -74,7 +79,7 @@ export default function ProductSearchModal({
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <CustomDrawerContent>
         <DrawerHeader>
           <Text variant="body2" weight="bold" color="darkKiwi">
             {title} 선택
@@ -95,7 +100,7 @@ export default function ProductSearchModal({
         </SearchContainer>
 
         {/* SECTION - 상품 리스트 */}
-        <div className="px-4 py-2 mb-4 max-h-60 overflow-y-auto">
+        <div className="px-4 py-2 mb-4 max-h-[calc(66vh-120px)] overflow-y-auto">
           {displayedProducts?.length > 0 ? (
             displayedProducts.map((product) => (
               <CardContainer
@@ -126,7 +131,7 @@ export default function ProductSearchModal({
             </div>
           )}
         </div>
-      </DrawerContent>
+      </CustomDrawerContent>
     </Drawer>
   )
 }

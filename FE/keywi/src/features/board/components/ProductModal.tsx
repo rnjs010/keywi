@@ -42,7 +42,7 @@ const Tooltip = tw.div`
 `
 
 const CustomDrawerContent = styled(DrawerContent)`
-  max-height: 66vh; /* 화면 높이의 2/3 */
+  max-height: 90vh; /* 화면 높이의 2/3 */
 `
 
 interface ProductDrawerProps {

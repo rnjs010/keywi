@@ -43,7 +43,7 @@ const LoadingContainer = tw.div`
   flex justify-center items-center py-8
 `
 const CustomDrawerContent = styled(DrawerContent)`
-  max-height: 66vh; /* 화면 높이의 2/3 */
+  max-height: 90vh;
 `
 const ProductListContainer = tw.div`
   px-4 
