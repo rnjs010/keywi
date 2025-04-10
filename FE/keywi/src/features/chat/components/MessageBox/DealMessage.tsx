@@ -10,6 +10,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useDealAcceptStore } from '@/stores/chatStore'
 import { useCompleteTrade } from '../../hooks/trades/useCompleteTrade'
 import { useAccount } from '../../hooks/useAccount'
+import { updateBoardState } from '../../sevices/dealService'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -129,10 +130,24 @@ export default function DealMessage({
           onCancle: handleCloseModal,
           onConfirm: () => {
             if (!receipt?.receiptId) return
+            // 결제 완료 api 호출
             completeTradeMutate(
               { escrowTransactionId: receipt.receiptId },
               {
                 onSuccess: () => {
+                  if (receipt?.boardId) {
+                    updateBoardState({
+                      boardId: receipt.boardId,
+                      dealState: 'COMPLETED',
+                    })
+                      .then(() => {
+                        console.log('게시글 상태 변경 완료')
+                      })
+                      .catch((err) => {
+                        console.error('게시글 상태 변경 실패', err)
+                      })
+                  }
+
                   sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
                   handleCloseModal()
                   resetState()

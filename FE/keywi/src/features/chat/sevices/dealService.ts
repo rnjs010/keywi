@@ -109,3 +109,23 @@ export const getPaymentAccount =
     )
     return response.data
   }
+
+// 게시글 상태 변경 함수
+export type DealState = 'IN_PROGRESS' | 'COMPLETED'
+
+export const updateBoardState = async ({
+  boardId,
+  dealState,
+}: {
+  boardId: number
+  dealState: DealState
+}) => {
+  const { data } = await apiRequester.patch(
+    `/api/estimate-boards/${boardId}/state`,
+    null,
+    {
+      params: { dealState },
+    },
+  )
+  return data
+}

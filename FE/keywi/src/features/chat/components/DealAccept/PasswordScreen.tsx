@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useVerifyPassword } from '../../hooks/useVerifyPassword'
 import { useUserStore } from '@/stores/userStore'
 import { useAcceptTrade } from '../../hooks/trades/useAcceptTrade'
+import { updateBoardState } from '../../sevices/dealService'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4 justify-center
@@ -41,6 +42,18 @@ export default function PasswordScreen() {
                   },
                   {
                     onSuccess: () => {
+                      if (receipt?.boardId) {
+                        updateBoardState({
+                          boardId: receipt.boardId,
+                          dealState: 'IN_PROGRESS',
+                        })
+                          .then(() => {
+                            console.log('게시글 상태 변경 완료')
+                          })
+                          .catch((err) => {
+                            console.error('게시글 상태 변경 실패', err)
+                          })
+                      }
                       setStep(4)
                     },
                     onError: (err) => {
