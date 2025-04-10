@@ -161,7 +161,7 @@ public class ChatMessageService {
         return response;
     }
 
-    // 날짜 그룹 문자열을 LocalDate로 변환하는 유틸리티 메소드 추가
+    // 날짜 그룹 문자열을 LocalDate로 변환하는 유틸리티 메소드
     private LocalDate parseGroupDateToLocalDate(String dateGroup) {
         try {
             // "2025년 4월 7일" 형식을 LocalDate로 변환
@@ -210,10 +210,20 @@ public class ChatMessageService {
         Map<String, List<ChatMessageDto>> groupedMessages = messageDtos.stream()
                 .collect(Collectors.groupingBy(msg -> formatDateToGroup(msg.getSentAt())));
 
-        // 그룹화된 메시지를 날짜 순으로 정렬하여 리스트로 변환
+        // 각 그룹 내의 메시지를 시간순(오름차순)으로 정렬
+        groupedMessages.forEach((date, msgs) ->
+                msgs.sort(Comparator.comparing(ChatMessageDto::getSentAt))
+        );
+
+        // 날짜 문자열을 LocalDate로 변환하여 정렬 - 오래된 날짜부터 (오름차순)
         List<ChatMessageGroupDto> messageGroups = groupedMessages.entrySet().stream()
                 .map(entry -> new ChatMessageGroupDto(entry.getKey(), entry.getValue()))
-                .sorted(Comparator.comparing(ChatMessageGroupDto::getDateGroup))
+                .sorted((a, b) -> {
+                    // "yyyy년 M월 d일" 형식의 문자열을 LocalDate로 변환
+                    LocalDate dateA = parseGroupDateToLocalDate(a.getDateGroup());
+                    LocalDate dateB = parseGroupDateToLocalDate(b.getDateGroup());
+                    return dateA.compareTo(dateB); // 오름차순 정렬
+                })
                 .collect(Collectors.toList());
 
         // 필요한 페이징 정보만 포함하는 Map 생성
