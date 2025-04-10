@@ -6,9 +6,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useContext } from 'react'
 import { useUserStore } from '@/stores/userStore'
 import { WebSocketContext } from '@/services/WebSocketProvider'
-import { useChatSubscription } from '../../hooks/useChatSub'
 import { useAccount } from '../../hooks/useAccount'
-import { BANK_CODE_TO_NAME } from '@/interfaces/BankCode'
+import { getBankLogoPath, getBankName } from '@/utils/bankCodeMapper'
 
 const TextContainer = tw.div`
   flex flex-row justify-center mt-8
@@ -36,18 +35,8 @@ export default function DealReqConfirmScreen() {
   const resetState = useDealRequestStore((state) => state.resetState)
   const userId = useUserStore((state) => state.userId)
 
-  // 내 계좌 정보 api 호출
   const { data } = useAccount()
-  const bankName = data?.bankCode
-    ? BANK_CODE_TO_NAME[data.bankCode].slice(0, -2)
-    : '알 수 없음'
-  const accountNumber = data?.accountNo
-
   const { client } = useContext(WebSocketContext)
-
-  useChatSubscription({
-    roomId: roomId!,
-  })
 
   const handleNext = () => {
     console.log('거래 내역', selectedProducts)
@@ -91,9 +80,10 @@ export default function DealReqConfirmScreen() {
         </TextContainer>
 
         <AccountBadge>
-          <BankLogo src={`/banks/${bankName}.png`}></BankLogo>
+          <BankLogo src={getBankLogoPath(data?.bankCode || '')}></BankLogo>
           <Text variant="body1" weight="bold">
-            {bankName} {accountNumber}
+            {getBankNameWithoutSuffix(getBankName(data?.bankCode || ''))}{' '}
+            {data?.accountNo}
           </Text>
         </AccountBadge>
       </div>
@@ -107,4 +97,9 @@ export default function DealReqConfirmScreen() {
       </BottomContainer>
     </>
   )
+}
+
+// 이름에서 '은행' 제거
+const getBankNameWithoutSuffix = (name: string) => {
+  return name.endsWith('은행') ? name.slice(0, -2) : name
 }

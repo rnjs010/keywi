@@ -61,7 +61,7 @@ export const searchProductsDeal = async (
 
 // 거래 영수증 조회 함수
 interface DealReceiptResponse {
-  status: string
+  success: boolean
   message: string
   data: ReceiptData
 }

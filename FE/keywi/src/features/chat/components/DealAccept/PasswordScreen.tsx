@@ -5,6 +5,7 @@ import { useDealAcceptStore } from '@/stores/chatStore'
 import { useState } from 'react'
 import { useVerifyPassword } from '../../hooks/useVerifyPassword'
 import { useUserStore } from '@/stores/userStore'
+import { useAcceptTrade } from '../../hooks/trades/useAcceptTrade'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4 justify-center
@@ -13,10 +14,12 @@ const Container = tw.div`
 export default function PasswordScreen() {
   const myId = useUserStore((state) => state.userId)
   const setStep = useDealAcceptStore((state) => state.setStep)
+  const receipt = useDealAcceptStore((state) => state.receipt)
   const [password, setPasswordInput] = useState('')
   const [showError, setShowError] = useState(false)
 
   const { mutate: verifyPassword } = useVerifyPassword()
+  const { mutate: acceptTrade } = useAcceptTrade()
 
   const handleKeyPress = (key: string) => {
     if (password.length < 6) {
@@ -30,7 +33,21 @@ export default function PasswordScreen() {
             onSuccess: (res) => {
               if (res.matched) {
                 setShowError(false)
-                setStep(4)
+                // 거래 수락 api 호출
+                acceptTrade(
+                  {
+                    escrowTransactionId: receipt.receiptId,
+                    paymentPassword: newPassword,
+                  },
+                  {
+                    onSuccess: () => {
+                      setStep(4)
+                    },
+                    onError: (err) => {
+                      console.error('거래 수락 오류', err)
+                    },
+                  },
+                )
               } else {
                 setShowError(true)
                 setPasswordInput('')

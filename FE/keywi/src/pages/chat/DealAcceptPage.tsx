@@ -8,7 +8,7 @@ import { useDealAcceptStore } from '@/stores/chatStore'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import SafePaymentScreen from '@/features/chat/components/DealAccept/SafePaymentScreen'
 import { useDealReceipt } from '@/features/chat/hooks/useDealReceipt'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import LoadingMessage from '@/components/message/LoadingMessage'
 import ErrorMessage from '@/components/message/ErrorMessage'
 import { WebSocketContext } from '@/services/WebSocketProvider'
@@ -36,11 +36,10 @@ export default function DealAcceptPage() {
   const { client } = useContext(WebSocketContext)
   const myId = useUserStore((state) => state.userId)
 
-  useEffect(() => {
-    if (data) {
-      setReceipt(data)
-    }
-  }, [data, setReceipt])
+  if (data) {
+    resetState()
+    setReceipt(data)
+  }
 
   useChatSubscription({
     roomId: roomId!,

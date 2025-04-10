@@ -9,6 +9,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from '@/components/ui/input-otp'
+import { getBankLogoPath, getBankName } from '@/utils/bankCodeMapper'
+import { useVerifyTransferCode } from '../hooks/useVerifyCode'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4
@@ -31,19 +33,37 @@ const OtpContainer = tw.div`
 `
 
 export default function AuthAccount() {
-  const bank = usePayStore((state) => state.bank)
   const setStep = usePayStore((state) => state.setStep)
-
+  const bankCode = usePayStore((state) => state.bank)
+  const accountNo = usePayStore((state) => state.accountNumber)
   const [authCode, setAuthCode] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const { mutate: verifyCode } = useVerifyTransferCode()
 
   const handleNext = () => {
-    if (authCode.length === 4) {
-      setStep(4)
+    if (authCode.length === 4 && accountNo) {
+      verifyCode(
+        { accountNo, bankCode, authCode },
+        {
+          onSuccess: (data) => {
+            if (data.Header.responseCode === 'H0000') {
+              setStep(4)
+            } else {
+              setErrorMessage('인증에 실패했습니다. 다시 시도해 주세요.')
+            }
+          },
+          onError: () => {
+            setErrorMessage('인증에 실패했습니다. 다시 시도해 주세요.')
+          },
+        },
+      )
     }
   }
 
   const handleOtpChange = (value: string) => {
     setAuthCode(value)
+    setErrorMessage('')
   }
 
   return (
@@ -59,9 +79,13 @@ export default function AuthAccount() {
       {/* SECTION - 상세 예시 */}
       <InfoBox>
         <BankInfo>
-          <img src={`/banks/${bank}.png`} alt={bank} className="w-6 h-6" />
+          <img
+            src={getBankLogoPath(bankCode)}
+            alt={bankCode}
+            className="w-6 h-6"
+          />
           <Text variant="body1" weight="bold">
-            {bank}
+            {getBankName(bankCode).replace(/은행$/, '')}
           </Text>
         </BankInfo>
         <div className="flex items-center gap-2">
@@ -99,6 +123,18 @@ export default function AuthAccount() {
           </InputOTPGroup>
         </InputOTP>
       </OtpContainer>
+
+      {/* SECTION - 에러 메시지 */}
+      {errorMessage && (
+        <Text
+          variant="caption1"
+          weight="regular"
+          className="mt-2"
+          style={{ color: 'red' }}
+        >
+          {errorMessage}
+        </Text>
+      )}
 
       {/* SECTION - 버튼 */}
       <div className="mt-auto mb-12">

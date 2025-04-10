@@ -99,6 +99,7 @@ export interface CategoryAllProductResponse {
 export interface ReceiptData {
   receiptId: number
   roomId: number
+  boardId: number
   messageId: string
   assemblerId: number
   buyerId: number
