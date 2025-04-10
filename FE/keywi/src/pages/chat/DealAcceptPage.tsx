@@ -37,7 +37,7 @@ export default function DealAcceptPage() {
   const myId = useUserStore((state) => state.userId)
 
   if (data) {
-    resetState()
+    // resetState()
     setReceipt(data)
   }
 
@@ -63,7 +63,7 @@ export default function DealAcceptPage() {
         },
       })
     }
-
+    resetState()
     navigate(`/chat/${roomId}`)
   }
 
