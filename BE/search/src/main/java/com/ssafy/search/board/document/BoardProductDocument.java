@@ -34,9 +34,6 @@ public class BoardProductDocument {
     @Field(type = FieldType.Keyword)
     private String imageUrl;
 
-    @Field(type = FieldType.Date)
-    private Instant createdAt;
-
     @Field(type = FieldType.Integer)
     private Integer searchCount;
 }

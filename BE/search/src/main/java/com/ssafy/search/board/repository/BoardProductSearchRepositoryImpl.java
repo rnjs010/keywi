@@ -51,7 +51,6 @@ public class BoardProductSearchRepositoryImpl implements BoardProductSearchRepos
             SearchRequest request = new SearchRequest.Builder()
                     .index(INDEX)
                     .query(boolQuery.build()._toQuery())
-                    .sort(s -> s.field(f -> f.field("createdAt").order(SortOrder.Desc)))
                     .build();
 
             SearchResponse<BoardProductDocument> response = esClient.search(request, BoardProductDocument.class);
