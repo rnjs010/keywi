@@ -11,13 +11,13 @@ const Container = tw.div`
   bg-white
   border-t
   border-littleGray
-  p-4
+  px-4
+  pt-4
   max-w-screen-sm
   z-10
 `
 const InputWrapper = tw.div`
   flex
-  items-center
   justify-between
   bg-white
   border
@@ -26,15 +26,16 @@ const InputWrapper = tw.div`
   px-4
 `
 const Input = tw.input`
+  flex
   border-none
   bg-transparent
   outline-none
   placeholder:text-gray
 `
 const SendButton = tw.button`
-  ml-2
-  flex
-  items-center
+  flex-shrink-0
+  whitespace-nowrap
+  text-center
   justify-center
 `
 

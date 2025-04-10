@@ -13,9 +13,10 @@ import React, { useEffect, useState } from 'react'
 import { useProductSearch } from '../hooks/useProductSearch'
 import truncateText from '@/utils/truncateText'
 import highlightSearchTerm from '@/utils/highlightSearchTerm'
+import styled from '@emotion/styled'
 
 const CardContainer = tw.div`
-  flex items-center gap-3 cursor-pointer my-2 pb-2
+  flex items-center gap-3 cursor-pointer my-2
 `
 
 const ThumbnailImage = tw.img`
@@ -38,6 +39,10 @@ const SearchIconWrapper = tw.div`
 
 const Tooltip = tw.div`
   fixed top-40 right-32 px-3 py-2 bg-info rounded shadow-lg z-50 leading-none
+`
+
+const CustomDrawerContent = styled(DrawerContent)`
+  max-height: 66vh; /* 화면 높이의 2/3 */
 `
 
 interface ProductDrawerProps {
@@ -133,7 +138,7 @@ export default function ProductModal({
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent>
+      <CustomDrawerContent>
         <DrawerHeader>
           <Text variant="body2" weight="bold" color="darkKiwi">
             {title} 선택
@@ -217,7 +222,7 @@ export default function ProductModal({
             </div>
           )}
         </div>
-      </DrawerContent>
+      </CustomDrawerContent>
     </Drawer>
   )
 }
