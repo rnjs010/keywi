@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class FinancialUserInfo {
-    private final String apiKey = "fc1880ecc2444474a54db3592c898761";
+    private final String apiKey = "17a2e34593a440f89610538638c5856c";
 }
