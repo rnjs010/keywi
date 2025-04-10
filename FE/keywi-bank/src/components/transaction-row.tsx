@@ -1,37 +1,38 @@
-import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
-import type { Transaction } from '@/types/banking'
+import { Transaction } from '@/api/transactions'
+import tw from 'twin.macro'
+import styled from '@emotion/styled'
 
-interface TransactionRowProps {
-  transaction: Transaction
-  usdToKrwRate: number
+const Tr = tw.tr`border-t last:border-b`
+const Td = tw.td`px-4 py-3 text-sm`
+const NameCell = tw(Td)``
+const DateCell = tw(Td)`text-blue-900`
+const AmountCell = tw(Td)` font-semibold`
+const AmountWrapper = styled.div(({ type }: { type: 'in' | 'out' }) => [
+  tw`inline-flex items-center gap-1`,
+  type === 'in' ? tw`text-green-600` : tw`text-red-600`,
+])
+
+function formatDate(dateString: string) {
+  const year = dateString.slice(0, 4)
+  const month = dateString.slice(4, 6)
+  const day = dateString.slice(6, 8)
+  return `${year}.${month}.${day}`
 }
 
-export function TransactionRow({
-  transaction,
-  usdToKrwRate,
-}: TransactionRowProps) {
-  const isDeposit = transaction.amount > 0
-  const formattedAmount = Math.round(
-    Math.abs(transaction.amount) * usdToKrwRate,
-  ).toLocaleString('ko-KR')
+export function TransactionRow({ transaction }: { transaction: Transaction }) {
+  const isDeposit = transaction.transactionType === '1'
+  const amount = Number(transaction.transactionBalance).toLocaleString()
+  const formattedDate = formatDate(transaction.transactionDate)
 
   return (
-    <tr className="hover:bg-blue-50">
-      <td className="px-4 py-3 text-sm text-gray-700">{transaction.date}</td>
-      <td className="px-4 py-3 text-sm text-gray-700">{transaction.name}</td>
-      <td className="px-4 py-3 text-sm text-right font-medium flex justify-end items-center">
-        {isDeposit ? (
-          <>
-            <ArrowDownIcon className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-green-600">+₩{formattedAmount}</span>
-          </>
-        ) : (
-          <>
-            <ArrowUpIcon className="h-4 w-4 text-red-500 mr-1" />
-            <span className="text-red-600">-₩{formattedAmount}</span>
-          </>
-        )}
-      </td>
-    </tr>
+    <Tr>
+      <DateCell>{formattedDate}</DateCell>
+      <NameCell>{transaction.transactionTypeName}</NameCell>
+      <AmountCell>
+        <AmountWrapper type={isDeposit ? 'in' : 'out'}>
+          <span>{isDeposit ? `₩ ${amount}` : `₩ ${amount}`}</span>
+        </AmountWrapper>
+      </AmountCell>
+    </Tr>
   )
 }

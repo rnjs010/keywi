@@ -1,48 +1,42 @@
-import type { Transaction } from '@/types/banking'
+import { Transaction } from '@/api/transactions'
 import { TransactionRow } from './transaction-row'
+import tw from 'twin.macro'
 
-interface TransactionHistoryProps {
-  transactions: Transaction[]
-  usdToKrwRate: number
-}
+const Container = tw.div`mb-8`
+const Label = tw.h2`mb-3 text-[30px] font-semibold text-blue-800 text-left`
+const TableContainer = tw.div`rounded-lg border border-blue-200 overflow-hidden`
+const Table = tw.table`w-full text-left border-collapse`
+const Thead = tw.thead`bg-blue-50`
+const Th = tw.th`py-3 px-4 text-sm font-semibold text-blue-800`
+const Tbody = tw.tbody`bg-white`
 
 export function TransactionHistory({
   transactions,
-  usdToKrwRate,
-}: TransactionHistoryProps) {
+}: {
+  transactions: Transaction[]
+}) {
   return (
-    <div>
-      <h2 className="text-lg font-medium mb-4 text-blue-800">
-        Transaction History
-      </h2>
-      <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-blue-50">
-                <th className="px-4 py-3 text-left text-sm font-medium text-blue-800">
-                  Date & Time
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-blue-800">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-blue-800">
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-blue-100">
-              {transactions.map((transaction) => (
-                <TransactionRow
-                  key={transaction.id}
-                  transaction={transaction}
-                  usdToKrwRate={usdToKrwRate}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <Container>
+      <Label>전체 입출금 내역</Label>
+      <TableContainer>
+        <Table>
+          <Thead>
+            <tr>
+              <Th>Date</Th>
+              <Th>Type</Th>
+              <Th>Amount</Th>
+            </tr>
+          </Thead>
+          <Tbody>
+            {transactions.map((transaction) => (
+              <TransactionRow
+                key={transaction.transactionUniqueNo}
+                transaction={transaction}
+              />
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Container>
   )
 }

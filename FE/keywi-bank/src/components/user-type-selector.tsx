@@ -1,9 +1,21 @@
-import { Button } from '@/components/ui/button'
-import { UserType } from '@/types/banking'
+import tw from 'twin.macro'
+import styled from '@emotion/styled'
+
+const Container = tw.div`mb-8`
+const Label = tw.span`block w-full mb-4 text-blue-800 font-semibold text-[30px] text-left`
+const ButtonGroup = tw.div`flex gap-4 flex-wrap`
+
+const SelectButton = styled.button<{ selected: boolean }>`
+  ${tw`px-4 py-2 rounded-lg font-semibold border transition-colors duration-200`}
+  ${({ selected }) =>
+    selected
+      ? tw`rounded-lg bg-blue-600 text-white border-blue-600 hover:bg-blue-700`
+      : tw`rounded-lg bg-white text-blue-600 border-blue-300 hover:bg-blue-100`}
+`
 
 interface UserTypeSelectorProps {
-  userType: UserType
-  setUserType: (type: UserType) => void
+  userType: string
+  setUserType: (type: string) => void
 }
 
 export function UserTypeSelector({
@@ -11,45 +23,28 @@ export function UserTypeSelector({
   setUserType,
 }: UserTypeSelectorProps) {
   return (
-    <div className="mb-8">
-      <h2 className="text-lg font-medium mb-4 text-blue-800">
-        Select User Type
-      </h2>
-      <div className="flex flex-wrap gap-4">
-        <Button
-          variant={userType === 'assembler' ? 'default' : 'outline'}
-          onClick={() => setUserType('assembler')}
-          className={
-            userType === 'assembler'
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'border-blue-300 text-blue-600'
-          }
+    <Container>
+      <Label>사용자 선택</Label>
+      <ButtonGroup>
+        <SelectButton
+          selected={userType === '조립자(혜원)'}
+          onClick={() => setUserType('조립자(혜원)')}
         >
-          Assembler
-        </Button>
-        <Button
-          variant={userType === 'buyer' ? 'default' : 'outline'}
-          onClick={() => setUserType('buyer')}
-          className={
-            userType === 'buyer'
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'border-blue-300 text-blue-600'
-          }
+          조립자(혜원)
+        </SelectButton>
+        <SelectButton
+          selected={userType === '구매자(규리)'}
+          onClick={() => setUserType('구매자(규리)')}
         >
-          Buyer
-        </Button>
-        <Button
-          variant={userType === 'corporation' ? 'default' : 'outline'}
-          onClick={() => setUserType('corporation')}
-          className={
-            userType === 'corporation'
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'border-blue-300 text-blue-600'
-          }
+          구매자(규리)
+        </SelectButton>
+        <SelectButton
+          selected={userType === '플랫폼(키위)'}
+          onClick={() => setUserType('플랫폼(키위)')}
         >
-          Corporation
-        </Button>
-      </div>
-    </div>
+          플랫폼(키위)
+        </SelectButton>
+      </ButtonGroup>
+    </Container>
   )
 }
