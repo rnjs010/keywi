@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -135,10 +136,15 @@ public class ChatMessageService {
                 messages.sort(Comparator.comparing(ChatMessageDto::getSentAt))
         );
 
-        // 그룹화된 메시지를 날짜 순으로 정렬하여 리스트로 변환
+        // 날짜 문자열을 LocalDate로 변환하여 정렬
         List<ChatMessageGroupDto> messageGroups = groupedMessages.entrySet().stream()
                 .map(entry -> new ChatMessageGroupDto(entry.getKey(), entry.getValue()))
-                .sorted(Comparator.comparing(ChatMessageGroupDto::getDateGroup))
+                .sorted((a, b) -> {
+                    // "yyyy년 M월 d일" 형식의 문자열을 LocalDate로 변환
+                    LocalDate dateA = parseGroupDateToLocalDate(a.getDateGroup());
+                    LocalDate dateB = parseGroupDateToLocalDate(b.getDateGroup());
+                    return dateA.compareTo(dateB); // 오래된 날짜부터 (오름차순)
+                })
                 .collect(Collectors.toList());
 
         // 필요한 페이징 정보만 포함하는 Map 생성
@@ -153,6 +159,21 @@ public class ChatMessageService {
         response.setPageInfo(pagingInfo);
 
         return response;
+    }
+
+    // 날짜 그룹 문자열을 LocalDate로 변환하는 유틸리티 메소드 추가
+    private LocalDate parseGroupDateToLocalDate(String dateGroup) {
+        try {
+            // "2025년 4월 7일" 형식을 LocalDate로 변환
+            String normalized = dateGroup
+                    .replace("년 ", "-")
+                    .replace("월 ", "-")
+                    .replace("일", "");
+            return LocalDate.parse(normalized, DateTimeFormatter.ofPattern("yyyy-M-d"));
+        } catch (Exception e) {
+            // 변환 실패 시 현재 날짜 리턴 (정렬 상 마지막에 위치하게 됨)
+            return LocalDate.now();
+        }
     }
 
     // 날짜를 "2025년 4월 7일" 형식으로 포맷팅하는 메소드
