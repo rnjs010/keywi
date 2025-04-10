@@ -61,22 +61,27 @@ public class ChatMessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(messageDto.getRoomId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND, "존재하지 않는 채팅방입니다."));
 
-        // 메시지 발신자가 채팅방 참여자인지 확인 - String을 Long으로 변환
+        // 메시지 발신자가 채팅방 참여자인지 확인
         Long senderIdLong = Long.parseLong(senderId);
         if (!chatRoom.getBuyerId().equals(senderIdLong) && !chatRoom.getAssemblerId().equals(senderIdLong)) {
             throw new CustomException(ErrorCode.USER_NOT_IN_CHATROOM, "사용자가 채팅방에 속해있지 않습니다.");
         }
 
-        // 수신자 ID 설정
         // 발신자 닉네임 설정
         String senderNickname = chatRoom.getBuyerId().equals(senderIdLong)
                 ? chatRoom.getBuyerNickname() : chatRoom.getAssemblerNickname();
+
+        // 여기에 userServiceClient를 통해 프로필 정보 가져오기 추가
+        ApiResponse<MemberResponseDto> response = userServiceClient.getUserProfile(senderIdLong);
+        MemberResponseDto userInfo = response.getData();
+        String profileUrl = userInfo != null ? userInfo.getProfileUrl() : null;
 
         // 메시지 ID 생성
         String messageId = UUID.randomUUID().toString();
         messageDto.setMessageId(messageId);
         messageDto.setSenderId(senderId);
         messageDto.setSenderNickname(senderNickname);
+        messageDto.setSenderProfileUrl(profileUrl);  // 여기에 추가
         messageDto.setSentAt(LocalDateTime.now());
 
         // 구매자와 조립자 읽음 상태 설정
