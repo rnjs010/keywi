@@ -7,7 +7,7 @@ import { colors } from '@/styles/colors'
 import { useState } from 'react'
 import CommissionInfoModal from './CommissionInfoModal'
 import { useAccount } from '../../hooks/useAccount'
-import { BANK_CODE_TO_NAME } from '@/interfaces/BankCode'
+import { getBankName } from '@/utils/bankCodeMapper'
 
 const PaymentContainer = tw.div`
   mx-4 my-2 p-4 bg-pay rounded-lg
@@ -26,11 +26,6 @@ export default function SafePaymentScreen() {
   const receipt = useDealAcceptStore((state) => state.receipt)
   const [openModal, setOpenModal] = useState<boolean>(false)
   const { data } = useAccount()
-
-  const bankName = data?.bankCode
-    ? BANK_CODE_TO_NAME[data.bankCode]
-    : '알 수 없음'
-  const lastDigits = data?.accountNo.slice(-4)
 
   const handleOpenModal = () => {
     setOpenModal(true)
@@ -94,7 +89,8 @@ export default function SafePaymentScreen() {
             키위페이 연결계좌
           </Text>
           <Text variant="caption1" weight="bold" color="darkGray">
-            {bankName} {lastDigits}
+            {getBankName(data?.bankCode || '')}
+            {data?.accountNo.slice(-4)}
           </Text>
         </PaymentRow>
       </PaymentContainer>

@@ -3,6 +3,7 @@ import { Text } from '@/styles/typography'
 import tw from 'twin.macro'
 import { ChatPost } from '@/interfaces/ChatInterfaces'
 import getBadgeData from '@/utils/getBadgeData'
+import { useNavigate } from 'react-router-dom'
 
 const Container = tw.div`
   flex items-center gap-4 p-4 border-b border-[#dbdbdb] 
@@ -13,14 +14,16 @@ const ThumbnailImage = tw.img`
 `
 
 export default function ChatRoomPostInfo({
+  boardId,
   title,
   thumbnailUrl,
   dealState,
 }: ChatPost) {
+  const navigate = useNavigate()
   const badgeData = getBadgeData(dealState)
 
   return (
-    <Container>
+    <Container onClick={() => navigate(`/board/${boardId}`)}>
       <ThumbnailImage
         src={thumbnailUrl || '/default/default_product.png'}
         alt="thumbnail"

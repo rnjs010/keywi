@@ -6,6 +6,7 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { BANK_MAP } from '@/utils/bankCodeMapper'
 
 const BankGrid = tw.div`
   grid grid-cols-3 gap-2 py-4
@@ -32,32 +33,6 @@ export default function BankModal({
   trigger,
   onSelectBank,
 }: BankDrawerProps) {
-  const banks = [
-    'iM뱅크(대구)',
-    'SC제일',
-    '경남',
-    '광주',
-    '국민',
-    '기업',
-    '농협',
-    '부산',
-    '산림조합',
-    '산업',
-    '새마을금고',
-    '수협',
-    '시티',
-    '신한',
-    '신협',
-    '우리',
-    '우체국',
-    '저축',
-    '전북',
-    '카카오뱅크',
-    '케이뱅크',
-    '토스뱅크',
-    '하나',
-  ]
-
   const securities = [
     'DB금융투자',
     'KB증권',
@@ -97,20 +72,20 @@ export default function BankModal({
             은행
           </Text>
           <BankGrid>
-            {banks.map((bank) => (
+            {Object.entries(BANK_MAP).map(([code, { name, logoPath }]) => (
               <BankItem
-                key={bank}
-                onClick={() => onSelectBank && onSelectBank(bank)}
+                key={code}
+                onClick={() => onSelectBank && onSelectBank(code)} // 코드 넘겨줌
               >
                 <BankLogo>
                   <img
-                    src={`/banks/${bank}.png`}
-                    alt={`${bank} 로고`}
+                    src={logoPath}
+                    alt={`${name} 로고`}
                     className="w-10 h-10 object-contain"
                   />
                 </BankLogo>
                 <Text variant="caption1" weight="regular" color="black">
-                  {bank}
+                  {name.replace(/은행$/, '')}
                 </Text>
               </BankItem>
             ))}
@@ -124,7 +99,8 @@ export default function BankModal({
             {securities.map((security) => (
               <BankItem
                 key={security}
-                onClick={() => onSelectBank && onSelectBank(security)}
+                disabled={true}
+                className="opacity-50 cursor-not-allowed"
               >
                 <BankLogo>
                   <img

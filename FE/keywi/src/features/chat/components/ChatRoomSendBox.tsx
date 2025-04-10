@@ -14,6 +14,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useContext, useState } from 'react'
 import { useUserStore } from '@/stores/userStore'
 import { WebSocketContext } from '@/services/WebSocketProvider'
+import { getPaymentAccount } from '../sevices/dealService'
+import TwoBtnModal from '@/components/TwoBtnModal'
 
 const Container = tw.div`
   flex items-center justify-between px-4 pt-2 pb-3
@@ -39,12 +41,20 @@ export default function ChatRoomSendBox({ dealDisabled = false }: Props) {
   const navigate = useNavigate()
   const { roomId } = useParams()
   const setShowImage = useChatImageStore((state) => state.setShowImage)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleAddImageClick = () => {
     setShowImage(true)
   }
 
-  const handleDealRequestClick = () => {
+  const handleDealRequestClick = async () => {
+    const account = await getPaymentAccount()
+
+    if (!account) {
+      setIsModalOpen(true)
+      return
+    }
+
     navigate(`/chat/${roomId}/dealrequest`)
   }
 
@@ -81,52 +91,70 @@ export default function ChatRoomSendBox({ dealDisabled = false }: Props) {
   }
 
   return (
-    <Container>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button>
-            <Plus width="2rem" height="2rem" color={colors.darkGray} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="top" align="start" className="w-40">
-          <DropdownMenuItem onClick={handleAddImageClick}>
-            <IconCircle className="bg-[#F0D61B]">
-              <MediaImagePlus color={colors.white} />
-            </IconCircle>
-            <Text variant="body1" weight="regular" color="darkGray">
-              사진 첨부
-            </Text>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={handleDealRequestClick}
-            className={dealDisabled ? 'opacity-50 cursor-not-allowed' : ''}
-            disabled={dealDisabled}
-          >
-            <IconCircle
-              className={`bg-kiwi ${dealDisabled ? 'grayscale' : ''}`}
+    <>
+      <Container>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button>
+              <Plus width="2rem" height="2rem" color={colors.darkGray} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-40">
+            <DropdownMenuItem onClick={handleAddImageClick}>
+              <IconCircle className="bg-[#F0D61B]">
+                <MediaImagePlus color={colors.white} />
+              </IconCircle>
+              <Text variant="body1" weight="regular" color="darkGray">
+                사진 첨부
+              </Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleDealRequestClick}
+              className={dealDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+              disabled={dealDisabled}
             >
-              <Wallet color={colors.white} />
-            </IconCircle>
-            <Text variant="body1" weight="regular" color="darkGray">
-              거래요청
-            </Text>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <IconCircle
+                className={`bg-kiwi ${dealDisabled ? 'grayscale' : ''}`}
+              >
+                <Wallet color={colors.white} />
+              </IconCircle>
+              <Text variant="body1" weight="regular" color="darkGray">
+                거래요청
+              </Text>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <InputBox
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="메시지 보내기"
-        className="bg-transparent outline-none text-[#303337]"
+        <InputBox
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="메시지 보내기"
+          className="bg-transparent outline-none text-[#303337]"
+        />
+        <Send
+          height="1.6rem"
+          width="1.5rem"
+          color={colors.darkGray}
+          onClick={sendMessage}
+        />
+      </Container>
+
+      <TwoBtnModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        title={'거래 요청 불가'}
+        content={
+          '거래 요청을 위해 계좌 연결이 필요해요\n계좌 연결하러 가시겠어요?'
+        }
+        cancleText={'닫기'}
+        confirmText={'연결하러 가기'}
+        onCancle={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          navigate('/pay')
+        }}
       />
-      <Send
-        height="1.6rem"
-        width="1.5rem"
-        color={colors.darkGray}
-        onClick={sendMessage}
-      />
-    </Container>
+    </>
   )
 }

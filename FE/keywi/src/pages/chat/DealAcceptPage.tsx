@@ -36,11 +36,10 @@ export default function DealAcceptPage() {
   const { client } = useContext(WebSocketContext)
   const myId = useUserStore((state) => state.userId)
 
-  useEffect(() => {
-    if (data) {
-      setReceipt(data)
-    }
-  }, [data, setReceipt])
+  if (data) {
+    resetState()
+    setReceipt(data)
+  }
 
   useChatSubscription({
     roomId: roomId!,

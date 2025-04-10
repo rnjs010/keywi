@@ -5,7 +5,7 @@ interface BankInfo {
   logoPath: string
 }
 
-const BANK_MAP: Record<string, BankInfo> = {
+export const BANK_MAP: Record<string, BankInfo> = {
   '001': { code: '001', name: '한국은행', logoPath: '/banks/한국.png' },
   '002': { code: '002', name: '산업은행', logoPath: '/banks/산업.png' },
   '003': { code: '003', name: '기업은행', logoPath: '/banks/기업.png' },

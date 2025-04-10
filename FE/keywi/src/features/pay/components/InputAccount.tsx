@@ -7,6 +7,8 @@ import { Text } from '@/styles/typography'
 import { CheckCircle, CheckCircleSolid, NavArrowDown } from 'iconoir-react'
 import BankModal from './BankModal'
 import { colors } from '@/styles/colors'
+import { useInitiateTransfer } from '../hooks/useInitiateTransfer'
+import { getBankLogoPath, getBankName } from '@/utils/bankCodeMapper'
 
 const Container = tw.div`
   w-full max-w-screen-sm mx-auto flex flex-col h-screen box-border overflow-x-hidden px-4
@@ -40,11 +42,29 @@ export default function InputAccount() {
   const [bank, setBank] = useState('')
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   const [isAgreed, setIsAgreed] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const { mutate: initiateTransfer } = useInitiateTransfer()
 
   const handleNext = () => {
     if (accountNumber && bank) {
-      setAccountInfo(accountNumber, bank)
-      setStep(3)
+      initiateTransfer(
+        { accountNo: accountNumber, bankCode: bank },
+        {
+          onSuccess: (data) => {
+            if (data.Header.responseCode === 'H0000') {
+              setAccountInfo(accountNumber, bank)
+              setStep(3)
+            } else {
+              setErrorMessage('유효하지 않은 계좌입니다.')
+            }
+          },
+          onError: (err) => {
+            console.error('계좌 인증 요청 실패:', err)
+            setErrorMessage('인증 중 오류가 발생했습니다.')
+          },
+        },
+      )
     }
   }
 
@@ -83,12 +103,12 @@ export default function InputAccount() {
               {bank ? (
                 <BankInfo>
                   <img
-                    src={`/banks/${bank}.png`}
+                    src={getBankLogoPath(bank)}
                     alt={bank}
                     className="w-6 h-6"
                   />
                   <Text variant="body1" weight="bold">
-                    {bank}
+                    {getBankName(bank).replace(/은행$/, '')}
                   </Text>
                 </BankInfo>
               ) : (
@@ -113,6 +133,18 @@ export default function InputAccount() {
             <CheckCircle />
           )}
         </InputBox>
+
+        {/* SECTION - 에러 메시지 */}
+        {errorMessage && (
+          <Text
+            variant="caption1"
+            weight="regular"
+            className="mt-2"
+            style={{ color: 'red' }}
+          >
+            {errorMessage}
+          </Text>
+        )}
       </Form>
 
       <div className="mt-auto mb-12">

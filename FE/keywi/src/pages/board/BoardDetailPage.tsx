@@ -79,7 +79,7 @@ export default function BoardDetailPage() {
       <NavBar />
 
       {/* SECTION - 채팅 버튼 */}
-      {data && !data.author && (
+      {data && !data.author && data.dealState === 'REQUEST' && (
         <div className="flex flex-row justify-between items-center gap-2 w-full max-w-screen-sm px-4 fixed bottom-24">
           <MainButton text="1:1 채팅 하러 가기" onClick={handleStartChat} />
           <div onClick={handleBookmarkClick} className="cursor-pointer">
