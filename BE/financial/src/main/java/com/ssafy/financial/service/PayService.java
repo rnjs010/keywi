@@ -276,6 +276,7 @@ public class PayService {
         EscrowTransactionEntity transaction = escrowTransactionRepository.findById(request.getEscrowTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("거래 정보가 없습니다."));
 
+
         // 2. 구매자 확인
         if (!transaction.getBuyer().getId().equals(request.getUserId())) {
 
@@ -302,7 +303,7 @@ public class PayService {
                 .header(financialHeaderUtil.createHeader("updateDemandDepositAccountTransfer", userKey))
                 .depositAccountNo(builderAccount.getAccountNo())
                 .depositTransactionSummary("조립비 지급")
-                .transactionBalance(String.valueOf(transaction.getTotalAmount()))
+                .transactionBalance(String.valueOf(transaction.getAmount()))
                 .withdrawalAccountNo(escrowAccountNo)
                 .withdrawalTransactionSummary("구매 확정")
                 .build();
