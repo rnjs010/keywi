@@ -10,6 +10,7 @@ import { useChatImageStore } from '@/stores/chatStore'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import {
+  chatInfoKeys,
   useChatPartner,
   useChatPost,
 } from '@/features/chat/hooks/useChatRoomInfo'
@@ -49,6 +50,7 @@ export default function ChatRoomPage() {
   const [showDownBtn, setShowDownBtn] = useState(false)
   const { roomId } = useParams<{ roomId: string }>()
   const myId = useUserStore((state) => state.userId)
+  const queryClient = useQueryClient()
 
   // 정보 get
   const {
@@ -62,9 +64,13 @@ export default function ChatRoomPage() {
     isError: errorPost,
   } = useChatPost(roomId!)
 
+  const invalidateChat = () => {
+    queryClient.invalidateQueries({ queryKey: chatInfoKeys.partner(roomId!) })
+    queryClient.invalidateQueries({ queryKey: chatInfoKeys.post(roomId!) })
+  }
+
   // 채팅 내역 가져오기
   const location = useLocation()
-  const queryClient = useQueryClient()
   const { data: chatHistory, refetch } = useChatHistory(roomId!)
   const messageGroups = chatHistory?.messageGroups || []
 
@@ -106,12 +112,13 @@ export default function ChatRoomPage() {
       )
 
       console.log('메시지 수신', msg)
+      invalidateChat()
       // 새 메시지가 오면 자동 스크롤 다운
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     },
-    [queryClient, roomId],
+    [queryClient, roomId, invalidateChat],
   )
 
   useChatSubscription({

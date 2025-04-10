@@ -27,6 +27,7 @@ export const getChatPartner = async (roomId: string): Promise<ChatPartner> => {
 // 거래 게시글 정보 가져오기
 export const getChatPost = async (roomId: string): Promise<ChatPost> => {
   const response = await apiRequester.get(`/api/chat/rooms/${roomId}/board`)
+  console.log('게시글 정보', response.data.data)
   return response.data.data
 }
 

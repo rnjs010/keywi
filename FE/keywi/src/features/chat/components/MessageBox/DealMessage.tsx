@@ -89,9 +89,9 @@ export default function DealMessage({
         : `조립자님이 ${Number(content).toLocaleString()}원을 송금 요청했어요.`
       buttonText = '거래 진행하기'
       showButton = !isMine // 내가 보낸 요청이 아닐 때만 버튼 표시
-      onClickHandler = handleOpenModal
       if (!data) {
         // 계좌 연결 안되어 있을 때
+        onClickHandler = handleOpenModal
         modalTitle = '거래 진행 불가'
         modalContent =
           '거래 진행을 위해 계좌 연결이 필요해요\n계좌 연결하러 가시겠어요?'
@@ -106,7 +106,9 @@ export default function DealMessage({
         }
       } else {
         // 계좌 연결 되어있을 때
-        navigate(`/chat/${roomId}/dealaccept`, { state: { messageId } })
+        onClickHandler = () => {
+          navigate(`/chat/${roomId}/dealaccept`, { state: { messageId } })
+        }
       }
       break
     case 'DEALPROGRESS':
@@ -127,6 +129,7 @@ export default function DealMessage({
           confirm: '확정하기',
           onCancle: handleCloseModal,
           onConfirm: () => {
+            console.log(receipt?.receiptId)
             if (!receipt?.receiptId) return
             // 결제 완료 api 호출
             completeTradeMutate(
@@ -149,8 +152,8 @@ export default function DealMessage({
                   }
 
                   sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
-                  handleCloseModal()
                   resetState()
+                  handleCloseModal()
                 },
                 onError: (err) => {
                   console.error('거래 완료 실패', err)
