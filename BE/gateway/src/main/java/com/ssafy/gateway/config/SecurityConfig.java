@@ -63,6 +63,7 @@ public class SecurityConfig {
                         //결제/페이
                         .pathMatchers("/api/payment/**").permitAll()
                         .pathMatchers("/api/financial/**").permitAll()
+                        .pathMatchers("/api/bank/**").permitAll()
                         //마이페이지
                         .pathMatchers("/api/ratings/**").permitAll()
                         .pathMatchers("/api/profile/**").permitAll()
