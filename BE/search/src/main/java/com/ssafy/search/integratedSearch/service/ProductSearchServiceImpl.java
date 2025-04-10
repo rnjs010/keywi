@@ -50,6 +50,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                             .categoryName(product.getCategoryName())
                             .price(product.getPrice())
                             .imageUrl(product.getImageUrl())
+                            .manufacturer(product.getManufacturer())
+                            .categoryId(product.getCategoryId())
                             .build())
                     .toList();
 
