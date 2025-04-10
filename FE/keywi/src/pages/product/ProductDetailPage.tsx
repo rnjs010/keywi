@@ -47,7 +47,13 @@ export default function ProductDetailPage() {
     if (location.state?.category) {
       navigate(location.state.category)
     } else {
-      navigate(-1)
+      const fromFeed = location.state?.fromFeed === true
+
+      if (fromFeed) {
+        navigate('/home', { state: { fromFeed: true } })
+      } else {
+        navigate(-1) // 또는 navigate('/')
+      }
     }
   }
 

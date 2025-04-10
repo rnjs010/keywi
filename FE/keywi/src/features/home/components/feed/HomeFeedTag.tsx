@@ -103,7 +103,7 @@ export default function HomeFeedTag({
     if (productId > 0) {
       e.stopPropagation() // 이벤트 버블링 방지
       console.log(`상품 ID: ${productId}로 이동합니다.`)
-      navigate(`/product/detail/${productId}`)
+      navigate(`/product/detail/${productId}`, { state: { fromFeed: true } })
     }
   }
 

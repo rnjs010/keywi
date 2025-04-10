@@ -112,10 +112,11 @@ export default function HomePage() {
   // 스크롤 위치 복원
   useLayoutEffect(() => {
     const isFromComments = location.state?.fromComments === true // 댓글 창에서 돌아왔는지 확인
+    const isFromProduct = location.state?.fromFeed === true // 상품 페이지에서 돌아왔는지 확인
     const isInitialLoad = data?.pages?.length === 1 // 첫 로딩인지 확인
 
     if (!isLoading && data?.pages) {
-      if (scrollAreaRef.current && isFromComments) {
+      if (scrollAreaRef.current && (isFromComments || isFromProduct)) {
         const position = getScrollPosition(SCROLL_KEY)
         if (position > 0) {
           scrollAreaRef.current.scrollTop = position
@@ -150,7 +151,7 @@ export default function HomePage() {
 
   // 새로고침 함수
   const handleRefresh = async () => {
-    if (location.state?.fromComments) {
+    if (location.state?.fromComments || location.state?.fromFeed) {
       window.history.replaceState({}, document.title)
     }
 

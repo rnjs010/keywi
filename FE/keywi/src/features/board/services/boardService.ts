@@ -102,7 +102,7 @@ export const searchProducts = async (
       },
     },
   )
-
+  console.log('상품 검색', response.data)
   return response.data.map((item) => ({
     categoryId: item.categoryId,
     categoryName: item.categoryName,
