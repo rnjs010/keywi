@@ -288,6 +288,8 @@ public class FinancialApiService {
     public TransactionHistoryListResponse inquireTransactionHistoryList(TransactionHistoryListRequest request) {
         String url = apiConfig.getApiUrl() + "/edu/demandDeposit/inquireTransactionHistoryList";
 
+        String userKey = commonService.getUserKeyAllowUnlinked(request.getUserId());
+
         // 공통 헤더 생성
         FinancialRequestHeader header = financialHeaderUtil.createHeader("inquireTransactionHistoryList", request.getUserKey());
         request.setHeader(header);
