@@ -143,7 +143,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+    </dependencies>
 
 	<dependencyManagement>
 		<dependencies>
