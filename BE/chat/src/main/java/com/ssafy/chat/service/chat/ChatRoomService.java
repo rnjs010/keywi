@@ -266,19 +266,35 @@ public class ChatRoomService {
     public Object getBoardInfo(Long roomId) {
         ChatRoom chatRoom = findChatRoomById(roomId);
 
-        // 실제 구현에서는 Board 서비스에서 게시글 정보를 조회해야 함
-        // BoardDto boardInfo = boardServiceClient.getBoardInfo(chatRoom.getBoardId());
+        try {
+            // Board 서비스에서 게시글 정보를 조회
+            ApiResponse<BoardDetailDto> response = boardServiceClient.getBoardWithWriterInfo(chatRoom.getBoardId());
+            BoardDetailDto boardInfo = response.getData();
 
-        // 임시 구현: 채팅방에 저장된 간단한 게시글 정보 반환
-        Map<String, Object> boardInfo = new HashMap<>();
-        boardInfo.put("boardId", chatRoom.getBoardId().toString());
-        boardInfo.put("title", chatRoom.getTitle());
-        boardInfo.put("thumbnailUrl", chatRoom.getThumbnailUrl());
-        boardInfo.put("dealState", chatRoom.getDealState());
-        boardInfo.put("buyerId", chatRoom.getBuyerId().toString());
-        boardInfo.put("assemblerId", chatRoom.getAssemblerId().toString());
+            // 응답 데이터 구성
+            Map<String, Object> boardInfoMap = new HashMap<>();
+            boardInfoMap.put("boardId", boardInfo.getBoardId().toString());
+            boardInfoMap.put("title", boardInfo.getTitle());
+            boardInfoMap.put("thumbnailUrl", boardInfo.getThumbnailUrl());
+            boardInfoMap.put("dealState", boardInfo.getDealState());
+            boardInfoMap.put("buyerId", boardInfo.getWriterId().toString());
+            boardInfoMap.put("assemblerId", chatRoom.getAssemblerId().toString());
 
-        return boardInfo;
+            return boardInfoMap;
+        } catch (Exception e) {
+            log.error("게시글 정보 조회 실패: {}", e.getMessage(), e);
+
+            // 오류 발생 시 채팅방에 저장된 기본 정보 반환 (대체 방안)
+            Map<String, Object> defaultInfo = new HashMap<>();
+            defaultInfo.put("boardId", chatRoom.getBoardId().toString());
+            defaultInfo.put("title", chatRoom.getTitle());
+            defaultInfo.put("thumbnailUrl", chatRoom.getThumbnailUrl());
+            defaultInfo.put("dealState", chatRoom.getDealState());
+            defaultInfo.put("buyerId", chatRoom.getBuyerId().toString());
+            defaultInfo.put("assemblerId", chatRoom.getAssemblerId().toString());
+
+            return defaultInfo;
+        }
     }
 
     /**
