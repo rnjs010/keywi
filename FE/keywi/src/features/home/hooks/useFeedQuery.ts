@@ -29,6 +29,6 @@ export const useFeedQuery = () => {
     staleTime: 1000 * 60 * 1, // 1분
     refetchOnWindowFocus: false, // 창이 포커스를 얻을 때 다시 가져오지 않음
     retry: 2, // 실패 시 최대 2번 재시도
-    gcTime: 1000 * 10 * 1,
+    gcTime: 1000 * 60 * 5, // 5분
   })
 }
