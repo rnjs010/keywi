@@ -50,7 +50,7 @@ const ProductListContainer = tw.div`
   py-2 
   mb-4 
   overflow-y-auto
-  max-h-[calc(66vh-120px)] /* 헤더와 검색창 높이를 뺀 값 */
+  max-h-60
 `
 
 interface ProductDrawerProps {

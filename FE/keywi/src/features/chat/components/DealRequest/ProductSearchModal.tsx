@@ -100,7 +100,7 @@ export default function ProductSearchModal({
         </SearchContainer>
 
         {/* SECTION - 상품 리스트 */}
-        <div className="px-4 py-2 mb-4 max-h-[calc(66vh-120px)] overflow-y-auto">
+        <div className="px-4 py-2 mb-4 max-h-60 overflow-y-auto">
           {displayedProducts?.length > 0 ? (
             displayedProducts.map((product) => (
               <CardContainer
