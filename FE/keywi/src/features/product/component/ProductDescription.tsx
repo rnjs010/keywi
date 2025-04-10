@@ -8,6 +8,7 @@ import apiRequester from '@/services/api'
 import { ApiResponse } from '@/interfaces/ApiResponse'
 import { useFavorite } from '@/features/product/hooks/useFavorite'
 import LinkPreview from '@/features/product/component/LinkPreview'
+import LoadingMessage from '@/components/message/LoadingMessage'
 // useNavigate
 const ContentContainer = styled.div`
   ${tw`
@@ -122,7 +123,7 @@ export default function ProductDescription() {
   if (loading) {
     return (
       <ContentContainer>
-        <Text variant="body1">로딩 중...</Text>
+        <LoadingMessage />
       </ContentContainer>
     )
   }
