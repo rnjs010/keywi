@@ -56,7 +56,6 @@ export default function ProductModal({
   onOpenChange,
   categoryId,
   title,
-  children,
   trigger,
   products,
   onSelectProduct,
@@ -69,7 +68,14 @@ export default function ProductModal({
     isOpen, // 모달 열려있을 때만 요청
   )
   const [suggestions, setSuggestions] = useState<BoardItemUsingInfo[]>([])
-  const displayedProducts = searchTerm ? suggestions : products
+  const displayedProducts = searchTerm ? suggestions || [] : products || []
+
+  // 모달 닫힐 때 searchTerm 초기화
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm('')
+    }
+  }, [isOpen])
 
   // 검색 결과 업데이트
   useEffect(() => {
@@ -180,30 +186,36 @@ export default function ProductModal({
           </div>
         </div>
         {/* SECTION - 상품 리스트 */}
-        <div className="px-4 py-2 mb-4">
-          {displayedProducts
-            ? displayedProducts.map((product) => (
-                <CardContainer
-                  key={product.productId}
-                  onClick={() => onSelectProduct && onSelectProduct(product)}
-                >
-                  {product.imageUrl && (
-                    <ThumbnailImage src={product.imageUrl} alt="thumbnail" />
-                  )}
-                  <div className="flex flex-col">
-                    <Text variant="caption1" weight="regular">
-                      {highlightSearchTerm(
-                        truncateText(product.productName, 30),
-                        searchTerm,
-                      )}
-                    </Text>
-                    <Text variant="caption1" weight="bold">
-                      {product.price.toLocaleString()}원
-                    </Text>
-                  </div>
-                </CardContainer>
-              ))
-            : children}
+        <div className="px-4 py-2 mb-4 max-h-60 overflow-y-auto">
+          {displayedProducts?.length > 0 ? (
+            displayedProducts.map((product) => (
+              <CardContainer
+                key={product.productId}
+                onClick={() => onSelectProduct && onSelectProduct(product)}
+              >
+                {product.imageUrl && (
+                  <ThumbnailImage src={product.imageUrl} alt="thumbnail" />
+                )}
+                <div className="flex flex-col">
+                  <Text variant="caption1" weight="regular">
+                    {highlightSearchTerm(
+                      truncateText(product.productName, 30),
+                      searchTerm,
+                    )}
+                  </Text>
+                  <Text variant="caption1" weight="bold">
+                    {product.price.toLocaleString()}원
+                  </Text>
+                </div>
+              </CardContainer>
+            ))
+          ) : (
+            <div className="text-center py-4">
+              <Text variant="caption1" weight="regular" color="darkGray">
+                {searchTerm ? '검색 결과가 없습니다.' : '찜한 상품이 없습니다.'}
+              </Text>
+            </div>
+          )}
         </div>
       </DrawerContent>
     </Drawer>
