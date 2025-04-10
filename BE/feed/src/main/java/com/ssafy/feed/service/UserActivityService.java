@@ -179,16 +179,25 @@ public class UserActivityService {
 
         // 총 상호작용 수 계산
         int totalInteractions = hashtagStats.stream()
-                .mapToInt(stat -> ((Number) stat.get("count")).intValue())
+                .mapToInt(stat -> {
+                    Number count = (Number) stat.get("count");
+                    return count != null ? count.intValue() : 0;
+                })
                 .sum();
 
         // 해시태그별 가중치 계산 (정규화)
         Map<Long, Double> hashtagWeights = new HashMap<>();
+        // 해시태그별 가중치 계산 부분 수정
         for (Map<String, Object> stat : hashtagStats) {
-            Long hashtagId = ((Number) stat.get("hashtag_id")).longValue();
-            int count = ((Number) stat.get("count")).intValue();
-            double weight = (double) count / totalInteractions;
-            hashtagWeights.put(hashtagId, weight);
+            Number hashtagIdNum = (Number) stat.get("hashtag_id");
+            Number countNum = (Number) stat.get("count");
+
+            if (hashtagIdNum != null && countNum != null) {
+                Long hashtagId = hashtagIdNum.longValue();
+                int count = countNum.intValue();
+                double weight = (double) count / totalInteractions;
+                hashtagWeights.put(hashtagId, weight);
+            }
         }
 
         return hashtagWeights;
