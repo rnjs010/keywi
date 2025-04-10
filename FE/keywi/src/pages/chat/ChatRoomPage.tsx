@@ -69,6 +69,15 @@ export default function ChatRoomPage() {
     queryClient.invalidateQueries({ queryKey: chatInfoKeys.post(roomId!) })
   }
 
+  // 채팅방 입장 시 계좌 정보 무효화
+  const invalidateAccount = () => {
+    queryClient.invalidateQueries({ queryKey: ['paymentAccount'] })
+  }
+
+  useEffect(() => {
+    invalidateAccount()
+  }, [])
+
   // 채팅 내역 가져오기
   const location = useLocation()
   const { data: chatHistory, refetch } = useChatHistory(roomId!)
