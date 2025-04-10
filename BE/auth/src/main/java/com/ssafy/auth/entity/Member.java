@@ -68,7 +68,7 @@ public class Member {
         this.createdAt = LocalDateTime.now();
         this.isDeleted = false;
         this.accountConnected = false;
-        this.brix = 0; // 초기 당도값
+        this.brix = 16; // 초기 당도값
         this.role = "USER"; // 기본 권한
         this.statusMessage = ""; // 기본 상태 메시지는 빈 문자열
     }
@@ -145,7 +145,7 @@ public class Member {
                 .kakaoId(kakaoId)
                 .isDeleted(false)
                 .accountConnected(false)
-                .brix(0)
+                .brix(16)
                 .role("USER")
                 .statusMessage("")
                 .build();
