@@ -10,6 +10,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 @MappedTypes(Map.class)
@@ -51,6 +52,14 @@ public class JsonTypeHandler extends BaseTypeHandler<Map<String, Object>> {
         }
 
         try {
+            // 숫자인지 확인
+            if (json.matches("^\\d+$")) {
+                // 숫자라면 Map으로 변환
+                Map<String, Object> result = new HashMap<>();
+                result.put("id", Long.parseLong(json));
+                return result;
+            }
+
             @SuppressWarnings("unchecked")
             Map<String, Object> map = OBJECT_MAPPER.readValue(json, Map.class);
             return map;
