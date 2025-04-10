@@ -17,6 +17,6 @@ public class FinancialRequestHeader {
     private String fintechAppNo; // 001 고정
     private String apiServiceCode; // apiName과 같음
     private String institutionTransactionUniqueNo; // transmissionDate + transmissionTime + 랜덤숫자 6개
-    private String apiKey; // 개발자 키 fc1880ecc2444474a54db3592c898761 고정
+    private String apiKey; // 개발자 키
     private String userKey; // 회원 계정마다 다름
 }
