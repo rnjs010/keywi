@@ -66,7 +66,7 @@ export default function SearchProduct({ products }: SearchProductProps) {
           key={product.productId}
           to={`/product/detail/${product.productId}`}
         >
-          <ProductImage src={product.thumbnailUrl} alt={product.productName} />
+          <ProductImage src={product.imageUrl} alt={product.productName} />
           <ProductInfo>
             <Text variant="caption1" color="gray">
               {product.manufacturer || '-'}

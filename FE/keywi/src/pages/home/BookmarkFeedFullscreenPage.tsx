@@ -11,7 +11,6 @@ import NextHeader from '@/components/NextHeader'
 import { useDeleteFeed } from '@/features/home/services/feedService'
 import { toast } from 'sonner'
 import LoadingMessage from '@/components/message/LoadingMessage'
-import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useBookmarkedFeedsQuery } from '@/features/home/hooks/useBookmarkedFeedsQuery'
 
 const Container = tw.div`
@@ -63,28 +62,12 @@ const FeedWrapper = styled(motion.div)`
   -ms-overflow-style: none;
   scrollbar-width: none;
 `
-// 드래그 인터랙션 힌트 컴포넌트
-const DragHint = tw.div`
-  absolute
-  top-1/2
-  left-4
-  right-4
-  flex
-  justify-between
-  opacity-50
-  pointer-events-none
-  transition-opacity
-  duration-300
-`
 
 export default function BookmarkFullscreenPage() {
   const { feedId } = useParams<{ feedId: string }>()
   const navigate = useNavigate()
   const { feeds } = useFeedStore()
   const myUserId = useUserStore((state) => state.userId)
-
-  // 드래그 힌트 상태 추가
-  const [showDragHint, setShowDragHint] = useState(false)
 
   // 현재 피드에서 작성자 ID 가져오기 (URL에서 feedId를 통해)
   const initialFeedId = parseInt(feedId || '0', 10)
@@ -120,16 +103,6 @@ export default function BookmarkFullscreenPage() {
   // 드래그 관련 상태
   const dragStartY = useRef(0)
   const dragThreshold = 200
-
-  useEffect(() => {
-    // 처음 마운트될 때 드래그 힌트 표시 후 숨기기
-    setShowDragHint(true)
-    const timer = setTimeout(() => {
-      setShowDragHint(false)
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   // 데이터가 로드되면 피드 인덱스 업데이트
   useEffect(() => {
@@ -322,21 +295,6 @@ export default function BookmarkFullscreenPage() {
             </div>
           </FeedWrapper>
         </AnimatePresence>
-        {/* 드래그 힌트 - 처음 몇 초 동안만 표시 */}
-        {bookmarkedFeeds.length > 1 && (
-          <DragHint style={{ opacity: showDragHint ? 0.5 : 0 }}>
-            {currentIndex > 0 && (
-              <div className="text-white bg-black bg-opacity-30 p-2 rounded-full">
-                <ChevronDown size={20} />
-              </div>
-            )}
-            {currentIndex < bookmarkedFeeds.length - 1 && (
-              <div className="text-white bg-black bg-opacity-30 p-2 rounded-full">
-                <ChevronUp size={20} />
-              </div>
-            )}
-          </DragHint>
-        )}
       </FeedContainer>
       <NavBarContainer>
         <NavBar />

@@ -1,6 +1,4 @@
 import tw from 'twin.macro'
-import styled from '@emotion/styled'
-import { Link } from 'react-router-dom'
 import { FeedSearchResult } from '@/interfaces/SearchInterface'
 
 const GridContainer = tw.div`
@@ -8,12 +6,10 @@ const GridContainer = tw.div`
   grid-cols-3 
   gap-0.5
 `
-const FeedItem = styled(Link)`
-  ${tw`
-    relative
-    aspect-square
-    overflow-hidden
-  `}
+const FeedItem = tw.div`
+  relative
+  aspect-square
+  overflow-hidden
 `
 const FeedImage = tw.img`
   w-full
@@ -44,7 +40,7 @@ export default function SearchFeed({ feeds }: SearchFeedProps) {
   return (
     <GridContainer>
       {feeds.map((feed) => (
-        <FeedItem key={feed.feedId} to={`/home/${feed.feedId}`}>
+        <FeedItem key={feed.feedId}>
           <FeedImage src={feed.thumbnailUrl} alt={`피드 ${feed.feedId}`} />
         </FeedItem>
       ))}

@@ -16,7 +16,7 @@ export interface FeedSearchResult {
 export interface UserSearchResult {
   userId: number
   nickname: string
-  brix?: number
+  brix?: number | null
   profileImageUrl?: string
   profileContent?: string
 }
@@ -28,7 +28,7 @@ export interface ProductSearchResult {
   categoryId?: number
   categoryName?: string
   price?: number
-  thumbnailUrl?: string
+  imageUrl?: string
   manufacturer?: string
 }
 

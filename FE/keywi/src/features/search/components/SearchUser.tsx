@@ -62,7 +62,7 @@ export default function SearchUser({ users }: SearchUserProps) {
             <div className="flex items-center gap-2">
               <Text variant="body1">{user.nickname}</Text>
               <Badge
-                title={`당도 ${user.brix}`}
+                title={`당도 ${user.brix || 16}`}
                 color={getDangdoBadgeData(user.brix || 16) || 'gray'}
                 size="small"
               />
