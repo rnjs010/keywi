@@ -30,7 +30,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                             .query(q -> q
                                     .bool(b -> b
                                             .must(m -> m.multiMatch(mq -> mq
-                                                    .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5", "categoryName^1")
+                                                    .fields("productName.jaso^3", "productName.standard_en^2", "productName.ngram_en^0.5", "categoryName^1", "manufacturer^1")
                                                     .query(requestDto.getQuery())
                                                     .fuzziness("AUTO")
                                                     .minimumShouldMatch("80%")
@@ -49,7 +49,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                             .productName(product.getProductName())
                             .categoryName(product.getCategoryName())
                             .price(product.getPrice())
-                            .thumbnailUrl(product.getThumbnailUrl())
+                            .imageUrl(product.getImageUrl())
                             .build())
                     .toList();
 

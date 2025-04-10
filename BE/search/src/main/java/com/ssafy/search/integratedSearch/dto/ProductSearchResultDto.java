@@ -15,6 +15,6 @@ public class ProductSearchResultDto {
     private Integer categoryId;
     private String categoryName;
     private Integer price;
-    private String thumbnailUrl;
+    private String imageUrl;
     private String manufacturer;
 }

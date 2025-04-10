@@ -38,10 +38,7 @@ public class ProductDocument {
     private Integer price;
 
     @Field(type = FieldType.Keyword)
-    private String thumbnailUrl;
-
-    @Field(type = FieldType.Date)
-    private Instant createdAt;
+    private String imageUrl;
 
     @Field(type = FieldType.Text)
     private String manufacturer;
