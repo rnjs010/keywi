@@ -42,7 +42,9 @@ export default function PasswordScreen() {
                   },
                   {
                     onSuccess: () => {
+                      console.log('거래 수락 성공')
                       if (receipt?.boardId) {
+                        console.log('상태 변경 요청')
                         updateBoardState({
                           boardId: receipt.boardId,
                           dealState: 'IN_PROGRESS',
