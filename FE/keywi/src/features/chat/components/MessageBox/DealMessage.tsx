@@ -9,6 +9,8 @@ import { WebSocketContext } from '@/services/WebSocketProvider'
 import { useUserStore } from '@/stores/userStore'
 import { useDealAcceptStore } from '@/stores/chatStore'
 import { useCompleteTrade } from '../../hooks/trades/useCompleteTrade'
+import { useAccount } from '../../hooks/useAccount'
+import { updateBoardState } from '../../sevices/dealService'
 
 const Container = tw.div`
   rounded-xl overflow-hidden border border-gray w-56
@@ -32,6 +34,7 @@ export default function DealMessage({
   const { roomId } = useParams()
   const { client } = useContext(WebSocketContext)
   const { userId } = useUserStore()
+  const { data } = useAccount()
   const receipt = useDealAcceptStore((state) => state.receipt)
   const resetState = useDealAcceptStore((state) => state.resetState)
   const { mutate: completeTradeMutate } = useCompleteTrade()
@@ -86,8 +89,27 @@ export default function DealMessage({
         : `조립자님이 ${Number(content).toLocaleString()}원을 송금 요청했어요.`
       buttonText = '거래 진행하기'
       showButton = !isMine // 내가 보낸 요청이 아닐 때만 버튼 표시
-      onClickHandler = () =>
-        navigate(`/chat/${roomId}/dealaccept`, { state: { messageId } })
+      onClickHandler = () => {
+        if (!data) {
+          // 계좌 연결 안되어 있을 때
+          modalTitle = '거래 진행 불가'
+          modalContent =
+            '거래 진행을 위해 계좌 연결이 필요해요\n계좌 연결하러 가시겠어요?'
+          modalActions = {
+            cancel: '닫기',
+            confirm: '연결하러 가기',
+            onCancle: handleCloseModal,
+            onConfirm: () => {
+              handleCloseModal()
+              navigate('/pay')
+            },
+          }
+          handleOpenModal()
+        } else {
+          // 계좌 연결 되어있을 때
+          navigate(`/chat/${roomId}/dealaccept`, { state: { messageId } })
+        }
+      }
       break
     case 'DEALPROGRESS':
       title = '거래 진행중'
@@ -108,10 +130,24 @@ export default function DealMessage({
           onCancle: handleCloseModal,
           onConfirm: () => {
             if (!receipt?.receiptId) return
+            // 결제 완료 api 호출
             completeTradeMutate(
               { escrowTransactionId: receipt.receiptId },
               {
                 onSuccess: () => {
+                  if (receipt?.boardId) {
+                    updateBoardState({
+                      boardId: receipt.boardId,
+                      dealState: 'COMPLETED',
+                    })
+                      .then(() => {
+                        console.log('게시글 상태 변경 완료')
+                      })
+                      .catch((err) => {
+                        console.error('게시글 상태 변경 실패', err)
+                      })
+                  }
+
                   sendChatMessage('DEALCOMPLETE', receipt?.amount?.toString())
                   handleCloseModal()
                   resetState()
