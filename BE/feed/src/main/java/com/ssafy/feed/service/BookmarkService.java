@@ -267,7 +267,8 @@ public class BookmarkService {
      * Redis -> MySQL 동기화 (주기적 실행)
      * Redis의 북마크 데이터를 MySQL에 주기적으로 동기화
      */
-    @Scheduled(fixedRate = 15 * 60 * 1000) // 15분마다 실행
+//    @Scheduled(fixedRate = 15 * 60 * 1000) // 15분마다 실행
+    @Scheduled(fixedRate = 15 * 1000) // 15분마다 실행
     public void syncBookmarkDataToDatabase() {
         log.info("Redis -> MySQL 북마크 데이터 동기화 시작");
 
