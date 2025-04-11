@@ -382,4 +382,7 @@ pipeline {
         }
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/BE/auth
