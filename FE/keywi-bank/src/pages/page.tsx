@@ -14,7 +14,7 @@ const Subtitle = tw.p`text-sm text-blue-100`
 const Section = tw.div`mt-6`
 
 const userTypeMap: Record<string, number> = {
-  '구매자(규리)': 3,
+  '구매자(규리)': 4,
   '조립자(혜원)': 1,
   '플랫폼(키위)': 5,
 }

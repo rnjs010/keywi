@@ -28,6 +28,7 @@ export function TransactionRow({ transaction }: { transaction: Transaction }) {
     <Tr>
       <DateCell>{formattedDate}</DateCell>
       <NameCell>{transaction.transactionTypeName}</NameCell>
+      <NameCell>{transaction.transactionSummary}</NameCell>
       <AmountCell>
         <AmountWrapper type={isDeposit ? 'in' : 'out'}>
           <span>{isDeposit ? `₩ ${amount}` : `₩ ${amount}`}</span>

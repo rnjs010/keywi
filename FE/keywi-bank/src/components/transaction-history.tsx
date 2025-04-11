@@ -4,7 +4,7 @@ import tw from 'twin.macro'
 
 const Container = tw.div`mb-8`
 const Label = tw.h2`mb-3 text-[30px] font-semibold text-blue-800 text-left`
-const TableContainer = tw.div`rounded-lg border border-blue-200 overflow-hidden`
+const TableContainer = tw.div`rounded-lg border border-blue-200 h-80 overflow-y-auto`
 const Table = tw.table`w-full text-left border-collapse`
 const Thead = tw.thead`bg-blue-50`
 const Th = tw.th`py-3 px-4 text-sm font-semibold text-blue-800`
@@ -24,6 +24,7 @@ export function TransactionHistory({
             <tr>
               <Th>Date</Th>
               <Th>Type</Th>
+              <Th>Content</Th>
               <Th>Amount</Th>
             </tr>
           </Thead>
