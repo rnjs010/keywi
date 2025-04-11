@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.mypage.rating.mapper.RatingMapper">
+
+    <select id="existsRating" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM ratings
+            WHERE board_id = #{boardId}
+              AND rater_id = #{raterId}
+        )
+    </select>
+
+    <insert id="insertRating">
+        INSERT INTO ratings (rater_id, target_id, board_id, rating)
+        VALUES (#{raterId}, #{targetId}, #{boardId}, #{rating})
+    </insert>
+
+</mapper>
