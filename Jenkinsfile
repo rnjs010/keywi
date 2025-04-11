@@ -58,7 +58,7 @@ pipeline {
                             ])
                             withCredentials([gitUsernamePassword(credentialsId: 'gitlab-credentials')]) {
                                 sh "git fetch --all --prune"
-                                sh "git checkout ${BRANCH_NAME}"
+                                sh "git checkout -B ${BRANCH_NAME} origin/${BRANCH_NAME} --force"
                                 sh "git pull origin ${BRANCH_NAME}"
                                 
                                 GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
@@ -68,11 +68,12 @@ pipeline {
                                 SERVICE_PATH = BRANCH_NAME.contains('feature/BE/') ? BRANCH_NAME.replace("feature/BE/", "") : ""
                                 
                                 // 서비스 목록 설정
-                                // if (BRANCH_NAME == "develop") {
-                                //     env.SERVICES = "config,eureka,gateway,auth,common,feed,product,payment,search,chat,notification"
-                                // } else
-                                if (BRANCH_NAME == "feature/BE/gateway") {
+                                if (BRANCH_NAME == "master") {
+                                    env.SERVICES = "config,eureka,gateway,auth,product,feed,mypage,pay,financial,board,chat,search"
+                                } else if (BRANCH_NAME == "feature/BE/gateway") {
                                     SERVICES = "eureka,gateway"
+                                } else if (BRANCH_NAME == "feature/BE/pay") {
+                                    SERVICES = "financial"
                                 } else {
                                     SERVICES = "${SERVICE_PATH}"
                                 }
@@ -101,8 +102,12 @@ pipeline {
                                 SERVICE_PATH = BRANCH_NAME.replace("feature/BE/", "")
                                 
                                 // 서비스 목록 설정
-                                if (BRANCH_NAME == "feature/BE/gateway") {
-                                    SERVICES = "gateway,eureka"
+                                if (BRANCH_NAME == "master") {
+                                    env.SERVICES = "config,eureka,gateway,auth,product,feed,mypage,pay,financial,board,chat,search"
+                                } else if (BRANCH_NAME == "feature/BE/gateway") {
+                                    SERVICES = "eureka,gateway"
+                                } else if (BRANCH_NAME == "feature/BE/pay") {
+                                    SERVICES = "financial"
                                 } else {
                                     SERVICES = "${SERVICE_PATH}"
                                 }
@@ -127,17 +132,22 @@ pipeline {
                         returnStatus: true
                     ) != 0) {
                         currentBuild.result = 'ABORTED'
-                        env.ERROR_MSG = "BE 디렉토리가 원격 브랜치에 존재하지 않음"
+                        ERROR_MSG = "BE 디렉토리가 원격 브랜치에 존재하지 않음"
                         error ERROR_MSG
                     }
                     
                     if (!fileExists("BE")) {
-                        env.ERROR_MSG = "BE 디렉토리가 로컬에 존재하지 않음"
+                        ERROR_MSG = "BE 디렉토리가 로컬에 존재하지 않음"
                         error ERROR_MSG
                     }
                     
                     if (COMMIT_MSG.toLowerCase().contains('[fe]')) {
-                        env.ERROR_MSG = "FE 커밋으로 빌드 중단"
+                        ERROR_MSG = "FE 커밋으로 빌드 중단"
+                        error ERROR_MSG
+                    }
+                    
+                    if (COMMIT_MSG.toLowerCase().contains('merge') && COMMIT_MSG.toLowerCase().contains('feature/fe')) {
+                        ERROR_MSG = "FE 커밋으로 빌드 중단"
                         error ERROR_MSG
                     }
                 }
@@ -147,12 +157,13 @@ pipeline {
             steps {
                 script {
                     def servicesList = SERVICES.split(',')
-                    env.STAGE_NAME = "Inject Config (2/6)"
+                    STAGE_NAME = "Inject Config (2/6)"
                     
                     servicesList.each { SERVICE ->
-                        echo "Injecting config for ${SERVICE}..."
+                        echo "Config Searching..."
                         
                         if (SERVICE == "config") {
+                            echo "Injecting config for ${SERVICE}..."
                             withCredentials([
                                 file(credentialsId: 'config_yml', variable: 'CONFIG_FILE')
                             ]) {
@@ -169,7 +180,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    env.STAGE_NAME = "Build (3/6)"
+                    STAGE_NAME = "Build (3/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Building ${SERVICE}..."
@@ -178,7 +189,7 @@ pipeline {
                                 // Maven 빌드 사용
                                 sh "mvn clean package -DskipTests"
                             } catch(Exception e) {
-                                env.ERROR_MSG = e.getMessage()
+                                ERROR_MSG = e.getMessage()
                                 error "Build failed for ${SERVICE}: ${ERROR_MSG}"
                             }
                         }
@@ -189,7 +200,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        env.ERROR_MSG += "\nBuild failed"
+                        ERROR_MSG += "\nBuild failed"
                         error ERROR_MSG
                     }
                 }
@@ -198,7 +209,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    env.STAGE_NAME = "Docker Build (4/6)"
+                    STAGE_NAME = "Docker Build (4/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Docker building ${SERVICE}..."
@@ -213,7 +224,7 @@ pipeline {
                             sh "docker tag ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG} ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:latest"
                             // sh "docker save ${DOCKER_USER}/${IMAGE_NAME}-${SERVICE}:${DOCKER_TAG}-test | gzip > ${SERVICE}-image.tar.gz"
                         } catch(Exception e) {
-                            env.ERROR_MSG = e.getMessage()
+                            ERROR_MSG = e.getMessage()
                             error "Docker build failed for ${SERVICE}: ${ERROR_MSG}"
                         }
                     }
@@ -223,7 +234,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        env.ERROR_MSG += "\nDocker Build failed"
+                        ERROR_MSG += "\nDocker Build failed"
                         error ERROR_MSG
                     }
                 }
@@ -232,7 +243,7 @@ pipeline {
         stage('Push to Docker Hub') {//('Deploy to Test') {
             steps {
                 script {
-                    env.STAGE_NAME = "Push to Docker Hub (5/6)"//"Deploy to Test (5/9)"
+                    STAGE_NAME = "Push to Docker Hub (5/6)"//"Deploy to Test (5/9)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Pushing ${SERVICE} to Docker Hub..."
@@ -248,7 +259,7 @@ pipeline {
                 failure {
                     cleanWs()
                     script {
-                        env.ERROR_MSG = "Docker Push failed"
+                        ERROR_MSG = "Docker Push failed"
                         error ERROR_MSG
                     }
                 }
@@ -257,18 +268,20 @@ pipeline {
         stage('Deploy to Prod') {
             steps {
                 script {
-                    env.STAGE_NAME = "Deploy to Prod (6/6)"
+                    STAGE_NAME = "Deploy to Prod (6/6)"
                     def servicesList = SERVICES.split(',')
                     servicesList.each { SERVICE ->
                         echo "Deploying ${SERVICE} to production server..."
                         def memoryl=""
                         if (SERVICE == 'search'){
-                            memoryl = " --memory=4g --memory-swap=4g"
+                            memoryl = " --memory=1.3g --memory-swap=1.3g"
                         } else if (SERVICE == 'config'){
                             memoryl = " --memory=512m --memory-swap=512m"
-                        } else if (SERVICE == 'auth'){
-                            memoryl = " --memory=1g --memory-swap=1.5g"
-                        }else {
+                        } else if (SERVICE == 'chat'){
+                            memoryl = " --memory=2g --memory-swap=2g"
+                        } else if (SERVICE == 'auth' || SERVICE == 'feed'){
+                            memoryl = " --memory=1g --memory-swap=1g"
+                        } else {
                             memoryl = " --memory=768m --memory-swap=1g"
                         }
                         sshagent(['ec2-ssafy']) {
@@ -288,7 +301,7 @@ pipeline {
             post {
                 failure {
                     script {
-                        env.ERROR_MSG = "Production deployment failed"
+                        ERROR_MSG = "Production deployment failed"
                         error ERROR_MSG
                     }
                 }
@@ -329,7 +342,7 @@ pipeline {
         stage('Complete') {
             steps {
                 script {
-                    env.STAGE_NAME = "Completed"
+                    STAGE_NAME = "Completed"
                 }
             }
         }
@@ -370,6 +383,12 @@ pipeline {
                 message += "\n\n`${env.BUILD_TIMESTAMP}`"
                 
                 mattermostSend color: currentBuild.currentResult == 'SUCCESS' ? 'good' : (cleanedMessage.toLowerCase().contains('[fe]') ? 'good' : (currentBuild.currentResult == 'ABORTED' ? 'warning' : 'danger')), message: message
+            }
+            script {
+                cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
             }
         }
         failure {
