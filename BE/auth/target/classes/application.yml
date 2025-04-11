@@ -1,0 +1,57 @@
+server:
+  port: 8081  # 인증 서비스가 실행될 포트 번호
+
+spring:
+  application:
+    name: auth  # 이 애플리케이션의 이름 (대문자로 설정, Eureka에 이 이름으로 등록됨)
+  datasource:  # MySQL 데이터베이스 연결 설정
+    url: jdbc:mysql://localhost:3306/auth?createDatabaseIfNotExist=true  # DB URL (없으면 생성)
+    username: root  # 데이터베이스 사용자 이름
+    password: ssafy  # 데이터베이스 비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL JDBC 드라이버
+  jpa:
+    hibernate:
+      ddl-auto: update  # 데이터베이스 스키마 자동 업데이트 (개발 환경에 적합)
+    show-sql: true  # SQL 쿼리를 콘솔에 출력
+  redis:  # Redis 설정 (세션 또는 토큰 저장소로 사용될 수 있음)
+    host: localhost  # Redis 서버 호스트
+    port: 6379  # Redis 서버 포트
+
+oauth2:  # OAuth2 카카오 로그인 설정
+  kakao:
+    client_id: 7537de3fcdc73bb8f2a04d8e785ff575
+    redirect_uri: http://localhost:8080/api/auth/callback/kakao
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/  # Eureka 서버의 위치 (서비스 등록 위치)
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}  # 인스턴스의 고유 ID 생성 (애플리케이션 이름 + 랜덤 UUID)
+
+# JWT 토큰 설정
+jwt:
+  secret: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWppd29vbi1zcHJpbmctYm9vdC1zZWN1cml0eS1qd3QtdHV0b3JpYWwK  # JWT 서명에 사용되는 비밀 키
+  access-token-validity: 3600000  # 액세스 토큰 유효 기간 (1시간, 밀리초 단위)
+  expiration: 86400000  # JWT 토큰 만료 시간 (24시간, 밀리초 단위)
+  refresh-token-validity: 604800000  # 리프레시 토큰 유효 기간 (7일, 밀리초 단위)
+
+logging:
+  level:
+    com.ssafy.auth: DEBUG  # 인증 서비스 관련 로그를 상세히 출력
+
+app:
+  default-profile-image: https://key-wi.s3.ap-northeast-2.amazonaws.com/defaults/default-profile.png
+
+# AWS S3 설정
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAWOAVSVKPGB5WHJYX
+      secret-key: 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
+    s3:
+      bucket: key-wi
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
