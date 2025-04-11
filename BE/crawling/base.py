@@ -14,9 +14,9 @@ class StoreData:
         # 만약 1~3 사이 숫자가 들어있다면, 제목/설명 기반으로 카테고리 추출 - 쉑키는 설명(_1enCFJskWo)에, 지온은 처음부터 분류됨
         self.swegkey_dic={
             "스위치":[["마그네틱 스위치", 17], ["저소음", 16], ["리니어", 14], ["택타일", 15]],
-            "키보드":[["Swagkeys", 1], ["Owlab", 9], ["QK", 1], ["Neo", 1], ["MatrixLab", 13], ["MODE", 9], ["Angrymiao", 9], ["Whatever Studio", 11], ["Omnitype", 9], ["TKD", 1], ["FoxLab", 9]],
+            "키보드":[["Swagkeys", 1], ["Owlab", 9], ["QK", 1], ["Neo", 1], ["MatrixLab", 13], ["MODE", 9], ["Angrymiao", 9], ["Whatever Studio", 11], ["Omnitype", 9], ["TKD", 1], ["FoxLab", 9], ["Cannonkeys", 10]],
             # 분류가 붙으면 그대로 넣고, 안붙은거는 제목에서 가져가기
-            "키캡":[["SW", 3],["FBB", 3],["Keyreative", 3],["Hammerworks", 3],["DMK", 3],["MilkyWay", 3],["GMK", 3],["JKDK",3],["JTK", 3],["PBTfans", 3],["아티산", 20],["기타 키캡", 3]],
+            "키캡":[["SW", 3],["FBB", 3],["Keyreative", 3],["Hammerworks", 3],["DMK", 3],["MilkyWay", 3],["GMK", 3],["JKDK",3],["JTK", 3],["아티산", 20],["기타 키캡", 3]],
             # sweg 키캡은 상품 설명에서 분류 가져오기
             "기판 & 파츠":[["기판", 4], ["보강판", 5]],
             "스테빌라이저":[["무보강용(PCB)", 22], ["보강용(Plate)", 23]],
