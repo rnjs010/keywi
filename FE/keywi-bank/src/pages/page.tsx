@@ -20,7 +20,7 @@ const userTypeMap: Record<string, number> = {
 }
 
 export default function BankPage() {
-  const [userType, setUserType] = useState<string>('구매자(규리)')
+  const [userType, setUserType] = useState<string>('플랫폼(키위)')
   const [accountInfo, setAccountInfo] = useState<{
     accountNo: string
     bankCode: string
