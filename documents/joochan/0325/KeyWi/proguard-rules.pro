@@ -1,0 +1,4 @@
+-keep class expo.modules.** { *; }
+-keep class com.facebook.react.** { *; }
+-keep class org.unimodules.** { *; }
+-dontwarn org.apache.commons.**
