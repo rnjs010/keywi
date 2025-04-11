@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FeedReadMapper">
+    <resultMap id="FeedReadResultMap" type="com.ssafy.feed.model.FeedRead">
+        <id property="readId" column="read_id"/>
+        <result property="feedId" column="feed_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="readAt" column="read_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="readId">
+        INSERT INTO feed_reads (feed_id, user_id, read_at)
+        VALUES (#{feedId}, #{userId}, NOW())
+            ON DUPLICATE KEY UPDATE read_at = NOW()
+    </insert>
+
+    <delete id="deleteByFeedIdAndUserId">
+        DELETE FROM feed_reads
+        WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </delete>
+
+    <select id="findByFeedIdAndUserId" resultMap="FeedReadResultMap">
+        SELECT * FROM feed_reads
+        WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </select>
+
+    <select id="findByUserId" resultMap="FeedReadResultMap">
+        SELECT * FROM feed_reads
+        WHERE user_id = #{userId}
+        ORDER BY read_at DESC
+    </select>
+
+    <select id="findByFeedId" resultMap="FeedReadResultMap">
+        SELECT * FROM feed_reads
+        WHERE feed_id = #{feedId}
+        ORDER BY read_at DESC
+    </select>
+
+    <select id="existsByFeedIdAndUserId" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM feed_reads
+            WHERE feed_id = #{feedId} AND user_id = #{userId}
+        )
+    </select>
+</mapper>

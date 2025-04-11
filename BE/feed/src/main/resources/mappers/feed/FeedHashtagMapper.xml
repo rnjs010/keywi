@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FeedHashtagMapper">
+    <resultMap id="FeedHashtagResultMap" type="com.ssafy.feed.model.FeedHashtag">
+        <id property="feedTagId" column="feed_tag_id"/>
+        <result property="feedId" column="feed_id"/>
+        <result property="hashtagId" column="hashtag_id"/>
+    </resultMap>
+
+    <select id="findByFeedId" resultMap="FeedHashtagResultMap">
+        SELECT * FROM feed_hashtags WHERE feed_id = #{feedId}
+    </select>
+
+    <select id="findHashtagIdsByFeedId" resultType="long">
+        SELECT hashtag_id FROM feed_hashtags WHERE feed_id = #{feedId}
+    </select>
+
+    <select id="findFeedIdsByHashtagId" resultType="long">
+        SELECT feed_id FROM feed_hashtags WHERE hashtag_id = #{hashtagId}
+    </select>
+
+    <select id="findFeedIdsByHashtagIds" resultType="long">
+        SELECT feed_id FROM feed_hashtags WHERE hashtag_id IN
+        <foreach item="hashtagId" collection="hashtagIds" open="(" separator="," close=")">
+            #{hashtagId}
+        </foreach>
+        GROUP BY feed_id
+        ORDER BY COUNT(*) DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="feedTagId">
+        INSERT INTO feed_hashtags (feed_id, hashtag_id) VALUES (#{feedId}, #{hashtagId})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM feed_hashtags WHERE feed_id = #{feedId} AND hashtag_id = #{hashtagId}
+    </delete>
+
+    <delete id="deleteByFeedId">
+        DELETE FROM feed_hashtags WHERE feed_id = #{feedId}
+    </delete>
+
+    <resultMap id="HashtagStatsResultMap" type="map">
+        <result property="hashtag_id" column="hashtag_id" javaType="long"/>
+        <result property="count" column="count" javaType="int"/>
+    </resultMap>
+
+    <select id="findUserInteractionHashtagStats" resultMap="HashtagStatsResultMap">
+        WITH user_interactions AS (
+            SELECT DISTINCT f.feed_id AS feed_id
+            FROM feeds f
+                     LEFT JOIN feed_likes fl ON f.feed_id = fl.feed_id AND fl.user_id = #{userId}
+                     LEFT JOIN feed_bookmarks fb ON f.feed_id = fb.feed_id AND fb.user_id = #{userId}
+            WHERE fl.feed_id IS NOT NULL OR fb.feed_id IS NOT NULL
+        )
+        SELECT fh.hashtag_id, COUNT(*) as count
+        FROM user_interactions ui
+            JOIN feed_hashtags fh ON ui.feed_id = fh.feed_id
+        GROUP BY fh.hashtag_id
+        ORDER BY count DESC
+    </select>
+
+    <select id="findSimilarFeedsByHashtags" resultType="map">
+        WITH feed_hashtags_set AS (
+            SELECT hashtag_id FROM feed_hashtags WHERE feed_id = #{feedId}
+        )
+        SELECT fh.feed_id, COUNT(*) as similarity
+        FROM feed_hashtags fh
+                 JOIN feed_hashtags_set fhs ON fh.hashtag_id = fhs.hashtag_id
+        WHERE fh.feed_id != #{feedId}
+        GROUP BY fh.feed_id
+        ORDER BY similarity DESC
+            LIMIT #{limit}
+    </select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FollowUserMapper">
+    <resultMap id="FollowUserResultMap" type="com.ssafy.feed.model.FollowUser">
+        <id property="id" column="id"/>
+        <result property="followerId" column="follower_id"/>
+        <result property="followingId" column="following_id"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 팔로워 ID로 팔로잉 목록 조회 -->
+    <select id="findByFollowerId" resultMap="FollowUserResultMap">
+        SELECT * FROM follow_user
+        WHERE follower_id = #{followerId} AND is_active = true
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 팔로잉 ID로 팔로워 목록 조회 -->
+    <select id="findByFollowingId" resultMap="FollowUserResultMap">
+        SELECT * FROM follow_user
+        WHERE following_id = #{followingId} AND is_active = true
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 팔로우 관계 추가 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO follow_user (follower_id, following_id, is_active, created_at)
+        VALUES (#{followerId}, #{followingId}, true, NOW())
+            ON DUPLICATE KEY UPDATE
+                                 is_active = true,
+                                 created_at = CASE WHEN is_active = false THEN NOW() ELSE created_at END
+    </insert>
+
+    <!-- 팔로우 상태 토글 (팔로우/언팔로우) -->
+    <update id="toggleFollow">
+        INSERT INTO follow_user (follower_id, following_id, is_active, created_at)
+        VALUES (#{followerId}, #{followingId}, true, NOW())
+            ON DUPLICATE KEY UPDATE
+                                 is_active = NOT is_active,
+                                 created_at = CASE WHEN is_active = false THEN NOW() ELSE created_at END
+    </update>
+
+    <!-- 팔로우 여부 확인 -->
+    <select id="isFollowing" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM follow_user
+            WHERE follower_id = #{followerId}
+              AND following_id = #{followingId}
+              AND is_active = true
+        )
+    </select>
+
+    <!-- 팔로우 관계 삭제 (물리적 삭제) -->
+    <delete id="delete">
+        DELETE FROM follow_user
+        WHERE follower_id = #{followerId} AND following_id = #{followingId}
+    </delete>
+
+    <!-- 사용자의 팔로워 수 조회 -->
+    <select id="countFollowers" resultType="int">
+        SELECT COUNT(*) FROM follow_user
+        WHERE following_id = #{userId} AND is_active = true
+    </select>
+
+    <!-- 사용자의 팔로잉 수 조회 -->
+    <select id="countFollowings" resultType="int">
+        SELECT COUNT(*) FROM follow_user
+        WHERE follower_id = #{userId} AND is_active = true
+    </select>
+</mapper>

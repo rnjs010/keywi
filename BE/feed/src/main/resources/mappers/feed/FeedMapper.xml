@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.FeedMapper">
+    <resultMap id="FeedResultMap" type="com.ssafy.feed.model.Feed">
+        <id property="feedId" column="feed_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="bookmarkCount" column="bookmark_count"/>
+    </resultMap>
+
+    <select id="findById" resultMap="FeedResultMap">
+        SELECT * FROM feeds WHERE feed_id = #{feedId} AND is_delete = false
+    </select>
+
+    <select id="findByIds" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE feed_id IN
+        <foreach item="feedId" collection="collection" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+        AND is_delete = false
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="feedId">
+        INSERT INTO feeds (user_id, content, created_at, like_count, comment_count, bookmark_count)
+        VALUES (#{userId}, #{content}, NOW(), 0, 0, 0)
+    </insert>
+
+    <update id="update">
+        UPDATE feeds SET content = #{content}, updated_at = NOW()
+        WHERE feed_id = #{feedId}
+    </update>
+
+    <update id="deleteById">
+        UPDATE feeds SET is_delete = true
+        WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </update>
+
+    <select id="findUnreadFeedsByFollowings" resultMap="FeedResultMap">
+        SELECT f.* FROM feeds f
+            JOIN follow_user fu ON f.user_id = fu.following_id AND fu.is_active = true
+            LEFT JOIN feed_reads fr ON f.feed_id = fr.feed_id AND fr.user_id = #{userId}
+        WHERE fu.follower_id = #{userId} AND fr.read_id IS NULL AND f.is_delete = false
+        ORDER BY f.created_at DESC LIMIT 50
+    </select>
+
+    <select id="findPopularFeeds" resultMap="FeedResultMap">
+        SELECT f.* FROM feeds f
+                            LEFT JOIN feed_likes fl ON f.feed_id = fl.feed_id
+                            LEFT JOIN feed_bookmarks fb ON f.feed_id = fb.feed_id
+                            LEFT JOIN comments c ON f.feed_id = c.feed_id
+        WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND f.is_delete = false
+        GROUP BY f.feed_id
+        ORDER BY (COUNT(DISTINCT fl.like_id) * 1.5 + COUNT(DISTINCT fb.bookmark_id) * 2 + COUNT(DISTINCT c.comment_id)) DESC
+            LIMIT 50
+    </select>
+
+    <select id="findFeedsByCategories" resultMap="FeedResultMap">
+        SELECT f.*, fp.category FROM feeds f
+        JOIN feed_products fp ON f.feed_id = fp.feed_id
+        WHERE fp.category IN
+        <foreach item="category" collection="categories" open="(" separator="," close=")">
+            #{category}
+        </foreach>
+        AND f.is_delete = false
+        GROUP BY f.feed_id
+        ORDER BY f.created_at DESC LIMIT 50
+    </select>
+
+    <select id="findRandomFeeds" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE is_delete = false
+        ORDER BY RAND()
+            LIMIT #{limit}
+    </select>
+
+    <select id="findRandomFeedsExcluding" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE is_delete = false
+        <if test="excludeFeedIds != null and excludeFeedIds.size() > 0">
+            AND feed_id NOT IN
+            <foreach item="feedId" collection="excludeFeedIds" open="(" separator="," close=")">
+                #{feedId}
+            </foreach>
+        </if>
+        ORDER BY RAND()
+        LIMIT #{limit}
+    </select>
+
+    <select id="isLikedByUser" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM feed_likes WHERE feed_id = #{feedId} AND user_id = #{userId})
+    </select>
+
+    <select id="isBookmarkedByUser" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM feed_bookmarks WHERE feed_id = #{feedId} AND user_id = #{userId})
+    </select>
+
+    <select id="findAllByUserId" resultMap="FeedResultMap">
+        SELECT * FROM feeds
+        WHERE user_id = #{userId} AND is_delete = false
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="addLike">
+        INSERT INTO feed_likes (feed_id, user_id, created_at) VALUES (#{feedId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="removeLike">
+        DELETE FROM feed_likes WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </delete>
+
+    <update id="updateLikeCount">
+        UPDATE feeds SET like_count = like_count + #{increment} WHERE feed_id = #{feedId}
+    </update>
+
+    <insert id="addBookmark">
+        INSERT INTO feed_bookmarks (feed_id, user_id, created_at) VALUES (#{feedId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="removeBookmark">
+        DELETE FROM feed_bookmarks WHERE feed_id = #{feedId} AND user_id = #{userId}
+    </delete>
+
+    <update id="updateBookmarkCount">
+        UPDATE feeds SET bookmark_count = bookmark_count + #{increment} WHERE feed_id = #{feedId}
+    </update>
+
+    <select id="findLikedFeedsByUserAndFeedIds" resultType="long">
+        SELECT feed_id FROM feed_likes WHERE user_id = #{userId} AND feed_id IN
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+    </select>
+
+    <select id="findAllBookmarkedFeedsByUserId" resultType="long">
+        SELECT feed_id FROM feed_bookmarks WHERE user_id = #{userId}
+    </select>
+
+    <select id="findBookmarkedFeedsByUserAndFeedIds" resultType="long">
+        SELECT feed_id FROM feed_bookmarks WHERE user_id = #{userId} AND feed_id IN
+        <foreach item="feedId" collection="feedIds" open="(" separator="," close=")">
+            #{feedId}
+        </foreach>
+    </select>
+</mapper>

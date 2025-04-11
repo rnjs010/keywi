@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.feed.mapper.UserActivityMapper">
+    <resultMap id="UserActivityResultMap" type="com.ssafy.feed.model.UserActivity">
+        <id property="activityId" column="activity_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="activityData" column="activity_data" typeHandler="com.ssafy.feed.config.JsonTypeHandler"/>
+        <result property="timestamp" column="timestamp" typeHandler="com.ssafy.feed.config.LocalDateTimeTypeHandler"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities WHERE activity_id = #{activityId}
+    </select>
+
+    <select id="findByUserId" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findByUserIdAndActivityTypeAndAfter" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND activity_type = #{activityType}
+          AND timestamp > #{after}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findRecentActivities" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND timestamp >= #{timestamp}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findActivitiesByType" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND activity_type = #{activityType}
+          AND timestamp >= #{fromDate}
+        ORDER BY timestamp DESC
+    </select>
+
+    <select id="findFeedRelatedActivities" resultMap="UserActivityResultMap">
+        SELECT * FROM user_activities
+        WHERE user_id = #{userId}
+          AND (activity_type = 'VIEW_FEED_DETAIL' OR
+               activity_type = 'LIKE_FEED' OR
+               activity_type = 'BOOKMARK_FEED' OR
+               activity_type = 'ADD_COMMENT')
+          AND timestamp >= #{fromDate}
+        ORDER BY timestamp DESC
+    </select>
+
+    <!-- 해시태그별 사용자 활동 통계 -->
+    <select id="findHashtagActivityStats" resultType="map">
+        WITH feed_activities AS (
+            SELECT ua.activity_id, ua.activity_data->'$.feedId' as feed_id
+            FROM user_activities ua
+            WHERE ua.user_id = #{userId}
+              AND (ua.activity_type = 'VIEW_FEED_DETAIL' OR
+                   ua.activity_type = 'LIKE_FEED' OR
+                   ua.activity_type = 'BOOKMARK_FEED' OR
+                   ua.activity_type = 'ADD_COMMENT')
+              AND ua.timestamp >= #{fromDate}
+        )
+        SELECT h.hashtag_id, h.name, COUNT(*) as activity_count
+        FROM feed_activities fa
+                 JOIN feed_hashtags fh ON fa.feed_id = fh.feed_id
+                 JOIN hashtags h ON fh.hashtag_id = h.hashtag_id
+        GROUP BY h.hashtag_id, h.name
+        ORDER BY activity_count DESC
+    </select>
+
+    <select id="findActiveUserIds" resultType="java.lang.Long">
+        SELECT DISTINCT user_id FROM user_activities
+        WHERE timestamp > #{timestamp}
+        ORDER BY user_id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="activityId">
+        INSERT INTO user_activities (user_id, activity_type, activity_data, timestamp)
+        VALUES (#{userId}, #{activityType},
+                #{activityData, typeHandler=com.ssafy.feed.config.JsonTypeHandler},
+                NOW())
+    </insert>
+</mapper>
