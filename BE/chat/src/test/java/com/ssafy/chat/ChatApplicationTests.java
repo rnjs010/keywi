@@ -1,10 +1,10 @@
-package com.ssafy.board;
+package com.ssafy.chat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BoardApplicationTests {
+class ChatApplicationTests {
 
 	@Test
 	void contextLoads() {
