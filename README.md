@@ -91,24 +91,48 @@
 
 ## ⌨️ 주요 기능
 
-#### 완료된 UI 페이지
-
-✅ 로그인, 회원 정보 입력<br />
-✅ 홈 피드<br />
-✅ 견적 게시판, 게시글 입력<br />
-✅ 계좌 연결<br />
-
 <details>
 <summary><strong>회원가입/로그인, 마이페이지</strong></summary>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">소셜 로그인</th>
+    <th style="text-align: center;" width="33.33%">유저 정보 입력</th>
+    <th style="text-align: center;" width="33.33%">온보딩 페이지</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="소셜 로그인" src="" ></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="유저 정보 입력" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="온보딩 페이지" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">카카오 소셜 회원가입/로그인 기능을 제공합니다.</td>
+    <td style="text-align: center;" width="33.33%">회원가입을 한 신규 유저는 닉네임, 프로필 사진을 등록할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">앱의 전체적인 기능을 소개합니다. (Skip으로 바로 메인페이지로 이동 가능)</td>
+  </tr>
+</table>
 
-- 카카오로그인
-- 회원정보 작성 (프로필 이미지, 닉네임 작성)
-- 마이페이지 (피드/견적)
-- 설정 (계좌 관리/정보 수정)
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">마이페이지 (피드)</th>
+    <th style="text-align: center;" width="33.33%">마이페이지 (견적)</th>
+    <th style="text-align: center;" width="33.33%">설정페이지</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="마이페이지 (피드)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="마이페이지 (견적)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="설정페이지" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">마이페이지 중 피드 탭에서 작성한 파드들을 확인가능합니다. </br> 세로 슬라이드를 통해 전후 피드로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">마이페이지 중 견적 탭에서 작성한 견적 게시물들을 확인가능합니다. </br> 게시물의 상태를 변경할 수 있으며 조립자에 대한 후기를 남길 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">계좌 관리, 정보 수정 등 설정을 할 수 있습니다. </td>
+  </tr>
+</table>
+
 </details>
 
 <details>
-<summary><strong>홈 피드 </strong></summary>
+<summary><strong>홈 페이지 (피드)</strong></summary>
 
 - 무한스크롤 피드
 - 태그 상품 리스트
@@ -116,7 +140,44 @@
 - 피드 작성 (사진 선택, 상품 태그, 글/해시태그 작성)
 - 상품 찜 리스트
 - 북마크 리스트 (피드/견적 게시물)
-- 알림 리스트
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="25%">피드 메인 페이지</th>
+    <th style="text-align: center;" width="25%">태그된 상품 리스트</th>
+    <th style="text-align: center;" width="25%">댓글 페이지</th>
+    <th style="text-align: center;" width="25%">상품 찜 페이지</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 메인 페이지" src="" ></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="태그된 상품 리스트" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="댓글 페이지" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="상품 찜 페이지" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%">추천 알고리즘 순으로 피드들이 나타나면서 무한 스크롤이 가능합니다. </br> 좋아요, 북마크, 공유 등이 가능합니다. </br> 대표 이미지에 태그된 상품들을 확인할 수 있습니다. </td>
+    <td style="text-align: center;" width="25%">대표 이미지에 태그된 상품들을 리스트로 확인할 수 있습니다. </br> 상품 별 찜을 할 수 있으며, 해당 상품 페이지로 바로 이동 가능합니다. </td>
+    <td style="text-align: center;" width="25%">피드 별 댓글 작성 및 확인 가능합니다. </td>
+    <td style="text-align: center;" width="25%"> </td>
+  </tr>
+</table>
+
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%"></th>
+    <th style="text-align: center;" width="33.33%"></th>
+    <th style="text-align: center;" width="33.33%"></th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"></td>
+    <td style="text-align: center;" width="33.33%"></td>
+    <td style="text-align: center;" width="33.33%"> </td>
+  </tr>
+</table>
 </details>
 
 <details>
@@ -277,7 +338,7 @@
 
 ## 🗺️ 기술 아키텍처
 
-![아키텍처](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(5)+(1).png)
+![아키텍처](<https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(5)+(1).png>)
 
 ## 📂 프로젝트 구조 (추후 작성)
 
