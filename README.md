@@ -20,7 +20,7 @@
 
 > ⌛ 프로젝트 기간 : 2025.03.03 ~ 2025.04.12 (6주)
 
-> 📆 상세 기간 : 기획 1주 + 공부 2주 + 개발 2주 + 버그 해결 1주
+> 📆 상세 기간 : 기획 1주 + 공부 2주 + 개발 3주
 
 > 🔗 [노션 링크](https://shiny-headlight-8fc.notion.site/KeyWi-1a4c09e299c68064827cde3460b97652?pvs=4)
 
@@ -123,7 +123,7 @@
     <td style="text-align: center;" width="33.33%"><img height="400" alt="설정페이지" src=""></td>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%">마이페이지 중 피드 탭에서 작성한 파드들을 확인가능합니다. </br> 세로 슬라이드를 통해 전후 피드로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">마이페이지 중 피드 탭에서 작성한 파드들을 확인가능합니다. </br> 세로 스와이프를 통해 전후 피드로 이동할 수 있습니다.</td>
     <td style="text-align: center;" width="33.33%">마이페이지 중 견적 탭에서 작성한 견적 게시물들을 확인가능합니다. </br> 게시물의 상태를 변경할 수 있으며 조립자에 대한 후기를 남길 수 있습니다.</td>
     <td style="text-align: center;" width="33.33%">계좌 관리, 정보 수정 등 설정을 할 수 있습니다. </td>
   </tr>
@@ -133,97 +133,245 @@
 
 <details>
 <summary><strong>홈 페이지 (피드)</strong></summary>
-
-- 무한스크롤 피드
-- 태그 상품 리스트
-- 댓글 페이지
-- 피드 작성 (사진 선택, 상품 태그, 글/해시태그 작성)
-- 상품 찜 리스트
-- 북마크 리스트 (피드/견적 게시물)
 <table style="text-align: center;" width="100%">
   <tr>
-    <th style="text-align: center;" width="25%">피드 메인 페이지</th>
-    <th style="text-align: center;" width="25%">태그된 상품 리스트</th>
-    <th style="text-align: center;" width="25%">댓글 페이지</th>
-    <th style="text-align: center;" width="25%">상품 찜 페이지</th>
+    <th style="text-align: center;" width="20%">피드 메인 페이지</th>
+    <th style="text-align: center;" width="20%">태그된 상품 리스트</th>
+    <th style="text-align: center;" width="20%">댓글 페이지</th>
+    <th style="text-align: center;" width="20%">상품 찜 페이지</th>
+    <th style="text-align: center;" width="20%">북마크 페이지</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="피드 메인 페이지" src="" ></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="태그된 상품 리스트" src=""></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="댓글 페이지" src=""></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="상품 찜 페이지" src=""></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="피드 메인 페이지" src="https://github.com/user-attachments/assets/b9909ba6-9146-4a69-b7de-df2916776d6e" ></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="태그된 상품 리스트" src=""></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="댓글 페이지" src=""></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="상품 찜 페이지" src=""></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="북마크 페이지" src=""></td>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%">추천 알고리즘 순으로 피드들이 나타나면서 무한 스크롤이 가능합니다. </br> 좋아요, 북마크, 공유 등이 가능합니다. </br> 대표 이미지에 태그된 상품들을 확인할 수 있습니다. </td>
-    <td style="text-align: center;" width="25%">대표 이미지에 태그된 상품들을 리스트로 확인할 수 있습니다. </br> 상품 별 찜을 할 수 있으며, 해당 상품 페이지로 바로 이동 가능합니다. </td>
-    <td style="text-align: center;" width="25%">피드 별 댓글 작성 및 확인 가능합니다. </td>
-    <td style="text-align: center;" width="25%"> </td>
+    <td style="text-align: center;" width="20%">추천 알고리즘 순으로 피드들이 나타나면서 무한 스크롤이 가능합니다. </br> 좋아요, 북마크, 공유 등이 가능합니다. </br> 대표 이미지에 태그된 상품들을 확인할 수 있습니다. </td>
+    <td style="text-align: center;" width="20%">대표 이미지에 태그된 상품들을 리스트로 확인할 수 있습니다. </br> 상품 별 찜을 할 수 있으며, 해당 상품 페이지로 바로 이동 가능합니다. </td>
+    <td style="text-align: center;" width="20%">피드 별 댓글 작성 및 확인 가능합니다. </td>
+    <td style="text-align: center;" width="20%">찜한 상품 목록을 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="20%">북마크한 피드와 견적 게시글을 확인할 수 있습니다.</td>
   </tr>
 </table>
 
 <table style="text-align: center;" width="100%">
-  <tr>
-    <th style="text-align: center;" width="33.33%"></th>
-    <th style="text-align: center;" width="33.33%"></th>
-    <th style="text-align: center;" width="33.33%"></th>
+<tr>
+    <th style="text-align: center;" width="25%">피드 작성 (사진 선택)</th>
+    <th style="text-align: center;" width="25%">피드 작성 (상품 태그)</th>
+    <th style="text-align: center;" width="25%">피드 작성 (상품 추가)</th>
+    <th style="text-align: center;" width="25%">피드 작성 (글 작성)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (사진 선택)" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 태그)" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 추가)" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (글 작성)" src=""></td>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"></td>
-    <td style="text-align: center;" width="33.33%"></td>
-    <td style="text-align: center;" width="33.33%"> </td>
+    <td style="text-align: center;" width="25%">여러 사진을 선택해 추가할 수 있으며, </br> 드래그 앤 드롭으로 순서를 변경할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">메인 사진에 상품 태그를 추가할 수 있습니다. </br> 드래그를 통해 원하는 위치에 놓을 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">상품태그 추가 시 나타나는 모달로, </br> 찜한 목록/검색/직접 입력을 통해 추가할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">내용을 작성할 수 있으며, 해시태그를 추가할 수 있습니다. </br> 인기 해시태그 목록이 보이고 검색도 가능합니다.</td>
   </tr>
 </table>
 </details>
 
 <details>
 <summary><strong>조립/견적 요청 게시판</strong></summary>
-
-- 견적 게시판
-- 견적 게시물 작성 ( 폼 작성, 글/사진 첨부)
+<table style="text-align: center;" width="100%">
+<tr>
+    <th style="text-align: center;" width="25%">견적 게시판 페이지</th>
+    <th style="text-align: center;" width="25%">견적 게시글 상세 페이지</th>
+    <th style="text-align: center;" width="25%">견적 게시글 작성 (상품 선택)</th>
+    <th style="text-align: center;" width="25%">견적 게시글 작성 (글 작성)</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시판 페이지" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 상세 페이지" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (상품 선택)" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (글 작성)" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%">전체 게시글의 상태 및 채팅 수를 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">자신이 작성한 글이 아니라면 1:1 채팅으로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">카테고리 별 원하는 상품을 추가할 수 있습니다. </br> 찜한 목록/검색/조립자 추천 요청을 선택할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">제목과 내용, 이미지를 추가 및 상품 수정을 할 수 있습니다.</td>
+  </tr>
+</table>
 </details>
 
 <details>
 <summary><strong>상품/검색 페이지</strong></summary>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="25%">상품 리스트</th>
+    <th style="text-align: center;" width="25%">상품 상세 페이지</th>
+    <th style="text-align: center;" width="25%">검색 초기 화면</th>
+    <th style="text-align: center;" width="25%">검색 중 화면</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%"><img height="400" alt="상품 리스트" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="상품 상세 페이지" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="검색 초기 화면" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="검색 중 화면" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%">카테고리 별 (상위/하위) 상품 목록을 확인할 수 있습니다. </br> 상품을 찜할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">상품 상세페이지에서 공유 및 판매 사이트로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">검색 페이지에서는 최근, 추천, 인기 검색어를 확인할 수 있습니다. </br>  추천 검색어와 인기 검색어는 시간마다 변경됩니다. </td>
+    <td style="text-align: center;" width="25%">검색어를 입력할 때는 자모음 별로 구분하여 자동완성된 단어 목록이 나타납니다.</td>
+  </tr>
+</table>
 
-- 상품 리스트
-- 상품 상세 페이지
-- 검색 초기 화면 (최근, 추천, 인기 검색어)
-- 검색 중 화면 (실시간 연동 검색어)
-- 검색 후 화면 (피드/상품/계정 탭)
-</details>
-
-<details>
-<summary><strong>채팅 페이지</strong></summary>
-
-- 채팅 리스트
-- 1:1 채팅 화면 (상단/하단 더보기)
-- 거래 진행 화면
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">검색 결과 화면 (피드)</th>
+    <th style="text-align: center;" width="33.33%">검색 결과 화면 (상품)</th>
+    <th style="text-align: center;" width="33.33%">검색 결과 화면 (계정)</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (피드)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (상품)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (계정)" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">검색어가 들어간 피드가 나타나며, 피드 선택 시 세로 스와이프를 통해 전후 피드로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">검색어가 들어간 상품 리스트가 출력됩니다.</td>
+    <td style="text-align: center;" width="33.33%">검색어가 들어간 계정 리스트가 출력됩니다.</td>
+  </tr>
+</table>
 </details>
 
 <details>
 <summary><strong>계좌 연결</strong></summary>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">계좌 입력</th>
+    <th style="text-align: center;" width="33.33%">계좌 인증</th>
+    <th style="text-align: center;" width="33.33%">간편 비밀번호 설정</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 입력" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 인증" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 설정" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">계좌 번호 입력, 은행 선택, 약관 동의 시 버튼이 활성화됩니다.</td>
+    <td style="text-align: center;" width="33.33%">입력한 계좌로 1원 송금을 진행하여 인증코드를 확인 후 입력합니다.</td>
+    <td style="text-align: center;" width="33.33%">인증이 완료되면 랜덤 키패드를 통해 간편 비밀번호를 설정할 수 있습니다. </br> 마지막 숫자 입력시 재입력받고 일치하면 계좌 연결이 완료됩니다. </td>
+  </tr>
+</table>
+</details>
 
-- 계좌 입력 (은행/계좌번호/필수 동의)
-- 계좌 인증 (1원 송금)
-- 간편 비밀번호 설정
+<details>
+<summary><strong>채팅 페이지</strong></summary>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">채팅 목록 페이지</th>
+    <th style="text-align: center;" width="33.33%">채팅방 페이지</th>
+    <th style="text-align: center;" width="33.33%">사진 보내기</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅 목록 페이지" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅방 페이지" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="사진 보내기" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">전체 채팅 목록을 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">상단의 게시글을 터치하면, 해당 게시글 상세 페이지로 이동합니다. </br> 하단의 + 버튼을 터치하면, 사진 보내기 및 거래 요청을 할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">사진 첨부하기를 누르면 갤러리에서 한 장 선택할 수 있습니다.</td>
+  </tr>
+</table>
 </details>
 
 <details>
 <summary><strong>거래 요청(조립자)</strong></summary>
-
-- 영수증 폼 작성
+<table style="text-align: center;" width="100%">
+<tr>
+    <th style="text-align: center;" width="25%">거래 요청 폼 화면</th>
+    <th style="text-align: center;" width="25%">금액 및 계좌 확인 화면</th>
+    <th style="text-align: center;" width="25%">거래 요청 채팅 (조립자)</th>
+    <th style="text-align: center;" width="25%">거래 요청 채팅 (구매자)</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 폼 화면" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="금액 및 계좌 확인 화면" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (조립자)" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (구매자)" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%">조립할 키보드에 필요한 상품 선택 및 조립 비용을 입력할 수 있습니다. </br> 카테고리 별 상품을 검색할 수 있으며, 기타 카테고리를 추가할 수 있습니다. </td>
+    <td style="text-align: center;" width="25%">거래할 최종 금액과 계좌를 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">거래 요청 시 조립자 채팅 화면입니다.</td>
+    <td style="text-align: center;" width="25%">거래 요청 시 구매자 채팅 화면입니다.</td>
+  </tr>
+</table>
 </details>
 
 <details>
-<summary><strong>송금하기(구매자)</strong></summary>
+<summary><strong>거래 수락(구매자)</strong></summary>
+<table style="text-align: center;" width="100%">
+<tr>
+    <th style="text-align: center;" width="33.33%">거래 내역</th>
+    <th style="text-align: center;" width="33.33%">최종 금액 및 계좌 확인</th>
+    <th style="text-align: center;" width="33.33%">간편 비밀번호 입력</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 내역" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="최종 금액 및 계좌 확인" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 입력" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">거래 수락 버튼 터치 시, 조립자가 작성한 거래 내역을 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">안심결제를 위한 수수료가 포함된 최종 금액 및 계좌를 확인할 수 있습니다.</td>
+    <td style="text-align: center;" width="33.33%">계좌 연결 시 설정한 간편 비밀번호와 일치한다면 계좌에서 출금됩니다.</td>
+  </tr>
+</table>
 
-- 작성된 영수증 확인
-- 결제액 송금 (간편 비밀번호 입력)
+<table style="text-align: center;" width="100%">
+<tr>
+    <th style="text-align: center;" width="33.33%">은행 화면 (출금)</th>
+    <th style="text-align: center;" width="33.33%">거래 수락 채팅 (구매자)</th>
+    <th style="text-align: center;" width="33.33%">거래 수락 채팅 (조립자)</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="은행 화면 (출금)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (구매자)" src=""></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (조립자)" src=""></td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%">거래 수락 시 구매자 은행 화면입닌다.</td>
+    <td style="text-align: center;" width="33.33%">거래 수락 시 구매자 채팅 화면입니다.</td>
+    <td style="text-align: center;" width="33.33%">거래 수락 시 조립자 채팅 화면입니다. </br> (거래 완료 요청 버튼을 터치하면, 요청 메시지가 전송됩니다.)</td>
+  </tr>
+</table>
+</details>
+
+<details>
+<summary><strong>거래 완료(구매자)</strong></summary>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="25%">거래 확정 모달</th>
+    <th style="text-align: center;" width="25%">거래 완료 채팅 (구매자)</th>
+    <th style="text-align: center;" width="25%">거래 완료 채팅 (조립자)</th>
+    <th style="text-align: center;" width="25%">은행 화면 (입금)</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 확정 모달" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="" src="">거래 완료 채팅 (구매자)</td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="" src="">거래 완료 채팅 (조립자)</td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="" src="">은행 화면 (입금)</td>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="25%">거래 완료하기 버튼 터치 시 나타나는 모달입니다.</td>
+    <td style="text-align: center;" width="25%">거래 완료 시 구매자 채팅 화면입니다.</td>
+    <td style="text-align: center;" width="25%">거래 완료 시 조립자 채팅 화면입니다.</td>
+    <td style="text-align: center;" width="25%">거래 완료 시 조립자 은행 화면입니다.</td>
+  </tr>
+</table>
 </details>
 
 ## 🎥 시연 영상 (추후 작성)
@@ -340,17 +488,1066 @@
 
 ![아키텍처](<https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(5)+(1).png>)
 
-## 📂 프로젝트 구조 (추후 작성)
+## 📂 프로젝트 구조
 
 <details>
   <summary><strong>Back 폴더 구조 보기</strong></summary>
   <pre>
+  📦BE
+ ┣ 📂auth
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂auth
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RedisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RestTemplateConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜S3Config.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SecurityConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FileUploadController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtTokenController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SocialLoginController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂oauth
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KakaoLoginDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂request
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberProfileUpdateRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SignUpRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂response
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KakaoUserInfoResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LoginResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜NicknameCheckResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UploadResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂token
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtTokenRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtTokenResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜JwtTokens.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂userinfo
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KakaoUserInfoResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜Member.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FileDeleteException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FileUploadException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜InvalidFileException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜TokenRefreshException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂jwt
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂filter
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜JwtAuthenticationFilter.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtTokenGenerator.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜JwtTokenProvider.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RefreshTokenRedisRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtTokenService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KakaoService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜S3Service.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AuthApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂auth
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AuthApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂board
+ ┃ ┣ 📂src
+ ┃ ┃ ┗ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂board
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂client
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserServiceClient.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EurekaClientConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyBatisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜S3Config.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜StaticResourceConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜EstimateBoardController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardImageDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EstimateBoardDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ApiExceptionHandler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardImageMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜EstimateBoardMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardImage.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProduct.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜EstimateBoard.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EstimateBoardService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EstimateBoardServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FileUploadService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LocalFileUploadServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜S3FileUploadServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardImageMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜EstimateBoardMapper.xml
+ ┃ ┃ ┃ ┃ ┣ 📜bootstrap.yml
+ ┃ ┃ ┃ ┃ ┗ 📜schema.sql
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┗ 📜pom.xml
+ ┣ 📂chat
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂board
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂client
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserServiceClient.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜S3Config.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProduct.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LocalFileUploadServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜S3FileUploadServiceImpl.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductMapper.xml
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂chat
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ChatApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂config
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ConfigApplication.java
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ConfigApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂crawling
+ ┃ ┣ 📂data
+ ┃ ┃ ┣ 📜category.sql
+ ┃ ┃ ┣ 📜geon_product.json
+ ┃ ┃ ┣ 📜products.sql
+ ┃ ┃ ┣ 📜products_descriptions.json
+ ┃ ┃ ┣ 📜products_descriptions.sql
+ ┃ ┃ ┗ 📜swegkey_product.json
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜analysis.md
+ ┃ ┣ 📜base.py
+ ┃ ┣ 📜dbctl.py
+ ┃ ┣ 📜detail.py
+ ┃ ┣ 📜driver.py
+ ┃ ┣ 📜mj.py
+ ┃ ┣ 📜product_crawler.py
+ ┃ ┣ 📜product_detail.py
+ ┃ ┣ 📜product_main.py
+ ┃ ┣ 📜product_og.py
+ ┃ ┗ 📜requirements.txt
+ ┣ 📂eureka
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂eureka
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜EurekaApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂eureka
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜EurekaApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂feed
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂feed
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂client
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductServiceClient.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductServiceClientFallbackFactory.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserServiceClient.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserServiceClientFallbackFactory.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeignConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JsonTypeHandler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KafkaConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LocalDateTimeTypeHandler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyBatisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RedisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜S3Config.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂consumer
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BookmarkEventConsumer.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜LikeEventConsumer.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂request
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedCreateRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProductRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductCreateRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductIdRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂response
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BookmarkResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜DeleteFeedResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedPageResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FollowResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LikeResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductFavoriteResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedDetailDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedImageDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜HashtagDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductDescriptionDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductResponseDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserDTO.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedHashtagMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedImageMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProductMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedReadMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FollowUserMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜HashtagMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserActivityMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserHashtagPreferenceMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂model
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Comment.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentMention.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Feed.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedBookmark.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedHashtag.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedImage.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedLike.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProduct.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedRead.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FollowUser.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Hashtag.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserActivity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserHashtagPreference.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BookmarkService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FileStorageService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜HashtagService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜LikeService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductServiceAdapter.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserActivityService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserServiceAdapter.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂mappers
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂feed
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedHashtagMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedImageMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProductMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedReadMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FollowUserMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜HashtagMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserActivityMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserHashtagPreferenceMapper.xml
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂feed
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂financial
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂financial
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EscrowAccountProperties.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialApiConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RestTemplateConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SecurityConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PayController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂request
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialRequestHeader.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FinancialUserInfo.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountBalanceRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountCheckRequestDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountTransferRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CreateAccountRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CreateUserRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜DemandDepositProductRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EscrowTransactionAcceptRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EscrowTransactionCompleteRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OneWonTransferRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OneWonVerifyRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SetSimplePasswordRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SimplePasswordVerifyRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜TransactionHistoryListRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂response
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialResponseHeader.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OpenApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountBalanceResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountTransferResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CreateAccountResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CreateUserResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜DemandDepositProductResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyAccountCheckResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OneWonTransferInitResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OneWonTransferResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OneWonVerifyResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SimplePasswordVerifyResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜TransactionHistoryListResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EscrowTransactionEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialUserEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RegisterProductEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SimplePasswordEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserAccountConnectionEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UsersEntity.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂handler
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ApiException.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜GlobalExceptionHandler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AccountRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EscrowTransactionRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialUserRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RegisterProductRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SimplePasswordRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserAccountConnectionRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UsersRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommonService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialApiService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PayService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂util
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BankCodeMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ErrorCode.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FinancialHeaderUtil.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ResponseUtil.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜TransactionStatus.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FinancialApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂financial
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FinancialApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂gateway
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂gateway
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FilterConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SecurityConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂filter
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜JwtAuthFilter.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜GatewayApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂gateway
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜GatewayApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂Logstash
+ ┃ ┣ 📜feeds.conf
+ ┃ ┣ 📜products.conf
+ ┃ ┗ 📜users.conf
+ ┣ 📂mypage
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂mypage
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂profile
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProfileController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProfileDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜StatusMessageUpdateDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProfileService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProfileServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂rating
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RatingController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RatingRequestDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RatingMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RatingService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RatingServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MypageApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜RatingMapper.xml
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserMapper.xml
+ ┃ ┃ ┃ ┃ ┗ 📜bootstrap.yml
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂mypage
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MypageApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂pay
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂pay
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PayApplication.java
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂pay
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PayApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂product
+ ┃ ┣ 📂.mvn
+ ┃ ┃ ┗ 📂wrapper
+ ┃ ┃ ┃ ┗ 📜maven-wrapper.properties
+ ┃ ┣ 📂src
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂product
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ApiResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜EurekaClientConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyBatisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SecurityConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂request
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductIdRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WishRequest.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OpenGraphDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductDescriptionDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ApiExceptionHandler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductDescriptionMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductWishMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WishMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserServiceClient.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WishService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂util
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SortUtil.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂old
+ ┃ ┃ ┃ ┃ ┃ ┣ 📜products.sql
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜products_descriptions.sql
+ ┃ ┃ ┃ ┃ ┣ 📜bootstrap.yml
+ ┃ ┃ ┃ ┃ ┣ 📜category.sql
+ ┃ ┃ ┃ ┃ ┣ 📜old_products.sql
+ ┃ ┃ ┃ ┃ ┣ 📜products.sql
+ ┃ ┃ ┃ ┃ ┣ 📜products_descriptions.sql
+ ┃ ┃ ┃ ┃ ┗ 📜schema.sql
+ ┃ ┃ ┗ 📂test
+ ┃ ┃ ┃ ┗ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂product
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductApplicationTests.java
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┗ 📜pom.xml
+ ┣ 📂search
+ ┃ ┣ 📂src
+ ┃ ┃ ┗ 📂main
+ ┃ ┃ ┃ ┣ 📂java
+ ┃ ┃ ┃ ┃ ┗ 📂com
+ ┃ ┃ ┃ ┃ ┃ ┗ 📂ssafy
+ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂search
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂autocomplete
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AutocompleteController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂document
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SuggestKeywordDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AutocompleteRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AutocompleteRepositoryImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AutocompleteService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AutocompleteServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂board
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductSearchController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂document
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductSearchResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductSearchRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductSearchRepositoryCustom.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductSearchRepositoryImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BoardProductSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BoardProductSearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ElasticsearchConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KeywordRankingJobConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜RedisConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WebConfig.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂feed
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedProductSearchController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂document
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedProductDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedProductSearchResponse.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProductSearchRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedProductSearchRepositoryImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedProductSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜FeedProductSearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂integratedSearch
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SearchController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂document
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SuggestDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserDocument.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedSearchResultDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductSearchResultDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SearchRequestDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserSearchResultDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SearchRepository.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SearchRepositoryImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜FeedSearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductSearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserSearchServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂keywordRanking
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KeywordDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankDto.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankMapper.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂processor
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KeywordRankProcessor.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KeywordRankReader.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankWriter.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂scheduler
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BatchJobScheduler.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜KeywordRankService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankServiceImpl.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂recentSearch
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RecentSearchController.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜RecentSearchService.java
+ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SearchApplication.java
+ ┃ ┃ ┃ ┗ 📂resources
+ ┃ ┃ ┃ ┃ ┣ 📂mapper
+ ┃ ┃ ┃ ┃ ┃ ┗ 📜KeywordRankMapper.xml
+ ┃ ┃ ┃ ┃ ┣ 📜bootstrap.yml
+ ┃ ┃ ┃ ┃ ┣ 📜dummy.sql
+ ┃ ┃ ┃ ┃ ┣ 📜elasticsearch-settings.json
+ ┃ ┃ ┃ ┃ ┣ 📜keywi_schema.sql
+ ┃ ┃ ┃ ┃ ┗ 📜schema.sql
+ ┃ ┣ 📜.gitattributes
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜Dockerfile
+ ┃ ┣ 📜mvnw
+ ┃ ┣ 📜mvnw.cmd
+ ┃ ┣ 📜pom.xml
+ ┃ ┗ 📜README.md
+ ┗ 📜.gitignore
   </pre>
 </details>
 
 <details>
-  <summary><strong>Front - mobile 폴더 구조 보기</strong></summary>
+  <summary><strong>Front 폴더 구조 보기</strong></summary>
   <pre>
+  📦src
+ ┣ 📂components
+ ┃ ┣ 📂message
+ ┃ ┃ ┣ 📜ErrorMessage.tsx
+ ┃ ┃ ┣ 📜LoadingMessage.tsx
+ ┃ ┃ ┗ 📜NoDataMessage.tsx
+ ┃ ┣ 📂ui
+ ┃ ┃ ┣ 📜button.tsx
+ ┃ ┃ ┣ 📜carousel.tsx
+ ┃ ┃ ┣ 📜dialog-noX.tsx
+ ┃ ┃ ┣ 📜dialog.tsx
+ ┃ ┃ ┣ 📜drawer.tsx
+ ┃ ┃ ┣ 📜dropdown-menu.tsx
+ ┃ ┃ ┣ 📜input-otp.tsx
+ ┃ ┃ ┣ 📜skeleton.tsx
+ ┃ ┃ ┣ 📜tabs.tsx
+ ┃ ┃ ┗ 📜toaster.tsx
+ ┃ ┣ 📜AuthRedirect.tsx
+ ┃ ┣ 📜Badge.tsx
+ ┃ ┣ 📜DetailHeader.tsx
+ ┃ ┣ 📜FeedWriteButton.tsx
+ ┃ ┣ 📜HeaderIcons.tsx
+ ┃ ┣ 📜HeaderSearch.tsx
+ ┃ ┣ 📜InfiniteScroll.tsx
+ ┃ ┣ 📜MainButton.tsx
+ ┃ ┣ 📜NavBar.tsx
+ ┃ ┣ 📜NextHeader.tsx
+ ┃ ┣ 📜ProtectedRoute.tsx
+ ┃ ┣ 📜PulltoRefresh.tsx
+ ┃ ┣ 📜StyledTabs.tsx
+ ┃ ┣ 📜StyleTab.tsx
+ ┃ ┣ 📜SubHeader.tsx
+ ┃ ┗ 📜TwoBtnModal.tsx
+ ┣ 📂features
+ ┃ ┣ 📂board
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜BoardCard.tsx
+ ┃ ┃ ┃ ┣ 📜BoardCardList.tsx
+ ┃ ┃ ┃ ┣ 📜BoardDetailMain.tsx
+ ┃ ┃ ┃ ┣ 📜BoardDetailTop.tsx
+ ┃ ┃ ┃ ┣ 📜BoardProductCard.tsx
+ ┃ ┃ ┃ ┣ 📜BoardWriteBtn.tsx
+ ┃ ┃ ┃ ┣ 📜ProductForm.tsx
+ ┃ ┃ ┃ ┣ 📜ProductModal.tsx
+ ┃ ┃ ┃ ┣ 📜ProductSelector.tsx
+ ┃ ┃ ┃ ┣ 📜WriteForm.tsx
+ ┃ ┃ ┃ ┗ 📜WriteImage.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜useBoardDetail.ts
+ ┃ ┃ ┃ ┣ 📜useBoardList.ts
+ ┃ ┃ ┃ ┣ 📜useBoardWrite.ts
+ ┃ ┃ ┃ ┣ 📜useFavoriteProducts.ts
+ ┃ ┃ ┃ ┗ 📜useProductSearch.ts
+ ┃ ┃ ┗ 📂services
+ ┃ ┃ ┃ ┗ 📜boardService.ts
+ ┃ ┣ 📂chat
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📂DealAccept
+ ┃ ┃ ┃ ┃ ┣ 📜AcceptCompleteScreen.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜CommissionInfoModal.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜DealListScreen.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜PasswordScreen.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜SafePaymentScreen.tsx
+ ┃ ┃ ┃ ┣ 📂DealRequest
+ ┃ ┃ ┃ ┃ ┣ 📜AddMethodModal.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜DealReqConfirmScreen.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜DealReqFormScreen.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductCard.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductDirectModal.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductForm.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductSearchModal.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductSelector.tsx
+ ┃ ┃ ┃ ┣ 📂MessageBox
+ ┃ ┃ ┃ ┃ ┣ 📜DealMessage.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜MyMessage.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜OpponentMessage.tsx
+ ┃ ┃ ┃ ┣ 📜ChatCard.tsx
+ ┃ ┃ ┃ ┣ 📜ChatRoomHeader.tsx
+ ┃ ┃ ┃ ┣ 📜ChatRoomPostInfo.tsx
+ ┃ ┃ ┃ ┣ 📜ChatRoomSendBox.tsx
+ ┃ ┃ ┃ ┗ 📜ImageInputScreen.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📂trades
+ ┃ ┃ ┃ ┃ ┣ 📜useAcceptTrade.ts
+ ┃ ┃ ┃ ┃ ┗ 📜useCompleteTrade.ts
+ ┃ ┃ ┃ ┣ 📜useAccount.ts
+ ┃ ┃ ┃ ┣ 📜useChatHistory.ts
+ ┃ ┃ ┃ ┣ 📜useChatList.ts
+ ┃ ┃ ┃ ┣ 📜useChatRoomInfo.ts
+ ┃ ┃ ┃ ┣ 📜useChatSub.ts
+ ┃ ┃ ┃ ┣ 📜useDealReceipt.ts
+ ┃ ┃ ┃ ┣ 📜useImageUpload.ts
+ ┃ ┃ ┃ ┣ 📜useProductsAllDeal.ts
+ ┃ ┃ ┃ ┣ 📜useProductsSearchDeal.ts
+ ┃ ┃ ┃ ┗ 📜useVerifyPassword.ts
+ ┃ ┃ ┗ 📂sevices
+ ┃ ┃ ┃ ┣ 📜chatService.ts
+ ┃ ┃ ┃ ┣ 📜dealService.ts
+ ┃ ┃ ┃ ┗ 📜tradeService.ts
+ ┃ ┣ 📂home
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📂comment
+ ┃ ┃ ┃ ┃ ┣ 📜CommentInput.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜CommentItem.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜CommentList.tsx
+ ┃ ┃ ┃ ┣ 📂feed
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeed.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedImg.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedInteraction.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedList.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedProfile.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedSkeleton.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedTag.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedTagBtn.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeFeedText.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜HomeHeader.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜HomeTagListModal.tsx
+ ┃ ┃ ┃ ┣ 📂navbar
+ ┃ ┃ ┃ ┃ ┣ 📜BookmarkedFeedGrid.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜FavoriteProductList.tsx
+ ┃ ┃ ┃ ┗ 📂write
+ ┃ ┃ ┃ ┃ ┣ 📜HashtagSelector.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜SelectDndWrapper.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜SelectDraggableImage.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜SelectImage.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜TagPointInfo.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜TagProductImg.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜TagProductList.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜TagProductModal.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜TagWriteModal.tsx
+ ┃ ┃ ┃ ┃ ┣ 📜WriteShowImg.tsx
+ ┃ ┃ ┃ ┃ ┗ 📜WriteText.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜useBookmarkedFeedsQuery.ts
+ ┃ ┃ ┃ ┣ 📜useComments.ts
+ ┃ ┃ ┃ ┣ 📜useFavoriteProducts.ts
+ ┃ ┃ ┃ ┣ 📜useFeedInteractions.ts
+ ┃ ┃ ┃ ┣ 📜useFeedMutation.ts
+ ┃ ┃ ┃ ┣ 📜useFeedProductSearch.ts
+ ┃ ┃ ┃ ┣ 📜useFeedQuery.ts
+ ┃ ┃ ┃ ┣ 📜useHashtags.ts
+ ┃ ┃ ┃ ┣ 📜useImageDragDrop.ts
+ ┃ ┃ ┃ ┣ 📜useProductFavorite.ts
+ ┃ ┃ ┃ ┣ 📜useProductTag.ts
+ ┃ ┃ ┃ ┗ 📜useTagDragDrop.ts
+ ┃ ┃ ┣ 📂services
+ ┃ ┃ ┃ ┣ 📜commentService.ts
+ ┃ ┃ ┃ ┣ 📜feedInteractionService.ts
+ ┃ ┃ ┃ ┣ 📜feedProductService.ts
+ ┃ ┃ ┃ ┗ 📜feedService.ts
+ ┃ ┃ ┗ 📂utils
+ ┃ ┃ ┃ ┗ 📜FeedDataConverter.ts
+ ┃ ┣ 📂login
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜CompleteBtn.tsx
+ ┃ ┃ ┃ ┣ 📜CompleteContent.tsx
+ ┃ ┃ ┃ ┣ 📜MainLoginBtn.tsx
+ ┃ ┃ ┃ ┣ 📜MainTopSection.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileForm.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileHeaderText.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileImageInput.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileNameInput.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileNextBtn.tsx
+ ┃ ┃ ┃ ┗ 📜ProfileStatusInput.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜handleViewPortResize.ts
+ ┃ ┃ ┃ ┣ 📜KakaoHandler.tsx
+ ┃ ┃ ┃ ┣ 📜useAuth.ts
+ ┃ ┃ ┃ ┗ 📜useUserInfo.ts
+ ┃ ┃ ┗ 📂services
+ ┃ ┃ ┃ ┗ 📜authServices.ts
+ ┃ ┣ 📂mypage
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜MypageBoard.tsx
+ ┃ ┃ ┃ ┣ 📜MypageBoardCard.tsx
+ ┃ ┃ ┃ ┣ 📜MypageFeed.tsx
+ ┃ ┃ ┃ ┣ 📜MypageHeader.tsx
+ ┃ ┃ ┃ ┣ 📜MypageProfile.tsx
+ ┃ ┃ ┃ ┣ 📜ProfileEditModal.tsx
+ ┃ ┃ ┃ ┗ 📜ReviewStars.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜useMypageBoard.ts
+ ┃ ┃ ┃ ┣ 📜useMypageFeedQuery.ts
+ ┃ ┃ ┃ ┣ 📜useMypageProfile.ts
+ ┃ ┃ ┃ ┗ 📜useProfileEdit.ts
+ ┃ ┃ ┗ 📂services
+ ┃ ┃ ┃ ┣ 📜mypageBoardService.ts
+ ┃ ┃ ┃ ┣ 📜mypageFeedService.ts
+ ┃ ┃ ┃ ┗ 📜mypageProfileService.ts
+ ┃ ┣ 📂pay
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜AuthAccount.tsx
+ ┃ ┃ ┃ ┣ 📜BankModal.tsx
+ ┃ ┃ ┃ ┣ 📜Complete.tsx
+ ┃ ┃ ┃ ┣ 📜InputAccount.tsx
+ ┃ ┃ ┃ ┣ 📜Intro.tsx
+ ┃ ┃ ┃ ┣ 📜RandomKeyPad.tsx
+ ┃ ┃ ┃ ┗ 📜RegistPassword.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜useConnectAccount.ts
+ ┃ ┃ ┃ ┣ 📜useInitiateTransfer.ts
+ ┃ ┃ ┃ ┗ 📜useVerifyCode.ts
+ ┃ ┃ ┗ 📂services
+ ┃ ┃ ┃ ┗ 📜payService.ts
+ ┃ ┣ 📂product
+ ┃ ┃ ┣ 📂component
+ ┃ ┃ ┃ ┣ 📜LinkPreview.tsx
+ ┃ ┃ ┃ ┣ 📜ProductDescription.tsx
+ ┃ ┃ ┃ ┗ 📜ProductList.tsx
+ ┃ ┃ ┗ 📂hooks
+ ┃ ┃ ┃ ┗ 📜useFavorite.ts
+ ┃ ┗ 📂search
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜SearchFeed.tsx
+ ┃ ┃ ┃ ┣ 📜SearchHeader.tsx
+ ┃ ┃ ┃ ┣ 📜SearchPopular.tsx
+ ┃ ┃ ┃ ┣ 📜SearchProduct.tsx
+ ┃ ┃ ┃ ┣ 📜SearchRecent.tsx
+ ┃ ┃ ┃ ┣ 📜SearchRecommend.tsx
+ ┃ ┃ ┃ ┣ 📜SearchSuggestions.tsx
+ ┃ ┃ ┃ ┗ 📜SearchUser.tsx
+ ┃ ┃ ┣ 📂hooks
+ ┃ ┃ ┃ ┣ 📜useAutocomplete.ts
+ ┃ ┃ ┃ ┣ 📜usePopular.ts
+ ┃ ┃ ┃ ┣ 📜useRecent.ts
+ ┃ ┃ ┃ ┗ 📜useSearchResults.ts
+ ┃ ┃ ┗ 📂services
+ ┃ ┃ ┃ ┗ 📜searchService.ts
+ ┣ 📂fonts
+ ┃ ┣ 📜Pretendard-Regular.woff
+ ┃ ┗ 📜Pretendard-SemiBold.woff
+ ┣ 📂hooks
+ ┃ ┣ 📜useCookieAuth.ts
+ ┃ ┗ 📜useIntersectionObserver.ts
+ ┣ 📂interfaces
+ ┃ ┣ 📜ApiResponse.ts
+ ┃ ┣ 📜BoardInterface.ts
+ ┃ ┣ 📜ChatInterfaces.ts
+ ┃ ┣ 📜HomeInterfaces.ts
+ ┃ ┣ 📜LoginInterfaces.ts
+ ┃ ┣ 📜MypageInterface.ts
+ ┃ ┣ 📜OpenGraphData.ts
+ ┃ ┣ 📜ProductInterface.ts
+ ┃ ┗ 📜SearchInterface.ts
+ ┣ 📂lib
+ ┃ ┗ 📜utils.ts
+ ┣ 📂pages
+ ┃ ┣ 📂board
+ ┃ ┃ ┣ 📜BoardDetailPage.tsx
+ ┃ ┃ ┣ 📜BoardPage.tsx
+ ┃ ┃ ┗ 📜BoardWritePage.tsx
+ ┃ ┣ 📂chat
+ ┃ ┃ ┣ 📜ChatListPage.tsx
+ ┃ ┃ ┣ 📜ChatRoomPage.tsx
+ ┃ ┃ ┣ 📜DealAcceptPage.tsx
+ ┃ ┃ ┗ 📜DealRequestPage.tsx
+ ┃ ┣ 📂home
+ ┃ ┃ ┣ 📜AlarmListPage.tsx
+ ┃ ┃ ┣ 📜BookmarkFeedFullscreenPage.tsx
+ ┃ ┃ ┣ 📜BookmarkListPage.tsx
+ ┃ ┃ ┣ 📜HomeCommentPage.tsx
+ ┃ ┃ ┣ 📜HomeImgSelectPage.tsx
+ ┃ ┃ ┣ 📜HomePage.tsx
+ ┃ ┃ ┣ 📜HomeTagPage.tsx
+ ┃ ┃ ┣ 📜HomeWritePage.tsx
+ ┃ ┃ ┗ 📜ZzimListPage.tsx
+ ┃ ┣ 📂login
+ ┃ ┃ ┣ 📜LoginCompletePage.tsx
+ ┃ ┃ ┣ 📜LoginPage.tsx
+ ┃ ┃ ┗ 📜MainPage.tsx
+ ┃ ┣ 📂mypage
+ ┃ ┃ ┣ 📜MyPage.tsx
+ ┃ ┃ ┣ 📜MypageFeedFullscreenPage.tsx
+ ┃ ┃ ┣ 📜SettingAccountPage.tsx
+ ┃ ┃ ┗ 📜SettingPage.tsx
+ ┃ ┣ 📂pay
+ ┃ ┃ ┗ 📜PayPage.tsx
+ ┃ ┣ 📂product
+ ┃ ┃ ┣ 📜ProductDetailPage.tsx
+ ┃ ┃ ┗ 📜ProductPage.tsx
+ ┃ ┗ 📂search
+ ┃ ┃ ┣ 📜AfterSearchPage.tsx
+ ┃ ┃ ┗ 📜SearchingPage.tsx
+ ┣ 📂services
+ ┃ ┣ 📜api.ts
+ ┃ ┣ 📜userIdService.ts
+ ┃ ┗ 📜WebSocketProvider.tsx
+ ┣ 📂stores
+ ┃ ┣ 📜authStore.ts
+ ┃ ┣ 📜boardStore.ts
+ ┃ ┣ 📜chatStore.ts
+ ┃ ┣ 📜homeStore.ts
+ ┃ ┣ 📜payStore.ts
+ ┃ ┣ 📜searchStore.ts
+ ┃ ┣ 📜signupStore.ts
+ ┃ ┣ 📜stompContext.ts
+ ┃ ┗ 📜userStore.ts
+ ┣ 📂styles
+ ┃ ┣ 📜colors.ts
+ ┃ ┣ 📜fonts.tsx
+ ┃ ┗ 📜typography.ts
+ ┣ 📂utils
+ ┃ ┣ 📜bankCodeMapper.ts
+ ┃ ┣ 📜formatChatTime.ts
+ ┃ ┣ 📜formatDateTime.ts
+ ┃ ┣ 📜getBadgeData.ts
+ ┃ ┣ 📜getCurrentKoreanHour.ts
+ ┃ ┣ 📜getDandoBadgeData.ts
+ ┃ ┣ 📜getTimeDiff.ts
+ ┃ ┣ 📜highlightMentions.tsx
+ ┃ ┣ 📜highlightSearchTerm.tsx
+ ┃ ┣ 📜imageCompression.ts
+ ┃ ┣ 📜parseOpenGraph.ts
+ ┃ ┣ 📜scrollManager.ts
+ ┃ ┗ 📜truncateText.tsx
+ ┣ 📜App.tsx
+ ┣ 📜config.ts
+ ┣ 📜index.css
+ ┣ 📜main.tsx
+ ┗ 📜vite-env.d.ts
   </pre>
 </details>
 
