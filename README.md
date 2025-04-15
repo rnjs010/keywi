@@ -80,12 +80,12 @@
     <td style="text-align: center;" width="16.66%">프론트 개발</td>
   </tr>
   <tr>
-    <td style="text-align: center;" width="16.66%">검색 서버, MSA 설계</td>
-    <td style="text-align: center;" width="16.66%">견적 게시판/계좌 연결/채팅/결제 개발 및 디자인</td>
-    <td style="text-align: center;" width="16.66%">상품 크롤링,  MSA 설계</td>
-    <td style="text-align: center;" width="16.66%">설정 서버, 피드 서버, MSA 설계</td>
-    <td style="text-align: center;" width="16.66%">인증 서버, 실시간 채팅 시스템, 견적 게시판, 페이 서비스</td>
-    <td style="text-align: center;" width="16.66%">로그인/홈 피드/마이페이지/상품 페이지 구현, UX/UI 디자인</td>
+    <td style="text-align: center;" width="16.66%">검색/페이 서버, 금융 api 연결, MSA 설계</td>
+    <td style="text-align: center;" width="16.66%">견적 게시판/계좌 연결/채팅/결제 개발 및 UX/UI 디자인</td>
+    <td style="text-align: center;" width="16.66%">인프라 구축/관리, 상품 풀스택, 크롤링, CI/CD, MSA 설계</td>
+    <td style="text-align: center;" width="16.66%">피드 서버, 인프라 구축, MSA 설계</td>
+    <td style="text-align: center;" width="16.66%">인증/채팅 서버, 견적 게시판 서버, MSA 설계</td>
+    <td style="text-align: center;" width="16.66%">로그인/홈 피드/검색/마이페이지 개발 및 UX/UI 디자인</td>
   </tr>
 </table>
 
