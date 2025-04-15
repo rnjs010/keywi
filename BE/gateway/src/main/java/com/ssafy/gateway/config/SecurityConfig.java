@@ -89,7 +89,8 @@ public class SecurityConfig {
                 "http://localhost:5173", // 프론트엔드 개발 서버
                 "https://keywi.poloceleste.site", // 프론트엔드 배포 URL
                 "https://key-wi.netlify.app",
-                "http://j12e202.p.ssafy.io"
+                "http://j12e202.p.ssafy.io",
+		"https://keywi-bank.netlify.app"
         ));
 
         // 허용 메서드
