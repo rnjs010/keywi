@@ -374,7 +374,40 @@
 </table>
 </details>
 
-## 🎥 시연 영상 (추후 작성)
+## 🎥 시연 영상
+
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">피드-홈 기능 영상</th>
+    <th style="text-align: center;" width="33.33%">피드-작성 기능 영상</th>
+    <th style="text-align: center;" width="33.33%">피드-태그상품 기능 영상</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_02.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_03.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210301616.gif" height="400"></td>
+  </tr>
+</table>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">상품페이지 기능 영상</th>
+    <th style="text-align: center;" width="33.33%">견적게시판-작성 기능 영상</th>
+    <th style="text-align: center;" width="33.33%">견적게시판-채팅 기능 영상</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_01.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_05.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_04.gif" height="400"></td>
+  </tr>
+</table>
+<table style="text-align: center;" width="100%">
+  <tr>
+    <th style="text-align: center;" width="33.33%">마이페이지 기능 영상</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292.gif" height="400"></td>
+  </tr>
+</table>
 
 ## 🔍 주요 기술
 
