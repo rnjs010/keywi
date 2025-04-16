@@ -95,37 +95,22 @@
 <summary><strong>회원가입/로그인, 마이페이지</strong></summary>
 <table style="text-align: center;" width="100%">
   <tr>
-    <th style="text-align: center;" width="33.33%">소셜 로그인</th>
-    <th style="text-align: center;" width="33.33%">유저 정보 입력</th>
-    <th style="text-align: center;" width="33.33%">온보딩 페이지</th>
+    <th style="text-align: center;" width="25%">소셜 로그인</th>
+    <th style="text-align: center;" width="25%">마이페이지 (피드)</th>
+    <th style="text-align: center;" width="25%">마이페이지 (견적)</th>
+    <th style="text-align: center;" width="25%">설정페이지</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="소셜 로그인" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170632_Chrome.jpg" ></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="유저 정보 입력" src=""></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="온보딩 페이지" src=""></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="소셜 로그인" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170632_Chrome.jpg" ></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (피드)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170714_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (견적)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170913_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="설정페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170722_Chrome.jpg"></td>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%">카카오 소셜 회원가입/로그인 기능을 제공합니다.</td>
-    <td style="text-align: center;" width="33.33%">회원가입을 한 신규 유저는 닉네임, 프로필 사진을 등록할 수 있습니다.</td>
-    <td style="text-align: center;" width="33.33%">앱의 전체적인 기능을 소개합니다. (Skip으로 바로 메인페이지로 이동 가능)</td>
-  </tr>
-</table>
-
-<table style="text-align: center;" width="100%">
-  <tr>
-    <th style="text-align: center;" width="33.33%">마이페이지 (피드)</th>
-    <th style="text-align: center;" width="33.33%">마이페이지 (견적)</th>
-    <th style="text-align: center;" width="33.33%">설정페이지</th>
-  </tr>
-  <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="마이페이지 (피드)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170714_Chrome.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="마이페이지 (견적)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170913_Chrome.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="설정페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170722_Chrome.jpg"></td>
-  </tr>
-  <tr>
-    <td style="text-align: center;" width="33.33%">마이페이지 중 피드 탭에서 작성한 파드들을 확인가능합니다. </br> 세로 스와이프를 통해 전후 피드로 이동할 수 있습니다.</td>
-    <td style="text-align: center;" width="33.33%">마이페이지 중 견적 탭에서 작성한 견적 게시물들을 확인가능합니다. </br> 게시물의 상태를 변경할 수 있으며 조립자에 대한 후기를 남길 수 있습니다.</td>
-    <td style="text-align: center;" width="33.33%">계좌 관리, 정보 수정 등 설정을 할 수 있습니다. </td>
+    <td style="text-align: center;" width="25%">카카오 소셜 회원가입/로그인 기능을 제공합니다.</td>
+    <td style="text-align: center;" width="25%">마이페이지 중 피드 탭에서 작성한 파드들을 확인가능합니다. </br> 세로 스와이프를 통해 전후 피드로 이동할 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">마이페이지 중 견적 탭에서 작성한 견적 게시물들을 확인가능합니다. </br> 게시물의 상태를 변경할 수 있으며 조립자에 대한 후기를 남길 수 있습니다.</td>
+    <td style="text-align: center;" width="25%">계좌 관리, 정보 수정 등 설정을 할 수 있습니다. </td>
   </tr>
 </table>
 
@@ -221,7 +206,7 @@
   <tr>
     <td style="text-align: center;" width="25%">카테고리 별 (상위/하위) 상품 목록을 확인할 수 있습니다. </br> 상품을 찜할 수 있습니다.</td>
     <td style="text-align: center;" width="25%">상품 상세페이지에서 공유 및 판매 사이트로 이동할 수 있습니다.</td>
-    <td style="text-align: center;" width="25%">검색 페이지에서는 최근, 추천, 인기 검색어를 확인할 수 있습니다. </br>  추천 검색어와 인기 검색어는 시간마다 변경됩니다. </td>
+    <td style="text-align: center;" width="25%">검색 페이지에서는 최근, 인기 검색어를 확인할 수 있습니다. </br>  인기 검색어는 특정 시간마다 반영됩니다. </td>
     <td style="text-align: center;" width="25%">검색어를 입력할 때는 자모음 별로 구분하여 자동완성된 단어 목록이 나타납니다.</td>
   </tr>
 </table>
