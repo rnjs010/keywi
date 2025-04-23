@@ -1,0 +1,5 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/zulu17/bin:/usr/local/maven/apache-maven-3.9.9/bin:/opt/kafka/bin:/home/ubuntu/.local/bin"
+JAVA_HOME="/usr/lib/jvm/zulu17"
+MAVEN_HOME="/usr/local/maven/apache-maven-3.9.9"
+CLASSPATH="."
+CONFLUENT_HOME='/opt/kafka'
