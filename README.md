@@ -1,4 +1,4 @@
-![시작사진](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/427367306-601bb0bf-e5ff-489a-85ea-c027c8561c26.png)
+![시작사진](https://keywi-pri.netlify.app/readme/427367306-601bb0bf-e5ff-489a-85ea-c027c8561c26.png)
 <br />
 
 ## 📌 목차
@@ -56,12 +56,12 @@
 
 <table style="text-align: center;" width="100%">
   <tr>
-    <th style="text-align: center;" width="16.66%"><img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/88D65731-09D7-4950-A1A8-3FB20363A192-43052-00001CFE9E7EA0C9.png" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/76820bca-f807-4af5-bf93-09c9335fcbee" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/4b2e42fb-1005-4453-a418-02ae430bcd93" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/f3be0d04-1132-46c5-affb-929d97fb0b58" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/C1DFE235-A57E-467C-A243-013363DDFBCC-43052-00001CFE3E2204E4.png" width="150" height="150"/></th>
-    <th style="text-align: center;" width="16.66%"><img src="https://github.com/user-attachments/assets/4ac5efaf-080e-4b20-8796-13416f9e6cd5" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/88D65731-09D7-4950-A1A8-3FB20363A192-43052-00001CFE9E7EA0C9.png" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/415188383-76820bca-f807-4af5-bf93-09c9335fcbee.png" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/415188473-4b2e42fb-1005-4453-a418-02ae430bcd93.png" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/415188185-f3be0d04-1132-46c5-affb-929d97fb0b58.png" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/C1DFE235-A57E-467C-A243-013363DDFBCC-43052-00001CFE3E2204E4.png" width="150" height="150"/></th>
+    <th style="text-align: center;" width="16.66%"><img src="https://cofface.netlify.app/assets/415188726-4ac5efaf-080e-4b20-8796-13416f9e6cd5.png" width="150" height="150"/></th>
   </tr>
   <tr>
     <td style="text-align: center;" width="16.66%">이수환<br/><a href="https://github.com/getbravelee">@getbravelee</a></td>
@@ -101,10 +101,10 @@
     <th style="text-align: center;" width="25%">설정페이지</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="소셜 로그인" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170632_Chrome.jpg" ></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (피드)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170714_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (견적)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170913_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="설정페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250414_170722_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="소셜 로그인" src="https://keywi-pri.netlify.app/readme/Screenshot_20250414_170632_Chrome.jpg" ></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (피드)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250414_170714_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="마이페이지 (견적)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170913_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="설정페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250414_170722_Chrome.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">카카오 소셜 회원가입/로그인 기능을 제공합니다.</td>
@@ -127,11 +127,11 @@
     <th style="text-align: center;" width="20%">북마크 페이지</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="20%"><img height="400" alt="피드 메인 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170624_Chrome.jpg" ></td>
-    <td style="text-align: center;" width="20%"><img height="400" alt="태그된 상품 리스트" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170637_Chrome.jpg"></td>
-    <td style="text-align: center;" width="20%"><img height="400" alt="댓글 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170730_Chrome.jpg"></td>
-    <td style="text-align: center;" width="20%"><img height="400" alt="상품 찜 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170647_Chrome.jpg"></td>
-    <td style="text-align: center;" width="20%"><img height="400" alt="북마크 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170718_Chrome.jpg"></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="피드 메인 페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170624_Chrome.jpg" ></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="태그된 상품 리스트" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170637_Chrome.jpg"></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="댓글 페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170730_Chrome.jpg"></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="상품 찜 페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170647_Chrome.jpg"></td>
+    <td style="text-align: center;" width="20%"><img height="400" alt="북마크 페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170718_Chrome.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="20%">추천 알고리즘 순으로 피드들이 나타나면서 무한 스크롤이 가능합니다. </br> 좋아요, 북마크, 공유 등이 가능합니다. </br> 대표 이미지에 태그된 상품들을 확인할 수 있습니다. </td>
@@ -150,10 +150,10 @@
     <th style="text-align: center;" width="25%">피드 작성 (글 작성)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (사진 선택)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170948_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 태그)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171018_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 추가)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171030_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (글 작성)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171059_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (사진 선택)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170948_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 태그)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171018_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (상품 추가)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171030_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="피드 작성 (글 작성)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171059_Chrome.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">여러 사진을 선택해 추가할 수 있으며, </br> 드래그 앤 드롭으로 순서를 변경할 수 있습니다.</td>
@@ -174,10 +174,10 @@
     <th style="text-align: center;" width="25%">견적 게시글 작성 (글 작성)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시판 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%AC%EC%A0%81%EB%AA%A9%EB%A1%9D.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 상세 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%AC%EC%A0%81%EC%83%81%EC%84%B8.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (상품 선택)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171330_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (글 작성)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171406_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시판 페이지" src="https://keywi-pri.netlify.app/readme//%EA%B2%AC%EC%A0%81%EB%AA%A9%EB%A1%9D.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 상세 페이지" src="https://keywi-pri.netlify.app/readme//%EA%B2%AC%EC%A0%81%EC%83%81%EC%84%B8.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (상품 선택)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171330_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="견적 게시글 작성 (글 작성)" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171406_Chrome.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">전체 게시글의 상태 및 채팅 수를 확인할 수 있습니다.</td>
@@ -198,10 +198,10 @@
     <th style="text-align: center;" width="25%">검색 중 화면</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="상품 리스트" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170753_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="상품 상세 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_170812_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="검색 초기 화면" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%80%EC%83%89%EC%B4%88%EA%B8%B0.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="검색 중 화면" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%80%EC%83%89%EC%A4%91.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="상품 리스트" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170753_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="상품 상세 페이지" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_170812_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="검색 초기 화면" src="https://keywi-pri.netlify.app/readme//%EA%B2%80%EC%83%89%EC%B4%88%EA%B8%B0.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="검색 중 화면" src="https://keywi-pri.netlify.app/readme//%EA%B2%80%EC%83%89%EC%A4%91.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">카테고리 별 (상위/하위) 상품 목록을 확인할 수 있습니다. </br> 상품을 찜할 수 있습니다.</td>
@@ -218,9 +218,9 @@
     <th style="text-align: center;" width="33.33%">검색 결과 화면 (계정)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (피드)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%80%EC%83%89%ED%94%BC%EB%93%9C.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (상품)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%80%EC%83%89%EC%83%81%ED%92%88.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (계정)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B2%80%EC%83%89%EA%B3%84%EC%A0%95.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (피드)" src="https://keywi-pri.netlify.app/readme//%EA%B2%80%EC%83%89%ED%94%BC%EB%93%9C.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (상품)" src="https://keywi-pri.netlify.app/readme//%EA%B2%80%EC%83%89%EC%83%81%ED%92%88.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="검색 결과 화면 (계정)" src="https://keywi-pri.netlify.app/readme//%EA%B2%80%EC%83%89%EA%B3%84%EC%A0%95.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="33.33%">검색어가 들어간 피드가 나타나며, 피드 선택 시 세로 스와이프를 통해 전후 피드로 이동할 수 있습니다.</td>
@@ -239,9 +239,9 @@
     <th style="text-align: center;" width="33.33%">간편 비밀번호 설정</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 입력" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B3%84%EC%A2%8C%EC%9E%85%EB%A0%A5.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 인증" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_172406_Chrome.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 설정" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EA%B3%84%EC%A2%8C%EC%97%B0%EA%B2%B0%EB%B9%84%EB%B2%88.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 입력" src="https://keywi-pri.netlify.app/readme//%EA%B3%84%EC%A2%8C%EC%9E%85%EB%A0%A5.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="계좌 인증" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_172406_Chrome.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 설정" src="https://keywi-pri.netlify.app/readme//%EA%B3%84%EC%A2%8C%EC%97%B0%EA%B2%B0%EB%B9%84%EB%B2%88.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="33.33%">계좌 번호 입력, 은행 선택, 약관 동의 시 버튼이 활성화됩니다.</td>
@@ -260,9 +260,9 @@
     <th style="text-align: center;" width="33.33%">사진 보내기</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅 목록 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EB%AA%A9%EB%A1%9D.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅방 페이지" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EB%B0%A9%EC%83%81%EC%84%B8.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="사진 보내기" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%82%AC%EC%A7%84%EC%A0%84%EC%86%A1.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅 목록 페이지" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EB%AA%A9%EB%A1%9D.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="채팅방 페이지" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EB%B0%A9%EC%83%81%EC%84%B8.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="사진 보내기" src="https://keywi-pri.netlify.app/readme//%EC%82%AC%EC%A7%84%EC%A0%84%EC%86%A1.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="33.33%">전체 채팅 목록을 확인할 수 있습니다.</td>
@@ -282,10 +282,10 @@
     <th style="text-align: center;" width="25%">거래 요청 채팅 (구매자)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 폼 화면" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_172206_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="금액 및 계좌 확인 화면" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_172213_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (조립자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%9A%94%EC%B2%AD(%EC%A1%B0%EB%A6%BD).jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (구매자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%9A%94%EC%B2%AD(%EA%B5%AC%EB%A7%A4).jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 폼 화면" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_172206_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="금액 및 계좌 확인 화면" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_172213_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (조립자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%9A%94%EC%B2%AD(%EC%A1%B0%EB%A6%BD).jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 요청 채팅 (구매자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%9A%94%EC%B2%AD(%EA%B5%AC%EB%A7%A4).jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">조립할 키보드에 필요한 상품 선택 및 조립 비용을 입력할 수 있습니다. </br> 카테고리 별 상품을 검색할 수 있으며, 기타 카테고리를 추가할 수 있습니다. </td>
@@ -305,9 +305,9 @@
     <th style="text-align: center;" width="33.33%">간편 비밀번호 입력</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 내역" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171707_Chrome.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="최종 금액 및 계좌 확인" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171716_Chrome.jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 입력" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171726_Chrome.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 내역" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171707_Chrome.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="최종 금액 및 계좌 확인" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171716_Chrome.jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="간편 비밀번호 입력" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171726_Chrome.jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="33.33%">거래 수락 버튼 터치 시, 조립자가 작성한 거래 내역을 확인할 수 있습니다.</td>
@@ -323,9 +323,9 @@
     <th style="text-align: center;" width="33.33%">거래 수락 채팅 (조립자)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="은행 화면 (출금)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%9D%80%ED%96%89%EA%B5%AC%EB%A7%A4.png"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (구매자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%A4%91(%EA%B5%AC%EB%A7%A4).jpg"></td>
-    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (조립자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%A4%91(%EC%A1%B0%EB%A6%BD).jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="은행 화면 (출금)" src="https://keywi-pri.netlify.app/readme//%EC%9D%80%ED%96%89%EA%B5%AC%EB%A7%A4.png"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (구매자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%A4%91(%EA%B5%AC%EB%A7%A4).jpg"></td>
+    <td style="text-align: center;" width="33.33%"><img height="400" alt="거래 수락 채팅 (조립자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%A4%91(%EC%A1%B0%EB%A6%BD).jpg"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="33.33%">거래 수락 시 구매자 은행 화면입닌다.</td>
@@ -345,10 +345,10 @@
     <th style="text-align: center;" width="25%">은행 화면 (입금)</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 확정 모달" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme/Screenshot_20250411_171758_Chrome.jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 완료 채팅 (구매자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%99%84(%EA%B5%AC%EB%A7%A4).jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="거래 완료 채팅 (조립자)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%99%84(%EC%A1%B0%EB%A6%BD).jpg"></td>
-    <td style="text-align: center;" width="25%"><img height="400" alt="은행 화면 (입금)" src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme2/%EC%9D%80%ED%96%89%EC%A1%B0%EB%A6%BD.png"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 확정 모달" src="https://keywi-pri.netlify.app/readme/Screenshot_20250411_171758_Chrome.jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 완료 채팅 (구매자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%99%84(%EA%B5%AC%EB%A7%A4).jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="거래 완료 채팅 (조립자)" src="https://keywi-pri.netlify.app/readme//%EC%B1%84%ED%8C%85%EA%B1%B0%EB%9E%98%EC%99%84(%EC%A1%B0%EB%A6%BD).jpg"></td>
+    <td style="text-align: center;" width="25%"><img height="400" alt="은행 화면 (입금)" src="https://keywi-pri.netlify.app/readme//%EC%9D%80%ED%96%89%EC%A1%B0%EB%A6%BD.png"></td>
   </tr>
   <tr>
     <td style="text-align: center;" width="25%">거래 완료하기 버튼 터치 시 나타나는 모달입니다.</td>
@@ -368,9 +368,9 @@
     <th style="text-align: center;" width="33.33%">피드-태그상품 기능 영상</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_02.gif" height="400"></td>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_03.gif" height="400"></td>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210301616.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292_02.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292_03.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210301616.gif" height="400"></td>
   </tr>
 </table>
 <table style="text-align: center;" width="100%">
@@ -380,9 +380,9 @@
     <th style="text-align: center;" width="33.33%">견적게시판-채팅 기능 영상</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_01.gif" height="400"></td>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_05.gif" height="400"></td>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292_04.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292_01.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292_05.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292_04.gif" height="400"></td>
   </tr>
 </table>
 <table style="text-align: center;" width="100%">
@@ -390,7 +390,7 @@
     <th style="text-align: center;" width="33.33%">마이페이지 기능 영상</th>
   </tr>
   <tr>
-    <td style="text-align: center;" width="33.33%"><img src="https://key-wi.s3.ap-northeast-2.amazonaws.com/readme-video/KakaoTalk_20250415_210201292.gif" height="400"></td>
+    <td style="text-align: center;" width="33.33%"><img src="https://keywi-pri.netlify.app/readme/KakaoTalk_20250415_210201292.gif" height="400"></td>
   </tr>
 </table>
 
@@ -499,12 +499,12 @@
 
 ## 🔧 기술 스택
 
-![기술스택1](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D1.png)
-![기술스택2](https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D2.png)
+![기술스택1](https://keywi-pri.netlify.app/readme/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D1.png)
+![기술스택2](https://keywi-pri.netlify.app/readme/%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D2.png)
 
 ## 🗺️ 기술 아키텍처
 
-![아키텍처](<https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(5)+(1).png>)
+![아키텍처](<https://keywi-pri.netlify.app/readme/image+(5)+(1).png>)
 
 ## 📂 프로젝트 구조
 
@@ -1574,50 +1574,50 @@
 <details>
   <summary><strong>기능 명세서</strong></summary>
   <h3>🔹 소셜 로그인</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(3).png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(3).png" alt="기능명세서">
   <h3>🔹 견적 게시판</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%AC%EC%A0%81+(2).png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EA%B2%AC%EC%A0%81+(2).png" alt="기능명세서">
   <h3>🔹 채팅</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85+(1).png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EC%B1%84%ED%8C%85+(1).png" alt="기능명세서">
   <h3>🔹 키위페이</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%8E%98%EC%9D%B4.png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%ED%8E%98%EC%9D%B4.png" alt="기능명세서">
   <h3>🔹 마이페이지</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80.png" alt="기능명세서">
-  <img scr="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%95%8C%EB%A6%BC.png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80.png" alt="기능명세서">
+  <img scr="https://keywi-pri.netlify.app/readme/%EC%95%8C%EB%A6%BC.png" alt="기능명세서">
   <h3>🔹 SNS 피드</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%94%BC%EB%93%9C.png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%ED%94%BC%EB%93%9C.png" alt="기능명세서">
   <h3>🔹 검색</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%80%EC%83%89.png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EA%B2%80%EC%83%89.png" alt="기능명세서">
   <h3>🔹 상품 게시판</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%83%81%ED%92%88.png" alt="기능명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EC%83%81%ED%92%88.png" alt="기능명세서">
 </details>
 
 <details>
   <summary><strong>erd</strong></summary>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/KeyWi_ERD+(2).png" alt="erd">
+  <img src="https://keywi-pri.netlify.app/readme/KeyWi_ERD+(2).png" alt="erd">
 </details>
 
 <details>
   <summary><strong>피그마</strong></summary>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%94%BC%EA%B7%B8%EB%A7%88.png" alt="피그마">
+  <img src="https://keywi-pri.netlify.app/readme/%ED%94%BC%EA%B7%B8%EB%A7%88.png" alt="피그마">
 </details>
 
 <details>
   <summary><strong>api 명세서</strong></summary>
   <h3>🔹 소셜 로그인</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(2).png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EB%A1%9C%EA%B7%B8%EC%9D%B8+(2).png" alt="api명세서">
   <h3>🔹 견적 게시판</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%AC%EC%A0%81.png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EA%B2%AC%EC%A0%81.png" alt="api명세서">
   <h3>🔹 채팅</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%B1%84%ED%8C%85+(2).png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EC%B1%84%ED%8C%85+(2).png" alt="api명세서">
   <h3>🔹 키위페이</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%ED%82%A4%EC%9C%84%ED%8E%98%EC%9D%B4.png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%ED%82%A4%EC%9C%84%ED%8E%98%EC%9D%B4.png" alt="api명세서">
   <h3>🔹 마이페이지</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80+(2).png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EB%A7%88%EC%9D%B4%ED%8E%98%EC%9D%B4%EC%A7%80+(2).png" alt="api명세서">
   <h3>🔹 SNS 피드</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/image+(6).png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/image+(6).png" alt="api명세서">
   <h3>🔹 검색</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EA%B2%80%EC%83%89+(2).png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EA%B2%80%EC%83%89+(2).png" alt="api명세서">
   <h3>🔹 상품 게시판</h3>
-  <img src="https://enjoy-trip-static-files.s3.ap-northeast-2.amazonaws.com/%EC%83%81%ED%92%88%EA%B2%8C%EC%8B%9C%ED%8C%90.png" alt="api명세서">
+  <img src="https://keywi-pri.netlify.app/readme/%EC%83%81%ED%92%88%EA%B2%8C%EC%8B%9C%ED%8C%90.png" alt="api명세서">
 </details>
